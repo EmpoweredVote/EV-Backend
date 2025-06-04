@@ -1,0 +1,22 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+
+# Go workspace
+bin/
+pkg/
+vendor/
+
+# Editor/OS files
+.DS_Store
+.vscode/
+.idea/
+
+# Environment files
+.env
+.env.local
+.env.*
