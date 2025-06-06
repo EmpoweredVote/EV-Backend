@@ -1,4 +1,4 @@
-package handlers
+package auth
 
 import (
 	"encoding/json"
@@ -6,20 +6,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/DoyleJ11/auth-system/db"
-	"github.com/DoyleJ11/auth-system/models"
-	"github.com/DoyleJ11/auth-system/utils"
+	"github.com/DoyleJ11/auth-system/internal/db"
+	"github.com/DoyleJ11/auth-system/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func RootHandler(w http.ResponseWriter, r *http.Request) {
-	response := "Server is up!"
-	w.Header().Set("Content-Type", "text/plain")
-	fmt.Fprintln(w, response)
-}
-
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	var user models.User
+	var user User
 
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -34,7 +27,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if username is taken
-	var existing models.User
+	var existing User
 	err = db.DB.First(&existing, "username = ?", user.Username).Error
 	if err == nil {
 		http.Error(w, "Username already taken", http.StatusConflict)
@@ -67,11 +60,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	var user models.User
-	var session models.Session
-	var existing models.Session
+	var user User
+	var session Session
+	var existing Session
 
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -107,7 +99,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	db.DB.Where("user_id = ?", user.UserID).First(&existing)
 	if existing.UserID != "" {
 		fmt.Println(existing)
-		db.DB.Model(&existing).Updates(models.Session{
+		db.DB.Model(&existing).Updates(Session{
 			SessionID: uuid,
 			ExpiresAt: time.Now().Add(6 * time.Hour),
 		})
@@ -123,7 +115,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	var session models.Session
+	var session Session
 
 	// Get session_id from cookie
 	cookie, err := r.Cookie("session_id")
@@ -153,5 +145,34 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "Logout successful")
 	}
+}
 
+type MeResponse struct {
+	UserID 		string 	`json:"user_id"`
+	Username 	string  `json:"username"`
+}
+
+func MeHandler(w http.ResponseWriter, r *http.Request) {
+	var user User
+
+	userID, ok := utils.GetUserIDFromContext(r.Context())
+	if ok {
+		err := db.DB.First(&user, "user_id = ?", userID).Error
+		if err != nil {
+			http.Error(w, "Couldn't find user", http.StatusNotFound)
+			return
+		}
+
+		response := MeResponse {
+			UserID: userID,
+			Username: user.Username,
+		}
+		
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+
+	} else {
+		http.Error(w, "Failed converting ID to string", http.StatusInternalServerError)
+		return
+	}
 }

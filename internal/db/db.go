@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/DoyleJ11/auth-system/models"
+	// "github.com/DoyleJ11/auth-system/internal/auth"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -21,8 +21,4 @@ func Connect() {
 
 	DB = connection
 	fmt.Println("Connected to database")
-
-	if err := connection.AutoMigrate(&models.User{}, &models.Session{}); err != nil {
-		log.Fatal("Failed to auto-migrate tables", err)
-	}
 }
