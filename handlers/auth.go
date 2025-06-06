@@ -3,8 +3,8 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
+	"time"
 
 	"github.com/DoyleJ11/auth-system/db"
 	"github.com/DoyleJ11/auth-system/models"
@@ -16,56 +16,6 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 	response := "Server is up!"
 	w.Header().Set("Content-Type", "text/plain")
 	fmt.Fprintln(w, response)
-}
-
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	var user models.User
-	var session models.Session
-	var existing models.Session
-
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		//Handle err
-		http.Error(w, "Invalid Data", http.StatusBadRequest)
-		return
-	}
-
-	// Search for matching username
-	err = db.DB.First(&user, "username = ?", user.Username).Error
-	if err != nil {
-		http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
-		return
-	}
-	log.Printf("%+v", user) // Testing only
-
-	// Compare hashed password with plaintext password
-	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(user.Password))
-	if err != nil {
-		http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
-		return
-	} 
-
-	// Passwords matched, set cookie
-	uuid := utils.GenerateUUID()
-	http.SetCookie(w, &http.Cookie{
-		Name: "session_id",
-		Value: uuid,
-		Path: "/",
-		HttpOnly: true,
-	})
-
-	// Search db to see if session cookie already exists, update DB with new session_id if true
-	db.DB.Where("user_id = ?", user.UserID).First(&existing)
-	if existing.UserID != "" {
-		db.DB.Model(&existing).Update("session_id", uuid)
-	} else {
-		session.SessionID = uuid
-		session.UserID = user.UserID
-		db.DB.Create(&session)
-	}
-
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintln(w, "Login successful")
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -116,7 +66,92 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 })
 }
 
+
+
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	var user models.User
+	var session models.Session
+	var existing models.Session
+
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		//Handle err
+		http.Error(w, "Invalid Data", http.StatusBadRequest)
+		return
+	}
+
+	// Search for matching username
+	err = db.DB.First(&user, "username = ?", user.Username).Error
+	if err != nil {
+		http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
+		return
+	}
+
+	// Compare hashed password with plaintext password
+	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(user.Password))
+	if err != nil {
+		http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
+		return
+	} 
+
+	// Passwords matched, set cookie
+	uuid := utils.GenerateUUID()
+	http.SetCookie(w, &http.Cookie{
+		Name: "session_id",
+		Value: uuid,
+		Path: "/",
+		HttpOnly: true,
+	})
+
+	// Search db to see if session cookie already exists, update DB with new session_id if true
+	db.DB.Where("user_id = ?", user.UserID).First(&existing)
+	if existing.UserID != "" {
+		fmt.Println(existing)
+		db.DB.Model(&existing).Updates(models.Session{
+			SessionID: uuid,
+			ExpiresAt: time.Now().Add(6 * time.Hour),
+		})
+	} else {
+		session.SessionID = uuid
+		session.UserID = user.UserID
+		session.ExpiresAt = time.Now().Add(6 * time.Hour)
+		db.DB.Create(&session)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Login successful")
+}
+
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	
+	var session models.Session
+
+	// Get session_id from cookie
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		http.Error(w, "Couldn't find cookie", http.StatusUnauthorized)
+		return
+	}
+
+	// search sessions for session_id
+	err = db.DB.First(&session, "session_id = ?", cookie.Value).Error
+	if err != nil {
+		http.Error(w, "Couldn't find session", http.StatusUnauthorized)
+		return
+	} else {
+		// If no err, delete session record
+		db.DB.Delete(&session)
+
+		// Replace the cookie with new expired/empty cookie
+		deletedCookie := &http.Cookie{
+			Name: "session_id",
+			Value: "",
+			MaxAge: 0,
+			Path: "/",
+		}
+		http.SetCookie(w, deletedCookie)
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "Logout successful")
+	}
 
 }
