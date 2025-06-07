@@ -13,4 +13,5 @@ func SetupRoutes() {
 	http.HandleFunc("/register", RegisterHandler)
 	http.Handle("/logout", middleware.SessionMiddleware(sessionFetcher)(http.HandlerFunc(LogoutHandler)))
 	http.Handle("/me", middleware.SessionMiddleware(sessionFetcher)(http.HandlerFunc(MeHandler)))
+	http.Handle("/update-password", middleware.SessionMiddleware(sessionFetcher)(http.HandlerFunc(UpdatePasswordHandler)))
 }
