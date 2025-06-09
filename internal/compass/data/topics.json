@@ -1,0 +1,2352 @@
+[
+  {
+    "id": "6bcd01e0-4e96-4472-bd31-f6e3ff3fdc6a",
+    "title": "Healthcare Access and Affordability",
+    "shortTitle": "Healthcare",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Healthcare is a human right. I support a universal, government-run system like Medicare for All."
+      },
+      {
+        "value": 2,
+        "text": "We need a single-payer system with no private insurance. Government should cover everything."
+      },
+      {
+        "value": 3,
+        "text": "I support a public option - let everyone opt into Medicare if they want, but private insurance can still exist."
+      },
+      {
+        "value": 4,
+        "text": "Expand Medicaid and subsidies, improve ACA. Blend private and public systems to increase access."
+      },
+      {
+        "value": 5,
+        "text": "The ACA was a step forward, but the market should play a bigger role in driving down costs."
+      },
+      {
+        "value": 6,
+        "text": "We need more price transparency and deregulation to reduce costs - not more government programs."
+      },
+      {
+        "value": 7,
+        "text": "Reduce government involvement. Encourage competition and innovation in private healthcare."
+      },
+      {
+        "value": 8,
+        "text": "Government-run healthcare is inefficient. Healthcare should be delivered by the private sector."
+      },
+      {
+        "value": 9,
+        "text": "Abolish public healthcare programs. Individuals should purchase their own insurance or pay out of pocket."
+      },
+      {
+        "value": 10,
+        "text": "Healthcare is not a government responsibility. All healthcare should be privatized and market-driven."
+      }
+    ]
+  },
+  {
+    "id": "0c8fb177-b4a0-45db-bd12-9160463501c9",
+    "title": "Climate Change and Environmental Protection",
+    "shortTitle": "Climate Change",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Climate change is an urgent global crisis. We must immediately transition to 100% renewable energy."
+      },
+      {
+        "value": 2,
+        "text": "We need aggressive climate policy - carbon taxes, green infrastructure, and global cooperation."
+      },
+      {
+        "value": 3,
+        "text": "The government should lead the clean energy transition while supporting workers in fossil fuel industries."
+      },
+      {
+        "value": 4,
+        "text": "Encourage green energy through tax incentives and innovation - less regulation, more collaboration."
+      },
+      {
+        "value": 5,
+        "text": "We should balance environmental goals with economic growth - move gradually, not radically."
+      },
+      {
+        "value": 6,
+        "text": "Climate change is real, but we shouldn\u2019t overreact or damage the economy in the name of the environment."
+      },
+      {
+        "value": 7,
+        "text": "The science is uncertain. We should focus on energy independence and innovation, not regulations."
+      },
+      {
+        "value": 8,
+        "text": "Climate change is overstated. Environmental rules hurt our economy and personal freedom."
+      },
+      {
+        "value": 9,
+        "text": "Climate change is a hoax. Green policies are just a way to expand government power."
+      },
+      {
+        "value": 10,
+        "text": "We should maximize fossil fuel production. It's reliable, profitable, and essential to national strength."
+      }
+    ]
+  },
+  {
+    "id": "ae9eeaea-757e-426c-8511-b089569e5155",
+    "title": "Economic Inequality and Job Security",
+    "shortTitle": "Economic Inequality",
+    "stances": [
+      {
+        "value": 1,
+        "text": "We need to tax the wealthy and guarantee jobs and income for all."
+      },
+      {
+        "value": 2,
+        "text": "Raise taxes on corporations and the rich to fund public services and close the wealth gap."
+      },
+      {
+        "value": 3,
+        "text": "Strengthen unions, raise the minimum wage, and expand safety nets to protect workers."
+      },
+      {
+        "value": 4,
+        "text": "Government should support jobs through training, benefits, and infrastructure - but not control wages."
+      },
+      {
+        "value": 5,
+        "text": "Balance is key - help those in need, but don't punish success or overregulate the market."
+      },
+      {
+        "value": 6,
+        "text": "Encourage entrepreneurship and reduce barriers to hiring - not more welfare or mandates."
+      },
+      {
+        "value": 7,
+        "text": "Too much focus on inequality discourages ambition - reward work, not dependency."
+      },
+      {
+        "value": 8,
+        "text": "Cut regulations and taxes - the best way to fight poverty is through economic growth."
+      },
+      {
+        "value": 9,
+        "text": "End welfare programs that trap people in poverty. The private sector creates real jobs."
+      },
+      {
+        "value": 10,
+        "text": "Eliminate income taxes and dismantle entitlement programs. Let the market work without interference."
+      }
+    ]
+  },
+  {
+    "id": "0d612353-16e0-40c1-8cfd-80c777f23f38",
+    "title": "Education Quality and Funding",
+    "shortTitle": "Education",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Education should be fully publicly funded and equal for all, from pre-K through college."
+      },
+      {
+        "value": 2,
+        "text": "We need to dramatically increase public school funding and teacher pay, especially in underserved areas."
+      },
+      {
+        "value": 3,
+        "text": "Invest in public education reform - higher standards, better pay, and more support for students and teachers."
+      },
+      {
+        "value": 4,
+        "text": "Support school choice within the public system - magnet schools, open enrollment, and innovation zones."
+      },
+      {
+        "value": 5,
+        "text": "Balance public and private options - vouchers and charters can help where public schools are failing."
+      },
+      {
+        "value": 6,
+        "text": "Expand school choice - let parents use tax dollars for private, charter, or religious schools."
+      },
+      {
+        "value": 7,
+        "text": "Cut bureaucracy and teacher unions - give control to parents and local communities."
+      },
+      {
+        "value": 8,
+        "text": "Defund the federal Department of Education - education decisions should be made locally."
+      },
+      {
+        "value": 9,
+        "text": "Phase out government-run schools - education should be privatized and funded by families."
+      },
+      {
+        "value": 10,
+        "text": "End all public education. Schools should be privately run, with no taxpayer involvement."
+      }
+    ]
+  },
+  {
+    "id": "822f70b3-6e7e-426b-9bb8-332ba820e310",
+    "title": "Gun Laws and Public Safety",
+    "shortTitle": "Gun Control",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Ban all civilian firearms. Only law enforcement and military should have guns."
+      },
+      {
+        "value": 2,
+        "text": "Ban assault weapons and high-capacity magazines. Strict licensing and mental health checks for all gun owners."
+      },
+      {
+        "value": 3,
+        "text": "Universal background checks, red flag laws, and national registration are common sense and overdue."
+      },
+      {
+        "value": 4,
+        "text": "Support the Second Amendment, but also strong background checks and limits on high-risk weapons."
+      },
+      {
+        "value": 5,
+        "text": "Most gun laws are fine as-is. Enforce existing laws rather than adding new ones."
+      },
+      {
+        "value": 6,
+        "text": "Loosen restrictions on responsible gun owners - self-defense is a fundamental right."
+      },
+      {
+        "value": 7,
+        "text": "Permitless carry and fewer restrictions keep communities safer by empowering citizens."
+      },
+      {
+        "value": 8,
+        "text": "Gun rights are absolute. Any regulation is an infringement on the Constitution."
+      },
+      {
+        "value": 9,
+        "text": "Abolish background checks and gun registries. Government has no business tracking gun owners."
+      },
+      {
+        "value": 10,
+        "text": "Mandatory ownership for all adults. An armed society is a free and secure society."
+      }
+    ]
+  },
+  {
+    "id": "f528ae69-acbc-450f-b2ce-f63e6178de5e",
+    "title": "Reproductive Rights and Abortion Access",
+    "shortTitle": "Abortion",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Abortion should be available at any time, for any reason, and fully funded by the government."
+      },
+      {
+        "value": 2,
+        "text": "Abortion should be legal throughout pregnancy with no government interference."
+      },
+      {
+        "value": 3,
+        "text": "Protect legal abortion access with reasonable health regulations, especially in early stages."
+      },
+      {
+        "value": 4,
+        "text": "Allow legal abortion with some limits, such as viability or parental consent for minors."
+      },
+      {
+        "value": 5,
+        "text": "Permit abortion only in cases of rape, incest, or danger to the mother\u2019s life."
+      },
+      {
+        "value": 6,
+        "text": "Ban abortion except when the mother\u2019s life is at serious risk."
+      },
+      {
+        "value": 7,
+        "text": "Abortion is murder. It should be criminalized in all cases, including rape or incest."
+      },
+      {
+        "value": 8,
+        "text": "Constitutional amendment to protect unborn children and ban abortion nationwide."
+      },
+      {
+        "value": 9,
+        "text": "Doctors and women who perform abortions should be prosecuted."
+      },
+      {
+        "value": 10,
+        "text": "Life begins at conception. We must protect the unborn with the full force of the law."
+      }
+    ]
+  },
+  {
+    "id": "4e2ed93e-a793-400f-ab7a-838bfc26e3f9",
+    "title": "Policing and Criminal Justice Reform",
+    "shortTitle": "Policing",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Abolish the police and prisons \u2014 the system is rooted in racism and cannot be reformed."
+      },
+      {
+        "value": 2,
+        "text": "Defund the police significantly and invest in mental health, housing, and non-carceral solutions."
+      },
+      {
+        "value": 3,
+        "text": "Majorly reduce police budgets and enforce civilian oversight, transparency, and strict accountability."
+      },
+      {
+        "value": 4,
+        "text": "Shift some funding from police to social services while requiring better training and standards."
+      },
+      {
+        "value": 5,
+        "text": "Support responsible police reform \u2014 body cameras, training, and accountability without defunding."
+      },
+      {
+        "value": 6,
+        "text": "Trust law enforcement overall \u2014 reforms should be incremental and avoid weakening public safety."
+      },
+      {
+        "value": 7,
+        "text": "Police face unfair scrutiny \u2014 media exaggerates problems. Back the blue and restore respect."
+      },
+      {
+        "value": 8,
+        "text": "Loosen restrictions on officers \u2014 they need more freedom to stop crime and deter violence."
+      },
+      {
+        "value": 9,
+        "text": "Adopt tough-on-crime policies: expand police powers, mandatory minimums, and stop-and-frisk."
+      },
+      {
+        "value": 10,
+        "text": "Militarize policing, expand prisons, and crack down hard on crime."
+      }
+    ]
+  },
+  {
+    "id": "824d9731-3a9c-4d15-8536-07fa0cbed3a3",
+    "title": "Immigration Policy",
+    "shortTitle": "Immigration",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Abolish ICE and open the borders. Migration is a human right."
+      },
+      {
+        "value": 2,
+        "text": "Offer citizenship to all undocumented immigrants and decriminalize border crossings."
+      },
+      {
+        "value": 3,
+        "text": "Legalize DACA and provide a clear, humane path to citizenship for undocumented immigrants."
+      },
+      {
+        "value": 4,
+        "text": "Support secure borders, but also comprehensive immigration reform with a path to citizenship."
+      },
+      {
+        "value": 5,
+        "text": "Enforce existing immigration laws fairly. Reform is needed, but we must respect the process."
+      },
+      {
+        "value": 6,
+        "text": "Tighten border security and require legal entry only - no amnesty for undocumented immigrants."
+      },
+      {
+        "value": 7,
+        "text": "End birthright citizenship and reduce legal immigration to protect American jobs."
+      },
+      {
+        "value": 8,
+        "text": "Build the wall. Deport anyone here illegally. No more chain migration."
+      },
+      {
+        "value": 9,
+        "text": "Close the borders. Suspend all immigration until the system is fixed."
+      },
+      {
+        "value": 10,
+        "text": "America should stop all immigration permanently. Preserve our culture and protect our citizens first."
+      }
+    ]
+  },
+  {
+    "id": "4ef50dc2-aae9-4775-8c11-62e85be55524",
+    "title": "Civil Rights and Social Justice",
+    "shortTitle": "Civil Rights",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Dismantle systemic racism, patriarchy, and capitalism - they are all rooted in oppression."
+      },
+      {
+        "value": 2,
+        "text": "Center marginalized voices in all policy decisions and repair historical harms through reparations."
+      },
+      {
+        "value": 3,
+        "text": "We need strong anti-discrimination laws, inclusive education, and proactive equity programs."
+      },
+      {
+        "value": 4,
+        "text": "Address inequality with targeted programs while promoting unity and shared opportunity."
+      },
+      {
+        "value": 5,
+        "text": "Everyone should be treated equally, regardless of race or identity - no special treatment."
+      },
+      {
+        "value": 6,
+        "text": "Discrimination is wrong, but identity politics are divisive - we should focus on what unites us."
+      },
+      {
+        "value": 7,
+        "text": "DEI programs and social justice movements go too far - they stigmatize and divide."
+      },
+      {
+        "value": 8,
+        "text": "America is not systemically racist. Social justice rhetoric is exaggerated and harmful."
+      },
+      {
+        "value": 9,
+        "text": "Civil rights laws are weaponized against traditional values and free speech."
+      },
+      {
+        "value": 10,
+        "text": "End all DEI, affirmative action, and anti-discrimination laws. Treat everyone exactly the same."
+      }
+    ]
+  },
+  {
+    "id": "c48ce75d-b316-42ff-90fe-2d6934b64fc4",
+    "title": "Taxation and Government Spending",
+    "shortTitle": "Taxes",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Heavily tax the rich and corporations to fund universal services and close the wealth gap."
+      },
+      {
+        "value": 2,
+        "text": "Raise taxes on high earners to expand public services like healthcare, housing, and education."
+      },
+      {
+        "value": 3,
+        "text": "Progressive taxation is fair. Everyone should pay, but the wealthy should pay more."
+      },
+      {
+        "value": 4,
+        "text": "Keep taxes reasonable but make sure essential services are well-funded and accountable."
+      },
+      {
+        "value": 5,
+        "text": "Cut wasteful spending and avoid tax increases. Government should live within its means."
+      },
+      {
+        "value": 6,
+        "text": "Lower taxes to stimulate growth. Government should spend less and let people keep more."
+      },
+      {
+        "value": 7,
+        "text": "Cut taxes drastically. Shrink the government and shift more responsibility to individuals."
+      },
+      {
+        "value": 8,
+        "text": "Eliminate income taxes. Fund only essential national functions through sales or flat taxes."
+      },
+      {
+        "value": 9,
+        "text": "Abolish the IRS. Government has no right to take my money."
+      },
+      {
+        "value": 10,
+        "text": "No taxation. Government should be voluntary and funded by donations or service fees."
+      }
+    ]
+  },
+  {
+    "id": "81cfd583-7c2a-40e5-b428-ed7b66e84652",
+    "title": "Affordable Housing and Homelessness",
+    "shortTitle": "Housing",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Housing is a human right. Government should guarantee free housing for everyone in need."
+      },
+      {
+        "value": 2,
+        "text": "Build public housing and offer rent control to ensure no one is priced out of their community."
+      },
+      {
+        "value": 3,
+        "text": "Fund affordable housing programs and increase tenant protections like rent stabilization."
+      },
+      {
+        "value": 4,
+        "text": "Offer housing vouchers and zoning reform to help low-income families find stable homes."
+      },
+      {
+        "value": 5,
+        "text": "Support housing development and reduce red tape, but avoid heavy-handed regulations."
+      },
+      {
+        "value": 6,
+        "text": "Let the market lead. Deregulate zoning and building codes to make housing more affordable."
+      },
+      {
+        "value": 7,
+        "text": "Private developers and property owners should guide housing - not government mandates."
+      },
+      {
+        "value": 8,
+        "text": "End public housing programs and eliminate rent control. These policies distort the market."
+      },
+      {
+        "value": 9,
+        "text": "Homelessness is a personal choice. Government programs waste money and encourage dependency."
+      },
+      {
+        "value": 10,
+        "text": "The government should not be involved in housing at all. Property is a private matter."
+      }
+    ]
+  },
+  {
+    "id": "b980965a-52d8-4b67-addf-e89473372112",
+    "title": "Criminal Justice Reform and Policing",
+    "shortTitle": "Justice Reform",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Abolish the police and prisons. Replace them with community-led safety and accountability systems."
+      },
+      {
+        "value": 2,
+        "text": "Defund police departments and reinvest in mental health, housing, and violence prevention."
+      },
+      {
+        "value": 3,
+        "text": "Reform policing through accountability, demilitarization, and alternatives to incarceration."
+      },
+      {
+        "value": 4,
+        "text": "Fund both policing and community programs. Reform, don\u2019t abolish."
+      },
+      {
+        "value": 5,
+        "text": "Most officers do good work. Improve training and accountability, but support the police."
+      },
+      {
+        "value": 6,
+        "text": "Support law enforcement. Focus on stopping crime, not limiting the tools police need."
+      },
+      {
+        "value": 7,
+        "text": "We need tougher laws and more police presence to deter rising crime."
+      },
+      {
+        "value": 8,
+        "text": "Restore law and order. End soft-on-crime policies and let police do their jobs."
+      },
+      {
+        "value": 9,
+        "text": "Increase penalties and expand policing. Criminals need to fear consequences again."
+      },
+      {
+        "value": 10,
+        "text": "Zero tolerance. Expand surveillance, stop and frisk, and mandatory minimums."
+      }
+    ]
+  },
+  {
+    "id": "0c57a3b2-2f00-4586-badb-315695b340b3",
+    "title": "Voting Rights and Electoral Integrity",
+    "shortTitle": "Voting",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Automatic voter registration, universal mail-in voting, and Election Day as a national holiday."
+      },
+      {
+        "value": 2,
+        "text": "Expand voting access and protect against suppression - especially in marginalized communities."
+      },
+      {
+        "value": 3,
+        "text": "Support voting access and ID requirements as long as they don\u2019t exclude eligible voters."
+      },
+      {
+        "value": 4,
+        "text": "Let states manage their own elections, but apply federal standards to ensure fairness."
+      },
+      {
+        "value": 5,
+        "text": "Most elections are fair. Focus on improving efficiency, not overhauling the system."
+      },
+      {
+        "value": 6,
+        "text": "Require voter ID and proof of citizenship to vote."
+      },
+      {
+        "value": 7,
+        "text": "Tighten voting rules to prevent fraud - too much trust makes the system vulnerable."
+      },
+      {
+        "value": 8,
+        "text": "End mail-in voting and purge inactive voters from rolls."
+      },
+      {
+        "value": 9,
+        "text": "Return control of elections to the states. Federal oversight undermines local trust."
+      },
+      {
+        "value": 10,
+        "text": "Ban early voting, mail voting, and automatic registration. Only in-person voting on Election Day."
+      }
+    ]
+  },
+  {
+    "id": "c7ce3167-d0c7-4a0c-afea-e510974c4df0",
+    "title": "Foreign Policy and National Security",
+    "shortTitle": "Foreign Policy",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Dismantle the U.S. military empire and redirect resources to global peacebuilding and domestic needs."
+      },
+      {
+        "value": 2,
+        "text": "Drastically cut the defense budget and end military aid unless it supports peace and human rights."
+      },
+      {
+        "value": 3,
+        "text": "Prioritize diplomacy, reduce overseas bases, and avoid military entanglements."
+      },
+      {
+        "value": 4,
+        "text": "Use diplomacy first but maintain a strong military as a last resort."
+      },
+      {
+        "value": 5,
+        "text": "Balance national security with global cooperation. Don\u2019t overextend, but don\u2019t retreat."
+      },
+      {
+        "value": 6,
+        "text": "Maintain a robust military and defend our interests abroad when necessary."
+      },
+      {
+        "value": 7,
+        "text": "Reinvest in defense and military readiness. American power keeps the world stable."
+      },
+      {
+        "value": 8,
+        "text": "Stop funding global organizations and focus on American strength and independence."
+      },
+      {
+        "value": 9,
+        "text": "Withdraw from global alliances and defend only our borders. No more foreign wars."
+      },
+      {
+        "value": 10,
+        "text": "Use military power aggressively to protect American dominance and crush enemies."
+      }
+    ]
+  },
+  {
+    "id": "83056038-1392-468e-8558-ef7be92dd0d4",
+    "title": "Infrastructure and Transportation",
+    "shortTitle": "Infrastructure",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Nationalize transportation and utilities - they should serve people, not profit."
+      },
+      {
+        "value": 2,
+        "text": "Massive investment in public transit, green infrastructure, and broadband for all."
+      },
+      {
+        "value": 3,
+        "text": "Prioritize repairing and modernizing roads, bridges, and public systems with union labor."
+      },
+      {
+        "value": 4,
+        "text": "Invest in public-private partnerships to improve transportation and utilities efficiently."
+      },
+      {
+        "value": 5,
+        "text": "Maintain essential infrastructure and improve transit access where needed."
+      },
+      {
+        "value": 6,
+        "text": "Cut red tape so private developers can lead infrastructure projects faster and cheaper."
+      },
+      {
+        "value": 7,
+        "text": "Limit federal involvement - let states and businesses decide what infrastructure to build."
+      },
+      {
+        "value": 8,
+        "text": "Privatize roads, utilities, and transit. Government shouldn\u2019t run these services."
+      },
+      {
+        "value": 9,
+        "text": "Eliminate infrastructure subsidies. If people want it, the market will build it."
+      },
+      {
+        "value": 10,
+        "text": "No government role in infrastructure. All services should be built and maintained privately."
+      }
+    ]
+  },
+  {
+    "id": "b95cb1dd-be14-4d51-9760-54b189b76a07",
+    "title": "Technology and Data Privacy",
+    "shortTitle": "Tech & Privacy",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Ban surveillance tech, break up Big Tech, and make digital privacy a human right."
+      },
+      {
+        "value": 2,
+        "text": "Strictly regulate tech companies and protect personal data through strong privacy laws."
+      },
+      {
+        "value": 3,
+        "text": "Support digital privacy protections, net neutrality, and transparency in data collection."
+      },
+      {
+        "value": 4,
+        "text": "Protect free speech and innovation while holding tech platforms accountable for harm."
+      },
+      {
+        "value": 5,
+        "text": "Encourage responsible tech use but avoid overregulation that stifles progress."
+      },
+      {
+        "value": 6,
+        "text": "Let the market self-regulate unless clear harm is proven."
+      },
+      {
+        "value": 7,
+        "text": "Tech companies should be free to moderate content and collect data with user consent."
+      },
+      {
+        "value": 8,
+        "text": "End government oversight of tech platforms - let consumers decide."
+      },
+      {
+        "value": 9,
+        "text": "No limits on tech or data use - freedom includes how companies operate online."
+      },
+      {
+        "value": 10,
+        "text": "Eliminate all digital privacy laws. Data is currency and should be fully market-driven."
+      }
+    ]
+  },
+  {
+    "id": "95847105-7972-42c2-8b56-f45675b355fb",
+    "title": "Corporate Regulation and Consumer Protection",
+    "shortTitle": "Corporate Regulation",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Break up monopolies, heavily tax corporations, and make CEOs legally accountable for harm."
+      },
+      {
+        "value": 2,
+        "text": "Strongly regulate corporations to protect workers, consumers, and the environment."
+      },
+      {
+        "value": 3,
+        "text": "Enforce antitrust laws, raise corporate taxes, and stop exploitative labor or marketing practices."
+      },
+      {
+        "value": 4,
+        "text": "Create clear, fair rules to ensure businesses compete and consumers are protected."
+      },
+      {
+        "value": 5,
+        "text": "Keep basic protections in place but cut red tape that stifles business growth."
+      },
+      {
+        "value": 6,
+        "text": "Trust consumers and the market more than regulators - businesses respond to demand."
+      },
+      {
+        "value": 7,
+        "text": "Overregulation hurts small businesses and innovation. Let the market lead."
+      },
+      {
+        "value": 8,
+        "text": "Deregulate. Government shouldn\u2019t tell companies how to operate."
+      },
+      {
+        "value": 9,
+        "text": "Eliminate consumer protection agencies. Buyers should do their own research."
+      },
+      {
+        "value": 10,
+        "text": "No corporate regulation at all. Let companies and consumers operate with total freedom."
+      }
+    ]
+  },
+  {
+    "id": "73f59b65-468d-4410-b9de-641d05fc8ef3",
+    "title": "Wages and Labor Rights",
+    "shortTitle": "Wages",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Guarantee a living wage for all and cap CEO pay. No one should profit from exploitation."
+      },
+      {
+        "value": 2,
+        "text": "Raise the federal minimum wage to at least $20/hour and strengthen union protections."
+      },
+      {
+        "value": 3,
+        "text": "Support a higher minimum wage, paid leave, and workplace protections for all workers."
+      },
+      {
+        "value": 4,
+        "text": "Let states set minimum wages and support both unions and flexible work arrangements."
+      },
+      {
+        "value": 5,
+        "text": "Encourage fair pay through tax incentives and transparency, not mandates."
+      },
+      {
+        "value": 6,
+        "text": "Minimum wage laws hurt small businesses - let the market set wages."
+      },
+      {
+        "value": 7,
+        "text": "Unions and wage laws limit choice and hurt growth. Let workers and employers negotiate freely."
+      },
+      {
+        "value": 8,
+        "text": "End the minimum wage and eliminate collective bargaining privileges."
+      },
+      {
+        "value": 9,
+        "text": "Government should stay out of the labor market completely."
+      },
+      {
+        "value": 10,
+        "text": "Wages are private matters. No laws should dictate pay, benefits, or work conditions."
+      }
+    ]
+  },
+  {
+    "id": "94df126f-76f1-4a52-901c-8634137f3428",
+    "title": "Support for Small Businesses and Entrepreneurship",
+    "shortTitle": "Entrepreneurship",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Nationalize key industries and move away from profit-driven small businesses."
+      },
+      {
+        "value": 2,
+        "text": "Fund worker-owned cooperatives and community-owned enterprises instead of traditional businesses."
+      },
+      {
+        "value": 3,
+        "text": "Offer grants, affordable credit, and tax breaks for underserved entrepreneurs."
+      },
+      {
+        "value": 4,
+        "text": "Reduce barriers to entry and support local businesses with incentives and training."
+      },
+      {
+        "value": 5,
+        "text": "Help businesses succeed by streamlining regulations and improving access to capital."
+      },
+      {
+        "value": 6,
+        "text": "Limit bureaucracy and let businesses operate with minimal oversight."
+      },
+      {
+        "value": 7,
+        "text": "End subsidies and let the market pick winners and losers."
+      },
+      {
+        "value": 8,
+        "text": "Government should not support any business, large or small."
+      },
+      {
+        "value": 9,
+        "text": "Abolish all programs that favor small businesses over large ones."
+      },
+      {
+        "value": 10,
+        "text": "Private profit is private risk. There should be no government involvement in business creation."
+      }
+    ]
+  },
+  {
+    "id": "a2a34cbc-f323-4548-988a-2c04b9500be9",
+    "title": "Healthcare for Veterans and Military Support",
+    "shortTitle": "Veterans",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Abolish the military and redirect all veteran care to civilian systems."
+      },
+      {
+        "value": 2,
+        "text": "Shrink the military and shift veteran funding toward trauma recovery and reintegration."
+      },
+      {
+        "value": 3,
+        "text": "Fully fund VA care and expand access to mental health, housing, and job training."
+      },
+      {
+        "value": 4,
+        "text": "Support a modern, well-managed VA and allow veterans to choose public or private providers."
+      },
+      {
+        "value": 5,
+        "text": "Ensure veterans receive timely care, but keep spending reasonable and accountable."
+      },
+      {
+        "value": 6,
+        "text": "Streamline the VA and encourage private sector partnerships for efficiency."
+      },
+      {
+        "value": 7,
+        "text": "Privatize most VA functions - veterans should access the same healthcare as everyone else."
+      },
+      {
+        "value": 8,
+        "text": "Cut veteran benefits and focus military spending on active-duty readiness."
+      },
+      {
+        "value": 9,
+        "text": "End government-provided veteran care. Charity and community should fill the gap."
+      },
+      {
+        "value": 10,
+        "text": "Veteran care is not a government obligation. The military should contract its own providers."
+      }
+    ]
+  },
+  {
+    "id": "5bedcd97-b5ca-4892-9796-db4cdec55f22",
+    "title": "Israel-Palestine Conflict / War in Gaza",
+    "shortTitle": "Israel-Palestine",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Abolish the Israeli state and support full Palestinian liberation by any means necessary."
+      },
+      {
+        "value": 2,
+        "text": "End all U.S. aid to Israel and support international sanctions until Palestinian rights are restored."
+      },
+      {
+        "value": 3,
+        "text": "Ceasefire now. End occupation. Recognize a Palestinian state and hold all sides accountable."
+      },
+      {
+        "value": 4,
+        "text": "Support a two-state solution with fair borders, security guarantees, and equal rights."
+      },
+      {
+        "value": 5,
+        "text": "Israel has a right to exist and defend itself, but must end settlements and negotiate peace."
+      },
+      {
+        "value": 6,
+        "text": "Back Israel as a democratic ally, but investigate humanitarian abuses on all sides."
+      },
+      {
+        "value": 7,
+        "text": "The U.S. should fully support Israel in defending itself against terrorism."
+      },
+      {
+        "value": 8,
+        "text": "Hamas is the sole aggressor. Israel should finish the job and eliminate the threat."
+      },
+      {
+        "value": 9,
+        "text": "End all U.S. criticism of Israel. We should never second-guess our allies in wartime."
+      },
+      {
+        "value": 10,
+        "text": "Wipe out Hamas, occupy Gaza, and expand Israeli control. There can be no Palestinian state."
+      }
+    ]
+  },
+  {
+    "id": "57652473-9350-4a43-9404-4aa2792bfdf8",
+    "title": "U.S. Military Support to Ukraine",
+    "shortTitle": "Ukraine",
+    "stances": [
+      {
+        "value": 1,
+        "text": "The U.S. should immediately stop all support to Ukraine and withdraw from the conflict."
+      },
+      {
+        "value": 2,
+        "text": "Oppose NATO expansion and de-escalate with Russia through diplomacy, not weapons."
+      },
+      {
+        "value": 3,
+        "text": "Support Ukraine with humanitarian aid only - no weapons or military funding."
+      },
+      {
+        "value": 4,
+        "text": "Send limited military aid, but focus on accountability and avoid escalation."
+      },
+      {
+        "value": 5,
+        "text": "Support Ukraine, but set clear limits and push for diplomatic resolution."
+      },
+      {
+        "value": 6,
+        "text": "Continue military aid to Ukraine and coordinate with allies to counter Russian aggression."
+      },
+      {
+        "value": 7,
+        "text": "Increase military support - Ukraine must win and Putin must lose."
+      },
+      {
+        "value": 8,
+        "text": "Send advanced weapons and enforce red lines. The West must not back down."
+      },
+      {
+        "value": 9,
+        "text": "Deploy U.S. troops if necessary. A Russian victory threatens the entire free world."
+      },
+      {
+        "value": 10,
+        "text": "Declare war on Russia and lead NATO to crush the invasion completely."
+      }
+    ]
+  },
+  {
+    "id": "a594ccb8-e45c-476b-8ca0-71446743066e",
+    "title": "U.S.-China Relations and Taiwan",
+    "shortTitle": "China & Taiwan",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Recognize China\u2019s sovereignty over Taiwan and end U.S. interference in the region."
+      },
+      {
+        "value": 2,
+        "text": "Normalize relations with China and reduce military presence in the Pacific."
+      },
+      {
+        "value": 3,
+        "text": "Maintain peaceful ties with China but support Taiwan diplomatically, not militarily."
+      },
+      {
+        "value": 4,
+        "text": "Support Taiwan\u2019s self-governance while avoiding actions that escalate tensions with China."
+      },
+      {
+        "value": 5,
+        "text": "Defend the status quo - support Taiwan defensively, but don\u2019t provoke China."
+      },
+      {
+        "value": 6,
+        "text": "Continue arming Taiwan and preparing alliances to deter Chinese aggression."
+      },
+      {
+        "value": 7,
+        "text": "Recognize Taiwan as an independent nation and defend it if attacked."
+      },
+      {
+        "value": 8,
+        "text": "Build a strong anti-China coalition. China is our top global threat."
+      },
+      {
+        "value": 9,
+        "text": "Use military force now to stop China\u2019s rise before it\u2019s too late."
+      },
+      {
+        "value": 10,
+        "text": "Go to war with China over Taiwan and dismantle the CCP."
+      }
+    ]
+  },
+  {
+    "id": "ebbc304f-fce7-4ad4-bd8e-b1bfc1518a2a",
+    "title": "Defense Treaties and NATO Commitments",
+    "shortTitle": "NATO",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Withdraw from NATO and all foreign defense pacts. End American empire."
+      },
+      {
+        "value": 2,
+        "text": "Scale back NATO and renegotiate defense treaties to reduce U.S. burdens."
+      },
+      {
+        "value": 3,
+        "text": "Maintain alliances but stop sending troops or weapons abroad."
+      },
+      {
+        "value": 4,
+        "text": "Preserve NATO and defense treaties but require fair cost-sharing by allies."
+      },
+      {
+        "value": 5,
+        "text": "Continue participating in NATO, with occasional reassessment of commitments."
+      },
+      {
+        "value": 6,
+        "text": "Honor our alliances and keep troops deployed to deter aggression."
+      },
+      {
+        "value": 7,
+        "text": "Strengthen NATO and expand defense treaties to counter rising threats."
+      },
+      {
+        "value": 8,
+        "text": "Add more troops and bases abroad. Project strength to defend democracy worldwide."
+      },
+      {
+        "value": 9,
+        "text": "Preemptively strike threats and reshape alliances under U.S. leadership."
+      },
+      {
+        "value": 10,
+        "text": "Global military dominance through permanent U.S. control of key regions."
+      }
+    ]
+  },
+  {
+    "id": "119a48ce-7054-4b94-9f70-678712c35be2",
+    "title": "Foreign Aid and International Development",
+    "shortTitle": "Foreign Aid",
+    "stances": [
+      {
+        "value": 1,
+        "text": "End all foreign aid. We have too many problems at home to fund others abroad."
+      },
+      {
+        "value": 2,
+        "text": "Drastically reduce aid and only give to countries that align with U.S. interests."
+      },
+      {
+        "value": 3,
+        "text": "Limit foreign aid to disaster relief and urgent humanitarian crises."
+      },
+      {
+        "value": 4,
+        "text": "Give aid with strict oversight to ensure transparency and avoid corruption."
+      },
+      {
+        "value": 5,
+        "text": "Foreign aid is valuable, but it must be balanced with domestic priorities."
+      },
+      {
+        "value": 6,
+        "text": "Use aid to promote U.S. values and build long-term partnerships."
+      },
+      {
+        "value": 7,
+        "text": "Expand aid for global health, education, and climate resilience."
+      },
+      {
+        "value": 8,
+        "text": "Lead the world in ending poverty - foreign aid is a moral and strategic imperative."
+      },
+      {
+        "value": 9,
+        "text": "Double or triple foreign aid and redirect military spending to global development."
+      },
+      {
+        "value": 10,
+        "text": "Global redistribution is our duty. America should fund transformation in the Global South."
+      }
+    ]
+  },
+  {
+    "id": "8da04d6d-8f15-46bb-9dc0-780982aa6933",
+    "title": "Global Refugee and Asylum Policies",
+    "shortTitle": "Refugees",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Close all borders and end refugee admissions permanently."
+      },
+      {
+        "value": 2,
+        "text": "Deny entry to all refugees unless they can contribute economically."
+      },
+      {
+        "value": 3,
+        "text": "Limit refugee intake and prioritize persecuted religious minorities."
+      },
+      {
+        "value": 4,
+        "text": "Accept some refugees but tighten security screenings and cap annual totals."
+      },
+      {
+        "value": 5,
+        "text": "Maintain a balanced approach - help where possible, but don\u2019t overwhelm communities."
+      },
+      {
+        "value": 6,
+        "text": "Provide asylum to those fleeing violence or persecution, with fair processing."
+      },
+      {
+        "value": 7,
+        "text": "Expand refugee quotas and speed up asylum processing."
+      },
+      {
+        "value": 8,
+        "text": "Welcome refugees from all backgrounds. No one should be turned away from safety."
+      },
+      {
+        "value": 9,
+        "text": "Open borders to all displaced people and guarantee resettlement support."
+      },
+      {
+        "value": 10,
+        "text": "Tear down immigration barriers worldwide - anyone fleeing harm should be welcomed anywhere."
+      }
+    ]
+  },
+  {
+    "id": "cfbfc357-9c1b-4f69-bab2-0ef16e95fbe8",
+    "title": "Mental Health and Addiction Services",
+    "shortTitle": "Mental Health",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Mental healthcare and addiction treatment should be free and universally available."
+      },
+      {
+        "value": 2,
+        "text": "Massively expand funding for mental health, addiction treatment, and harm reduction."
+      },
+      {
+        "value": 3,
+        "text": "Improve access and affordability while integrating mental health into primary care."
+      },
+      {
+        "value": 4,
+        "text": "Offer support through public-private partnerships and local programs."
+      },
+      {
+        "value": 5,
+        "text": "Mental health is important, but we must spend wisely and prioritize the most urgent cases."
+      },
+      {
+        "value": 6,
+        "text": "Encourage personal responsibility alongside access to treatment."
+      },
+      {
+        "value": 7,
+        "text": "Limit government spending on treatment - families and charities can do more."
+      },
+      {
+        "value": 8,
+        "text": "Addiction is a moral failing. Public funding should not enable bad decisions."
+      },
+      {
+        "value": 9,
+        "text": "End all public mental health and addiction programs. Let the private sector handle care."
+      },
+      {
+        "value": 10,
+        "text": "No funding or tolerance for addiction programs. People must face the consequences of their actions."
+      }
+    ]
+  },
+  {
+    "id": "c14e5e24-e408-416f-abe3-8fcfb629feda",
+    "title": "Gender Identity and Trans Rights",
+    "shortTitle": "Trans Rights",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Ban all recognition of transgender identities and restrict gender-affirming care nationwide."
+      },
+      {
+        "value": 2,
+        "text": "Prohibit medical transition and transgender participation in public institutions."
+      },
+      {
+        "value": 3,
+        "text": "Restrict gender-affirming care for minors and protect single-sex spaces."
+      },
+      {
+        "value": 4,
+        "text": "Allow adult transition but set clear boundaries for minors, schools, and sports."
+      },
+      {
+        "value": 5,
+        "text": "Respect transgender rights while balancing privacy, safety, and fairness."
+      },
+      {
+        "value": 6,
+        "text": "Protect the right to transition and recognize nonbinary identities legally."
+      },
+      {
+        "value": 7,
+        "text": "Guarantee trans people full rights in healthcare, education, and public life."
+      },
+      {
+        "value": 8,
+        "text": "Ban anti-trans laws and fund inclusive education and healthcare."
+      },
+      {
+        "value": 9,
+        "text": "Affirm gender self-identification in all areas, with no exceptions."
+      },
+      {
+        "value": 10,
+        "text": "Gender is self-defined and fluid. All institutions must adapt and fully affirm all gender expressions."
+      }
+    ]
+  },
+  {
+    "id": "c57c0b65-74ba-40d1-8233-172919663626",
+    "title": "Book Bans and Curriculum Restrictions in Schools",
+    "shortTitle": "Book Bans",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Ban books and curriculum that contradict traditional religious or moral values."
+      },
+      {
+        "value": 2,
+        "text": "Remove books on race, gender, or sexuality that may be inappropriate for children."
+      },
+      {
+        "value": 3,
+        "text": "Let parents review and reject any classroom content they find objectionable."
+      },
+      {
+        "value": 4,
+        "text": "Allow limited restrictions for age-appropriateness, but avoid banning ideas."
+      },
+      {
+        "value": 5,
+        "text": "Schools should reflect diverse views but stay neutral on controversial topics."
+      },
+      {
+        "value": 6,
+        "text": "Teach honest history and diverse perspectives while respecting parental concerns."
+      },
+      {
+        "value": 7,
+        "text": "Reject all book bans and protect teachers\u2019 freedom to teach honest, inclusive content."
+      },
+      {
+        "value": 8,
+        "text": "Expand curriculum to include more marginalized voices, including LGBTQ+ and BIPOC authors."
+      },
+      {
+        "value": 9,
+        "text": "Ban censorship in all public schools. Kids deserve the full truth - even if it\u2019s uncomfortable."
+      },
+      {
+        "value": 10,
+        "text": "Mandate inclusive, anti-racist, and gender-inclusive education nationwide."
+      }
+    ]
+  },
+  {
+    "id": "b3d86839-247e-4693-b643-33513ace1a7b",
+    "title": "Religious Freedom and the Role of Religion in Government",
+    "shortTitle": "Religion",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Declare the U.S. a Christian nation and base laws on Biblical values."
+      },
+      {
+        "value": 2,
+        "text": "Allow religious law in state policy and prioritize religious liberty over secular concerns."
+      },
+      {
+        "value": 3,
+        "text": "Protect religious traditions, even if they conflict with public norms or laws."
+      },
+      {
+        "value": 4,
+        "text": "Respect religion but keep government neutral in all matters of faith."
+      },
+      {
+        "value": 5,
+        "text": "Uphold the separation of church and state without targeting faith-based groups."
+      },
+      {
+        "value": 6,
+        "text": "Keep religion out of policymaking and public education."
+      },
+      {
+        "value": 7,
+        "text": "Ban public funding for religious organizations and remove religious influence from government."
+      },
+      {
+        "value": 8,
+        "text": "Remove \u2018In God We Trust\u2019 and other religious symbols from all public spaces."
+      },
+      {
+        "value": 9,
+        "text": "Religion is a private matter. All traces of it should be excluded from civic life."
+      },
+      {
+        "value": 10,
+        "text": "Abolish religious exemptions. Faith should never override law or public policy."
+      }
+    ]
+  },
+  {
+    "id": "ee016926-6d22-4b45-af68-d07aceafafd6",
+    "title": "DEI (Diversity, Equity, Inclusion) Programs and Workplace Policy",
+    "shortTitle": "DEI",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Ban all DEI initiatives - they are racist, divisive, and undermine merit."
+      },
+      {
+        "value": 2,
+        "text": "Eliminate DEI offices in government, schools, and businesses."
+      },
+      {
+        "value": 3,
+        "text": "Stop mandatory trainings and quotas, but allow voluntary DEI programs."
+      },
+      {
+        "value": 4,
+        "text": "Limit DEI to recruitment outreach, not hiring decisions or compensation."
+      },
+      {
+        "value": 5,
+        "text": "Support inclusion and representation goals, but avoid rigid targets or penalties."
+      },
+      {
+        "value": 6,
+        "text": "Encourage DEI programs that promote workplace respect, equity, and retention."
+      },
+      {
+        "value": 7,
+        "text": "Require diversity plans in hiring, leadership, and training across public and private sectors."
+      },
+      {
+        "value": 8,
+        "text": "Tie DEI metrics to funding and performance reviews to drive accountability."
+      },
+      {
+        "value": 9,
+        "text": "Mandate DEI at every level - recruitment, culture, pay equity, and leadership."
+      },
+      {
+        "value": 10,
+        "text": "Rebuild institutions through an equity-first lens. Center marginalized voices in all decisions."
+      }
+    ]
+  },
+  {
+    "id": "7aee67d8-b9d5-49ba-ac19-7f22486bf976",
+    "title": "Artificial Intelligence and Job Displacement",
+    "shortTitle": "AI & Jobs",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Ban AI development entirely - it\u2019s too dangerous to jobs, privacy, and society."
+      },
+      {
+        "value": 2,
+        "text": "Halt AI in key industries and tightly regulate its use to protect workers."
+      },
+      {
+        "value": 3,
+        "text": "Heavily tax AI-using companies to fund retraining and job guarantees for displaced workers."
+      },
+      {
+        "value": 4,
+        "text": "Regulate AI to protect jobs and create a safety net for workers in transition."
+      },
+      {
+        "value": 5,
+        "text": "Monitor AI impact on jobs but let the market adapt naturally."
+      },
+      {
+        "value": 6,
+        "text": "Encourage AI adoption and trust business to retrain or redeploy workers."
+      },
+      {
+        "value": 7,
+        "text": "Accelerate AI development to improve productivity and global competitiveness."
+      },
+      {
+        "value": 8,
+        "text": "Remove barriers to AI use - humans must adapt quickly or fall behind."
+      },
+      {
+        "value": 9,
+        "text": "Use AI to replace as many jobs as possible and cut labor costs."
+      },
+      {
+        "value": 10,
+        "text": "Eliminate human labor where possible - automation is the key to long-term progress."
+      }
+    ]
+  },
+  {
+    "id": "929a8dfb-9f4c-4f23-9c3e-b045a2ea8a54",
+    "title": "Online Censorship and Platform Accountability",
+    "shortTitle": "Censorship",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Ban all content moderation - online speech must be completely unrestricted."
+      },
+      {
+        "value": 2,
+        "text": "Treat platforms like public utilities - they must host all legal speech, no exceptions."
+      },
+      {
+        "value": 3,
+        "text": "Prohibit government involvement in platform content decisions."
+      },
+      {
+        "value": 4,
+        "text": "Require transparency in platform moderation policies but avoid government mandates."
+      },
+      {
+        "value": 5,
+        "text": "Allow platforms to moderate, but hold them accountable for bias or harm."
+      },
+      {
+        "value": 6,
+        "text": "Establish guidelines for tech platforms to combat disinformation and abuse."
+      },
+      {
+        "value": 7,
+        "text": "Hold platforms legally responsible for hate speech, misinformation, and algorithmic harm."
+      },
+      {
+        "value": 8,
+        "text": "Create independent agencies to oversee platform algorithms and moderation."
+      },
+      {
+        "value": 9,
+        "text": "Nationalize key platforms or break them up to prevent monopoly abuse and censorship."
+      },
+      {
+        "value": 10,
+        "text": "Dismantle current platforms and rebuild the digital public sphere under democratic control."
+      }
+    ]
+  },
+  {
+    "id": "12602ce8-fc6e-4c2a-9ce5-7c56e00f0774",
+    "title": "TikTok and Foreign-Owned Social Media Regulation",
+    "shortTitle": "TikTok",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Ban TikTok and all foreign-owned apps that collect user data."
+      },
+      {
+        "value": 2,
+        "text": "Force foreign platforms to divest U.S. assets or face shutdown."
+      },
+      {
+        "value": 3,
+        "text": "Require U.S.-based data storage and ownership for all foreign social media companies."
+      },
+      {
+        "value": 4,
+        "text": "Regulate foreign-owned platforms for data privacy and content transparency."
+      },
+      {
+        "value": 5,
+        "text": "Apply the same privacy and security rules to all platforms, foreign or domestic."
+      },
+      {
+        "value": 6,
+        "text": "Monitor foreign platforms but avoid targeting them based on nationality alone."
+      },
+      {
+        "value": 7,
+        "text": "Encourage tech diplomacy - use international agreements to set digital standards."
+      },
+      {
+        "value": 8,
+        "text": "Oppose bans and embrace foreign platforms as tools for global communication."
+      },
+      {
+        "value": 9,
+        "text": "Protect TikTok and similar apps from nationalist policies."
+      },
+      {
+        "value": 10,
+        "text": "End all tech borders - data and platforms should move freely across nations."
+      }
+    ]
+  },
+  {
+    "id": "443b00ea-b215-4e04-9084-6df80dffd91b",
+    "title": "Misinformation and the Role of Algorithms in Democracy",
+    "shortTitle": "Misinformation",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Ban algorithmic content feeds entirely - they\u2019re manipulating minds and destroying democracy."
+      },
+      {
+        "value": 2,
+        "text": "Strictly regulate algorithms to prevent misinformation, radicalization, and bias."
+      },
+      {
+        "value": 3,
+        "text": "Audit and publicly disclose how algorithms shape political and social content."
+      },
+      {
+        "value": 4,
+        "text": "Label algorithmically boosted content and give users control over what they see."
+      },
+      {
+        "value": 5,
+        "text": "Encourage platform transparency but avoid heavy regulation that could limit free expression."
+      },
+      {
+        "value": 6,
+        "text": "Let platforms self-regulate and innovate - they have incentives to improve trust."
+      },
+      {
+        "value": 7,
+        "text": "Protect algorithm design as intellectual property and avoid stifling innovation."
+      },
+      {
+        "value": 8,
+        "text": "Algorithms are not the problem - misinformation is a free speech issue, not a tech issue."
+      },
+      {
+        "value": 9,
+        "text": "End the panic about misinformation - it\u2019s used to justify censorship."
+      },
+      {
+        "value": 10,
+        "text": "No regulation, no labels, no audits. Algorithms should be free to maximize engagement."
+      }
+    ]
+  },
+  {
+    "id": "46f31469-f541-4531-a84f-19fa7a905a34",
+    "title": "Pandemic Preparedness and Vaccine Mandates",
+    "shortTitle": "Vaccine Mandates",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Ban vaccine mandates and reject all government pandemic restrictions."
+      },
+      {
+        "value": 2,
+        "text": "Limit federal authority in health emergencies - no mandates, only guidance."
+      },
+      {
+        "value": 3,
+        "text": "Allow local governments to respond as needed, but oppose federal mandates."
+      },
+      {
+        "value": 4,
+        "text": "Support voluntary vaccines and emergency protocols, but only with full transparency."
+      },
+      {
+        "value": 5,
+        "text": "Balance public safety with civil liberties in emergencies."
+      },
+      {
+        "value": 6,
+        "text": "Mandate vaccines for frontline workers and use science to guide response plans."
+      },
+      {
+        "value": 7,
+        "text": "Fund universal testing, vaccination, and emergency planning."
+      },
+      {
+        "value": 8,
+        "text": "Require vaccinations for schools, travel, and public venues during emergencies."
+      },
+      {
+        "value": 9,
+        "text": "Create national pandemic protocols and enforce compliance through law."
+      },
+      {
+        "value": 10,
+        "text": "Empower global and national health authorities to take control in future pandemics."
+      }
+    ]
+  },
+  {
+    "id": "936c502b-5785-4d26-9535-baf6e38b9329",
+    "title": "Water Access and Drought Management",
+    "shortTitle": "Water Access",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Water should be privately owned and priced by the market - no government involvement."
+      },
+      {
+        "value": 2,
+        "text": "Privatize water utilities and reduce environmental regulations."
+      },
+      {
+        "value": 3,
+        "text": "Let local governments and landowners decide water use - no federal interference."
+      },
+      {
+        "value": 4,
+        "text": "Encourage conservation through pricing and smart infrastructure investments."
+      },
+      {
+        "value": 5,
+        "text": "Maintain public water systems and support moderate conservation incentives."
+      },
+      {
+        "value": 6,
+        "text": "Strengthen water regulation and invest in drought-resistant infrastructure."
+      },
+      {
+        "value": 7,
+        "text": "Guarantee clean water access as a human right, especially in underserved communities."
+      },
+      {
+        "value": 8,
+        "text": "Nationalize water utilities and create a federal drought resilience program."
+      },
+      {
+        "value": 9,
+        "text": "Make water free and publicly distributed, like education or fire services."
+      },
+      {
+        "value": 10,
+        "text": "Abolish private water rights. All water should be managed democratically and sustainably."
+      }
+    ]
+  },
+  {
+    "id": "1e183123-f5e4-4ef8-b837-8a45bbfc7753",
+    "title": "Supply Chain Resilience and Domestic Manufacturing",
+    "shortTitle": "Supply Chains",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Eliminate all trade barriers - let global markets determine supply and production."
+      },
+      {
+        "value": 2,
+        "text": "Rely on global supply chains and only intervene during national emergencies."
+      },
+      {
+        "value": 3,
+        "text": "Encourage domestic production through incentives, but avoid protectionism."
+      },
+      {
+        "value": 4,
+        "text": "Strengthen key domestic industries while maintaining trade flexibility."
+      },
+      {
+        "value": 5,
+        "text": "Balance domestic security with international trade relationships."
+      },
+      {
+        "value": 6,
+        "text": "Increase investment in critical U.S. manufacturing sectors like semiconductors and medicine."
+      },
+      {
+        "value": 7,
+        "text": "Use tax breaks and government contracts to boost American industry."
+      },
+      {
+        "value": 8,
+        "text": "Impose tariffs and penalties on companies that offshore essential production."
+      },
+      {
+        "value": 9,
+        "text": "Block imports of critical goods and rebuild all supply chains at home."
+      },
+      {
+        "value": 10,
+        "text": "Nationalize key supply chains and restrict foreign ownership of U.S. production."
+      }
+    ]
+  },
+  {
+    "id": "6037c5f0-ae14-4c45-ab8d-5ed32774188a",
+    "title": "Food Security and Agricultural Policy",
+    "shortTitle": "Food Policy",
+    "stances": [
+      {
+        "value": 1,
+        "text": "End all farm subsidies and let market forces determine food production."
+      },
+      {
+        "value": 2,
+        "text": "Cut subsidies and reduce regulation to let farmers innovate and compete."
+      },
+      {
+        "value": 3,
+        "text": "Support farmers through tax relief and trade access, not direct payments."
+      },
+      {
+        "value": 4,
+        "text": "Balance crop insurance and safety nets with incentives for sustainability."
+      },
+      {
+        "value": 5,
+        "text": "Maintain current farm support programs and invest in food distribution systems."
+      },
+      {
+        "value": 6,
+        "text": "Expand access to healthy, affordable food and support small and mid-sized farms."
+      },
+      {
+        "value": 7,
+        "text": "Subsidize local, sustainable agriculture and reduce corporate agribusiness influence."
+      },
+      {
+        "value": 8,
+        "text": "Ensure every American has access to nutritious food - make school meals free nationwide."
+      },
+      {
+        "value": 9,
+        "text": "Guarantee food security with public farming systems and strategic stockpiles."
+      },
+      {
+        "value": 10,
+        "text": "Nationalize agriculture and control prices to guarantee food for all."
+      }
+    ]
+  },
+  {
+    "id": "3bc046a8-f508-4604-9697-ecd15253e8bc",
+    "title": "Natural Disasters and Climate Resilience Funding",
+    "shortTitle": "Disasters",
+    "stances": [
+      {
+        "value": 1,
+        "text": "End federal disaster relief - states and individuals should handle their own risks."
+      },
+      {
+        "value": 2,
+        "text": "Reduce disaster aid and focus on insurance-based risk management."
+      },
+      {
+        "value": 3,
+        "text": "Limit federal spending to the most severe disasters, with strict accountability."
+      },
+      {
+        "value": 4,
+        "text": "Invest in preparedness and recovery, but require local cost-sharing and resilience planning."
+      },
+      {
+        "value": 5,
+        "text": "Maintain steady funding for disaster relief and infrastructure hardening."
+      },
+      {
+        "value": 6,
+        "text": "Expand federal aid and climate adaptation programs for high-risk regions."
+      },
+      {
+        "value": 7,
+        "text": "Create a national disaster resilience fund to prevent and respond to climate impacts."
+      },
+      {
+        "value": 8,
+        "text": "Prioritize climate resilience in all federal infrastructure and housing spending."
+      },
+      {
+        "value": 9,
+        "text": "Guarantee disaster aid and relocation support for all climate-displaced communities."
+      },
+      {
+        "value": 10,
+        "text": "Declare a climate emergency and mobilize all resources to defend against natural disasters."
+      }
+    ]
+  },
+  {
+    "id": "d66bb812-3995-44a0-a32c-938a9398c3ea",
+    "title": "American Tariff Policy",
+    "shortTitle": "Tariffs",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Abolish all tariffs - free trade leads to lower prices and global prosperity."
+      },
+      {
+        "value": 2,
+        "text": "Keep tariffs low and only use them for emergency shortages or national defense."
+      },
+      {
+        "value": 3,
+        "text": "Negotiate global trade deals that reduce tariffs for mutual economic benefit."
+      },
+      {
+        "value": 4,
+        "text": "Use targeted tariffs to address unfair foreign practices, but avoid trade wars."
+      },
+      {
+        "value": 5,
+        "text": "Balance free trade with protections for vulnerable industries and workers."
+      },
+      {
+        "value": 6,
+        "text": "Impose tariffs to incentivize domestic manufacturing and reduce dependency on rivals."
+      },
+      {
+        "value": 7,
+        "text": "Expand tariffs to punish outsourcing and protect American jobs."
+      },
+      {
+        "value": 8,
+        "text": "Use tariffs to reshape global trade - favor allies and punish adversaries."
+      },
+      {
+        "value": 9,
+        "text": "Raise tariffs across the board to build a self-reliant economy."
+      },
+      {
+        "value": 10,
+        "text": "Adopt a full protectionist policy. America first - no free trade, no compromise."
+      }
+    ]
+  },
+  {
+    "id": "0dda9169-4368-4a75-afbe-09784d9de6c1",
+    "title": "Universal Basic Income (UBI)",
+    "shortTitle": "UBI",
+    "stances": [
+      {
+        "value": 1,
+        "text": "UBI is a socialist scam - people should work for a living, not get paid to do nothing."
+      },
+      {
+        "value": 2,
+        "text": "Oppose UBI - it\u2019s unaffordable and would explode the deficit."
+      },
+      {
+        "value": 3,
+        "text": "Only consider small pilot programs with strict limits and data-driven evaluation."
+      },
+      {
+        "value": 4,
+        "text": "Replace some welfare programs with a modest basic income to simplify the system."
+      },
+      {
+        "value": 5,
+        "text": "UBI could be one tool among many - useful for some groups or during crises."
+      },
+      {
+        "value": 6,
+        "text": "Support a modest UBI to guarantee economic stability in an evolving job market."
+      },
+      {
+        "value": 7,
+        "text": "Guarantee every adult a monthly income - people should have freedom and dignity, with or without work."
+      },
+      {
+        "value": 8,
+        "text": "Fund UBI through taxes on the wealthy, corporations, and automation."
+      },
+      {
+        "value": 9,
+        "text": "UBI should replace most welfare - empower people with cash and eliminate bureaucracy."
+      },
+      {
+        "value": 10,
+        "text": "Adopt full UBI and redesign society around post-work values."
+      }
+    ]
+  },
+  {
+    "id": "5c58e514-006c-4051-9afa-7e0e9c9aeef2",
+    "title": "January 6th and the 2020 Election",
+    "shortTitle": "Jan 6 & 2020",
+    "stances": [
+      {
+        "value": 1,
+        "text": "January 6th was a patriotic protest - those arrested are political prisoners."
+      },
+      {
+        "value": 2,
+        "text": "The 2020 election was rigged. The events of January 6th were justified anger."
+      },
+      {
+        "value": 3,
+        "text": "The election had serious irregularities. January 6th was wrong but not an insurrection."
+      },
+      {
+        "value": 4,
+        "text": "Trump supporters went too far on January 6th, but overreacting threatens free speech."
+      },
+      {
+        "value": 5,
+        "text": "January 6th was unlawful, but not a coordinated coup attempt."
+      },
+      {
+        "value": 6,
+        "text": "January 6th was an attack on democracy. It must be investigated and condemned."
+      },
+      {
+        "value": 7,
+        "text": "The Capitol riot was part of a coordinated effort to overturn an election."
+      },
+      {
+        "value": 8,
+        "text": "Donald Trump incited the attack and should be held accountable."
+      },
+      {
+        "value": 9,
+        "text": "January 6th was an insurrection. All involved should face full legal consequences."
+      },
+      {
+        "value": 10,
+        "text": "The 2020 election was free and fair. January 6th was an act of domestic terrorism."
+      }
+    ]
+  },
+  {
+    "id": "e530c721-2f28-431f-986c-a826a8ad98b8",
+    "title": "Campaign Finance Reform",
+    "shortTitle": "Campaign Finance",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Ban all campaign donations - elections should be 100% publicly funded."
+      },
+      {
+        "value": 2,
+        "text": "Outlaw Super PACs and dark money groups - drastically limit private donations."
+      },
+      {
+        "value": 3,
+        "text": "Cap donations, require full disclosure, and limit campaign spending."
+      },
+      {
+        "value": 4,
+        "text": "Support disclosure laws and donation limits, but protect free speech."
+      },
+      {
+        "value": 5,
+        "text": "Keep donation rules mostly as-is, with minor transparency improvements."
+      },
+      {
+        "value": 6,
+        "text": "Loosen restrictions - let donors support causes without excessive regulation."
+      },
+      {
+        "value": 7,
+        "text": "Raise donation limits and reduce red tape for donors and campaigns."
+      },
+      {
+        "value": 8,
+        "text": "End all caps - the government should not limit political spending."
+      },
+      {
+        "value": 9,
+        "text": "Corporations and wealthy donors should have the freedom to fund politics as they choose."
+      },
+      {
+        "value": 10,
+        "text": "Abolish all campaign finance laws - let the strongest voices win."
+      }
+    ]
+  },
+  {
+    "id": "02d633a9-3883-4a1d-8acd-0ea8a6d3e91f",
+    "title": "Policing in Schools",
+    "shortTitle": "School Policing",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Remove all police from schools. They criminalize students and worsen inequality."
+      },
+      {
+        "value": 2,
+        "text": "Ban school resource officers and reinvest in counselors and mental health support."
+      },
+      {
+        "value": 3,
+        "text": "Only use school police in high-risk areas with strong community oversight."
+      },
+      {
+        "value": 4,
+        "text": "Limit school officers to external threats - keep discipline in the hands of educators."
+      },
+      {
+        "value": 5,
+        "text": "Use police in schools sparingly and ensure they're trained to work with youth."
+      },
+      {
+        "value": 6,
+        "text": "Maintain school officers and support threat preparedness."
+      },
+      {
+        "value": 7,
+        "text": "Expand school police and allow searches, surveillance, and armed defense."
+      },
+      {
+        "value": 8,
+        "text": "Let police run discipline in schools to restore order and respect."
+      },
+      {
+        "value": 9,
+        "text": "Arrest disruptive students and prosecute parents. No tolerance for school crime."
+      },
+      {
+        "value": 10,
+        "text": "Put armed guards in every school. Turn schools into secure zones."
+      }
+    ]
+  },
+  {
+    "id": "3d5ab70c-9691-4912-b9fa-4f8055cfbf10",
+    "title": "Government Role in Childcare and Parental Leave",
+    "shortTitle": "Childcare",
+    "stances": [
+      {
+        "value": 1,
+        "text": "The government should stay out of family life - no subsidies, no mandates."
+      },
+      {
+        "value": 2,
+        "text": "End public childcare and paid leave - families and employers should make their own decisions."
+      },
+      {
+        "value": 3,
+        "text": "Offer tax credits for parents but leave childcare and leave policies to employers."
+      },
+      {
+        "value": 4,
+        "text": "Encourage employer-based leave policies and help states expand child programs voluntarily."
+      },
+      {
+        "value": 5,
+        "text": "Maintain current programs and support modest improvements in childcare access."
+      },
+      {
+        "value": 6,
+        "text": "Guarantee paid leave and increase funding for childcare options."
+      },
+      {
+        "value": 7,
+        "text": "Create universal paid family leave and subsidized childcare for working families."
+      },
+      {
+        "value": 8,
+        "text": "Make childcare and parental leave free and accessible for all."
+      },
+      {
+        "value": 9,
+        "text": "Treat childcare like public education - universally available, funded, and guaranteed."
+      },
+      {
+        "value": 10,
+        "text": "Transform the system: federally run childcare, nationalized leave, and full caregiver pay."
+      }
+    ]
+  },
+  {
+    "id": "8b4ced5f-f7c0-4fe1-adb4-069fd37fd1da",
+    "title": "Internet Access and Digital Equity",
+    "shortTitle": "Digital Equity",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Internet access is a luxury, not a right. Government should stay out."
+      },
+      {
+        "value": 2,
+        "text": "Let the private market build broadband - public funding just creates inefficiency."
+      },
+      {
+        "value": 3,
+        "text": "Support tax credits for companies that expand broadband, but avoid subsidies."
+      },
+      {
+        "value": 4,
+        "text": "Encourage partnerships between local governments and ISPs to close coverage gaps."
+      },
+      {
+        "value": 5,
+        "text": "Maintain current infrastructure programs, especially in rural and underserved areas."
+      },
+      {
+        "value": 6,
+        "text": "Expand federal investment to ensure high-speed internet is available to every household."
+      },
+      {
+        "value": 7,
+        "text": "Guarantee affordable broadband for all, and prevent digital redlining."
+      },
+      {
+        "value": 8,
+        "text": "Treat internet like a public utility - regulated, subsidized, and universally accessible."
+      },
+      {
+        "value": 9,
+        "text": "Provide free high-speed internet as a public good, funded by taxes."
+      },
+      {
+        "value": 10,
+        "text": "Nationalize broadband and eliminate private ISPs. Internet is a human right."
+      }
+    ]
+  },
+  {
+    "id": "b2a48255-400c-47be-aa23-ef031b28a546",
+    "title": "Space Exploration and Federal Investment",
+    "shortTitle": "Space",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Defund NASA and end space exploration - focus on problems on Earth."
+      },
+      {
+        "value": 2,
+        "text": "Cut space spending - let private companies explore space if they want."
+      },
+      {
+        "value": 3,
+        "text": "Limit space funding to satellite systems and basic research."
+      },
+      {
+        "value": 4,
+        "text": "Maintain a modest NASA budget and support limited scientific missions."
+      },
+      {
+        "value": 5,
+        "text": "Continue supporting NASA and encourage responsible private-sector partnerships."
+      },
+      {
+        "value": 6,
+        "text": "Increase funding for space science, exploration, and Earth monitoring."
+      },
+      {
+        "value": 7,
+        "text": "Lead the world in space exploration through bold investment and international cooperation."
+      },
+      {
+        "value": 8,
+        "text": "Expand public funding to compete with and regulate private space companies."
+      },
+      {
+        "value": 9,
+        "text": "Establish permanent government-led missions to the Moon, Mars, and beyond."
+      },
+      {
+        "value": 10,
+        "text": "Make space exploration a central national mission - fund it like the military."
+      }
+    ]
+  },
+  {
+    "id": "5a7e14b3-19a6-4879-a7ad-bc04f510350e",
+    "title": "Term Limits and Congressional Reform",
+    "shortTitle": "Term Limits",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Abolish Congress and start over - the system is broken beyond repair."
+      },
+      {
+        "value": 2,
+        "text": "Dissolve the Senate or impose extreme term limits across all branches."
+      },
+      {
+        "value": 3,
+        "text": "Impose strict term limits for all elected officials to prevent career politicians."
+      },
+      {
+        "value": 4,
+        "text": "Limit terms and ban lobbying or campaign donations for a set time after office."
+      },
+      {
+        "value": 5,
+        "text": "Support modest term limits and tighter ethics rules, but preserve institutional knowledge."
+      },
+      {
+        "value": 6,
+        "text": "Improve transparency, reduce gerrymandering, and strengthen anti-corruption laws."
+      },
+      {
+        "value": 7,
+        "text": "Encourage civic participation and competitive elections instead of term limits."
+      },
+      {
+        "value": 8,
+        "text": "Oppose term limits - experience matters more than constant turnover."
+      },
+      {
+        "value": 9,
+        "text": "Let officials serve as long as they win - reelection is the only term limit we need."
+      },
+      {
+        "value": 10,
+        "text": "Eliminate all restrictions on service - lifelong public careers are a public good."
+      }
+    ]
+  },
+  {
+    "id": "9c8063a5-a867-41d3-98e4-0aefd8598007",
+    "title": "National Debt and Deficit Spending",
+    "shortTitle": "Debt",
+    "stances": [
+      {
+        "value": 1,
+        "text": "Shut down the Federal Reserve and default on the debt - the system is rigged."
+      },
+      {
+        "value": 2,
+        "text": "Balance the budget now - cut spending across the board, including entitlements."
+      },
+      {
+        "value": 3,
+        "text": "Enact a balanced budget amendment and limit new borrowing."
+      },
+      {
+        "value": 4,
+        "text": "Reduce the deficit through targeted cuts and limits on new programs."
+      },
+      {
+        "value": 5,
+        "text": "Manage the debt responsibly while preserving core investments."
+      },
+      {
+        "value": 6,
+        "text": "Borrow when needed to support key services and long-term growth."
+      },
+      {
+        "value": 7,
+        "text": "Run deficits to fight inequality, expand programs, and fund infrastructure."
+      },
+      {
+        "value": 8,
+        "text": "Ignore debt fears - the U.S. can always pay its bills and should focus on justice."
+      },
+      {
+        "value": 9,
+        "text": "Embrace Modern Monetary Theory - deficits don\u2019t matter if inflation is controlled."
+      },
+      {
+        "value": 10,
+        "text": "Dismantle debt ceilings and fund society at the scale it demands."
+      }
+    ]
+  }
+]
