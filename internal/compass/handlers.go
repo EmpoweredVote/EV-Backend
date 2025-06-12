@@ -3,6 +3,7 @@ package compass
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/DoyleJ11/auth-system/internal/auth"
@@ -30,8 +31,48 @@ func TopicHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func TopicBatchHandler(w http.ResponseWriter, r *http.Request) {
+	var topics []Topic
+
+	var filterRequest struct {
+		IDs  []string	`json:"ids"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&filterRequest)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	var validIDs []uuid.UUID
+	for _, id := range filterRequest.IDs {
+		parsed, err := uuid.Parse(id)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid UUID format: %s", id), http.StatusBadRequest)
+        	return
+		}
+		validIDs = append(validIDs, parsed)
+	}
+
+	err = db.DB.Where("id IN ?", validIDs).Preload("Stances").Find(&topics).Error
+	if err != nil {
+		http.Error(w, "Invalid Topic", http.StatusNotFound)
+		return
+	}
+
+	if len(topics) < len(validIDs) {
+    	log.Printf("Warning: Some topic IDs were not found")
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(topics); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
+}
+
+
 func AnswerHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method{
+	switch r.Method {
 	case http.MethodGet:
 		// GET logic
 

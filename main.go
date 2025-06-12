@@ -7,6 +7,8 @@ import (
 	"github.com/DoyleJ11/auth-system/internal/auth"
 	"github.com/DoyleJ11/auth-system/internal/compass"
 	"github.com/DoyleJ11/auth-system/internal/db"
+	"github.com/DoyleJ11/auth-system/internal/middleware"
+	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
 
@@ -22,11 +24,13 @@ func main() {
 
 	auth.Init()
 	compass.Init()
-
-	http.HandleFunc("/", RootHandler)
-	auth.SetupRoutes()
-	compass.SetupRoutes()
+	r := chi.NewRouter()
+	r.Use(middleware.CORSMiddleware)
+	r.Get("/", RootHandler)
+	
+	r.Mount("/auth", auth.SetupRoutes())
+	r.Mount("/compass", compass.SetupRoutes())
 
 	fmt.Println("Server listening on port :5050...")
-	http.ListenAndServe(":5050", nil)
+	http.ListenAndServe(":5050", r)
 }

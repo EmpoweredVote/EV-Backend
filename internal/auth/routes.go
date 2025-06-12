@@ -4,14 +4,24 @@ import (
 	"net/http"
 
 	"github.com/DoyleJ11/auth-system/internal/middleware"
+	"github.com/go-chi/chi/v5"
 )
 
-func SetupRoutes() {
+func SetupRoutes() http.Handler {
+	r := chi.NewRouter()
 	sessionFetcher := SessionInfo{}
 
-	http.HandleFunc("/login", LoginHandler)
-	http.HandleFunc("/register", RegisterHandler)
-	http.Handle("/logout", middleware.SessionMiddleware(sessionFetcher)(http.HandlerFunc(LogoutHandler)))
-	http.Handle("/me", middleware.SessionMiddleware(sessionFetcher)(http.HandlerFunc(MeHandler)))
-	http.Handle("/update-password", middleware.SessionMiddleware(sessionFetcher)(http.HandlerFunc(UpdatePasswordHandler)))
+	// Public routes
+	r.Post("/login", LoginHandler)
+	r.Post("/register", RegisterHandler)
+
+	// Protected routes
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.SessionMiddleware(sessionFetcher))
+		r.Get("/me", MeHandler)
+		r.Post("/update-password", UpdatePasswordHandler)
+		r.Post("/logout", LogoutHandler)
+	})
+
+	return r
 }
