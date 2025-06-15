@@ -13,6 +13,7 @@ func SetupRoutes() http.Handler {
 
 	r.Get("/topics", TopicHandler)
 	r.Get("/topics/batch", TopicBatchHandler)
+	r.Get("/categories", CategoryHandler)
 
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.SessionMiddleware(sessionFetcher))

@@ -26,4 +26,11 @@ type Topic struct {
 	Title	    string
 	ShortTitle  string		`gorm:"uniqueIndex"`
 	Stances	    []Stance	`gorm:"foreignKey:TopicID" json:"stances"`
+	Categories  []Category  `gorm:"many2many:topic_categories;"`
+}
+
+type Category struct {
+	ID     uuid.UUID   `gorm:"type:uuid;primaryKey"`
+	Title  string      `gorm:"uniqueIndex"`
+	Topics []Topic     `gorm:"many2many:topic_categories;"`
 }

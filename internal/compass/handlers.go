@@ -15,7 +15,7 @@ import (
 func TopicHandler(w http.ResponseWriter, r *http.Request) {
 	var topics []Topic
 
-	result := db.DB.Preload("Stances").Find(&topics)
+	result := db.DB.Preload("Stances").Preload("Categories").Find(&topics)
 	if result.Error != nil {
 		http.Error(w, "DB error: "+result.Error.Error(), http.StatusInternalServerError)
 		return
@@ -67,6 +67,21 @@ func TopicBatchHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(topics); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
+}
+
+func CategoryHandler(w http.ResponseWriter, r *http.Request) {
+	var categories []Category
+
+	result := db.DB.Preload("Topics").Find(&categories)
+	if result.Error != nil {
+		http.Error(w, "DB error: "+result.Error.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(categories); err != nil {
+    	http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 	}
 }
 
