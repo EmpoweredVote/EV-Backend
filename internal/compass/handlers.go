@@ -183,6 +183,54 @@ func AnswerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func AnswerBatchHander(w http.ResponseWriter, r *http.Request) {
+	var answers []Answer
+
+	var filterRequest struct {
+		IDs  []string	`json:"ids"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&filterRequest)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	var validIDs []uuid.UUID
+	for _, id := range filterRequest.IDs {
+		parsed, err := uuid.Parse(id)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid UUID format: %s", id), http.StatusBadRequest)
+        	return
+		}
+		validIDs = append(validIDs, parsed)
+	}
+
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		http.Error(w, "Session not found", http.StatusUnauthorized)
+		return
+	}
+
+	session, err := auth.SessionInfo{}.FindSessionByID(cookie.Value)
+	if err != nil {
+		http.Error(w, "Invalid session", http.StatusUnauthorized)
+		return
+	}
+
+	err = db.DB.Where("user_id = ? AND topic_id IN ?", session.UserID, validIDs).Find(&answers).Error
+	if err != nil {
+		http.Error(w, "Couldn't find answers", http.StatusInternalServerError)
+		return
+	}
+
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(answers); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
+}
+
 func CompareHandler(w http.ResponseWriter, r *http.Request) {
 
 	

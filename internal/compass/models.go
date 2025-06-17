@@ -9,8 +9,8 @@ import (
 type Answer struct {
 	ID			string		`gorm:"primaryKey"`
 	UserID 		string
-	TopicID 	string
-	Value 		int
+	TopicID 	string      `json:"topic_id"`
+	Value 		int         `json:"value"`
 	CreatedAt	time.Time
 }
 

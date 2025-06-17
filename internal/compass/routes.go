@@ -19,6 +19,7 @@ func SetupRoutes() http.Handler {
 		r.Use(middleware.SessionMiddleware(sessionFetcher))
 		r.Post("/answers", AnswerHandler)
 		r.Get("/answers", AnswerHandler)
+		r.Post("/answers/batch", AnswerBatchHander)
 		r.Get("/compare", CompareHandler)
 	})
 
