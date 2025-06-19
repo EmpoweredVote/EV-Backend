@@ -11,7 +11,6 @@ import (
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/EmpoweredVote/EV-Backend/internal/middleware"
 	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
 )
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +20,7 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	godotenv.Load()
+	// godotenv.Load()
 	db.Connect()
 
 	auth.Init()
