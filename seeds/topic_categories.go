@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/DoyleJ11/auth-system/internal/compass"
-	"github.com/DoyleJ11/auth-system/internal/db"
+	"github.com/EmpoweredVote/EV-Backend/internal/compass"
+	"github.com/EmpoweredVote/EV-Backend/internal/db"
 )
 
 var topicToCategories = map[string][]string{

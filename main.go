@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 
-	"github.com/DoyleJ11/auth-system/internal/auth"
-	"github.com/DoyleJ11/auth-system/internal/compass"
-	"github.com/DoyleJ11/auth-system/internal/db"
-	"github.com/DoyleJ11/auth-system/internal/middleware"
+	"github.com/EmpoweredVote/EV-Backend/internal/auth"
+	"github.com/EmpoweredVote/EV-Backend/internal/compass"
+	"github.com/EmpoweredVote/EV-Backend/internal/db"
+	"github.com/EmpoweredVote/EV-Backend/internal/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
@@ -32,5 +34,9 @@ func main() {
 	r.Mount("/compass", compass.SetupRoutes())
 
 	fmt.Println("Server listening on port :5050...")
-	http.ListenAndServe(":5050", r)
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatal("PORT env not set")
+	}
+	http.ListenAndServe("0.0.0.0:" + port, r)
 }

@@ -5,8 +5,8 @@ package seeds
 // 	"log"
 // 	"os"
 
-// 	"github.com/DoyleJ11/auth-system/internal/compass"
-// 	"github.com/DoyleJ11/auth-system/internal/db"
+// 	"github.com/EmpoweredVote/EV-Backend/internal/compass"
+// 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 // 	"github.com/google/uuid"
 // 	"github.com/joho/godotenv"
 // 	"gorm.io/gorm"

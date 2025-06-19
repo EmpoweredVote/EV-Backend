@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	// "github.com/DoyleJ11/auth-system/internal/auth"
+	// "github.com/EmpoweredVote/EV-Backend/internal/auth"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

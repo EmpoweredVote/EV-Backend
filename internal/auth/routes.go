@@ -3,7 +3,7 @@ package auth
 import (
 	"net/http"
 
-	"github.com/DoyleJ11/auth-system/internal/middleware"
+	"github.com/EmpoweredVote/EV-Backend/internal/middleware"
 	"github.com/go-chi/chi/v5"
 )
 

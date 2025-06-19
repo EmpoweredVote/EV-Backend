@@ -3,7 +3,7 @@ package auth
 import (
 	"log"
 
-	"github.com/DoyleJ11/auth-system/internal/db"
+	"github.com/EmpoweredVote/EV-Backend/internal/db"
 )
 
 func Init() {

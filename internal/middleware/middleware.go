@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/DoyleJ11/auth-system/internal/utils"
+	"github.com/EmpoweredVote/EV-Backend/internal/utils"
 )
 
 type SessionFetcher interface {
@@ -41,6 +41,7 @@ func SessionMiddleware(fetcher SessionFetcher) func(http.Handler) http.Handler {
 var allowed = map[string]struct{}{
 	"http://localhost:5173":              {},
 	"https://empoweredvote.github.io":   {},
+	"https://ev-backend-edhm.onrender.com": {},
 }
 
 func CORSMiddleware(next http.Handler) (http.Handler) {

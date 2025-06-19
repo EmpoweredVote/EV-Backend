@@ -1,9 +1,9 @@
 package compass
 
 import (
-	"github.com/DoyleJ11/auth-system/internal/auth"
-	"github.com/DoyleJ11/auth-system/internal/db"
-	"github.com/DoyleJ11/auth-system/internal/utils"
+	"github.com/EmpoweredVote/EV-Backend/internal/auth"
+	"github.com/EmpoweredVote/EV-Backend/internal/db"
+	"github.com/EmpoweredVote/EV-Backend/internal/utils"
 )
 
 

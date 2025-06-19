@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/DoyleJ11/auth-system/internal/auth"
-	"github.com/DoyleJ11/auth-system/internal/db"
+	"github.com/EmpoweredVote/EV-Backend/internal/auth"
+	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
