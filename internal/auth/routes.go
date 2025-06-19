@@ -21,6 +21,7 @@ func SetupRoutes() http.Handler {
 		r.Get("/me", MeHandler)
 		r.Post("/update-password", UpdatePasswordHandler)
 		r.Post("/logout", LogoutHandler)
+		r.Get("/empowered-accounts", EmpoweredAccountHandler)
 	})
 
 	return r

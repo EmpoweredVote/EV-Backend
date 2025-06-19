@@ -10,7 +10,7 @@ type Answer struct {
 	ID			string		`gorm:"primaryKey"`
 	UserID 		string
 	TopicID 	string      `json:"topic_id"`
-	Value 		int         `json:"value"`
+	Value 		int         `gorm:"default: 0" json:"value"`
 	CreatedAt	time.Time
 }
 

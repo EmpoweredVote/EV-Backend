@@ -20,7 +20,7 @@ func SetupRoutes() http.Handler {
 		r.Post("/answers", AnswerHandler)
 		r.Get("/answers", AnswerHandler)
 		r.Post("/answers/batch", AnswerBatchHander)
-		r.Get("/compare", CompareHandler)
+		r.Post("/compare", CompareHandler)
 	})
 
 	return r

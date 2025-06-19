@@ -272,3 +272,23 @@ func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "Password updated")
 }
+
+func EmpoweredAccountHandler(w http.ResponseWriter, r *http.Request) {
+	var users []User
+
+	var response[] struct {
+		UserID string `json:"user_id"`
+		Username   string    `json:"username"`
+	}
+
+	err := db.DB.Model(&users).Find(&response, "account_type = ?", "empowered").Error
+	if err != nil {
+		http.Error(w, "Couldn't find users", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err = json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
+}

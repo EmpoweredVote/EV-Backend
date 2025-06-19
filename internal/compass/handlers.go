@@ -218,7 +218,7 @@ func AnswerBatchHander(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = db.DB.Where("user_id = ? AND topic_id IN ?", session.UserID, validIDs).Find(&answers).Error
+	err = db.DB.Where("user_id = ? AND topic_id IN ? AND value != 0", session.UserID, validIDs).Find(&answers).Error
 	if err != nil {
 		http.Error(w, "Couldn't find answers", http.StatusInternalServerError)
 		return
@@ -232,6 +232,38 @@ func AnswerBatchHander(w http.ResponseWriter, r *http.Request) {
 }
 
 func CompareHandler(w http.ResponseWriter, r *http.Request) {
+	var answers []Answer
 
+	var request struct {
+		UserID   	string    `json:"user_id"`
+		TopicIDs	[]string  `json:"ids"`
+	}
 	
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	var validIDs []uuid.UUID
+	for _, id := range request.TopicIDs {
+		parsed, err := uuid.Parse(id)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid UUID format: %s", id), http.StatusBadRequest)
+        	return
+		}
+		validIDs = append(validIDs, parsed)
+	}
+
+	err = db.DB.Where("user_id = ? AND topic_id IN ?", request.UserID, validIDs).Find(&answers).Error
+	if err != nil {
+		http.Error(w, "Couldn't find answers", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(answers); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
+
 }

@@ -14,6 +14,6 @@ type User struct {
 	Password 		string	`json:"password" gorm:"-"`
 	HashedPassword  string  `json:"-"`
 	Role			string  `gorm:"default:'user'"`
-	AccountType		string  `gorm:"default:'informed'"`
+	AccountType		string  `gorm:"default:'informed'" json:"account_type"`
 	Session			Session	`gorm:"foreignKey:UserID"`
 }
