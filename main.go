@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/EmpoweredVote/EV-Backend/internal/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/joho/godotenv"
 )
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,8 +20,14 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// godotenv.Load()
+	_ = godotenv.Load(".env.local")
 	db.Connect()
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "5050"
+	}
+
 
 	auth.Init()
 	compass.Init()
@@ -33,9 +39,6 @@ func main() {
 	r.Mount("/compass", compass.SetupRoutes())
 
 	fmt.Println("Server listening on port :5050...")
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("PORT env not set")
-	}
+
 	http.ListenAndServe("0.0.0.0:" + port, r)
 }
