@@ -30,7 +30,7 @@ type Topic struct {
 }
 
 type Category struct {
-	ID     uuid.UUID   `gorm:"type:uuid;primaryKey"`
+	ID     uuid.UUID    `gorm:"type:uuid;primaryKey"`
 	Title  string      `gorm:"uniqueIndex"`
 	Topics []Topic     `gorm:"many2many:topic_categories;"`
 }

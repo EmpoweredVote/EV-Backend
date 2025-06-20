@@ -6,6 +6,8 @@ import (
 
 	"github.com/EmpoweredVote/EV-Backend/internal/compass"
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 var topicToCategories = map[string][]string{
@@ -62,6 +64,7 @@ var topicToCategories = map[string][]string{
 }
 
 
+
 func SeedTopicCategories() error {
 	var topics []compass.Topic
 	var categories []compass.Category
@@ -73,7 +76,6 @@ func SeedTopicCategories() error {
 		return fmt.Errorf("failed to fetch categories: %w", err)
 	}
 
-	// Build quick lookup maps
 	topicMap := make(map[string]*compass.Topic)
 	for i := range topics {
 		topicMap[topics[i].Title] = &topics[i]
@@ -84,7 +86,6 @@ func SeedTopicCategories() error {
 		categoryMap[categories[i].Title] = &categories[i]
 	}
 
-	// Assign categories to topics
 	for topicTitle, categoryTitles := range topicToCategories {
 		topic, ok := topicMap[topicTitle]
 		if !ok {
@@ -107,6 +108,43 @@ func SeedTopicCategories() error {
 			log.Printf("❌ Failed assigning categories to %s: %v", topicTitle, err)
 		} else {
 			log.Printf("✅ Assigned categories to %s", topicTitle)
+		}
+	}
+
+	return nil
+}
+
+func SeedCategories() error {
+	// 1. Build a unique set of category titles.
+	set := map[string]struct{}{}
+	for _, cats := range topicToCategories {
+		for _, c := range cats {
+			set[c] = struct{}{}
+		}
+	}
+
+	// 2. Insert each category if it doesn't already exist.
+	for title := range set {
+		var existing compass.Category
+		err := db.DB.First(&existing, "title = ?", title).Error
+
+		switch err {
+		case nil:
+			log.Printf("⚠️ Category exists, skipping: %s", title)
+			continue
+
+		case gorm.ErrRecordNotFound:
+			newCat := compass.Category{
+				ID:    uuid.New(), // generate fresh UUID
+				Title: title,
+			}
+			if err := db.DB.Create(&newCat).Error; err != nil {
+				return fmt.Errorf("failed to insert category %s: %w", title, err)
+			}
+			log.Printf("✅ Inserted category: %s", title)
+
+		default:
+			return fmt.Errorf("DB error when checking category %s: %w", title, err)
 		}
 	}
 

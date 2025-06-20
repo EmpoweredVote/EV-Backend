@@ -106,8 +106,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Value: uuid,
 		Path: "/",
 		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
-		Secure:   false,
+    	SameSite: http.SameSiteNoneMode,
+    	Secure:   true, 
 	})
 
 	// Search db to see if session cookie already exists, update DB with new session_id if true
