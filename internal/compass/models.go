@@ -34,3 +34,11 @@ type Category struct {
 	Title  string      `gorm:"uniqueIndex"`
 	Topics []Topic     `gorm:"many2many:topic_categories;"`
 }
+
+// type Context struct {
+// 	ID		    uuid.UUID	`gorm:"type:uuid;primaryKey"`
+// 	UserID 		string
+// 	TopicID 	string  	`json:"topic_id"`
+// 	Reasoning	string		`json:"reasoning"`
+// 	Sources		[]string	`json:"sources"`
+// }

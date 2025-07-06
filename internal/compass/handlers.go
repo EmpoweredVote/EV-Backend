@@ -15,7 +15,10 @@ import (
 func TopicHandler(w http.ResponseWriter, r *http.Request) {
 	var topics []Topic
 
-	result := db.DB.Preload("Stances").Preload("Categories").Find(&topics)
+	result := db.DB.Preload("Stances", func(db *gorm.DB) *gorm.DB {
+			return db.Order("value ASC")
+		}).Preload("Categories").Find(&topics)
+
 	if result.Error != nil {
 		http.Error(w, "DB error: "+result.Error.Error(), http.StatusInternalServerError)
 		return
@@ -54,7 +57,9 @@ func TopicBatchHandler(w http.ResponseWriter, r *http.Request) {
 		validIDs = append(validIDs, parsed)
 	}
 
-	err = db.DB.Where("id IN ?", validIDs).Preload("Stances").Find(&topics).Error
+	err = db.DB.Where("id IN ?", validIDs).Preload("Stances", func(db *gorm.DB) *gorm.DB {
+		return db.Order("value ASC")
+	}).Find(&topics).Error
 	if err != nil {
 		http.Error(w, "Invalid Topic", http.StatusNotFound)
 		return
@@ -70,6 +75,65 @@ func TopicBatchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func TopicUpdateHandler(w http.ResponseWriter, r *http.Request) {
+
+	var topicRequest struct {
+		ID          string  `json:"ID"`
+		Title       *string `json:"Title,omitempty"`
+		ShortTitle  *string `json:"ShortTitle,omitempty"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&topicRequest); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	var topic Topic
+	if err := db.DB.First(&topic, "id = ?", topicRequest.ID).Error; err != nil {
+		http.Error(w, "Topic not found", http.StatusNotFound)
+		return
+	}
+
+	updates := map[string]interface{}{}
+	if topicRequest.Title != nil {
+		updates["Title"] = *topicRequest.Title
+	}
+	if topicRequest.ShortTitle != nil {
+		updates["ShortTitle"] = *topicRequest.ShortTitle
+	}
+
+	if err := db.DB.Model(&topic).Updates(updates).Error; err != nil {
+		http.Error(w, "Failed to update topic", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "Topic updated successfully")
+}
+
+func StanceUpdateHandler(w http.ResponseWriter, r *http.Request) {
+	var updates []struct {
+		ID string `json:"ID"`
+		Text string `json:"Text"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+		http.Error(w, "Invalid JSON body", http.StatusBadRequest)
+		return
+	}
+
+	for _, update := range updates {
+		if err := db.DB.Model(&Stance{}).Where("id = ?", update.ID).Update("text", update.Text).Error; err != nil {
+			http.Error(w, "Failed to update stance "+update.ID, http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "Stances updated successfully")
+}
+
+
 func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 	var categories []Category
 
@@ -83,6 +147,63 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(categories); err != nil {
     	http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 	}
+}
+
+func UpdateTopicCategoriesHandler(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		TopicID string   `json:"topic_id"`
+		Add	    []string `json:"add,omitempty"`
+		Remove  []string `json:"remove,omitempty"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	topicUUID, err := uuid.Parse(req.TopicID)
+	if err != nil {
+		http.Error(w, "Invalid topic_id format", http.StatusBadRequest)
+		return
+	}
+
+	var topic Topic
+	if err := db.DB.Preload("Categories").First(&topic, "id = ?", topicUUID).Error; err != nil {
+		http.Error(w, "Topic not found", http.StatusNotFound)
+		return
+	}
+
+	addSet := make(map[uuid.UUID]bool)
+	for _, id := range req.Add {
+		if parsed, err := uuid.Parse(id); err == nil {
+			addSet[parsed] = true
+		}
+	}
+
+	removeSet := make(map[uuid.UUID]bool)
+	for _, id := range req.Remove {
+		if parsed, err := uuid.Parse(id); err == nil {
+			removeSet[parsed] = true
+		}
+	}
+
+	var newCategories []Category
+	for _, cat := range topic.Categories {
+		if !removeSet[cat.ID] {
+			newCategories = append(newCategories, cat)
+		}
+	}
+	for id := range addSet {
+		newCategories = append(newCategories, Category{ID: id})
+	}
+
+	if err := db.DB.Model(&topic).Association("Categories").Replace(&newCategories); err != nil {
+		http.Error(w, "Failed to update categories", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Topic categories updated successfully")
 }
 
 

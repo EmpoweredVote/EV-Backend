@@ -21,6 +21,9 @@ func SetupRoutes() http.Handler {
 		r.Get("/answers", AnswerHandler)
 		r.Post("/answers/batch", AnswerBatchHander)
 		r.Post("/compare", CompareHandler)
+		r.Patch("/topics/update", TopicUpdateHandler)
+		r.Patch("/stances/update", StanceUpdateHandler)
+		r.Patch("/topics/categories/update", UpdateTopicCategoriesHandler)
 	})
 
 	return r
