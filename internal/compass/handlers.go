@@ -388,3 +388,80 @@ func CompareHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func ContextHandler(w http.ResponseWriter, r *http.Request) {
+
+	var request struct {
+		UserID   	string    `json:"user_id"`
+		TopicID		string    `json:"topic_id"`
+		Reasoning	string	  `json:"reasoning"`
+		Sources		[]string  `json:"sources"`
+	}
+	
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Verify user making request has Admin role
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		http.Error(w, "Session not found", http.StatusUnauthorized)
+		return
+	}
+
+	session, err := auth.SessionInfo{}.FindSessionByID(cookie.Value)
+	if err != nil {
+		http.Error(w, "Invalid session", http.StatusUnauthorized)
+		return
+	}
+
+	var user auth.User
+	err = db.DB.Where("user_id = ? AND role = ?", session.UserID, "admin").Take(&user).Error
+	if err != nil {
+		http.Error(w, "Invalid permissions. Admin only", http.StatusUnauthorized)
+		return
+	}
+	// Verify user is empowered
+	var empoweredUser auth.User
+	err = db.DB.Where("user_id = ? AND account_type = ?", request.UserID, "empowered").Take(&empoweredUser).Error
+	if err != nil {
+		http.Error(w, "User not empowered.", http.StatusUnauthorized)
+		return
+	}
+
+
+	var existing Context
+	err = db.DB.Where("user_id = ? AND topic_id = ?", request.UserID, request.TopicID).First(&existing).Error
+
+	if err == nil {
+		// If no error, context already exists, update it
+		err = db.DB.Model(&existing).Updates(Context{Reasoning: request.Reasoning, Sources: request.Sources}).Error
+		if err != nil {
+			http.Error(w, "Failed to update context", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "Context updated successfully")
+		return
+	} 
+
+	if err == gorm.ErrRecordNotFound {
+		newContext := Context{
+			ID:      	uuid.NewString(),
+			UserID:  	request.UserID,
+			TopicID: 	request.TopicID,
+			Reasoning:  request.Reasoning,
+			Sources:    request.Sources,
+		}
+		if err = db.DB.Create(&newContext).Error; err != nil {
+			http.Error(w, "Failed to create context", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(newContext)
+		return
+	}
+	http.Error(w, "DB error", http.StatusInternalServerError)
+}

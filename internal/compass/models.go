@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 type Answer struct {
@@ -35,10 +36,10 @@ type Category struct {
 	Topics []Topic     `gorm:"many2many:topic_categories;"`
 }
 
-// type Context struct {
-// 	ID		    uuid.UUID	`gorm:"type:uuid;primaryKey"`
-// 	UserID 		string
-// 	TopicID 	string  	`json:"topic_id"`
-// 	Reasoning	string		`json:"reasoning"`
-// 	Sources		[]string	`json:"sources"`
-// }
+type Context struct {
+	ID		    string		`gorm:"primaryKey"`
+	UserID 		string
+	TopicID 	string  	`json:"topic_id"`
+	Reasoning	string		`json:"reasoning"`
+	Sources		pq.StringArray	`gorm:"type:text[]" json:"sources"`
+}

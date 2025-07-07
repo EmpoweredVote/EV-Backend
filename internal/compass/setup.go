@@ -7,7 +7,7 @@ import (
 )
 
 func Init() {
-	if err := db.DB.AutoMigrate(&Topic{}, &Answer{}, &Stance{}, &Category{}); err != nil {
+	if err := db.DB.AutoMigrate(&Topic{}, &Answer{}, &Stance{}, &Category{}, &Context{}); err != nil {
 		log.Fatal("Failed to auto-migrate tables", err)
 	}
 }

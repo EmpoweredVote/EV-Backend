@@ -24,6 +24,7 @@ func SetupRoutes() http.Handler {
 		r.Patch("/topics/update", TopicUpdateHandler)
 		r.Patch("/stances/update", StanceUpdateHandler)
 		r.Patch("/topics/categories/update", UpdateTopicCategoriesHandler)
+		r.Post("/context", ContextHandler)
 	})
 
 	return r
