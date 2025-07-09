@@ -292,3 +292,25 @@ func EmpoweredAccountHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 	}
 }
+
+func AdminCheckHandler(w http.ResponseWriter, r *http.Request) {
+	userID, ok := utils.GetUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Missing user ID", http.StatusUnauthorized)
+		return
+	}
+
+	var user User
+	if err := db.DB.First(&user, "user_id = ?", userID).Error; err != nil {
+		http.Error(w, "User not found", http.StatusUnauthorized)
+		return
+	}
+
+	if user.Role != "admin" {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Authorized")
+}

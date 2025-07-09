@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/EmpoweredVote/EV-Backend/internal/utils"
 )
 
@@ -65,4 +66,39 @@ func CORSMiddleware(next http.Handler) (http.Handler) {
 		}
 		next.ServeHTTP(w, r)
 	})
+}
+
+type User struct {
+	UserID string `gorm:"primaryKey"`
+	Role   string
+}
+
+func AdminMiddleware(fetcher SessionFetcher) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Get user ID from context
+			userID, ok := utils.GetUserIDFromContext(r.Context())
+			if !ok {
+				http.Error(w, "Unauthorized: missing user ID in context", http.StatusUnauthorized)
+				return
+			}
+
+			// Fetch the user by ID
+			var user User
+			if err := db.DB.First(&user, "user_id = ?", userID).Error; err != nil {
+				http.Error(w, "Unauthorized: user not found", http.StatusUnauthorized)
+				return
+			}
+
+			// Check role
+			if user.Role != "admin" {
+				http.Error(w, "Forbidden: admin access required", http.StatusForbidden)
+				return
+			}
+
+			// Pass request down the chain
+			ctx := context.WithValue(r.Context(), utils.ContextUserIDKey, userID)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
 }

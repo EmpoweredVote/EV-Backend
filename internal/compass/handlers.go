@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 
+	"sort"
+
 	"github.com/EmpoweredVote/EV-Backend/internal/auth"
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/google/uuid"
@@ -131,6 +133,205 @@ func StanceUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Stances updated successfully")
+}
+
+
+func StancesUpdateHandlerOLD(w http.ResponseWriter, r *http.Request) {
+	type stanceType struct {
+        ID   	string  `json:"id"`
+        Text 	string 	`json:"text"`
+		TopicID string  `json:"topic_id"`
+		Value 	int     `json:"value"`
+    }
+
+	var updatedStances []struct {
+		TopicID string 	 `json:"topic_id"`
+		Stances []stanceType `json:"stances"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&updatedStances); err != nil {
+		http.Error(w, "Invalid JSON body", http.StatusBadRequest)
+		return
+	}
+
+	for _, group := range updatedStances {
+		var oldStances []stanceType
+		topic := group.TopicID
+		if err := db.DB.Model(&Stance{}).Where("topic_id = ?", topic).Find(&oldStances).Error;
+		err != nil {
+			http.Error(w, "Failed to find stances", http.StatusInternalServerError)
+			return
+		}
+
+		// Sort both slices by value
+		sort.Slice(group.Stances, func(i, j int) bool {
+			return group.Stances[i].Value < group.Stances[j].Value
+		})
+
+		sort.Slice(oldStances, func(i, j int) bool {
+			return oldStances[i].Value < oldStances[j].Value
+		})
+
+		for i, stance := range group.Stances {
+			if i < len(oldStances) {
+				if oldStances[i].Text == stance.Text &&
+				oldStances[i].Value == stance.Value &&
+				oldStances[i].ID == stance.ID {
+					fmt.Printf("Stance %d: unchanged\n", i)
+					continue
+				}
+
+				if oldStances[i].ID == stance.ID {
+					// We did not continue so stance or val must be diff if ID is the smae
+					update := Stance{Text: stance.Text, Value: stance.Value}
+					if err := db.DB.Model(&Stance{}).Where("id = ? AND topic_id = ?",stance.ID, topic).Select("Text", "Value").Updates(update).Error
+					err != nil {
+						http.Error(w, "Failed to update stance", http.StatusInternalServerError)
+						return
+					}
+					fmt.Printf("Stance %d: updated\n", i)
+					continue
+				} 
+
+				// We know the ID doesn't match & the text or Value don't match. delete old stance
+				if err := db.DB.Delete(&Stance{}, "id = ?", oldStances[i].ID).Error;
+				err != nil {
+					http.Error(w, "Failed to delete stance", http.StatusInternalServerError)
+					return
+				}
+
+				// Create new stance
+				if err := db.DB.Create(stance).Error;
+				err != nil {
+					http.Error(w, "Failed to create stance", http.StatusInternalServerError)
+					return
+				}
+				fmt.Printf("Stance %d: deleted + created\n", i)
+				continue
+			}
+
+			if err := db.DB.Create(&stance).Error; err != nil {
+				http.Error(w, "Failed to create new stance", http.StatusInternalServerError)
+				return
+			}
+			fmt.Printf("Stance %d: new created\n", i)
+		}
+}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "Stances updated successfully")
+}
+
+func StancesUpdateHandler(w http.ResponseWriter, r *http.Request) {
+	type updated struct {
+		ID    string `json:"id"`
+		Text  string `json:"text"`
+		Value int    `json:"value"`
+	}
+
+	type added struct {
+		Text  string `json:"text"`
+		Value int    `json:"value"`
+	}
+
+	type removed struct {
+		ID    string `json:"id"`
+		Value int    `json:"value"`
+	}
+
+	var request struct {
+		TopicID uuid.UUID `json:"topic_id"`
+		Updated []updated `json:"updated"`
+		Added   []added   `json:"added"`
+		Removed []removed `json:"removed"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		log.Printf("❌ JSON decode failed: %v\n", err)
+		http.Error(w, "Invalid JSON body", http.StatusBadRequest)
+		return
+	}
+
+	log.Println("🔁 Starting DB transaction...")
+	tx := db.DB.Begin()
+	if tx.Error != nil {
+		log.Printf("❌ Failed to begin transaction: %v\n", tx.Error)
+		http.Error(w, "Failed to start transaction", http.StatusInternalServerError)
+		return
+	}
+
+	// 🔄 Updated stances
+	for _, updatedStance := range request.Updated {
+		update := Stance{Text: updatedStance.Text, Value: updatedStance.Value}
+		if err := tx.Model(&Stance{}).
+			Where("id = ? AND topic_id = ?", updatedStance.ID, request.TopicID).
+			Select("Text", "Value").
+			Updates(update).Error; err != nil {
+			log.Printf("❌ Failed to update stance ID %s: %v\n", updatedStance.ID, err)
+			tx.Rollback()
+			http.Error(w, "Failed to update stance", http.StatusInternalServerError)
+			return
+		}
+		log.Printf("✅ Updated stance ID %s\n", updatedStance.ID)
+	}
+
+	// ➕ Added stances
+	for _, addedStance := range request.Added {
+		newID := uuid.NewString()
+		newStance := Stance{
+			ID:      newID,
+			TopicID: request.TopicID,
+			Text:    addedStance.Text,
+			Value:   addedStance.Value,
+		}
+
+		if err := tx.Model(&Stance{}).
+			Where("topic_id = ? AND value >= ?", request.TopicID, addedStance.Value).
+			Update("value", gorm.Expr("value + ?", 1)).Error; err != nil {
+			log.Printf("❌ Failed to increment values before insert: %v\n", err)
+			tx.Rollback()
+			http.Error(w, "Failed to increment stances", http.StatusInternalServerError)
+			return
+		}
+
+		if err := tx.Create(&newStance).Error; err != nil {
+			log.Printf("❌ Failed to create stance (text: %s): %v\n", addedStance.Text, err)
+			tx.Rollback()
+			http.Error(w, "Failed to create stance", http.StatusInternalServerError)
+			return
+		}
+		log.Printf("✅ Created new stance with ID %s\n", newID)
+	}
+
+	// ❌ Removed stances
+	for _, removedStance := range request.Removed {
+		if err := tx.Model(&Stance{}).
+			Where("topic_id = ? AND value > ?", request.TopicID, removedStance.Value).
+			Update("value", gorm.Expr("value - ?", 1)).Error; err != nil {
+			log.Printf("❌ Failed to decrement values after removal of ID %s: %v\n", removedStance.ID, err)
+			tx.Rollback()
+			http.Error(w, "Failed to decrement stances", http.StatusInternalServerError)
+			return
+		}
+
+		if err := tx.Delete(&Stance{}, "id = ?", removedStance.ID).Error; err != nil {
+			log.Printf("❌ Failed to delete stance ID %s: %v\n", removedStance.ID, err)
+			tx.Rollback()
+			http.Error(w, "Failed to delete stance", http.StatusInternalServerError)
+			return
+		}
+		log.Printf("✅ Deleted stance ID %s\n", removedStance.ID)
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		log.Printf("❌ Transaction commit failed: %v\n", err)
+		http.Error(w, "Transaction commit failed", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("✅ Transaction committed successfully for topic %s\n", request.TopicID)
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Stances updated successfully")
 }
 
 
@@ -437,7 +638,8 @@ func ContextHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err == nil {
 		// If no error, context already exists, update it
-		err = db.DB.Model(&existing).Updates(Context{Reasoning: request.Reasoning, Sources: request.Sources}).Error
+		update := Context{Reasoning: request.Reasoning, Sources: request.Sources}
+		err = db.DB.Model(&existing).Select("Reasoning", "Sources").Updates(update).Error
 		if err != nil {
 			http.Error(w, "Failed to update context", http.StatusInternalServerError)
 			return
@@ -464,4 +666,32 @@ func ContextHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Error(w, "DB error", http.StatusInternalServerError)
+}
+
+func GetContextHandler(w http.ResponseWriter, r *http.Request) {
+	userID := r.URL.Query().Get("user_id")
+	topicID := r.URL.Query().Get("topic_id")
+	var contexts []Context
+
+	if userID == "" || topicID == "" {
+		err := db.DB.Find(&contexts).Error
+		if err != nil {
+			http.Error(w, "Failed to return context", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(contexts)
+		return
+	}
+
+
+	var ctx Context
+	err := db.DB.Where("user_id = ? AND topic_id = ?", userID, topicID).First(&ctx).Error
+	if err != nil {
+		http.Error(w, "Couldn't find context", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(ctx)
 }

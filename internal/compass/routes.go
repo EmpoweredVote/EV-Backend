@@ -12,8 +12,9 @@ func SetupRoutes() http.Handler {
 	sessionFetcher := SessionInfo{}
 
 	r.Get("/topics", TopicHandler)
-	r.Get("/topics/batch", TopicBatchHandler)
+	r.Post("/topics/batch", TopicBatchHandler)
 	r.Get("/categories", CategoryHandler)
+	r.Get("/context", GetContextHandler)
 
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.SessionMiddleware(sessionFetcher))
@@ -22,7 +23,7 @@ func SetupRoutes() http.Handler {
 		r.Post("/answers/batch", AnswerBatchHander)
 		r.Post("/compare", CompareHandler)
 		r.Patch("/topics/update", TopicUpdateHandler)
-		r.Patch("/stances/update", StanceUpdateHandler)
+		r.Patch("/stances/update", StancesUpdateHandler)
 		r.Patch("/topics/categories/update", UpdateTopicCategoriesHandler)
 		r.Post("/context", ContextHandler)
 	})
