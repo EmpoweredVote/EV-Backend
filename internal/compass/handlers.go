@@ -247,7 +247,7 @@ func StancesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		log.Printf("❌ JSON decode failed: %v\n", err)
+		log.Printf("JSON decode failed: %v\n", err)
 		http.Error(w, "Invalid JSON body", http.StatusBadRequest)
 		return
 	}
@@ -255,27 +255,25 @@ func StancesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("🔁 Starting DB transaction...")
 	tx := db.DB.Begin()
 	if tx.Error != nil {
-		log.Printf("❌ Failed to begin transaction: %v\n", tx.Error)
+		log.Printf("Failed to begin transaction: %v\n", tx.Error)
 		http.Error(w, "Failed to start transaction", http.StatusInternalServerError)
 		return
 	}
 
-	// 🔄 Updated stances
 	for _, updatedStance := range request.Updated {
 		update := Stance{Text: updatedStance.Text, Value: updatedStance.Value}
 		if err := tx.Model(&Stance{}).
 			Where("id = ? AND topic_id = ?", updatedStance.ID, request.TopicID).
 			Select("Text", "Value").
 			Updates(update).Error; err != nil {
-			log.Printf("❌ Failed to update stance ID %s: %v\n", updatedStance.ID, err)
+			log.Printf("Failed to update stance ID %s: %v\n", updatedStance.ID, err)
 			tx.Rollback()
 			http.Error(w, "Failed to update stance", http.StatusInternalServerError)
 			return
 		}
-		log.Printf("✅ Updated stance ID %s\n", updatedStance.ID)
+		log.Printf("Updated stance ID %s\n", updatedStance.ID)
 	}
 
-	// ➕ Added stances
 	for _, addedStance := range request.Added {
 		newID := uuid.NewString()
 		newStance := Stance{
@@ -288,48 +286,47 @@ func StancesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		if err := tx.Model(&Stance{}).
 			Where("topic_id = ? AND value >= ?", request.TopicID, addedStance.Value).
 			Update("value", gorm.Expr("value + ?", 1)).Error; err != nil {
-			log.Printf("❌ Failed to increment values before insert: %v\n", err)
+			log.Printf("Failed to increment values before insert: %v\n", err)
 			tx.Rollback()
 			http.Error(w, "Failed to increment stances", http.StatusInternalServerError)
 			return
 		}
 
 		if err := tx.Create(&newStance).Error; err != nil {
-			log.Printf("❌ Failed to create stance (text: %s): %v\n", addedStance.Text, err)
+			log.Printf("Failed to create stance (text: %s): %v\n", addedStance.Text, err)
 			tx.Rollback()
 			http.Error(w, "Failed to create stance", http.StatusInternalServerError)
 			return
 		}
-		log.Printf("✅ Created new stance with ID %s\n", newID)
+		log.Printf("Created new stance with ID %s\n", newID)
 	}
 
-	// ❌ Removed stances
 	for _, removedStance := range request.Removed {
 		if err := tx.Model(&Stance{}).
 			Where("topic_id = ? AND value > ?", request.TopicID, removedStance.Value).
 			Update("value", gorm.Expr("value - ?", 1)).Error; err != nil {
-			log.Printf("❌ Failed to decrement values after removal of ID %s: %v\n", removedStance.ID, err)
+			log.Printf("Failed to decrement values after removal of ID %s: %v\n", removedStance.ID, err)
 			tx.Rollback()
 			http.Error(w, "Failed to decrement stances", http.StatusInternalServerError)
 			return
 		}
 
 		if err := tx.Delete(&Stance{}, "id = ?", removedStance.ID).Error; err != nil {
-			log.Printf("❌ Failed to delete stance ID %s: %v\n", removedStance.ID, err)
+			log.Printf("Failed to delete stance ID %s: %v\n", removedStance.ID, err)
 			tx.Rollback()
 			http.Error(w, "Failed to delete stance", http.StatusInternalServerError)
 			return
 		}
-		log.Printf("✅ Deleted stance ID %s\n", removedStance.ID)
+		log.Printf("Deleted stance ID %s\n", removedStance.ID)
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		log.Printf("❌ Transaction commit failed: %v\n", err)
+		log.Printf("Transaction commit failed: %v\n", err)
 		http.Error(w, "Transaction commit failed", http.StatusInternalServerError)
 		return
 	}
 
-	log.Printf("✅ Transaction committed successfully for topic %s\n", request.TopicID)
+	log.Printf("Transaction committed successfully for topic %s\n", request.TopicID)
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "Stances updated successfully")
 }
