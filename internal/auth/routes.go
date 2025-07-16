@@ -22,7 +22,7 @@ func SetupRoutes() http.Handler {
 		r.Post("/update-password", UpdatePasswordHandler)
 		r.Post("/logout", LogoutHandler)
 		r.Get("/empowered-accounts", EmpoweredAccountHandler)
-		r.Get("/admin", AdminCheckHandler)
+		r.Get("/admin-check", AdminCheckHandler)
 
 		r.With(middleware.AdminMiddleware(sessionFetcher)).Get("/admin", func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
