@@ -91,6 +91,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
 		return
 	}
+	
+	if user.HashedPassword == "" {
+		http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
+		return
+	}
 
 	// Compare hashed password with plaintext password
 	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(user.Password))
