@@ -2,11 +2,10 @@ package compass
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
-
-	"sort"
 
 	"github.com/EmpoweredVote/EV-Backend/internal/auth"
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
@@ -136,91 +135,7 @@ func StanceUpdateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func StancesUpdateHandlerOLD(w http.ResponseWriter, r *http.Request) {
-	type stanceType struct {
-        ID   	string  `json:"id"`
-        Text 	string 	`json:"text"`
-		TopicID string  `json:"topic_id"`
-		Value 	int     `json:"value"`
-    }
 
-	var updatedStances []struct {
-		TopicID string 	 `json:"topic_id"`
-		Stances []stanceType `json:"stances"`
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&updatedStances); err != nil {
-		http.Error(w, "Invalid JSON body", http.StatusBadRequest)
-		return
-	}
-
-	for _, group := range updatedStances {
-		var oldStances []stanceType
-		topic := group.TopicID
-		if err := db.DB.Model(&Stance{}).Where("topic_id = ?", topic).Find(&oldStances).Error;
-		err != nil {
-			http.Error(w, "Failed to find stances", http.StatusInternalServerError)
-			return
-		}
-
-		// Sort both slices by value
-		sort.Slice(group.Stances, func(i, j int) bool {
-			return group.Stances[i].Value < group.Stances[j].Value
-		})
-
-		sort.Slice(oldStances, func(i, j int) bool {
-			return oldStances[i].Value < oldStances[j].Value
-		})
-
-		for i, stance := range group.Stances {
-			if i < len(oldStances) {
-				if oldStances[i].Text == stance.Text &&
-				oldStances[i].Value == stance.Value &&
-				oldStances[i].ID == stance.ID {
-					fmt.Printf("Stance %d: unchanged\n", i)
-					continue
-				}
-
-				if oldStances[i].ID == stance.ID {
-					// We did not continue so stance or val must be diff if ID is the smae
-					update := Stance{Text: stance.Text, Value: stance.Value}
-					if err := db.DB.Model(&Stance{}).Where("id = ? AND topic_id = ?",stance.ID, topic).Select("Text", "Value").Updates(update).Error
-					err != nil {
-						http.Error(w, "Failed to update stance", http.StatusInternalServerError)
-						return
-					}
-					fmt.Printf("Stance %d: updated\n", i)
-					continue
-				} 
-
-				// We know the ID doesn't match & the text or Value don't match. delete old stance
-				if err := db.DB.Delete(&Stance{}, "id = ?", oldStances[i].ID).Error;
-				err != nil {
-					http.Error(w, "Failed to delete stance", http.StatusInternalServerError)
-					return
-				}
-
-				// Create new stance
-				if err := db.DB.Create(stance).Error;
-				err != nil {
-					http.Error(w, "Failed to create stance", http.StatusInternalServerError)
-					return
-				}
-				fmt.Printf("Stance %d: deleted + created\n", i)
-				continue
-			}
-
-			if err := db.DB.Create(&stance).Error; err != nil {
-				http.Error(w, "Failed to create new stance", http.StatusInternalServerError)
-				return
-			}
-			fmt.Printf("Stance %d: new created\n", i)
-		}
-}
-
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Stances updated successfully")
-}
 
 func StancesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	type updated struct {
@@ -691,4 +606,118 @@ func GetContextHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(ctx)
+}
+
+// Create a handler that accepts an array of objects: [{topicID: value}, ...] & a username
+// For each element in array, create a new answer for the user with matching username.
+func PopulateDummyAnswers(w http.ResponseWriter, r *http.Request) {
+	type answers struct {
+		TopicID  string `json:"topic_id"`
+		Value 	  int    `json:"value"`
+	}
+
+	var request struct {
+		Answers		[]answers  `json:"answers"`
+		Username 	string	   `json:"username"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	var user auth.User
+
+	err = db.DB.Model(&user).First(&user, "username = ?", request.Username).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	if user.Role != "dummy" {
+		http.Error(w, "Only dummy users can be populated", http.StatusForbidden)
+		return
+	}
+
+	tx := db.DB.Begin()
+	for _, a := range request.Answers {
+		answer := Answer{
+			ID: 		uuid.NewString(),
+			UserID: 	user.UserID,
+			TopicID: 	a.TopicID,
+			Value: 		a.Value,
+		}
+		if err := tx.Create(&answer).Error; err != nil {
+			tx.Rollback()
+			http.Error(w, "Failed to create answer", http.StatusInternalServerError)
+			return
+		}
+	}
+	tx.Commit()
+	
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintln(w, "Answers created successfully")
+}
+
+func UpdateAnswerHandler(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		UserID   string `json:"user_id"`
+		TopicID  string `json:"topic_id"`
+		Value    int    `json:"value"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Verify requester is an admin
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		http.Error(w, "Missing session cookie", http.StatusUnauthorized)
+		return
+	}
+	session, err := auth.SessionInfo{}.FindSessionByID(cookie.Value)
+	if err != nil {
+		http.Error(w, "Invalid session", http.StatusUnauthorized)
+		return
+	}
+	var admin auth.User
+	if err := db.DB.First(&admin, "user_id = ? AND role = ?", session.UserID, "admin").Error; err != nil {
+		http.Error(w, "Unauthorized", http.StatusForbidden)
+		return
+	}
+
+	// Check if answer exists
+	var existing Answer
+	err = db.DB.Where("user_id = ? AND topic_id = ?", input.UserID, input.TopicID).First(&existing).Error
+	if err == nil {
+		// Exists, update
+		if err := db.DB.Model(&existing).Update("value", input.Value).Error; err != nil {
+			http.Error(w, "Failed to update answer", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "Answer updated successfully")
+		return
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		// Create new
+		newAnswer := Answer{
+			ID:      uuid.NewString(),
+			UserID:  input.UserID,
+			TopicID: input.TopicID,
+			Value:   input.Value,
+		}
+		if err := db.DB.Create(&newAnswer).Error; err != nil {
+			http.Error(w, "Failed to create answer", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "Answer created successfully")
+		return
+	}
+
+	http.Error(w, "Unexpected DB error", http.StatusInternalServerError)
 }
