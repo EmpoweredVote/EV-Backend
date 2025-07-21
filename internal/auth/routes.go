@@ -28,6 +28,8 @@ func SetupRoutes() http.Handler {
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("Admin access granted"))
 		})
+
+		r.With(middleware.AdminMiddleware(sessionFetcher)).Post("/create-dummy", CreateDummyHandler)
 	})
 
 	return r

@@ -319,3 +319,51 @@ func AdminCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "Authorized")
 }
+
+func CreateDummyHandler(w http.ResponseWriter, r *http.Request) {
+	var request struct {
+		Username   	string    `json:"username"`
+	}
+	
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if request.Username == "" {
+		http.Error(w, "Username is required", http.StatusBadRequest)
+		return
+	}
+
+	var user User
+
+	err = db.DB.First(&user, "username = ?", request.Username).Error; 
+	if err == nil {
+		http.Error(w, "Username already exists", http.StatusConflict)
+		return
+	}
+
+	newDummy := User{
+		UserID:  	utils.GenerateUUID(),
+		Username:	request.Username,
+		Role:		"dummy",
+		AccountType: "empowered",
+	}
+	if err = db.DB.Create(&newDummy).Error; err != nil {
+		http.Error(w, "Failed to create dummy", http.StatusInternalServerError)
+		return
+	}
+
+	type DummyResponse struct {
+		UserID   string `json:"user_id"`
+		Username string `json:"username"`
+	}
+
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(DummyResponse{
+		UserID: newDummy.UserID,
+		Username: newDummy.Username,
+	})
+}
