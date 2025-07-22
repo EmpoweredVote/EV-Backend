@@ -381,15 +381,24 @@ func UpdateProfilePicHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.UserID == "" || req.URL == "" {
-		http.Error(w, "User ID and URL are required", http.StatusBadRequest)
+
+	if req.UserID == "" {
+		http.Error(w, "User ID is required", http.StatusBadRequest)
 		return
 	}
 
-	if err := db.DB.Model(&User{}).Where("user_id = ?", req.UserID).Update("profile_pic_url", req.URL).Error; err != nil {
-		http.Error(w, "Failed to update profile picture", http.StatusInternalServerError)
-		return
+	var update interface{}
+	if req.URL == "" {
+		update = nil
+	} else {
+		update = req.URL
 	}
+
+
+if err := db.DB.Model(&User{}).Where("user_id = ?", req.UserID).Select("profile_pic_url").Update("profile_pic_url", update).Error; err != nil {
+	http.Error(w, "Failed to update profile picture", http.StatusInternalServerError)
+	return
+}
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "Profile picture updated")
