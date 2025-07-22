@@ -323,7 +323,8 @@ func AdminCheckHandler(w http.ResponseWriter, r *http.Request) {
 
 func CreateDummyHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		Username   	string    `json:"username"`
+		Username   		string    `json:"username"`
+		ProfilePicURL 	string 	  `json:"profile_pic_url"`
 	}
 	
 	err := json.NewDecoder(r.Body).Decode(&request)
@@ -335,6 +336,13 @@ func CreateDummyHandler(w http.ResponseWriter, r *http.Request) {
 	if request.Username == "" {
 		http.Error(w, "Username is required", http.StatusBadRequest)
 		return
+	}
+
+	var update interface{}
+	if request.ProfilePicURL == "" {
+		update = nil
+	} else {
+		update = request.ProfilePicURL
 	}
 
 	var user User
@@ -353,6 +361,11 @@ func CreateDummyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if err = db.DB.Create(&newDummy).Error; err != nil {
 		http.Error(w, "Failed to create dummy", http.StatusInternalServerError)
+		return
+	}
+
+	if err := db.DB.Model(&User{}).Where("user_id = ?", newDummy.UserID).Select("profile_pic_url").Update("profile_pic_url", update).Error; err != nil {
+		http.Error(w, "Failed to update profile picture", http.StatusInternalServerError)
 		return
 	}
 
