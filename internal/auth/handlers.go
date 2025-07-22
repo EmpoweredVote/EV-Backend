@@ -8,6 +8,7 @@ import (
 
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/EmpoweredVote/EV-Backend/internal/utils"
+	"github.com/go-chi/chi/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -415,4 +416,59 @@ if err := db.DB.Model(&User{}).Where("user_id = ?", req.UserID).Select("profile_
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "Profile picture updated")
+}
+
+func UpdateUsername(w http.ResponseWriter, r *http.Request) {
+	type Request struct {
+		UserID string `json:"user_id"`
+		Username    string `json:"username"`
+	}
+
+	var req Request
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	if req.UserID == "" {
+		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	}
+	var user User
+
+	err := db.DB.First(&user, "username = ?", req.Username).Error; 
+	if err == nil {
+		http.Error(w, "Username already exists", http.StatusConflict)
+		return
+	}
+
+	if err := db.DB.Model(&User{}).Where("user_id = ?", req.UserID).Select("username").Update("username", req.Username).Error; err != nil {
+		http.Error(w, "Failed to update Username", http.StatusInternalServerError)
+		return
+	}
+	
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Username updated")
+}
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	userID := chi.URLParam(r, "userID")
+	if userID == "" {
+		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	}
+
+	var user User
+	if err := db.DB.First(&user, "user_id = ?", userID).Error; err != nil {
+		http.Error(w, "Couldn't find user", http.StatusInternalServerError)
+		return
+	}
+	
+	if err := db.DB.Delete(&user).Error; err != nil {
+		http.Error(w, "Failed to delete user", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Deleted user")
 }
