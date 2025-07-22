@@ -282,8 +282,9 @@ func EmpoweredAccountHandler(w http.ResponseWriter, r *http.Request) {
 	var users []User
 
 	var response[] struct {
-		UserID string `json:"user_id"`
-		Username   string    `json:"username"`
+		UserID 		  string 	`json:"user_id"`
+		Username   	  string    `json:"username"`
+		ProfilePicURL string 	`json:"profile_pic_url"`
 	}
 
 	err := db.DB.Model(&users).Find(&response, "account_type = ?", "empowered").Error
@@ -366,4 +367,30 @@ func CreateDummyHandler(w http.ResponseWriter, r *http.Request) {
 		UserID: newDummy.UserID,
 		Username: newDummy.Username,
 	})
+}
+
+func UpdateProfilePicHandler(w http.ResponseWriter, r *http.Request) {
+	type Request struct {
+		UserID string `json:"user_id"`
+		URL    string `json:"url"`
+	}
+
+	var req Request
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	if req.UserID == "" || req.URL == "" {
+		http.Error(w, "User ID and URL are required", http.StatusBadRequest)
+		return
+	}
+
+	if err := db.DB.Model(&User{}).Where("user_id = ?", req.UserID).Update("profile_pic_url", req.URL).Error; err != nil {
+		http.Error(w, "Failed to update profile picture", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Profile picture updated")
 }
