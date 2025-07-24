@@ -9,6 +9,7 @@ import (
 
 	"github.com/EmpoweredVote/EV-Backend/internal/auth"
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -817,4 +818,50 @@ func CreateTopicHandler(w http.ResponseWriter, r *http.Request) {
 	tx.Commit()
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(newTopic)
+}
+
+func DeleteTopicHandler(w http.ResponseWriter, r *http.Request) {
+	topicID := chi.URLParam(r, "id")
+
+	log.Println("DELETE /topics/delete hit with ID:", topicID)
+
+	if topicID == "" {
+		http.Error(w, "Topic ID Required", http.StatusBadRequest)
+		return
+	}
+
+	tx := db.DB.Begin()
+	var topic Topic
+	if err := tx.First(&topic, "id = ?", topicID).Error; err != nil {
+		http.Error(w, "Topic not found", http.StatusNotFound)
+		tx.Rollback()
+		return
+	}
+
+	if err := tx.Where("topic_id = ?", topicID).Delete(&Stance{}).Error; err != nil {
+		tx.Rollback()
+		http.Error(w, "Failed to delete stances", http.StatusInternalServerError)
+		return
+	}
+
+	if err := tx.Exec("DELETE FROM topic_categories WHERE topic_id = ?", topicID).Error; err != nil {
+		tx.Rollback()
+		http.Error(w, "Failed to delete topic-category links", http.StatusInternalServerError)
+		return
+	}
+
+	if err := tx.Delete(&topic).Error; err != nil {
+		tx.Rollback()
+		http.Error(w, "Failed to delete topic", http.StatusInternalServerError)
+		return
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		http.Error(w, "Failed to commit transaction", http.StatusInternalServerError)
+		return
+	}
+
+	log.Println("Deleted topic successfully")
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Topic deleted successfully")
 }
