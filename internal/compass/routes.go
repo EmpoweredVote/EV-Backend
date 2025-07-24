@@ -23,6 +23,7 @@ func SetupRoutes() http.Handler {
 		r.Post("/answers/batch", AnswerBatchHander)
 		r.Post("/compare", CompareHandler)
 		r.Patch("/topics/update", TopicUpdateHandler)
+		r.Post("/topics/create", CreateTopicHandler)
 		r.Patch("/stances/update", StancesUpdateHandler)
 		r.Patch("/topics/categories/update", UpdateTopicCategoriesHandler)
 		r.Post("/context", ContextHandler)

@@ -721,3 +721,100 @@ func UpdateAnswerHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Error(w, "Unexpected DB error", http.StatusInternalServerError)
 }
+
+func CreateTopicHandler(w http.ResponseWriter, r *http.Request) {
+	var request struct {
+		Title		string		`json:"title"`
+		ShortTitle	string		`json:"shortTitle"`
+		Stances     []struct {
+			Value int    `json:"value"`
+			Text  string `json:"text"`
+		} `json:"stances"`
+		Categories []struct {
+			ID uuid.UUID `json:"id"`
+		} `json:"categories"`
+	}
+
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if request.Title == "" || request.ShortTitle == "" {
+		http.Error(w, "Title and ShortTitle are required", http.StatusBadRequest)
+		return
+	}
+
+	if len(request.Stances) < 4 {
+		http.Error(w, "Must have at least 3 stances", http.StatusBadRequest)
+		return
+	}
+
+	var exists Topic
+	if err := db.DB.Where("title = ?", request.Title).First(&exists).Error; err == nil {
+		http.Error(w, "Title must be unique", http.StatusConflict)
+		return
+	}
+	if err := db.DB.Where("short_title = ?", request.ShortTitle).First(&exists).Error; err == nil {
+		http.Error(w, "ShortTitle must be unique", http.StatusConflict)
+		return
+	}
+
+	tx := db.DB.Begin()
+
+	topicID, err := uuid.NewV6()
+	if err != nil {
+		tx.Rollback()
+		http.Error(w, "Failed to generate topic ID", http.StatusInternalServerError)
+		return
+	}
+
+	var stances []Stance
+	for _, s := range request.Stances {
+		stanceID, err := uuid.NewV6()
+		if err != nil {
+			tx.Rollback()
+			http.Error(w, "Failed to generate stance ID", http.StatusInternalServerError)
+			return
+		}
+
+		stances = append(stances, Stance{
+			ID: stanceID.String(),
+			Value: s.Value,
+			Text:	s.Text,
+			TopicID: topicID,
+		})
+	}
+
+	var categories []Category
+	if len(request.Categories ) > 0 {
+		var categoryIDs []uuid.UUID
+		for _, c := range request.Categories {
+			categoryIDs = append(categoryIDs, c.ID)
+		}
+		if err := tx.Where("id IN ?", categoryIDs).Find(&categories).Error; err != nil {
+			tx.Rollback()
+			http.Error(w, "Failed to fetch categories", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	newTopic := Topic{
+		ID:     	topicID,
+		Title:  	request.Title,
+		ShortTitle: request.ShortTitle,
+		Stances:   	stances,
+		Categories: categories,
+	}
+
+	if err := tx.Create(&newTopic).Error; err != nil {
+		tx.Rollback()
+		http.Error(w, "Failed to create topic", http.StatusInternalServerError)
+		return
+	}
+
+	tx.Commit()
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(newTopic)
+}
