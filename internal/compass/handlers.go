@@ -352,7 +352,7 @@ func AnswerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 	case http.MethodPost:
-		// POST logic
+		// POST
 		var input struct {
 			TopicID string `json:"topic_id"`
 			Value   int    `json:"value"`
