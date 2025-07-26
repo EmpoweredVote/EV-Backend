@@ -18,8 +18,8 @@ func TopicHandler(w http.ResponseWriter, r *http.Request) {
 	var topics []Topic
 
 	result := db.DB.Preload("Stances", func(db *gorm.DB) *gorm.DB {
-			return db.Order("value ASC")
-		}).Preload("Categories").Find(&topics)
+		return db.Order("value ASC")
+	}).Preload("Categories").Find(&topics)
 
 	if result.Error != nil {
 		http.Error(w, "DB error: "+result.Error.Error(), http.StatusInternalServerError)
@@ -32,7 +32,7 @@ func TopicHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(topics); err != nil {
-    	http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 	}
 }
 
@@ -40,7 +40,7 @@ func TopicBatchHandler(w http.ResponseWriter, r *http.Request) {
 	var topics []Topic
 
 	var filterRequest struct {
-		IDs  []string	`json:"ids"`
+		IDs []string `json:"ids"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&filterRequest)
@@ -54,7 +54,7 @@ func TopicBatchHandler(w http.ResponseWriter, r *http.Request) {
 		parsed, err := uuid.Parse(id)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Invalid UUID format: %s", id), http.StatusBadRequest)
-        	return
+			return
 		}
 		validIDs = append(validIDs, parsed)
 	}
@@ -68,7 +68,7 @@ func TopicBatchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(topics) < len(validIDs) {
-    	log.Printf("Warning: Some topic IDs were not found")
+		log.Printf("Warning: Some topic IDs were not found")
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -80,9 +80,9 @@ func TopicBatchHandler(w http.ResponseWriter, r *http.Request) {
 func TopicUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	var topicRequest struct {
-		ID          string  `json:"ID"`
-		Title       *string `json:"Title,omitempty"`
-		ShortTitle  *string `json:"ShortTitle,omitempty"`
+		ID         string  `json:"ID"`
+		Title      *string `json:"Title,omitempty"`
+		ShortTitle *string `json:"ShortTitle,omitempty"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&topicRequest); err != nil {
@@ -115,7 +115,7 @@ func TopicUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 func StanceUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	var updates []struct {
-		ID string `json:"ID"`
+		ID   string `json:"ID"`
 		Text string `json:"Text"`
 	}
 
@@ -134,9 +134,6 @@ func StanceUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Stances updated successfully")
 }
-
-
-
 
 func StancesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	type updated struct {
@@ -247,7 +244,6 @@ func StancesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Stances updated successfully")
 }
 
-
 func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 	var categories []Category
 
@@ -259,14 +255,14 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(categories); err != nil {
-    	http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 	}
 }
 
 func UpdateTopicCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		TopicID string   `json:"topic_id"`
-		Add	    []string `json:"add,omitempty"`
+		Add     []string `json:"add,omitempty"`
 		Remove  []string `json:"remove,omitempty"`
 	}
 
@@ -320,7 +316,6 @@ func UpdateTopicCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Topic categories updated successfully")
 }
 
-
 func AnswerHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -328,7 +323,7 @@ func AnswerHandler(w http.ResponseWriter, r *http.Request) {
 
 		var answers []Answer
 
-		var response[] struct {
+		var response []struct {
 			TopicID string `json:"topic_id"`
 			Value   int    `json:"value"`
 		}
@@ -356,7 +351,6 @@ func AnswerHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		}
 
-	
 	case http.MethodPost:
 		// POST logic
 		var input struct {
@@ -364,7 +358,7 @@ func AnswerHandler(w http.ResponseWriter, r *http.Request) {
 			Value   int    `json:"value"`
 		}
 
-		if err := json.NewDecoder(r.Body).Decode(&input); err != nil{
+		if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
@@ -394,7 +388,7 @@ func AnswerHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 			fmt.Fprintln(w, "Answer updated successfully")
 			return
-		} 
+		}
 
 		if err == gorm.ErrRecordNotFound {
 			newAnswer := Answer{
@@ -422,7 +416,7 @@ func AnswerBatchHander(w http.ResponseWriter, r *http.Request) {
 	var answers []Answer
 
 	var filterRequest struct {
-		IDs  []string	`json:"ids"`
+		IDs []string `json:"ids"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&filterRequest)
@@ -436,7 +430,7 @@ func AnswerBatchHander(w http.ResponseWriter, r *http.Request) {
 		parsed, err := uuid.Parse(id)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Invalid UUID format: %s", id), http.StatusBadRequest)
-        	return
+			return
 		}
 		validIDs = append(validIDs, parsed)
 	}
@@ -459,7 +453,6 @@ func AnswerBatchHander(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(answers); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
@@ -470,10 +463,10 @@ func CompareHandler(w http.ResponseWriter, r *http.Request) {
 	var answers []Answer
 
 	var request struct {
-		UserID   	string    `json:"user_id"`
-		TopicIDs	[]string  `json:"ids"`
+		UserID   string   `json:"user_id"`
+		TopicIDs []string `json:"ids"`
 	}
-	
+
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -485,7 +478,7 @@ func CompareHandler(w http.ResponseWriter, r *http.Request) {
 		parsed, err := uuid.Parse(id)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Invalid UUID format: %s", id), http.StatusBadRequest)
-        	return
+			return
 		}
 		validIDs = append(validIDs, parsed)
 	}
@@ -506,12 +499,12 @@ func CompareHandler(w http.ResponseWriter, r *http.Request) {
 func ContextHandler(w http.ResponseWriter, r *http.Request) {
 
 	var request struct {
-		UserID   	string    `json:"user_id"`
-		TopicID		string    `json:"topic_id"`
-		Reasoning	string	  `json:"reasoning"`
-		Sources		[]string  `json:"sources"`
+		UserID    string   `json:"user_id"`
+		TopicID   string   `json:"topic_id"`
+		Reasoning string   `json:"reasoning"`
+		Sources   []string `json:"sources"`
 	}
-	
+
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -545,7 +538,6 @@ func ContextHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	var existing Context
 	err = db.DB.Where("user_id = ? AND topic_id = ?", request.UserID, request.TopicID).First(&existing).Error
 
@@ -560,15 +552,15 @@ func ContextHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "Context updated successfully")
 		return
-	} 
+	}
 
 	if err == gorm.ErrRecordNotFound {
 		newContext := Context{
-			ID:      	uuid.NewString(),
-			UserID:  	request.UserID,
-			TopicID: 	request.TopicID,
-			Reasoning:  request.Reasoning,
-			Sources:    request.Sources,
+			ID:        uuid.NewString(),
+			UserID:    request.UserID,
+			TopicID:   request.TopicID,
+			Reasoning: request.Reasoning,
+			Sources:   request.Sources,
 		}
 		if err = db.DB.Create(&newContext).Error; err != nil {
 			http.Error(w, "Failed to create context", http.StatusInternalServerError)
@@ -597,7 +589,6 @@ func GetContextHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	var ctx Context
 	err := db.DB.Where("user_id = ? AND topic_id = ?", userID, topicID).First(&ctx).Error
 	if err != nil {
@@ -613,13 +604,13 @@ func GetContextHandler(w http.ResponseWriter, r *http.Request) {
 // For each element in array, create a new answer for the user with matching username.
 func PopulateDummyAnswers(w http.ResponseWriter, r *http.Request) {
 	type answers struct {
-		TopicID  string `json:"topic_id"`
-		Value 	  int    `json:"value"`
+		TopicID string `json:"topic_id"`
+		Value   int    `json:"value"`
 	}
 
 	var request struct {
-		Answers		[]answers  `json:"answers"`
-		Username 	string	   `json:"username"`
+		Answers  []answers `json:"answers"`
+		Username string    `json:"username"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&request)
@@ -644,10 +635,10 @@ func PopulateDummyAnswers(w http.ResponseWriter, r *http.Request) {
 	tx := db.DB.Begin()
 	for _, a := range request.Answers {
 		answer := Answer{
-			ID: 		uuid.NewString(),
-			UserID: 	user.UserID,
-			TopicID: 	a.TopicID,
-			Value: 		a.Value,
+			ID:      uuid.NewString(),
+			UserID:  user.UserID,
+			TopicID: a.TopicID,
+			Value:   a.Value,
 		}
 		if err := tx.Create(&answer).Error; err != nil {
 			tx.Rollback()
@@ -656,16 +647,16 @@ func PopulateDummyAnswers(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	tx.Commit()
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintln(w, "Answers created successfully")
 }
 
 func UpdateAnswerHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		UserID   string `json:"user_id"`
-		TopicID  string `json:"topic_id"`
-		Value    int    `json:"value"`
+		UserID  string `json:"user_id"`
+		TopicID string `json:"topic_id"`
+		Value   int    `json:"value"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -725,9 +716,9 @@ func UpdateAnswerHandler(w http.ResponseWriter, r *http.Request) {
 
 func CreateTopicHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		Title		string		`json:"title"`
-		ShortTitle	string		`json:"shortTitle"`
-		Stances     []struct {
+		Title      string `json:"title"`
+		ShortTitle string `json:"short_title"`
+		Stances    []struct {
 			Value int    `json:"value"`
 			Text  string `json:"text"`
 		} `json:"stances"`
@@ -735,7 +726,6 @@ func CreateTopicHandler(w http.ResponseWriter, r *http.Request) {
 			ID uuid.UUID `json:"id"`
 		} `json:"categories"`
 	}
-
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -781,15 +771,15 @@ func CreateTopicHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		stances = append(stances, Stance{
-			ID: stanceID.String(),
-			Value: s.Value,
-			Text:	s.Text,
+			ID:      stanceID.String(),
+			Value:   s.Value,
+			Text:    s.Text,
 			TopicID: topicID,
 		})
 	}
 
 	var categories []Category
-	if len(request.Categories ) > 0 {
+	if len(request.Categories) > 0 {
 		var categoryIDs []uuid.UUID
 		for _, c := range request.Categories {
 			categoryIDs = append(categoryIDs, c.ID)
@@ -802,10 +792,10 @@ func CreateTopicHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newTopic := Topic{
-		ID:     	topicID,
-		Title:  	request.Title,
+		ID:         topicID,
+		Title:      request.Title,
 		ShortTitle: request.ShortTitle,
-		Stances:   	stances,
+		Stances:    stances,
 		Categories: categories,
 	}
 
