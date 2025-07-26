@@ -8,13 +8,14 @@ import (
 
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/EmpoweredVote/EV-Backend/internal/utils"
+	"github.com/go-chi/chi/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var user User
 
-		// Only allow POST requests
+	// Only allow POST requests
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -27,7 +28,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if request has username & password
-	if user.Username == ""|| user.Password == "" {
+	if user.Username == "" || user.Password == "" {
 		http.Error(w, "Username and password are required", http.StatusBadRequest)
 		return
 	}
@@ -60,23 +61,21 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{
-	"user_id": user.UserID,
-	"username": user.Username,
-})
+		"user_id":  user.UserID,
+		"username": user.Username,
+	})
 }
-
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var user User
 	var session Session
 	var existing Session
 
-		// Only allow POST requests
+	// Only allow POST requests
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-
 
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -91,7 +90,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
 		return
 	}
-	
+
 	if user.HashedPassword == "" {
 		http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
 		return
@@ -102,17 +101,17 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
 		return
-	} 
+	}
 
 	// Passwords matched, set cookie
 	uuid := utils.GenerateUUID()
 	http.SetCookie(w, &http.Cookie{
-		Name: "session_id",
-		Value: uuid,
-		Path: "/",
+		Name:     "session_id",
+		Value:    uuid,
+		Path:     "/",
 		HttpOnly: true,
-    	SameSite: http.SameSiteNoneMode,
-    	Secure:   true, 
+		SameSite: http.SameSiteNoneMode,
+		Secure:   true,
 	})
 
 	// Search db to see if session cookie already exists, update DB with new session_id if true
@@ -161,10 +160,10 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Replace the cookie with new expired/empty cookie
 		deletedCookie := &http.Cookie{
-			Name: "session_id",
-			Value: "",
+			Name:   "session_id",
+			Value:  "",
 			MaxAge: 0,
-			Path: "/",
+			Path:   "/",
 		}
 		http.SetCookie(w, deletedCookie)
 
@@ -174,8 +173,8 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type MeResponse struct {
-	UserID 		string 	`json:"user_id"`
-	Username 	string  `json:"username"`
+	UserID   string `json:"user_id"`
+	Username string `json:"username"`
 }
 
 func MeHandler(w http.ResponseWriter, r *http.Request) {
@@ -195,11 +194,11 @@ func MeHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		response := MeResponse {
-			UserID: userID,
+		response := MeResponse{
+			UserID:   userID,
 			Username: user.Username,
 		}
-		
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(response)
 
@@ -215,8 +214,8 @@ func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
 	// We then take the user's new password, hash it & update it in the user records
 
 	type UpdatePassword struct {
-		CurrentPassword string  `json:"current_password"`
-		NewPassword 	string 	`json:"new_password"`
+		CurrentPassword string `json:"current_password"`
+		NewPassword     string `json:"new_password"`
 	}
 
 	var user User
@@ -281,10 +280,10 @@ func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
 func EmpoweredAccountHandler(w http.ResponseWriter, r *http.Request) {
 	var users []User
 
-	var response[] struct {
-		UserID 		  string 	`json:"user_id"`
-		Username   	  string    `json:"username"`
-		ProfilePicURL string 	`json:"profile_pic_url"`
+	var response []struct {
+		UserID        string `json:"user_id"`
+		Username      string `json:"username"`
+		ProfilePicURL string `json:"profile_pic_url"`
 	}
 
 	err := db.DB.Model(&users).Find(&response, "account_type = ?", "empowered").Error
@@ -323,10 +322,10 @@ func AdminCheckHandler(w http.ResponseWriter, r *http.Request) {
 
 func CreateDummyHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		Username   		string    `json:"username"`
-		ProfilePicURL 	string 	  `json:"profile_pic_url"`
+		Username      string `json:"username"`
+		ProfilePicURL string `json:"profile_pic_url"`
 	}
-	
+
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -347,16 +346,16 @@ func CreateDummyHandler(w http.ResponseWriter, r *http.Request) {
 
 	var user User
 
-	err = db.DB.First(&user, "username = ?", request.Username).Error; 
+	err = db.DB.First(&user, "username = ?", request.Username).Error
 	if err == nil {
 		http.Error(w, "Username already exists", http.StatusConflict)
 		return
 	}
 
 	newDummy := User{
-		UserID:  	utils.GenerateUUID(),
-		Username:	request.Username,
-		Role:		"dummy",
+		UserID:      utils.GenerateUUID(),
+		Username:    request.Username,
+		Role:        "dummy",
 		AccountType: "empowered",
 	}
 	if err = db.DB.Create(&newDummy).Error; err != nil {
@@ -374,10 +373,9 @@ func CreateDummyHandler(w http.ResponseWriter, r *http.Request) {
 		Username string `json:"username"`
 	}
 
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(DummyResponse{
-		UserID: newDummy.UserID,
+		UserID:   newDummy.UserID,
 		Username: newDummy.Username,
 	})
 }
@@ -394,7 +392,6 @@ func UpdateProfilePicHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	if req.UserID == "" {
 		http.Error(w, "User ID is required", http.StatusBadRequest)
 		return
@@ -407,12 +404,66 @@ func UpdateProfilePicHandler(w http.ResponseWriter, r *http.Request) {
 		update = req.URL
 	}
 
-
-if err := db.DB.Model(&User{}).Where("user_id = ?", req.UserID).Select("profile_pic_url").Update("profile_pic_url", update).Error; err != nil {
-	http.Error(w, "Failed to update profile picture", http.StatusInternalServerError)
-	return
-}
+	if err := db.DB.Model(&User{}).Where("user_id = ?", req.UserID).Select("profile_pic_url").Update("profile_pic_url", update).Error; err != nil {
+		http.Error(w, "Failed to update profile picture", http.StatusInternalServerError)
+		return
+	}
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "Profile picture updated")
+}
+
+func UpdateUsername(w http.ResponseWriter, r *http.Request) {
+	type Request struct {
+		UserID   string `json:"user_id"`
+		Username string `json:"username"`
+	}
+
+	var req Request
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	if req.UserID == "" {
+		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	}
+	var user User
+
+	err := db.DB.First(&user, "username = ?", req.Username).Error
+	if err == nil {
+		http.Error(w, "Username already exists", http.StatusConflict)
+		return
+	}
+
+	if err := db.DB.Model(&User{}).Where("user_id = ?", req.UserID).Select("username").Update("username", req.Username).Error; err != nil {
+		http.Error(w, "Failed to update Username", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Username updated")
+}
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	userID := chi.URLParam(r, "userID")
+	if userID == "" {
+		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	}
+
+	var user User
+	if err := db.DB.First(&user, "user_id = ?", userID).Error; err != nil {
+		http.Error(w, "Couldn't find user", http.StatusInternalServerError)
+		return
+	}
+
+	if err := db.DB.Delete(&user).Error; err != nil {
+		http.Error(w, "Failed to delete user", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Deleted user")
 }

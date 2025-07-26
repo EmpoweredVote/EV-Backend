@@ -31,6 +31,8 @@ func SetupRoutes() http.Handler {
 
 		r.With(middleware.AdminMiddleware(sessionFetcher)).Post("/create-dummy", CreateDummyHandler)
 		r.With(middleware.AdminMiddleware(sessionFetcher)).Post("/update-profile-pic", UpdateProfilePicHandler)
+		r.With(middleware.AdminMiddleware(sessionFetcher)).Post("/update-username", UpdateUsername)
+		r.With(middleware.AdminMiddleware(sessionFetcher)).Delete("/delete-user/{userID}", DeleteUser)
 	})
 
 	return r
