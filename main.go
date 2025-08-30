@@ -8,6 +8,7 @@ import (
 	"github.com/EmpoweredVote/EV-Backend/internal/auth"
 	"github.com/EmpoweredVote/EV-Backend/internal/compass"
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
+	"github.com/EmpoweredVote/EV-Backend/internal/essentials"
 	"github.com/EmpoweredVote/EV-Backend/internal/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
@@ -28,17 +29,18 @@ func main() {
 		port = "5050"
 	}
 
-
 	auth.Init()
 	compass.Init()
+	essentials.Init()
 	r := chi.NewRouter()
 	r.Use(middleware.CORSMiddleware)
 	r.Get("/", RootHandler)
-	
+
 	r.Mount("/auth", auth.SetupRoutes())
 	r.Mount("/compass", compass.SetupRoutes())
+	r.Mount("/essentials", essentials.SetupRoutes())
 
 	fmt.Println("Server listening on port :5050...")
 
-	http.ListenAndServe("0.0.0.0:" + port, r)
+	http.ListenAndServe("0.0.0.0:"+port, r)
 }

@@ -18,3 +18,11 @@ type User struct {
 	ProfilePicURL  string  `json:"profile_pic_url"`
 	Session        Session `gorm:"foreignKey:UserID" json:"session"`
 }
+
+func (Session) TableName() string {
+	return "auth.sessions"
+}
+
+func (User) TableName() string {
+	return "auth.users"
+}
