@@ -28,7 +28,12 @@ type CiceroAPIResponse struct {
 	Response struct {
 		Results struct {
 			Candidates []struct {
-				Count struct {
+				MatchAddress   string `json:"match_addr"`
+				MatchCity      string `json:"match_city"`
+				MatchSubregion string `json:"match_subregion"`
+				MatchRegion    string `json:"match_region"`
+				MatchPostal    string `json:"match_postal"`
+				Count          struct {
 					From  int `json:"from"`
 					To    int `json:"to"`
 					Total int `json:"total"`
@@ -159,7 +164,7 @@ type OfficialOut struct {
 	Committees        []CommitteeOut `json:"committees"`
 }
 
-func GetOfficialsByZip(w http.ResponseWriter, r *http.Request) {
+func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 	zip := chi.URLParam(r, "zip")
 	if zip == "" {
 		http.Error(w, "Missing zip parameter", http.StatusBadRequest)
@@ -672,4 +677,25 @@ func fetchAllCiceroOfficials(zip string) ([]CiceroOfficial, error) {
 	}
 
 	return all, nil
+}
+
+func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		http.Error(w, "Missing id parameter", http.StatusBadRequest)
+		return
+	}
+
+	var politician Politician
+	err := db.DB.Preload("Addresses").Preload("Identifiers").Preload("Committees").First(&politician, "id = ?", id).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			http.Error(w, "Not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "DB fetch error", http.StatusInternalServerError)
+		return
+	}
+
+	writeJSON(w, politician)
 }
