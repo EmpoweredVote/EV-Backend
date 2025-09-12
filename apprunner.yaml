@@ -1,0 +1,9 @@
+version: 1.0
+runtime: docker
+port: 5050
+health_check:
+  path: /healthz
+  interval: 5
+  timeout: 2
+  healthy_threshold: 1
+  unhealthy_threshold: 5
