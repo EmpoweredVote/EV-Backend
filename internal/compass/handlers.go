@@ -316,7 +316,7 @@ func UpdateTopicCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Topic categories updated successfully")
 }
 
-func AnswerHandler(w http.ResponseWriter, r *http.Request) {
+func UserAnswersHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		// GET logic
@@ -354,8 +354,8 @@ func AnswerHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		// POST
 		var input struct {
-			TopicID string `json:"topic_id"`
-			Value   int    `json:"value"`
+			TopicID uuid.UUID `json:"topic_id"`
+			Value   int       `json:"value"`
 		}
 
 		if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -412,7 +412,7 @@ func AnswerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func AnswerBatchHander(w http.ResponseWriter, r *http.Request) {
+func UserAnswerBatchHandler(w http.ResponseWriter, r *http.Request) {
 	var answers []Answer
 
 	var filterRequest struct {
@@ -499,10 +499,10 @@ func CompareHandler(w http.ResponseWriter, r *http.Request) {
 func ContextHandler(w http.ResponseWriter, r *http.Request) {
 
 	var request struct {
-		UserID    string   `json:"user_id"`
-		TopicID   string   `json:"topic_id"`
-		Reasoning string   `json:"reasoning"`
-		Sources   []string `json:"sources"`
+		UserID    string    `json:"user_id"`
+		TopicID   uuid.UUID `json:"topic_id"`
+		Reasoning string    `json:"reasoning"`
+		Sources   []string  `json:"sources"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&request)
@@ -604,8 +604,8 @@ func GetContextHandler(w http.ResponseWriter, r *http.Request) {
 // For each element in array, create a new answer for the user with matching username.
 func PopulateDummyAnswers(w http.ResponseWriter, r *http.Request) {
 	type answers struct {
-		TopicID string `json:"topic_id"`
-		Value   int    `json:"value"`
+		TopicID uuid.UUID `json:"topic_id"`
+		Value   int       `json:"value"`
 	}
 
 	var request struct {
@@ -654,9 +654,9 @@ func PopulateDummyAnswers(w http.ResponseWriter, r *http.Request) {
 
 func UpdateAnswerHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		UserID  string `json:"user_id"`
-		TopicID string `json:"topic_id"`
-		Value   int    `json:"value"`
+		UserID  string    `json:"user_id"`
+		TopicID uuid.UUID `json:"topic_id"`
+		Value   int       `json:"value"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -854,4 +854,250 @@ func DeleteTopicHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Deleted topic successfully")
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "Topic deleted successfully")
+}
+
+func GetPoliticianAnswers(w http.ResponseWriter, r *http.Request) {
+	pidStr := chi.URLParam(r, "politician_id")
+	pid, err := uuid.Parse(pidStr)
+	if err != nil {
+		http.Error(w, "invalid politician_id", http.StatusBadRequest)
+		return
+	}
+
+	var out []struct {
+		TopicID uuid.UUID `json:"topic_id"`
+		Value   int       `json:"value"`
+	}
+
+	if err := db.DB.Model(&Answer{}).Where("politician_id = ? AND value <> 0", pid).Select("topic_id, value").Order("topic_id").Scan(&out).Error; err != nil {
+		http.Error(w, "DB error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(out)
+
+}
+
+func PoliticianContextHandler(w http.ResponseWriter, r *http.Request) {
+	var request struct {
+		PoliticianID uuid.UUID `json:"politician_id"`
+		TopicID      uuid.UUID `json:"topic_id"`
+		Reasoning    string    `json:"reasoning"`
+		Sources      []string  `json:"sources"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Verify user making request has Admin role
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		http.Error(w, "Session not found", http.StatusUnauthorized)
+		return
+	}
+
+	session, err := auth.SessionInfo{}.FindSessionByID(cookie.Value)
+	if err != nil {
+		http.Error(w, "Invalid session", http.StatusUnauthorized)
+		return
+	}
+
+	var user auth.User
+	err = db.DB.Where("user_id = ? AND role = ?", session.UserID, "admin").Take(&user).Error
+	if err != nil {
+		http.Error(w, "Invalid permissions. Admin only", http.StatusUnauthorized)
+		return
+	}
+
+	var existing Context
+	err = db.DB.Where("politician_id = ? AND topic_id = ?", request.PoliticianID, request.TopicID).First(&existing).Error
+
+	if err == nil {
+		// If no error, context already exists, update it
+		update := Context{Reasoning: request.Reasoning, Sources: request.Sources}
+		err = db.DB.Model(&existing).Select("Reasoning", "Sources").Updates(update).Error
+		if err != nil {
+			http.Error(w, "Failed to update context", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "Context updated successfully")
+		return
+	}
+
+	if err == gorm.ErrRecordNotFound {
+		newContext := Context{
+			ID:           uuid.NewString(),
+			PoliticianID: request.PoliticianID,
+			TopicID:      request.TopicID,
+			Reasoning:    request.Reasoning,
+			Sources:      request.Sources,
+		}
+		if err = db.DB.Create(&newContext).Error; err != nil {
+			http.Error(w, "Failed to create context", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(newContext)
+		return
+	}
+	http.Error(w, "DB error", http.StatusInternalServerError)
+}
+
+func GetPoliticianContext(w http.ResponseWriter, r *http.Request) {
+	tid := chi.URLParam(r, "topic_id")
+	pidStr := chi.URLParam(r, "politician_id")
+	topicID, err := uuid.Parse(tid)
+	if err != nil {
+		http.Error(w, "invalid topic_id", http.StatusBadRequest)
+		return
+	}
+
+	pid, err := uuid.Parse(pidStr)
+	if err != nil {
+		http.Error(w, "invalid politician_id", http.StatusBadRequest)
+		return
+	}
+
+	var ctx Context
+	err = db.DB.Where("politician_id = ? AND topic_id = ?", pid, topicID).First(&ctx).Error
+	if err != nil {
+		http.Error(w, "Couldn't find context", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(ctx)
+}
+
+func PoliticianAnswerBatch(w http.ResponseWriter, r *http.Request) {
+	pidStr := chi.URLParam(r, "politician_id")
+	pid, err := uuid.Parse(pidStr)
+	if err != nil {
+		http.Error(w, "invalid politician_id", http.StatusBadRequest)
+		return
+	}
+
+	var answers []Answer
+
+	var filterRequest struct {
+		IDs []string `json:"ids"`
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&filterRequest)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	var validIDs []uuid.UUID
+	for _, id := range filterRequest.IDs {
+		parsed, err := uuid.Parse(id)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid UUID format: %s", id), http.StatusBadRequest)
+			return
+		}
+		validIDs = append(validIDs, parsed)
+	}
+
+	err = db.DB.Where("politician_id = ? AND topic_id IN ? AND value != 0", pid, validIDs).Find(&answers).Error
+	if err != nil {
+		http.Error(w, "Couldn't find answers", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(answers); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
+}
+
+// UpsertPoliticianAnswers lets an admin set multiple (topic_id, value)
+// answers for a single politician in one request.
+func UpsertPoliticianAnswers(w http.ResponseWriter, r *http.Request) {
+	pidStr := chi.URLParam(r, "politician_id")
+	pid, err := uuid.Parse(pidStr)
+	if err != nil {
+		http.Error(w, "invalid politician_id", http.StatusBadRequest)
+		return
+	}
+
+	// Admin guard
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		http.Error(w, "Missing session", http.StatusUnauthorized)
+		return
+	}
+	session, err := auth.SessionInfo{}.FindSessionByID(cookie.Value)
+	if err != nil {
+		http.Error(w, "Invalid session", http.StatusUnauthorized)
+		return
+	}
+	var admin auth.User
+	if err := db.DB.First(&admin, "user_id = ? AND role = ?", session.UserID, "admin").Error; err != nil {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
+	// Payload
+	var body []struct {
+		TopicID uuid.UUID `json:"topic_id"`
+		Value   int       `json:"value"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "Invalid JSON body", http.StatusBadRequest)
+		return
+	}
+	if len(body) == 0 {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "No changes")
+		return
+	}
+
+	// Upsert in a tx
+	tx := db.DB.Begin()
+	if tx.Error != nil {
+		http.Error(w, "Failed to start tx", http.StatusInternalServerError)
+		return
+	}
+
+	for _, it := range body {
+		var existing Answer
+		err := tx.Where("politician_id = ? AND topic_id = ?", pid, it.TopicID).First(&existing).Error
+		switch {
+		case err == nil:
+			if err := tx.Model(&existing).Update("value", it.Value).Error; err != nil {
+				tx.Rollback()
+				http.Error(w, "Failed update", http.StatusInternalServerError)
+				return
+			}
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			a := Answer{
+				ID:           uuid.NewString(),
+				PoliticianID: pid,
+				TopicID:      it.TopicID,
+				Value:        it.Value,
+			}
+			if err := tx.Create(&a).Error; err != nil {
+				tx.Rollback()
+				http.Error(w, "Failed insert", http.StatusInternalServerError)
+				return
+			}
+		default:
+			tx.Rollback()
+			http.Error(w, "DB error", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		http.Error(w, "Commit failed", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Upsert complete")
 }

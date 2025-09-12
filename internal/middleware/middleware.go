@@ -40,12 +40,13 @@ func SessionMiddleware(fetcher SessionFetcher) func(http.Handler) http.Handler {
 }
 
 var allowed = map[string]struct{}{
-	"http://localhost:5173":              {},
-	"https://empoweredvote.github.io":   {},
+	"http://localhost:5173":                {},
+	"http://localhost:5174":                {},
+	"https://empoweredvote.github.io":      {},
 	"https://ev-backend-edhm.onrender.com": {},
 }
 
-func CORSMiddleware(next http.Handler) (http.Handler) {
+func CORSMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
 
@@ -72,6 +73,8 @@ type User struct {
 	UserID string `gorm:"primaryKey"`
 	Role   string
 }
+
+func (User) TableName() string { return "auth.users" }
 
 func AdminMiddleware(fetcher SessionFetcher) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {

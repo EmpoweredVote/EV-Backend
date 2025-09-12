@@ -40,7 +40,7 @@ func main() {
 	r.Mount("/compass", compass.SetupRoutes())
 	r.Mount("/essentials", essentials.SetupRoutes())
 
-	fmt.Println("Server listening on port :5050...")
+	fmt.Printf("Server listening on :%s...\n", port)
 
 	http.ListenAndServe("0.0.0.0:"+port, r)
 }

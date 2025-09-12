@@ -10,6 +10,7 @@ func SetupRoutes() http.Handler {
 	r := chi.NewRouter()
 
 	// Public routes
+	r.Get("/politicians", GetAllPoliticians)
 	r.Get("/politicians/{zip}", GetPoliticiansByZip)
 	r.Get("/politician/{id}", GetPoliticianByID)
 

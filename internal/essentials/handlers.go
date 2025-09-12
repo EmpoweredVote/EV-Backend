@@ -699,3 +699,167 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, politician)
 }
+
+// GetAllPoliticians returns a (paged) list of politicians across the DB,
+// in the same flattened shape as GetPoliticiansByZip (OfficialOut).
+// Query params:
+//
+//	q       -> case-insensitive search on name (full/first/last)
+//	state   -> filter by representing_state (e.g., "WA")
+//	limit   -> default 100, max 500
+//	offset  -> default 0
+func GetAllPoliticians(w http.ResponseWriter, r *http.Request) {
+	type row struct {
+		ID                uuid.UUID
+		ExternalID        int
+		FirstName         string
+		MiddleInitial     string
+		LastName          string
+		PreferredName     string
+		NameSuffix        string
+		FullName          string
+		Party             string
+		PhotoOriginURL    string
+		WebFormURL        string
+		URLs              pq.StringArray `gorm:"type:text[]"`
+		EmailAddresses    pq.StringArray `gorm:"type:text[]"`
+		OfficeTitle       string
+		RepresentingState string
+		RepresentingCity  string
+		DistrictType      string
+		DistrictLabel     string
+		ChamberName       string
+		ChamberNameFormal string
+		GovernmentName    string
+	}
+
+	// ---- parse filters/paging
+	q := strings.TrimSpace(r.URL.Query().Get("q"))
+	state := strings.TrimSpace(r.URL.Query().Get("state"))
+
+	limitStr := strings.TrimSpace(r.URL.Query().Get("limit"))
+	offsetStr := strings.TrimSpace(r.URL.Query().Get("offset"))
+
+	applyLimit := false
+	limit := 0
+	offset := 0
+
+	// Allow ?limit=all to explicitly request no limit
+	if limitStr != "" && strings.ToLower(limitStr) != "all" {
+		if n, err := strconv.Atoi(limitStr); err == nil && n > 0 {
+			// Cap to a reasonable max to protect the DB (tune as needed)
+			const maxLimit = 5000
+			if n > maxLimit {
+				n = maxLimit
+			}
+			limit = n
+			applyLimit = true
+
+			if offsetStr != "" {
+				if off, err := strconv.Atoi(offsetStr); err == nil && off >= 0 {
+					offset = off
+				}
+			}
+		}
+	}
+
+	// ---- build WHERE dynamically
+	where := []string{"1=1"}
+	args := []any{}
+
+	if q != "" {
+		where = append(where, `(p.full_name ILIKE ? OR p.first_name ILIKE ? OR p.last_name ILIKE ? OR (p.first_name || ' ' || p.last_name) ILIKE ?)`)
+		pat := "%" + q + "%"
+		args = append(args, pat, pat, pat, pat)
+	}
+	if state != "" {
+		where = append(where, `o.representing_state = ?`)
+		args = append(args, state)
+	}
+
+	baseSQL := fmt.Sprintf(`
+	SELECT
+	  p.id, p.external_id, p.first_name, p.middle_initial, p.last_name,
+	  p.preferred_name, p.name_suffix, p.full_name, p.party,
+	  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
+	  p.web_form_url, p.urls, p.email_addresses,
+	  o.title AS office_title, o.representing_state, o.representing_city,
+	  d.district_type, d.label AS district_label,
+	  c.name AS chamber_name, c.name_formal AS chamber_name_formal,
+	  g.name AS government_name
+	FROM essentials.politicians p
+	JOIN essentials.offices o   ON o.politician_id = p.id
+	JOIN essentials.districts d ON d.id = o.district_id
+	JOIN essentials.chambers c  ON c.id = o.chamber_id
+	JOIN essentials.governments g ON g.id = c.government_id
+	WHERE %s
+	ORDER BY o.title, p.last_name, p.first_name
+`, strings.Join(where, " AND "))
+
+	var sql string
+	if applyLimit {
+		sql = fmt.Sprintf("%s LIMIT %d OFFSET %d", baseSQL, limit, offset)
+	} else {
+		sql = baseSQL // No LIMIT/OFFSET → return all
+	}
+
+	var rows []row
+	if err := db.DB.Raw(sql, args...).Scan(&rows).Error; err != nil {
+		http.Error(w, "DB fetch error", http.StatusInternalServerError)
+		return
+	}
+
+	if len(rows) == 0 {
+		writeJSON(w, []OfficialOut{})
+		return
+	}
+
+	// Batch load committees (like fetchOfficialsFromDB)
+	ids := make([]uuid.UUID, 0, len(rows))
+	for _, r := range rows {
+		ids = append(ids, r.ID)
+	}
+
+	type commRow struct {
+		PoliticianID uuid.UUID
+		Name         string
+		Position     string
+		URLs         pq.StringArray `gorm:"type:text[]"`
+	}
+	var commRows []commRow
+	if err := db.DB.Raw(`
+		SELECT pc.politician_id, cm.name, pc.position, cm.urls
+		FROM essentials.politician_committees pc
+		JOIN essentials.committees cm ON cm.id = pc.committee_id
+		WHERE pc.politician_id = ANY(?)
+	`, pq.Array(ids)).Scan(&commRows).Error; err != nil {
+		http.Error(w, "DB fetch error", http.StatusInternalServerError)
+		return
+	}
+
+	byPol := make(map[uuid.UUID][]CommitteeOut, len(ids))
+	for _, cr := range commRows {
+		byPol[cr.PoliticianID] = append(byPol[cr.PoliticianID], CommitteeOut{
+			Name: cr.Name, Position: cr.Position, URLs: []string(cr.URLs),
+		})
+	}
+
+	// Assemble final DTOs
+	out := make([]OfficialOut, 0, len(rows))
+	for _, r := range rows {
+		out = append(out, OfficialOut{
+			ID: r.ID, ExternalID: r.ExternalID,
+			FirstName: r.FirstName, MiddleInitial: r.MiddleInitial, LastName: r.LastName,
+			PreferredName: r.PreferredName, NameSuffix: r.NameSuffix, FullName: r.FullName,
+			Party: r.Party, PhotoOriginURL: r.PhotoOriginURL, WebFormURL: r.WebFormURL,
+			URLs: []string(r.URLs), EmailAddresses: []string(r.EmailAddresses),
+			OfficeTitle: r.OfficeTitle, RepresentingState: r.RepresentingState, RepresentingCity: r.RepresentingCity,
+			DistrictType: r.DistrictType, DistrictLabel: r.DistrictLabel,
+			ChamberName: r.ChamberName, ChamberNameFormal: r.ChamberNameFormal,
+			GovernmentName: r.GovernmentName,
+			Committees:     byPol[r.ID],
+		})
+	}
+
+	writeJSON(w, out)
+}

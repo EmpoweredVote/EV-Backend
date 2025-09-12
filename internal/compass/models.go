@@ -8,11 +8,12 @@ import (
 )
 
 type Answer struct {
-	ID        string `gorm:"primaryKey" json:"id"`
-	UserID    string `json:"user_id"`
-	TopicID   string `json:"topic_id"`
-	Value     int    `gorm:"default: 0" json:"value"`
-	CreatedAt time.Time
+	ID           string    `gorm:"primaryKey" json:"id"`
+	PoliticianID uuid.UUID `json:"politician_id" gorm:"index:idx_pol_topic"`
+	UserID       string    `json:"user_id"      gorm:"index:idx_user_topic"`
+	TopicID      uuid.UUID `json:"topic_id"     gorm:"index:idx_pol_topic;index:idx_user_topic"`
+	Value        int       `gorm:"default: 0" json:"value"`
+	CreatedAt    time.Time
 }
 
 type Stance struct {
@@ -37,11 +38,12 @@ type Category struct {
 }
 
 type Context struct {
-	ID        string         `gorm:"primaryKey" json:"id"`
-	UserID    string         `json:"user_id"`
-	TopicID   string         `json:"topic_id"`
-	Reasoning string         `json:"reasoning"`
-	Sources   pq.StringArray `gorm:"type:text[]" json:"sources"`
+	ID           string         `gorm:"primaryKey" json:"id"`
+	PoliticianID uuid.UUID      `json:"politician_id"`
+	UserID       string         `json:"user_id"`
+	TopicID      uuid.UUID      `json:"topic_id"`
+	Reasoning    string         `json:"reasoning"`
+	Sources      pq.StringArray `gorm:"type:text[]" json:"sources"`
 }
 
 func (Answer) TableName() string {
