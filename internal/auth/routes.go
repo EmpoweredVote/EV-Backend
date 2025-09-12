@@ -14,6 +14,10 @@ func SetupRoutes() http.Handler {
 	// Public routes
 	r.Post("/login", LoginHandler)
 	r.Post("/register", RegisterHandler)
+	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("ok"))
+	})
 
 	// Protected routes
 	r.Group(func(r chi.Router) {
