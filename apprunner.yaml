@@ -1,9 +1,23 @@
 version: 1.0
-runtime: docker
-port: 5050
-health_check:
-  path: /healthz
-  interval: 5
-  timeout: 2
-  healthy_threshold: 1
-  unhealthy_threshold: 5
+runtime: go1
+
+build:
+  commands:
+    pre-build:
+      - curl -fsSL https://go.dev/dl/go1.24.3.linux-amd64.tar.gz -o /tmp/go.tar.gz
+      - tar -C /tmp -xzf /tmp/go.tar.gz
+    build:
+      - /tmp/go/bin/go version
+      - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 /tmp/go/bin/go build -o server .
+
+run:
+  command: ./server
+  network:
+    port: 5050
+  secrets:
+    - name: DATABASE_URL
+      value-from: "arn:aws:secretsmanager:us-east-1:361769553908:secret:ev/dev/backend-QwxP7W:DATABASE_URL::"
+    - name: ALLOWED_ORIGINS
+      value-from: "arn:aws:secretsmanager:us-east-1:361769553908:secret:ev/dev/backend-QwxP7W:ALLOWED_ORIGINS::"
+    - name: CICERO_KEY
+      value-from: "arn:aws:secretsmanager:us-east-1:361769553908:secret:ev/dev/backend-QwxP7W:CICERO_KEY::"
