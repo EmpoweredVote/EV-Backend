@@ -20,3 +20,5 @@ vendor/
 .env
 .env.local
 .env.*
+
+/.apprunner/
