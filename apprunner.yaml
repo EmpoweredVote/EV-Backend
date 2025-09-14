@@ -3,10 +3,19 @@ runtime: go1
 
 build:
   commands:
+    pre-build:
+      # Make sure the build image has what we need
+      - yum -y update
+      - yum -y install curl tar gzip git
+      # Fetch and unpack Go 1.24.3
+      - curl -fsSL https://go.dev/dl/go1.24.3.linux-amd64.tar.gz -o /tmp/go.tar.gz
+      - tar -C /tmp -xzf /tmp/go.tar.gz
+      - /tmp/go/bin/go version
     build:
-      - go version
-      - go mod download
-      - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o server .
+      # Use the downloaded toolchain for module download and build
+      - /tmp/go/bin/go env
+      - /tmp/go/bin/go mod download
+      - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 /tmp/go/bin/go build -v -o server .
 
 run:
   command: ./server
