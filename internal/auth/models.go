@@ -19,10 +19,5 @@ type User struct {
 	Session        Session `gorm:"foreignKey:UserID" json:"session"`
 }
 
-func (Session) TableName() string {
-	return "auth.sessions"
-}
-
-func (User) TableName() string {
-	return "auth.users"
-}
+func (Session) TableName() string { return "app_auth.sessions" }
+func (User) TableName() string    { return "app_auth.users" }

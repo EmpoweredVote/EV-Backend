@@ -74,7 +74,7 @@ type User struct {
 	Role   string
 }
 
-func (User) TableName() string { return "auth.users" }
+func (User) TableName() string { return "app_auth.users" }
 
 func AdminMiddleware(fetcher SessionFetcher) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
