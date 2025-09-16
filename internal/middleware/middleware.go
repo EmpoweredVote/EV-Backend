@@ -40,10 +40,14 @@ func SessionMiddleware(fetcher SessionFetcher) func(http.Handler) http.Handler {
 }
 
 var allowed = map[string]struct{}{
-	"http://localhost:5173":                {},
-	"http://localhost:5174":                {},
-	"https://empoweredvote.github.io":      {},
-	"https://ev-backend-edhm.onrender.com": {},
+	"http://localhost:5173":                 {},
+	"http://localhost:5174":                 {},
+	"https://empoweredvote.github.io":       {},
+	"https://ev-backend-edhm.onrender.com":  {},
+	"https://compass-dev.empowered.vote":    {},
+	"https://compass.empowered.vote":        {},
+	"https://essentials-dev.empowered.vote": {},
+	"https://essentials.empowered.vote":     {},
 }
 
 func CORSMiddleware(next http.Handler) http.Handler {

@@ -109,6 +109,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Name:     "session_id",
 		Value:    uuid,
 		Path:     "/",
+		Domain:   ".empowered.vote",
 		HttpOnly: true,
 		SameSite: http.SameSiteNoneMode,
 		Secure:   true,
