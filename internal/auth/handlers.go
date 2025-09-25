@@ -104,6 +104,16 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Passwords matched, set cookie
+	// uuid := utils.GenerateUUID()
+	// http.SetCookie(w, &http.Cookie{
+	// 	Name:     "session_id",
+	// 	Value:    uuid,
+	// 	Path:     "/",
+	// 	HttpOnly: true,
+	// 	SameSite: http.SameSiteLaxMode,
+	// 	Secure:   false,
+	// })
+
 	uuid := utils.GenerateUUID()
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",

@@ -24,11 +24,12 @@ type Stance struct {
 }
 
 type Topic struct {
-	ID         uuid.UUID  `gorm:"type:uuid;primaryKey" json:"id"`
-	Title      string     `json:"title"`
-	ShortTitle string     `gorm:"uniqueIndex" json:"short_title"`
-	Stances    []Stance   `gorm:"foreignKey:TopicID" json:"stances"`
-	Categories []Category `gorm:"many2many:compass.topic_categories;" json:"categories"`
+	ID          uuid.UUID  `gorm:"type:uuid;primaryKey" json:"id"`
+	Title       string     `json:"title"`
+	ShortTitle  string     `gorm:"uniqueIndex" json:"short_title"`
+	Stances     []Stance   `gorm:"foreignKey:TopicID" json:"stances"`
+	Categories  []Category `gorm:"many2many:compass.topic_categories;" json:"categories"`
+	StartPhrase string     `json:"start_phrase"`
 }
 
 type Category struct {
