@@ -1,0 +1,15 @@
+name: Guard App Runner config
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  check-apprunner-yaml:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure prod ARN is present
+        run: |
+          grep -q 'arn:aws:secretsmanager:us-east-1:[0-9]\+:secret:ev/prod/backend-' apprunner.yaml
+      - name: Ensure no dev ARN slipped in
+        run: |
+          ! grep -q 'arn:aws:secretsmanager:us-east-1:[0-9]\+:secret:ev/dev/backend-' apprunner.yaml

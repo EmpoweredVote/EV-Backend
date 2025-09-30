@@ -20,8 +20,11 @@ run:
     port: 5050
   secrets:
     - name: DATABASE_URL
-      value-from: "arn:aws:secretsmanager:us-east-1:361769553908:secret:ev/dev/backend-QwxP7W:DATABASE_URL::"
+      value-from: "arn:aws:secretsmanager:us-east-1:361769553908:secret:ev/prod/backend-hKU59w:DATABASE_URL::"
+      # value-from: "arn:aws:secretsmanager:us-east-1:361769553908:secret:ev/dev/backend-QwxP7W:DATABASE_URL::"
     - name: ALLOWED_ORIGINS
-      value-from: "arn:aws:secretsmanager:us-east-1:361769553908:secret:ev/dev/backend-QwxP7W:ALLOWED_ORIGINS::"
+      value-from: "arn:aws:secretsmanager:us-east-1:361769553908:secret:ev/prod/backend-hKU59w:ALLOWED_ORIGINS::"
+      # value-from: "arn:aws:secretsmanager:us-east-1:361769553908:secret:ev/dev/backend-QwxP7W:ALLOWED_ORIGINS::"
     - name: CICERO_KEY
-      value-from: "arn:aws:secretsmanager:us-east-1:361769553908:secret:ev/dev/backend-QwxP7W:CICERO_KEY::"
+      value-from: "arn:aws:secretsmanager:us-east-1:361769553908:secret:ev/prod/backend-hKU59w:CICERO_KEY::"
+      # value-from: "arn:aws:secretsmanager:us-east-1:361769553908:secret:ev/dev/backend-QwxP7W:CICERO_KEY::"
