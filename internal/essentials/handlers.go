@@ -1,12 +1,15 @@
 package essentials
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -165,62 +168,128 @@ type OfficialOut struct {
 }
 
 func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	zip := chi.URLParam(r, "zip")
-	if zip == "" {
-		http.Error(w, "Missing zip parameter", http.StatusBadRequest)
+	if !isZip5(zip) {
+		http.Error(w, "Missing or invalid zip parameter", http.StatusBadRequest)
 		return
 	}
+
+	const (
+		maxAge          = 90 * 24 * time.Hour // cache “freshness” for DB rows
+		shortWait       = 2 * time.Second     // how long we’re willing to wait on cold start
+		shortWaitTick   = 200 * time.Millisecond
+		cdnTTLWhenFresh = 3600  // 1h
+		swrSeconds      = 86400 // 24h
+	)
 
 	now := time.Now()
-	const maxAge = 7 * 24 * time.Hour
 
-	// Try cache
+	// Read cache metadata + whatever we currently have
 	var cache ZipCache
-	err := db.DB.Where("zip = ?", zip).First(&cache).Error
-	if err == nil && now.Sub(cache.LastFetched) < maxAge {
-		officials, err := fetchOfficialsFromDB(zip)
-		if err != nil {
-			http.Error(w, "DB fetch error", http.StatusInternalServerError)
-			return
+	cacheErr := db.DB.WithContext(ctx).Where("zip = ?", zip).First(&cache).Error
+	officials, readErr := fetchOfficialsFromDB(zip)
+	hasData := readErr == nil && len(officials) > 0
+	isFresh := cacheErr == nil && now.Sub(cache.LastFetched) < maxAge && hasData
+
+	// Kick warmer if not fresh (deduped by advisory lock)
+	if !isFresh {
+		if tryAcquireZipWarmLock(ctx, zip) {
+			go func() {
+				defer releaseZipWarmLock(context.Background(), zip)
+				if err := warmZip(context.Background(), zip); err != nil {
+					log.Printf("[warmZip] zip=%s err=%v", zip, err)
+				}
+			}()
 		}
-		if len(officials) > 0 {
-			writeJSON(w, officials)
-			return
-		}
-		// Fresh cache but empty mapping -> treat as stale and refresh
 	}
 
-	// 2) Not cached or stale => call Cicero, upsert, and refresh cache
-	officials, err := fetchAllCiceroOfficials(zip)
-	if err != nil {
-		http.Error(w, "Failed to contact Cicero API", http.StatusInternalServerError)
+	// Serve immediately if fresh or stale-but-present
+	if isFresh {
+		w.Header().Set("X-Data-Status", "fresh")
+		addCacheHeaders(w, cdnTTLWhenFresh, swrSeconds)
+		writeJSON(w, officials)
+		return
+	}
+	if hasData {
+		w.Header().Set("X-Data-Status", "stale")
+		addCacheHeaders(w, 60, swrSeconds) // short CDN TTL while we refresh
+		writeJSON(w, officials)
 		return
 	}
 
+	// Cold miss: wait briefly for warmer to populate; if it wins, return data.
+	if warmed, ok := waitForData(ctx, zip, shortWait, shortWaitTick); ok {
+		w.Header().Set("X-Data-Status", "warmed")
+		addCacheHeaders(w, cdnTTLWhenFresh, swrSeconds)
+		writeJSON(w, warmed)
+		return
+	}
+
+	// Still not ready -> tell client it's warming (don’t send an empty array).
+	w.Header().Set("X-Data-Status", "warming")
+	w.Header().Set("Retry-After", "3")
+	w.Header().Set("Cache-Control", "no-store") // avoid caching the warm notice
+	writeJSONStatus(w, http.StatusAccepted, map[string]string{"status": "warming"})
+}
+
+// waitForData polls the DB for up to maxWait until we see any officials for the given ZIP.
+func waitForData(ctx context.Context, zip string, maxWait, tick time.Duration) ([]OfficialOut, bool) {
+	ctx, cancel := context.WithTimeout(ctx, maxWait)
+	defer cancel()
+	t := time.NewTicker(tick)
+	defer t.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, false
+		case <-t.C:
+			officials, err := fetchOfficialsFromDB(zip)
+			if err == nil && len(officials) > 0 {
+				return officials, true
+			}
+		}
+	}
+}
+
+// helper: write JSON with a specific HTTP status code
+func writeJSONStatus(w http.ResponseWriter, status int, v any) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(v)
+}
+
+// --- Background warmer (your current upsert flow, off the request path) ----
+
+func warmZip(ctx context.Context, zip string) error {
+	now := time.Now()
+
+	officials, err := fetchAllCiceroOfficials(zip)
+	if err != nil {
+		return fmt.Errorf("cicero fetch: %w", err)
+	}
+
+	// If nothing came back, still bump cache so we don't hammer Cicero
 	if len(officials) == 0 {
-		// Update an empty cache so we don't spam Cicero
-		_ = db.DB.Clauses(clause.OnConflict{
+		return db.DB.WithContext(ctx).Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "zip"}},
 			DoUpdates: clause.Assignments(map[string]any{"last_fetched": now}),
 		}).Create(&ZipCache{Zip: zip, LastFetched: now}).Error
-
-		writeJSON(w, []OfficialOut{})
-		return
 	}
 
-	// Upsert + collect politician IDs we touched for this zip
 	touched := make([]uuid.UUID, 0, len(officials))
 
 	for _, off := range officials {
 		tr, err := TransformCiceroData(off)
 		if err != nil {
+			// Skip malformed records but continue warming
 			continue
 		}
 
 		var polID uuid.UUID
 
-		// Run your existing transaction + capture politician UUID for this official
-		err = db.DB.Transaction(func(tx *gorm.DB) error {
+		err = db.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 			// ==== District ====
 			if tr.District != nil {
 				if err := tx.Clauses(clause.OnConflict{
@@ -244,11 +313,13 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 				).First(&existingGov).Error
 				if err == nil {
 					govID = &existingGov.ID
-				} else {
+				} else if errors.Is(err, gorm.ErrRecordNotFound) {
 					if err := tx.Create(tr.Government).Error; err != nil {
 						return err
 					}
 					govID = &tr.Government.ID
+				} else {
+					return err
 				}
 			}
 
@@ -270,9 +341,7 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// ==== Politician ====
-			// ==== Politician ====
 			if tr.Politician != nil {
-				// Build per-column assignments so we can protect photo_origin_url from being overwritten by empty values.
 				assign := map[string]interface{}{
 					"first_name":     gorm.Expr("excluded.first_name"),
 					"middle_initial": gorm.Expr("excluded.middle_initial"),
@@ -282,7 +351,6 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 					"party":          gorm.Expr("excluded.party"),
 					"web_form_url":   gorm.Expr("excluded.web_form_url"),
 					"urls":           gorm.Expr("excluded.urls"),
-					// Keep existing value when EXCLUDED is NULL or empty string:
 					"photo_origin_url": gorm.Expr(
 						`COALESCE(NULLIF(excluded.photo_origin_url, ''), "essentials"."politicians"."photo_origin_url")`,
 					),
@@ -383,7 +451,7 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 						`INSERT INTO essentials.identifiers
                (politician_id, identifier_type, identifier_value)
              VALUES (?, ?, ?)
-             ON CONFLICT DO NOTHING`, // <- catch-all
+             ON CONFLICT DO NOTHING`,
 						persistedPol.ID, t, v,
 					).Error; err != nil {
 						return err
@@ -392,7 +460,6 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// ==== Committees & joins ====
-			// Upsert committees by name (case-insensitive) and build name->ID map
 			committeeIDByName := make(map[string]uuid.UUID)
 			norm := func(s string) string { return strings.ToLower(strings.TrimSpace(s)) }
 
@@ -402,7 +469,6 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 				}
 				var existing Committee
 				if err := tx.Where("LOWER(name) = LOWER(?)", c.Name).First(&existing).Error; err == nil {
-					// update URLs if changed
 					if !committeeEqual(*c, existing) {
 						existing.URLs = c.URLs
 						if err := tx.Save(&existing).Error; err != nil {
@@ -420,8 +486,6 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			// Decide one position per committee from the raw Cicero payload,
-			// preferring the first non-empty position
 			type namePos struct {
 				Name     string
 				Position string
@@ -439,16 +503,13 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			// Insert/Upsert joins using the IDs resolved above (never using transform IDs)
 			for k, np := range posByName {
 				cid, ok := committeeIDByName[k]
 				if !ok {
-					// Fallback: resolve by name again (in case transform filtered something)
 					var existing Committee
 					if err := tx.Where("LOWER(name) = LOWER(?)", np.Name).First(&existing).Error; err == nil {
 						cid = existing.ID
 					} else if errors.Is(err, gorm.ErrRecordNotFound) {
-						// Last resort: create a minimal committee row
 						minimal := &Committee{ID: uuid.New(), Name: np.Name}
 						if err := tx.Create(minimal).Error; err != nil {
 							return err
@@ -479,8 +540,8 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Refresh cache atomically
-	_ = db.DB.Transaction(func(tx *gorm.DB) error {
+	// Refresh cache + mapping atomically
+	return db.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := tx.Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "zip"}},
 			DoUpdates: clause.Assignments(map[string]any{"last_fetched": now}),
@@ -488,7 +549,7 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 			return err
 		}
 
-		// Replace mapping
+		// Replace zip->politician mapping
 		if err := tx.Where("zip = ?", zip).Delete(&ZipPolitician{}).Error; err != nil {
 			return err
 		}
@@ -501,14 +562,37 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil
 	})
+}
 
-	// Return fresh data from DB
-	officialsOut, err := fetchOfficialsFromDB(zip)
-	if err != nil {
-		http.Error(w, "DB fetch error", http.StatusInternalServerError)
-		return
+// --- Helpers ---------------------------------------------------------------
+
+func isZip5(s string) bool {
+	return regexp.MustCompile(`^\d{5}$`).MatchString(s)
+}
+
+func addCacheHeaders(w http.ResponseWriter, maxAgeSeconds, swrSeconds int) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%d, stale-while-revalidate=%d", maxAgeSeconds, swrSeconds))
+	w.Header().Set("Vary", "Accept-Encoding") // helpful once you enable gzip/br
+}
+
+// Try to acquire a process-safe dedupe lock per ZIP using Postgres advisory locks.
+// We hash the zip to a 32-bit key using Postgres hashtext().
+func tryAcquireZipWarmLock(ctx context.Context, zip string) bool {
+	var ok bool
+	if err := db.DB.WithContext(ctx).
+		Raw(`SELECT pg_try_advisory_lock(hashtext(?))`, zip).
+		Row().Scan(&ok); err != nil {
+		return false
 	}
-	writeJSON(w, officialsOut)
+	return ok
+}
+
+func releaseZipWarmLock(ctx context.Context, zip string) {
+	var dummy bool
+	_ = db.DB.WithContext(ctx).
+		Raw(`SELECT pg_advisory_unlock(hashtext(?))`, zip).
+		Row().Scan(&dummy)
 }
 
 // fetchOfficialsFromDB returns all officials for a zip using the zip cache mapping.
