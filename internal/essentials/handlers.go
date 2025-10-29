@@ -1,12 +1,15 @@
 package essentials
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -165,76 +168,182 @@ type OfficialOut struct {
 }
 
 func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	zip := chi.URLParam(r, "zip")
-	if zip == "" {
-		http.Error(w, "Missing zip parameter", http.StatusBadRequest)
+	if !isZip5(zip) {
+		http.Error(w, "Missing or invalid zip parameter", http.StatusBadRequest)
 		return
 	}
+
+	const (
+		maxAge          = 90 * 24 * time.Hour
+		shortWait       = 2 * time.Second
+		shortWaitTick   = 200 * time.Millisecond
+		cdnTTLWhenFresh = 3600
+		swrSeconds      = 86400
+	)
+
+	// --- timings
+	t0 := time.Now()
+	var dbReadMs, waitMs float64
 
 	now := time.Now()
-	const maxAge = 7 * 24 * time.Hour
 
-	// Try cache
+	// Read cache metadata + whatever we currently have
 	var cache ZipCache
-	err := db.DB.Where("zip = ?", zip).First(&cache).Error
-	if err == nil && now.Sub(cache.LastFetched) < maxAge {
-		officials, err := fetchOfficialsFromDB(zip)
-		if err != nil {
-			http.Error(w, "DB fetch error", http.StatusInternalServerError)
-			return
+	cacheErr := db.DB.WithContext(ctx).Where("zip = ?", zip).First(&cache).Error
+
+	tDB1 := time.Now()
+	officials, readErr := fetchOfficialsFromDB(zip)
+	dbReadMs += float64(time.Since(tDB1).Milliseconds())
+	hasData := readErr == nil && len(officials) > 0
+	isFresh := cacheErr == nil && now.Sub(cache.LastFetched) < maxAge && hasData
+
+	// Kick warmer if not fresh (deduped by advisory lock)
+	if !isFresh {
+		if tryAcquireZipWarmLock(ctx, zip) {
+			go func() {
+				defer releaseZipWarmLock(context.Background(), zip)
+				if err := warmZip(context.Background(), zip); err != nil {
+					log.Printf("[warmZip] zip=%s err=%v", zip, err)
+				}
+			}()
 		}
-		if len(officials) > 0 {
-			writeJSON(w, officials)
-			return
-		}
-		// Fresh cache but empty mapping -> treat as stale and refresh
 	}
 
-	// 2) Not cached or stale => call Cicero, upsert, and refresh cache
-	officials, err := fetchAllCiceroOfficials(zip)
-	if err != nil {
-		http.Error(w, "Failed to contact Cicero API", http.StatusInternalServerError)
+	// Serve immediately if fresh or stale-but-present
+	if isFresh {
+		addServerTiming(w, [2]string{"dbread", fmt.Sprintf("%d", int(dbReadMs))})
+		w.Header().Set("X-Data-Status", "fresh")
+		addCacheHeaders(w, cdnTTLWhenFresh, swrSeconds)
+		writeJSON(w, officials)
 		return
+	}
+	if hasData {
+		addServerTiming(w, [2]string{"dbread", fmt.Sprintf("%d", int(dbReadMs))})
+		w.Header().Set("X-Data-Status", "stale")
+		addNoStore(w)
+		writeJSON(w, officials)
+		return
+	}
+
+	// Cold miss: wait briefly for warmer to populate; if it wins, return data.
+	tWait := time.Now()
+	if warmed, ok := waitForDataMin(ctx, zip, shortWait, shortWaitTick, 3); ok {
+		waitMs = float64(time.Since(tWait).Milliseconds())
+		addServerTiming(w,
+			[2]string{"dbread", fmt.Sprintf("%d", int(dbReadMs))},
+			[2]string{"wait", fmt.Sprintf("%d", int(waitMs))},
+			[2]string{"total", fmt.Sprintf("%d", int(time.Since(t0).Milliseconds()))},
+		)
+		w.Header().Set("X-Data-Status", "warmed")
+		addNoStore(w)
+		writeJSON(w, warmed)
+		return
+	}
+
+	// Still not ready -> tell client it's warming (don’t send an empty array).
+	waitMs = float64(time.Since(tWait).Milliseconds())
+	addServerTiming(w,
+		[2]string{"dbread", fmt.Sprintf("%d", int(dbReadMs))},
+		[2]string{"wait", fmt.Sprintf("%d", int(waitMs))},
+		[2]string{"total", fmt.Sprintf("%d", int(time.Since(t0).Milliseconds()))},
+	)
+	w.Header().Set("X-Data-Status", "warming")
+	w.Header().Set("Retry-After", "3")
+	w.Header().Set("Cache-Control", "no-store")
+	writeJSONStatus(w, http.StatusAccepted, map[string]string{"status": "warming"})
+}
+
+// waitForData polls the DB for up to maxWait until we see any officials for the given ZIP.
+func waitForData(ctx context.Context, zip string, maxWait, tick time.Duration) ([]OfficialOut, bool) {
+	ctx, cancel := context.WithTimeout(ctx, maxWait)
+	defer cancel()
+	t := time.NewTicker(tick)
+	defer t.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, false
+		case <-t.C:
+			officials, err := fetchOfficialsFromDB(zip)
+			if err == nil && len(officials) > 0 {
+				return officials, true
+			}
+		}
+	}
+}
+
+// helper: write JSON with a specific HTTP status code
+func writeJSONStatus(w http.ResponseWriter, status int, v any) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(v)
+}
+
+// --- Background warmer (your current upsert flow, off the request path) ----
+
+func warmZip(ctx context.Context, zip string) error {
+	warmStart := time.Now()
+
+	// timings for logs
+	var ciceroMs, transformMs, upsertMs, mapMs float64
+	defer func() {
+		log.Printf("[warmZip] zip=%s timings ms: cicero=%d transform=%d upserts=%d map=%d total=%d",
+			zip,
+			int(ciceroMs), int(transformMs), int(upsertMs), int(mapMs),
+			int(time.Since(warmStart).Milliseconds()),
+		)
+	}()
+
+	tFetch := time.Now()
+	officials, err := fetchAllCiceroOfficials(zip)
+	ciceroMs = float64(time.Since(tFetch).Milliseconds())
+	if err != nil {
+		return fmt.Errorf("cicero fetch: %w", err)
 	}
 
 	if len(officials) == 0 {
-		// Update an empty cache so we don't spam Cicero
-		_ = db.DB.Clauses(clause.OnConflict{
+		return db.DB.WithContext(ctx).Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "zip"}},
-			DoUpdates: clause.Assignments(map[string]any{"last_fetched": now}),
-		}).Create(&ZipCache{Zip: zip, LastFetched: now}).Error
-
-		writeJSON(w, []OfficialOut{})
-		return
+			DoUpdates: clause.Assignments(map[string]any{"last_fetched": warmStart}),
+		}).Create(&ZipCache{Zip: zip, LastFetched: warmStart}).Error
 	}
 
-	// Upsert + collect politician IDs we touched for this zip
+	// working set for end-of-warm cleanup
+	// (we also stream results immediately; touched is only for optional debugging)
 	touched := make([]uuid.UUID, 0, len(officials))
 
 	for _, off := range officials {
+		tTr := time.Now()
 		tr, err := TransformCiceroData(off)
+		transformMs += float64(time.Since(tTr).Milliseconds())
 		if err != nil {
 			continue
 		}
 
 		var polID uuid.UUID
 
-		// Run your existing transaction + capture politician UUID for this official
-		err = db.DB.Transaction(func(tx *gorm.DB) error {
-			// ==== District ====
+		tUp := time.Now()
+		err = db.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+			// ==== District (upsert + RETURNING) ====
 			if tr.District != nil {
-				if err := tx.Clauses(clause.OnConflict{
-					Columns: []clause.Column{{Name: "external_id"}},
-					DoUpdates: clause.AssignmentColumns([]string{
-						"ocd_id", "label", "district_type", "district_id", "subtype",
-						"state", "city", "num_officials", "valid_from", "valid_to",
-					}),
-				}).Create(tr.District).Error; err != nil {
+				if err := tx.Clauses(
+					clause.OnConflict{
+						Columns: []clause.Column{{Name: "external_id"}},
+						DoUpdates: clause.AssignmentColumns([]string{
+							"ocd_id", "label", "district_type", "district_id", "subtype",
+							"state", "city", "num_officials", "valid_from", "valid_to",
+						}),
+					},
+					clause.Returning{Columns: []clause.Column{{Name: "id"}}},
+				).Create(tr.District).Error; err != nil {
 					return err
 				}
 			}
 
-			// ==== Government (natural key) ====
+			// ==== Government (keep your natural-key lookup) ====
 			var govID *uuid.UUID
 			if tr.Government != nil {
 				var existingGov Government
@@ -244,71 +353,78 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 				).First(&existingGov).Error
 				if err == nil {
 					govID = &existingGov.ID
-				} else {
+				} else if errors.Is(err, gorm.ErrRecordNotFound) {
 					if err := tx.Create(tr.Government).Error; err != nil {
 						return err
 					}
 					govID = &tr.Government.ID
-				}
-			}
-
-			// ==== Chamber ====
-			if tr.Chamber != nil {
-				if govID != nil {
-					tr.Chamber.GovernmentID = *govID
-				}
-				if err := tx.Clauses(clause.OnConflict{
-					Columns: []clause.Column{{Name: "external_id"}},
-					DoUpdates: clause.AssignmentColumns([]string{
-						"government_id", "name", "name_formal", "official_count",
-						"term_limit", "term_length", "inauguration_rules",
-						"election_frequency", "election_rules", "vacancy_rules", "remarks",
-					}),
-				}).Create(tr.Chamber).Error; err != nil {
+				} else {
 					return err
 				}
 			}
 
-			// ==== Politician ====
-			// ==== Politician ====
-			if tr.Politician != nil {
-				// Build per-column assignments so we can protect photo_origin_url from being overwritten by empty values.
-				assign := map[string]interface{}{
-					"first_name":     gorm.Expr("excluded.first_name"),
-					"middle_initial": gorm.Expr("excluded.middle_initial"),
-					"last_name":      gorm.Expr("excluded.last_name"),
-					"preferred_name": gorm.Expr("excluded.preferred_name"),
-					"name_suffix":    gorm.Expr("excluded.name_suffix"),
-					"party":          gorm.Expr("excluded.party"),
-					"web_form_url":   gorm.Expr("excluded.web_form_url"),
-					"urls":           gorm.Expr("excluded.urls"),
-					// Keep existing value when EXCLUDED is NULL or empty string:
-					"photo_origin_url": gorm.Expr(
-						`COALESCE(NULLIF(excluded.photo_origin_url, ''), "essentials"."politicians"."photo_origin_url")`,
-					),
-					"notes":           gorm.Expr("excluded.notes"),
-					"valid_from":      gorm.Expr("excluded.valid_from"),
-					"valid_to":        gorm.Expr("excluded.valid_to"),
-					"email_addresses": gorm.Expr("excluded.email_addresses"),
-					"office_id":       gorm.Expr("excluded.office_id"),
+			// ==== Chamber (upsert + RETURNING) ====
+			if tr.Chamber != nil {
+				if govID != nil {
+					tr.Chamber.GovernmentID = *govID
 				}
+				if err := tx.Clauses(
+					clause.OnConflict{
+						Columns: []clause.Column{{Name: "external_id"}},
+						DoUpdates: clause.AssignmentColumns([]string{
+							"government_id", "name", "name_formal", "official_count",
+							"term_limit", "term_length", "inauguration_rules",
+							"election_frequency", "election_rules", "vacancy_rules", "remarks",
+						}),
+					},
+					clause.Returning{Columns: []clause.Column{{Name: "id"}}},
+				).Create(tr.Chamber).Error; err != nil {
+					return err
+				}
+			}
 
+			// ==== Politician (upsert + RETURNING id) ====
+			if tr.Politician != nil {
+				assign := map[string]interface{}{
+					"first_name":       gorm.Expr("excluded.first_name"),
+					"middle_initial":   gorm.Expr("excluded.middle_initial"),
+					"last_name":        gorm.Expr("excluded.last_name"),
+					"preferred_name":   gorm.Expr("excluded.preferred_name"),
+					"name_suffix":      gorm.Expr("excluded.name_suffix"),
+					"party":            gorm.Expr("excluded.party"),
+					"web_form_url":     gorm.Expr("excluded.web_form_url"),
+					"urls":             gorm.Expr("excluded.urls"),
+					"photo_origin_url": gorm.Expr(`COALESCE(NULLIF(excluded.photo_origin_url, ''), "essentials"."politicians"."photo_origin_url")`),
+					"notes":            gorm.Expr("excluded.notes"),
+					"valid_from":       gorm.Expr("excluded.valid_from"),
+					"valid_to":         gorm.Expr("excluded.valid_to"),
+					"email_addresses":  gorm.Expr("excluded.email_addresses"),
+					"office_id":        gorm.Expr("excluded.office_id"),
+				}
 				if err := tx.
 					Omit("Addresses", "Identifiers", "Committees").
-					Clauses(clause.OnConflict{
-						Columns:   []clause.Column{{Name: "external_id"}},
-						DoUpdates: clause.Assignments(assign),
-					}).
+					Clauses(
+						clause.OnConflict{
+							Columns:   []clause.Column{{Name: "external_id"}},
+							DoUpdates: clause.Assignments(assign),
+						},
+						clause.Returning{Columns: []clause.Column{{Name: "id"}}},
+					).
 					Create(tr.Politician).Error; err != nil {
 					return err
 				}
 			}
 
-			var persistedPol Politician
-			if err := tx.Where("external_id = ?", off.OfficialID).First(&persistedPol).Error; err != nil {
-				return err
+			// ID now available without a separate SELECT
+			polID = tr.Politician.ID
+			if polID == uuid.Nil {
+				// defensive fallback (shouldn't happen)
+				var persistedPol Politician
+				if err := tx.Where("external_id = ?", off.OfficialID).First(&persistedPol).Error; err != nil {
+					return err
+				}
+				polID = persistedPol.ID
 			}
-			polID = persistedPol.ID
 
 			// Resolve IDs for office
 			var districtID, chamberID uuid.UUID
@@ -331,10 +447,10 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 				chamberID = ex.ID
 			}
 
-			// ==== Office (upsert by politician_id) ====
+			// ==== Office ====
 			office := Office{
 				ID:                tr.Politician.OfficeID,
-				PoliticianID:      persistedPol.ID,
+				PoliticianID:      polID,
 				ChamberID:         chamberID,
 				DistrictID:        districtID,
 				Title:             off.Office.Title,
@@ -349,83 +465,88 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// ==== Addresses ====
-			if err := tx.Where("politician_id = ?", persistedPol.ID).Delete(&Address{}).Error; err != nil {
+			if err := tx.Where("politician_id = ?", polID).Delete(&Address{}).Error; err != nil {
 				return err
 			}
 			if len(tr.Politician.Addresses) > 0 {
 				for i := range tr.Politician.Addresses {
-					tr.Politician.Addresses[i].PoliticianID = persistedPol.ID
+					tr.Politician.Addresses[i].PoliticianID = polID
 				}
 				if err := tx.Create(&tr.Politician.Addresses).Error; err != nil {
 					return err
 				}
 			}
 
-			// ==== Identifiers ====
-			if err := tx.Where("politician_id = ?", persistedPol.ID).Delete(&Identifier{}).Error; err != nil {
+			// ==== Identifiers (batch insert, DO NOTHING on dup) ====
+			if err := tx.Where("politician_id = ?", polID).Delete(&Identifier{}).Error; err != nil {
 				return err
 			}
 			if len(tr.Politician.Identifiers) > 0 {
-				seen := make(map[string]struct{}, len(tr.Politician.Identifiers))
+				batch := make([]Identifier, 0, len(tr.Politician.Identifiers))
 				for _, it := range tr.Politician.Identifiers {
-					t := strings.TrimSpace(it.IdentifierType)
-					v := strings.TrimSpace(it.IdentifierValue)
+					t := strings.TrimSpace(strings.ToLower(it.IdentifierType))
+					v := strings.TrimSpace(strings.ToLower(it.IdentifierValue))
 					if t == "" || v == "" {
 						continue
 					}
-					key := strings.ToLower(t) + "||" + strings.ToLower(v)
-					if _, ok := seen[key]; ok {
-						continue
-					}
-					seen[key] = struct{}{}
-
-					if err := tx.Exec(
-						`INSERT INTO essentials.identifiers
-               (politician_id, identifier_type, identifier_value)
-             VALUES (?, ?, ?)
-             ON CONFLICT DO NOTHING`, // <- catch-all
-						persistedPol.ID, t, v,
-					).Error; err != nil {
+					batch = append(batch, Identifier{
+						PoliticianID:    polID,
+						IdentifierType:  t,
+						IdentifierValue: v,
+					})
+				}
+				if len(batch) > 0 {
+					if err := tx.Clauses(clause.OnConflict{
+						Columns:   []clause.Column{{Name: "politician_id"}, {Name: "identifier_type"}, {Name: "identifier_value"}},
+						DoNothing: true,
+					}).Create(&batch).Error; err != nil {
 						return err
 					}
 				}
 			}
 
-			// ==== Committees & joins ====
-			// Upsert committees by name (case-insensitive) and build name->ID map
+			// ==== Committees (prefetch existing by LOWER(name), then upsert join) ====
 			committeeIDByName := make(map[string]uuid.UUID)
 			norm := func(s string) string { return strings.ToLower(strings.TrimSpace(s)) }
 
+			names := make([]string, 0, len(tr.Committees))
 			for _, c := range tr.Committees {
 				if strings.TrimSpace(c.Name) == "" {
 					continue
 				}
-				var existing Committee
-				if err := tx.Where("LOWER(name) = LOWER(?)", c.Name).First(&existing).Error; err == nil {
-					// update URLs if changed
-					if !committeeEqual(*c, existing) {
-						existing.URLs = c.URLs
-						if err := tx.Save(&existing).Error; err != nil {
-							return err
-						}
+				names = append(names, c.Name)
+			}
+			if len(names) > 0 {
+				var existing []Committee
+				if err := tx.Where("LOWER(name) IN ?", names).Find(&existing).Error; err != nil {
+					return err
+				}
+				for _, ex := range existing {
+					committeeIDByName[norm(ex.Name)] = ex.ID
+				}
+				// insert missing
+				toCreate := make([]*Committee, 0)
+				for _, c := range tr.Committees {
+					k := norm(c.Name)
+					if _, ok := committeeIDByName[k]; !ok {
+						toCreate = append(toCreate, c)
 					}
-					committeeIDByName[norm(c.Name)] = existing.ID
-				} else if errors.Is(err, gorm.ErrRecordNotFound) {
-					if err := tx.Create(c).Error; err != nil {
+				}
+				if len(toCreate) > 0 {
+					if err := tx.Clauses(clause.OnConflict{
+						Columns:   []clause.Column{{Name: "name"}},
+						DoNothing: true,
+					}).Create(&toCreate).Error; err != nil {
 						return err
 					}
-					committeeIDByName[norm(c.Name)] = c.ID
-				} else {
-					return err
+					for _, c := range toCreate {
+						committeeIDByName[norm(c.Name)] = c.ID
+					}
 				}
 			}
 
-			// Decide one position per committee from the raw Cicero payload,
-			// preferring the first non-empty position
-			type namePos struct {
-				Name     string
-				Position string
-			}
+			// dedupe name->position from source
+			type namePos struct{ Name, Position string }
 			posByName := make(map[string]namePos)
 			for _, kc := range off.Committees {
 				name := strings.TrimSpace(kc.Name)
@@ -439,76 +560,129 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			// Insert/Upsert joins using the IDs resolved above (never using transform IDs)
+			joins := make([]PoliticianCommittee, 0, len(posByName))
 			for k, np := range posByName {
 				cid, ok := committeeIDByName[k]
 				if !ok {
-					// Fallback: resolve by name again (in case transform filtered something)
-					var existing Committee
-					if err := tx.Where("LOWER(name) = LOWER(?)", np.Name).First(&existing).Error; err == nil {
-						cid = existing.ID
-					} else if errors.Is(err, gorm.ErrRecordNotFound) {
-						// Last resort: create a minimal committee row
-						minimal := &Committee{ID: uuid.New(), Name: np.Name}
-						if err := tx.Create(minimal).Error; err != nil {
-							return err
-						}
-						cid = minimal.ID
-					} else {
+					// last-resort minimal create
+					minimal := Committee{ID: uuid.New(), Name: np.Name}
+					if err := tx.Clauses(
+						clause.OnConflict{Columns: []clause.Column{{Name: "name"}}, DoNothing: true},
+						clause.Returning{Columns: []clause.Column{{Name: "id"}}},
+					).Create(&minimal).Error; err != nil {
 						return err
 					}
+					cid = minimal.ID
 				}
-
-				row := PoliticianCommittee{
-					PoliticianID: persistedPol.ID,
+				joins = append(joins, PoliticianCommittee{
+					PoliticianID: polID,
 					CommitteeID:  cid,
 					Position:     np.Position,
-				}
+				})
+			}
+			if len(joins) > 0 {
 				if err := tx.Clauses(clause.OnConflict{
 					Columns:   []clause.Column{{Name: "politician_id"}, {Name: "committee_id"}},
 					DoUpdates: clause.AssignmentColumns([]string{"position"}),
-				}).Create(&row).Error; err != nil {
+				}).Create(&joins).Error; err != nil {
 					return err
 				}
 			}
 
 			return nil
 		})
+		upsertMs += float64(time.Since(tUp).Milliseconds())
 		if err == nil && polID != uuid.Nil {
 			touched = append(touched, polID)
+
+			// STREAM the mapping so waiters see partial results
+			tMap := time.Now()
+			if err := db.DB.WithContext(ctx).Clauses(clause.OnConflict{
+				Columns:   []clause.Column{{Name: "zip"}, {Name: "politician_id"}},
+				DoUpdates: clause.Assignments(map[string]any{"last_seen": warmStart}),
+			}).Create(&ZipPolitician{
+				Zip:          zip,
+				PoliticianID: polID,
+				LastSeen:     warmStart,
+			}).Error; err != nil {
+				log.Printf("[warmZip] zip=%s map upsert err=%v", zip, err)
+			}
+			mapMs += float64(time.Since(tMap).Milliseconds())
 		}
 	}
 
-	// Refresh cache atomically
-	_ = db.DB.Transaction(func(tx *gorm.DB) error {
+	// Refresh cache + cleanup (delete only rows not touched this warm)
+	return db.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := tx.Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "zip"}},
-			DoUpdates: clause.Assignments(map[string]any{"last_fetched": now}),
-		}).Create(&ZipCache{Zip: zip, LastFetched: now}).Error; err != nil {
+			DoUpdates: clause.Assignments(map[string]any{"last_fetched": warmStart}),
+		}).Create(&ZipCache{Zip: zip, LastFetched: warmStart}).Error; err != nil {
 			return err
 		}
-
-		// Replace mapping
-		if err := tx.Where("zip = ?", zip).Delete(&ZipPolitician{}).Error; err != nil {
+		// remove stale mappings for this zip
+		if err := tx.Where("zip = ? AND last_seen < ?", zip, warmStart).Delete(&ZipPolitician{}).Error; err != nil {
 			return err
-		}
-		for _, id := range touched {
-			if err := tx.Create(&ZipPolitician{
-				Zip: zip, PoliticianID: id, LastSeen: now,
-			}).Error; err != nil {
-				return err
-			}
 		}
 		return nil
 	})
+}
 
-	// Return fresh data from DB
-	officialsOut, err := fetchOfficialsFromDB(zip)
-	if err != nil {
-		http.Error(w, "DB fetch error", http.StatusInternalServerError)
-		return
+// --- Helpers ---------------------------------------------------------------
+
+func isZip5(s string) bool {
+	return regexp.MustCompile(`^\d{5}$`).MatchString(s)
+}
+
+func addCacheHeaders(w http.ResponseWriter, maxAgeSeconds, swrSeconds int) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%d, stale-while-revalidate=%d", maxAgeSeconds, swrSeconds))
+	w.Header().Set("Vary", "Accept-Encoding") // helpful once you enable gzip/br
+}
+
+func addNoStore(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	// Prevent browser/CDN from caching partial payloads
+	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Vary", "Accept-Encoding")
+}
+
+// Try to acquire a process-safe dedupe lock per ZIP using Postgres advisory locks.
+// We hash the zip to a 32-bit key using Postgres hashtext().
+func tryAcquireZipWarmLock(ctx context.Context, zip string) bool {
+	var ok bool
+	if err := db.DB.WithContext(ctx).
+		Raw(`SELECT pg_try_advisory_lock(hashtext(?))`, zip).
+		Row().Scan(&ok); err != nil {
+		return false
 	}
-	writeJSON(w, officialsOut)
+	return ok
+}
+
+func releaseZipWarmLock(ctx context.Context, zip string) {
+	var dummy bool
+	_ = db.DB.WithContext(ctx).
+		Raw(`SELECT pg_advisory_unlock(hashtext(?))`, zip).
+		Row().Scan(&dummy)
+}
+
+func waitForDataMin(ctx context.Context, zip string, maxWait, tick time.Duration, minCount int) ([]OfficialOut, bool) {
+	ctx, cancel := context.WithTimeout(ctx, maxWait)
+	defer cancel()
+	t := time.NewTicker(tick)
+	defer t.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, false
+		case <-t.C:
+			officials, err := fetchOfficialsFromDB(zip)
+			if err == nil && len(officials) >= minCount {
+				return officials, true
+			}
+		}
+	}
 }
 
 // fetchOfficialsFromDB returns all officials for a zip using the zip cache mapping.
