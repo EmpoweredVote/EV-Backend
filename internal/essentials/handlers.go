@@ -229,7 +229,7 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 
 	// Cold miss: wait briefly for warmer to populate; if it wins, return data.
 	tWait := time.Now()
-	if warmed, ok := waitForData(ctx, zip, shortWait, shortWaitTick); ok {
+	if warmed, ok := waitForDataMin(ctx, zip, shortWait, shortWaitTick, 3); ok {
 		waitMs = float64(time.Since(tWait).Milliseconds())
 		addServerTiming(w,
 			[2]string{"dbread", fmt.Sprintf("%d", int(dbReadMs))},
@@ -656,6 +656,25 @@ func releaseZipWarmLock(ctx context.Context, zip string) {
 	_ = db.DB.WithContext(ctx).
 		Raw(`SELECT pg_advisory_unlock(hashtext(?))`, zip).
 		Row().Scan(&dummy)
+}
+
+func waitForDataMin(ctx context.Context, zip string, maxWait, tick time.Duration, minCount int) ([]OfficialOut, bool) {
+	ctx, cancel := context.WithTimeout(ctx, maxWait)
+	defer cancel()
+	t := time.NewTicker(tick)
+	defer t.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, false
+		case <-t.C:
+			officials, err := fetchOfficialsFromDB(zip)
+			if err == nil && len(officials) >= minCount {
+				return officials, true
+			}
+		}
+	}
 }
 
 // fetchOfficialsFromDB returns all officials for a zip using the zip cache mapping.
