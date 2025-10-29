@@ -237,7 +237,7 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 			[2]string{"total", fmt.Sprintf("%d", int(time.Since(t0).Milliseconds()))},
 		)
 		w.Header().Set("X-Data-Status", "warmed")
-		addCacheHeaders(w, cdnTTLWhenFresh, swrSeconds)
+		addNoStore(w)
 		writeJSON(w, warmed)
 		return
 	}
@@ -637,6 +637,14 @@ func addCacheHeaders(w http.ResponseWriter, maxAgeSeconds, swrSeconds int) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%d, stale-while-revalidate=%d", maxAgeSeconds, swrSeconds))
 	w.Header().Set("Vary", "Accept-Encoding") // helpful once you enable gzip/br
+}
+
+func addNoStore(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	// Prevent browser/CDN from caching partial payloads
+	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Vary", "Accept-Encoding")
 }
 
 // Try to acquire a process-safe dedupe lock per ZIP using Postgres advisory locks.
