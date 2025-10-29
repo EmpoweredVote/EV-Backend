@@ -222,7 +222,7 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 	if hasData {
 		addServerTiming(w, [2]string{"dbread", fmt.Sprintf("%d", int(dbReadMs))})
 		w.Header().Set("X-Data-Status", "stale")
-		addCacheHeaders(w, 60, swrSeconds)
+		addNoStore(w)
 		writeJSON(w, officials)
 		return
 	}
