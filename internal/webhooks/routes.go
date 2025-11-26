@@ -10,7 +10,7 @@ func SetupRoutes() http.Handler {
 	r := chi.NewRouter()
 
 	// Public routes
-	r.Post("/webhooks/framer/volunteer", FramerFormWebhook)
+	r.Post("/framer/volunteer", FramerFormWebhook)
 
 	return r
 }
