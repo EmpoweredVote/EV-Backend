@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -14,6 +15,8 @@ import (
 )
 
 func FramerFormWebhook(w http.ResponseWriter, r *http.Request) {
+	log.Printf("webhook secret present: %t", os.Getenv("FRAMER_WEBHOOK_SECRET") != "")
+
 	r.Body = http.MaxBytesReader(w, r.Body, 1<<20) // 1 MiB
 	raw, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -30,13 +33,11 @@ func FramerFormWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	secret := os.Getenv("FRAMER_WEBHOOK_SECRET")
-	if secret == "" {
-		http.Error(w, "server misconfigured", http.StatusInternalServerError)
-		return
-	}
-	if !verifyFramer(sig, sid, raw, secret) {
-		http.Error(w, "invalid signature", http.StatusUnauthorized)
-		return
+	if secret != "" {
+		if !verifyFramer(sig, sid, raw, secret) {
+			http.Error(w, "invalid signature", http.StatusUnauthorized)
+			return
+		}
 	}
 
 	var m map[string]any
