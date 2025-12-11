@@ -9,14 +9,15 @@ type Session struct {
 }
 
 type User struct {
-	UserID         string  `gorm:"primaryKey" json:"user_id"`
-	Username       string  `json:"username"`
-	Password       string  `json:"password" gorm:"-"`
-	HashedPassword string  `json:"-"`
-	Role           string  `gorm:"default:'user'" json:"role"`
-	AccountType    string  `gorm:"default:'informed'" json:"account_type"`
-	ProfilePicURL  string  `json:"profile_pic_url"`
-	Session        Session `gorm:"foreignKey:UserID" json:"session"`
+	UserID              string  `gorm:"primaryKey" json:"user_id"`
+	Username            string  `json:"username"`
+	Password            string  `json:"password" gorm:"-"`
+	HashedPassword      string  `json:"-"`
+	Role                string  `gorm:"default:'user'" json:"role"`
+	CompletedOnboarding bool    `gorm:"default:false" json:"completed_onboarding"`
+	AccountType         string  `gorm:"default:'informed'" json:"account_type"`
+	ProfilePicURL       string  `json:"profile_pic_url"`
+	Session             Session `gorm:"foreignKey:UserID" json:"session"`
 }
 
 func (Session) TableName() string { return "app_auth.sessions" }

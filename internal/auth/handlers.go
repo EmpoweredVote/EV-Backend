@@ -184,8 +184,9 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type MeResponse struct {
-	UserID   string `json:"user_id"`
-	Username string `json:"username"`
+	UserID              string `json:"user_id"`
+	Username            string `json:"username"`
+	CompletedOnboarding bool   `json:"completed_onboarding"`
 }
 
 func MeHandler(w http.ResponseWriter, r *http.Request) {
@@ -206,8 +207,9 @@ func MeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		response := MeResponse{
-			UserID:   userID,
-			Username: user.Username,
+			UserID:              userID,
+			Username:            user.Username,
+			CompletedOnboarding: user.CompletedOnboarding,
 		}
 
 		w.Header().Set("Content-Type", "application/json")
@@ -217,6 +219,39 @@ func MeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed converting ID to string", http.StatusInternalServerError)
 		return
 	}
+}
+
+func OnboardingHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID, ok := utils.GetUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var user User
+	if err := db.DB.First(&user, "user_id = ?", userID).Error; err != nil {
+		http.Error(w, "Couldn't find user", http.StatusNotFound)
+		return
+	}
+
+	if err := db.DB.Model(&user).Update("completed_onboarding", true).Error; err != nil {
+		http.Error(w, "Failed to update onboarding status", http.StatusInternalServerError)
+		return
+	}
+
+	resp := MeResponse{
+		UserID:              userID,
+		Username:            user.Username,
+		CompletedOnboarding: true,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
 }
 
 func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
