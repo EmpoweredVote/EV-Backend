@@ -170,13 +170,28 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		db.DB.Delete(&session)
 
 		// Replace the cookie with new expired/empty cookie
-		deletedCookie := &http.Cookie{
-			Name:   "session_id",
-			Value:  "",
-			MaxAge: 0,
-			Path:   "/",
-		}
-		http.SetCookie(w, deletedCookie)
+		// Clear domain cookie
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session_id",
+			Value:    "",
+			Path:     "/",
+			Domain:   ".empowered.vote",
+			MaxAge:   -1,
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteNoneMode,
+		})
+
+		// Clear host-only cookie (no Domain)
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session_id",
+			Value:    "",
+			Path:     "/",
+			MaxAge:   -1,
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteNoneMode,
+		})
 
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "Logout successful")
