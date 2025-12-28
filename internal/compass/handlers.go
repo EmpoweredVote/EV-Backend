@@ -98,10 +98,10 @@ func TopicUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	updates := map[string]interface{}{}
 	if topicRequest.Title != nil {
-		updates["Title"] = *topicRequest.Title
+		updates["title"] = *topicRequest.Title
 	}
 	if topicRequest.ShortTitle != nil {
-		updates["ShortTitle"] = *topicRequest.ShortTitle
+		updates["short_title"] = *topicRequest.ShortTitle
 	}
 
 	if err := db.DB.Model(&topic).Updates(updates).Error; err != nil {

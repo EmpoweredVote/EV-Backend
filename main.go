@@ -10,6 +10,7 @@ import (
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/EmpoweredVote/EV-Backend/internal/essentials"
 	"github.com/EmpoweredVote/EV-Backend/internal/middleware"
+	"github.com/EmpoweredVote/EV-Backend/internal/webhooks"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
@@ -39,6 +40,7 @@ func main() {
 	r.Mount("/auth", auth.SetupRoutes())
 	r.Mount("/compass", compass.SetupRoutes())
 	r.Mount("/essentials", essentials.SetupRoutes())
+	r.Mount("/webhooks", webhooks.SetupRoutes())
 
 	fmt.Printf("Server listening on :%s...\n", port)
 

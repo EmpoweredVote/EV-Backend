@@ -23,6 +23,7 @@ func SetupRoutes() http.Handler {
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.SessionMiddleware(sessionFetcher))
 		r.Get("/me", MeHandler)
+		r.Post("/complete-onboarding", OnboardingHandler)
 		r.Post("/update-password", UpdatePasswordHandler)
 		r.Post("/logout", LogoutHandler)
 		r.Get("/empowered-accounts", EmpoweredAccountHandler)

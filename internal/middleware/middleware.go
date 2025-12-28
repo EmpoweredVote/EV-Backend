@@ -16,15 +16,21 @@ type SessionFetcher interface {
 func SessionMiddleware(fetcher SessionFetcher) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			cookie, err := r.Cookie("session_id")
-			if err != nil {
+			var sessionID string
+			for _, c := range r.Cookies() {
+				if c.Name == "session_id" && c.Value != "" {
+					sessionID = c.Value
+					break
+				}
+			}
+			if sessionID == "" {
 				http.Error(w, "Couldn't find cookie", http.StatusUnauthorized)
 				return
 			}
 
-			session, err := fetcher.FindSessionByID(cookie.Value)
+			session, err := fetcher.FindSessionByID(sessionID)
 			if err != nil {
-				http.Error(w, "Couldn't find session", http.StatusUnauthorized)
+				http.Error(w, "Couldn't find cookie", http.StatusUnauthorized)
 				return
 			}
 
