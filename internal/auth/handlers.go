@@ -115,11 +115,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// })
 
 	uuid := utils.GenerateUUID()
+	// NOTE: Domain is omitted for cross-domain dev (Netlify + Render).
+	// For production on empowered.vote subdomains, restore: Domain: ".empowered.vote"
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
 		Value:    uuid,
 		Path:     "/",
-		Domain:   ".empowered.vote",
 		HttpOnly: true,
 		SameSite: http.SameSiteNoneMode,
 		Secure:   true,
@@ -170,12 +171,12 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		db.DB.Delete(&session)
 
 		// Replace the cookie with new expired/empty cookie
-		// Clear domain cookie
+		// NOTE: Domain is omitted for cross-domain dev (Netlify + Render).
+		// For production on empowered.vote subdomains, restore: Domain: ".empowered.vote"
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session_id",
 			Value:    "",
 			Path:     "/",
-			Domain:   ".empowered.vote",
 			MaxAge:   -1,
 			HttpOnly: true,
 			Secure:   true,
