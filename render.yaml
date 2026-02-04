@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: ev-backend
+    runtime: docker
+    region: oregon # Change to your preferred region
+    plan: starter # free tier
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 5050
+      - key: DATABASE_URL
+        sync: false # You'll add this manually in Render dashboard
+      - key: ALLOWED_ORIGINS
+        value: https://compass.empowered.vote,https://essentials.empowered.vote,https://api.empowered.vote
+      - key: CICERO_KEY
+        sync: false # You'll add this manually in Render dashboard
+    healthCheckPath: /
+    autoDeploy: true
+
+# Optional: Uncomment below if you want Render to provision a PostgreSQL database for you
+# databases:
+#   - name: ev-postgres
+#     databaseName: empowered_vote
+#     user: ev_admin
+#     region: oregon
+#     plan: starter # free tier, 90 day expiration
