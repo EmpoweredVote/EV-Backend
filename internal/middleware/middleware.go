@@ -52,6 +52,7 @@ var allowed = map[string]struct{}{
 	"http://localhost:5176":                 {},
 	"https://empoweredvote.github.io":       {},
 	"https://ev-backend-edhm.onrender.com":  {},
+	"https://ev-backend-h3n8.onrender.com":  {},
 	"https://compass-dev.empowered.vote":    {},
 	"https://compass.empowered.vote":        {},
 	"https://essentials-dev.empowered.vote": {},
