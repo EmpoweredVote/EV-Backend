@@ -60,6 +60,8 @@ var allowed = map[string]struct{}{
 	"https://treasury.empowered.vote":       {},
 	"https://data-entry-dev.empowered.vote": {},
 	"https://data-entry.empowered.vote":     {},
+	"https://ev-essentials.netlify.app":     {},
+	"https://ev-compassv2.netlify.app":      {},
 }
 
 func CORSMiddleware(next http.Handler) http.Handler {
