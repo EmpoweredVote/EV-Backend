@@ -7,6 +7,11 @@ import (
 )
 
 func Init() {
+	// Ensure the essentials schema exists
+	if err := db.EnsureSchema(db.DB, "essentials"); err != nil {
+		log.Fatal("Failed to ensure schema essentials: ", err)
+	}
+
 	if err := db.DB.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`).Error; err != nil {
 		log.Fatal("Failed to enable uuid-ossp extension:", err)
 	}
@@ -21,6 +26,8 @@ func Init() {
 		&Identifier{},
 		&Committee{},
 		&PoliticianCommittee{},
+		&FederalCache{},
+		&StateCache{},
 		&ZipCache{},
 		&ZipPolitician{},
 	); err != nil {

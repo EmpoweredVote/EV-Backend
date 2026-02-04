@@ -119,8 +119,19 @@ type PoliticianCommittee struct {
 	Position     string    `json:"position"`
 }
 
+type FederalCache struct {
+	ID          int       `gorm:"primaryKey;autoIncrement:false;default:1" json:"id"` // Single row
+	LastFetched time.Time `json:"last_fetched"`
+}
+
+type StateCache struct {
+	State       string    `gorm:"primaryKey;size:2" json:"state"` // e.g., "WA", "CA"
+	LastFetched time.Time `json:"last_fetched"`
+}
+
 type ZipCache struct {
 	Zip         string    `gorm:"primaryKey;size:10" json:"zip"`
+	State       string    `gorm:"size:2" json:"state"` // Store the state for this ZIP
 	LastFetched time.Time `json:"last_fetched"`
 }
 
@@ -164,6 +175,14 @@ func (Committee) TableName() string {
 
 func (PoliticianCommittee) TableName() string {
 	return "essentials.politician_committees"
+}
+
+func (FederalCache) TableName() string {
+	return "essentials.federal_cache"
+}
+
+func (StateCache) TableName() string {
+	return "essentials.state_caches"
 }
 
 func (ZipCache) TableName() string {
