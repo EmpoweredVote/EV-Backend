@@ -1197,17 +1197,17 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		JOIN essentials.chambers c ON c.id = o.chamber_id
 		JOIN essentials.governments g ON g.id = c.government_id
 		WHERE (
-		  -- Federal officials (all ZIPs)
-		  d.district_type IN ('NATIONAL_EXEC', 'NATIONAL_UPPER', 'NATIONAL_LOWER')
+		  -- Federal executive officials (President, VP, Cabinet) - nationwide
+		  d.district_type = 'NATIONAL_EXEC'
 	`
 
 	args := []interface{}{}
 
-	// Add state officials if state is known
+	// Add senators and state officials filtered by state
 	if state != "" {
 		query += `
 		  OR (
-		    d.district_type IN ('STATE_EXEC', 'STATE_UPPER', 'STATE_LOWER')
+		    d.district_type IN ('NATIONAL_UPPER', 'STATE_EXEC', 'STATE_UPPER', 'STATE_LOWER')
 		    AND (o.representing_state = ? OR d.state = ?)
 		  )
 		`
