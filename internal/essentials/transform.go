@@ -2,9 +2,12 @@ package essentials
 
 import (
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
+	"github.com/EmpoweredVote/EV-Backend/internal/essentials/cicero"
+	"github.com/EmpoweredVote/EV-Backend/internal/essentials/provider"
 	"github.com/google/uuid"
 )
 
@@ -259,4 +262,260 @@ func committeeEqual(a, b Committee) bool {
 	a.ID = uuid.Nil
 	b.ID = uuid.Nil
 	return reflect.DeepEqual(a, b)
+}
+
+// TransformNormalizedToModels converts a NormalizedOfficial to database models.
+// This is the provider-agnostic transformation function.
+func TransformNormalizedToModels(off provider.NormalizedOfficial) (TransformResults, error) {
+	polID := uuid.New()
+	distID := uuid.New()
+	chamberID := uuid.New()
+	officeID := uuid.New()
+	govID := uuid.New()
+
+	// Parse external ID - may be numeric string from Cicero or alphanumeric from BallotReady
+	externalID := 0
+	if id, err := strconv.Atoi(off.ExternalID); err == nil {
+		externalID = id
+	}
+
+	// Addresses
+	var newAddresses []Address
+	for _, addr := range off.Addresses {
+		newAddresses = append(newAddresses, Address{
+			Address1:   addr.Address1,
+			Address2:   addr.Address2,
+			Address3:   addr.Address3,
+			State:      addr.State,
+			PostalCode: addr.PostalCode,
+			Phone1:     addr.Phone1,
+			Phone2:     addr.Phone2,
+		})
+	}
+
+	// Identifiers (dedupe)
+	var newIdentifiers []Identifier
+	seen := make(map[string]struct{})
+	for _, ident := range off.Identifiers {
+		t := strings.TrimSpace(ident.IdentifierType)
+		v := strings.TrimSpace(ident.IdentifierValue)
+		if t == "" || v == "" {
+			continue
+		}
+		key := strings.ToLower(t) + "||" + strings.ToLower(v)
+		if _, dup := seen[key]; dup {
+			continue
+		}
+		seen[key] = struct{}{}
+		newIdentifiers = append(newIdentifiers, Identifier{
+			PoliticianID:    polID,
+			IdentifierType:  t,
+			IdentifierValue: v,
+		})
+	}
+
+	// Office/District/Chamber/Government
+	newOffice := &Office{
+		ID:                officeID,
+		PoliticianID:      polID,
+		ChamberID:         chamberID,
+		DistrictID:        distID,
+		Title:             off.Office.Title,
+		RepresentingState: off.Office.RepresentingState,
+		Description:       off.Office.Description,
+		RepresentingCity:  off.Office.RepresentingCity,
+	}
+
+	newDistrict := &District{
+		ID:           distID,
+		ExternalID:   off.Office.District.ExternalID,
+		OCDID:        off.Office.District.OCDID,
+		Label:        off.Office.District.Label,
+		DistrictType: off.Office.District.DistrictType,
+		DistrictID:   off.Office.District.DistrictID,
+		Subtype:      off.Office.District.Subtype,
+		State:        off.Office.District.State,
+		City:         off.Office.District.City,
+		MTFCC:        off.Office.District.MTFCC,
+		NumOfficials: off.Office.District.NumOfficials,
+		ValidFrom:    off.Office.District.ValidFrom,
+		ValidTo:      off.Office.District.ValidTo,
+	}
+
+	newChamber := &Chamber{
+		ID:                chamberID,
+		ExternalID:        off.Office.Chamber.ExternalID,
+		GovernmentID:      govID,
+		Name:              off.Office.Chamber.Name,
+		NameFormal:        off.Office.Chamber.NameFormal,
+		OfficialCount:     off.Office.Chamber.OfficialCount,
+		TermLimit:         off.Office.Chamber.TermLimit,
+		TermLength:        off.Office.Chamber.TermLength,
+		InaugurationRules: off.Office.Chamber.InaugurationRules,
+		ElectionFrequency: off.Office.Chamber.ElectionFrequency,
+		ElectionRules:     off.Office.Chamber.ElectionRules,
+		VacancyRules:      off.Office.Chamber.VacancyRules,
+		Remarks:           off.Office.Chamber.Remarks,
+	}
+
+	newGovernment := &Government{
+		ID:    govID,
+		Name:  off.Office.Chamber.Government.Name,
+		Type:  off.Office.Chamber.Government.Type,
+		State: off.Office.Chamber.Government.State,
+		City:  off.Office.Chamber.Government.City,
+	}
+
+	// Map images
+	newImages := make([]PoliticianImage, 0, len(off.Images))
+	for _, img := range off.Images {
+		newImages = append(newImages, PoliticianImage{
+			ID:           uuid.New(),
+			PoliticianID: polID,
+			URL:          img.URL,
+			Type:         img.Type,
+		})
+	}
+
+	// Map degrees
+	newDegrees := make([]Degree, 0, len(off.Degrees))
+	for _, deg := range off.Degrees {
+		newDegrees = append(newDegrees, Degree{
+			ID:           uuid.New(),
+			PoliticianID: polID,
+			ExternalID:   deg.ExternalID,
+			Degree:       deg.Degree,
+			Major:        deg.Major,
+			School:       deg.School,
+			GradYear:     deg.GradYear,
+		})
+	}
+
+	// Map experiences
+	newExperiences := make([]Experience, 0, len(off.Experiences))
+	for _, exp := range off.Experiences {
+		newExperiences = append(newExperiences, Experience{
+			ID:           uuid.New(),
+			PoliticianID: polID,
+			ExternalID:   exp.ExternalID,
+			Title:        exp.Title,
+			Organization: exp.Organization,
+			Type:         exp.Type,
+			Start:        exp.Start,
+			End:          exp.End,
+		})
+	}
+
+	newPolitician := &Politician{
+		ID:                 polID,
+		ExternalID:         externalID,
+		FirstName:          off.FirstName,
+		MiddleInitial:      off.MiddleInitial,
+		LastName:           off.LastName,
+		PreferredName:      off.PreferredName,
+		NameSuffix:         off.NameSuffix,
+		Party:              off.Party,
+		WebFormURL:         off.WebFormURL,
+		URLs:               off.URLs,
+		PhotoOriginURL:     off.PhotoOriginURL,
+		Notes:              off.Notes,
+		OfficeID:           newOffice.ID,
+		Addresses:          newAddresses,
+		ValidFrom:          off.ValidFrom,
+		ValidTo:            off.ValidTo,
+		EmailAddresses:     off.EmailAddresses,
+		Identifiers:        newIdentifiers,
+		Source:             off.Source,
+		BioText:            off.BioText,
+		BioguideID:         off.BioguideID,
+		Slug:               off.Slug,
+		TotalYearsInOffice: off.TotalYearsInOffice,
+		Images:             newImages,
+		Degrees:            newDegrees,
+		Experiences:        newExperiences,
+	}
+
+	// Build full name
+	full := strings.TrimSpace(strings.Join([]string{
+		off.FirstName, off.MiddleInitial, off.LastName,
+	}, " "))
+	newPolitician.FullName = strings.Join(strings.Fields(full), " ")
+
+	// Committees - dedupe by normalized name
+	norm := func(s string) string { return strings.ToLower(strings.TrimSpace(s)) }
+	commByName := make(map[string]*Committee)
+	posByName := make(map[string]string)
+
+	for _, c := range off.Committees {
+		if strings.TrimSpace(c.Name) == "" {
+			continue
+		}
+		key := norm(c.Name)
+		if _, ok := commByName[key]; !ok {
+			commByName[key] = &Committee{
+				ID:   uuid.New(),
+				Name: c.Name,
+				URLs: c.URLs,
+			}
+		}
+		if posByName[key] == "" && strings.TrimSpace(c.Position) != "" {
+			posByName[key] = c.Position
+		}
+	}
+
+	// Resolve committees against DB and build joins
+	var finalCommittees []*Committee
+	var joins []PoliticianCommittee
+
+	for key, committee := range commByName {
+		var existing Committee
+		err := db.DB.Where("LOWER(name) = LOWER(?)", committee.Name).First(&existing).Error
+
+		var committeeID uuid.UUID
+		if err == nil {
+			if committeeEqual(*committee, existing) {
+				committeeID = existing.ID
+			} else {
+				committeeID = committee.ID
+				finalCommittees = append(finalCommittees, committee)
+			}
+		} else {
+			committeeID = committee.ID
+			finalCommittees = append(finalCommittees, committee)
+		}
+
+		joins = append(joins, PoliticianCommittee{
+			ID:           uuid.New(),
+			PoliticianID: polID,
+			CommitteeID:  committeeID,
+			Position:     posByName[key],
+		})
+	}
+
+	results := TransformResults{
+		Politician:           newPolitician,
+		District:             newDistrict,
+		Chamber:              newChamber,
+		Government:           newGovernment,
+		Committees:           finalCommittees,
+		PoliticianCommittees: joins,
+	}
+
+	// Omit unchanged entities
+	newPolitician, _ = CheckAndOmitIfEqual(newPolitician, "external_id = ?", newPolitician.ExternalID, politicianEqual)
+	newDistrict, _ = CheckAndOmitIfEqual(newDistrict, "external_id = ?", newDistrict.ExternalID, districtEqual)
+	newChamber, _ = CheckAndOmitIfEqual(newChamber, "external_id = ?", newChamber.ExternalID, chambersEqual)
+
+	results.Politician = newPolitician
+	results.District = newDistrict
+	results.Chamber = newChamber
+	results.Government = newGovernment
+
+	return results, nil
+}
+
+// TransformCiceroOfficialToNormalized is a helper that converts a Cicero official
+// to normalized format using the cicero package transformer.
+func TransformCiceroOfficialToNormalized(off cicero.CiceroOfficial) provider.NormalizedOfficial {
+	return cicero.TransformToNormalized(off)
 }

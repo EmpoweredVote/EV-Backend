@@ -7,14 +7,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
+	"github.com/EmpoweredVote/EV-Backend/internal/essentials/ballotready"
+	"github.com/EmpoweredVote/EV-Backend/internal/essentials/cicero"
+	"github.com/EmpoweredVote/EV-Backend/internal/essentials/provider"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
@@ -27,114 +28,17 @@ func writeJSON(w http.ResponseWriter, v any) {
 	_ = json.NewEncoder(w).Encode(v)
 }
 
-type CiceroAPIResponse struct {
-	Response struct {
-		Results struct {
-			Candidates []struct {
-				MatchAddress   string `json:"match_addr"`
-				MatchCity      string `json:"match_city"`
-				MatchSubregion string `json:"match_subregion"`
-				MatchRegion    string `json:"match_region"`
-				MatchPostal    string `json:"match_postal"`
-				Count          struct {
-					From  int `json:"from"`
-					To    int `json:"to"`
-					Total int `json:"total"`
-				} `json:"count"`
-				Officials []CiceroOfficial `json:"officials"`
-			} `json:"candidates"`
-		} `json:"results"`
-	} `json:"response"`
-}
-
-type CiceroOffice struct {
-	Title             string         `json:"title"`
-	RepresentingState string         `json:"representing_state"`
-	RepresentingCity  string         `json:"representing_city"`
-	District          CiceroDistrict `json:"district"`
-	Chamber           CiceroChamber  `json:"chamber"`
-}
-
-type CiceroDistrict struct {
-	Type           string `json:"district_type"`
-	DistrictID     string `json:"district_id"`
-	SK             int    `json:"sk"`
-	OCDID          string `json:"ocd_id"`
-	Subtype        string `json:"subtype"`
-	Label          string `json:"label"`
-	State          string `json:"state"`
-	City           string `json:"city"`
-	NumOfficials   int    `json:"num_officials"`
-	ValidFrom      string `json:"valid_from"` // can change to time.Time if you want
-	ValidTo        string `json:"valid_to"`
-	LastUpdateDate string `json:"last_update_date"`
-}
-
-type CiceroChamber struct {
-	ID                int              `json:"id"`
-	Name              string           `json:"name"`
-	NameFormal        string           `json:"name_formal"`
-	OfficialCount     int              `json:"official_count" gorm:"omitempty"`
-	TermLimit         string           `json:"term_limit"`
-	TermLength        string           `json:"term_length"`
-	InaugurationRules string           `json:"inauguration_rules"`
-	ElectionFrequency string           `json:"election_frequency"`
-	ElectionRules     string           `json:"election_rules"`
-	VacancyRules      string           `json:"vacancy_rules"`
-	Remarks           string           `json:"remarks"`
-	Government        CiceroGovernment `json:"government"`
-}
-
-type CiceroGovernment struct {
-	Name  string `json:"name"`
-	Type  string `json:"type"`
-	State string `json:"state"`
-	City  string `json:"city"`
-}
-
-type CiceroAddress struct {
-	Address1   string `json:"address_1"`
-	Address2   string `json:"address_2"`
-	Address3   string `json:"address_3"`
-	State      string `json:"state"`
-	PostalCode string `json:"postal_code"`
-	Phone1     string `json:"phone_1"`
-	Phone2     string `json:"phone_2"`
-}
-
-type CiceroIdentifier struct {
-	ID              int    `json:"id"`
-	IdentifierType  string `json:"identifier_type"` // Consider changing to something like Platform for clarity
-	IdentifierValue string `json:"identifier_value"`
-}
-
-type CiceroCommittee struct {
-	Name                 string             `json:"name"`
-	URLs                 []string           `json:"urls"`
-	CommitteeIdentifiers []CiceroIdentifier `json:"committee_identifiers"`
-	Position             string             `json:"position"`
-}
-
-type CiceroOfficial struct {
-	OfficialID     int                `json:"id"`
-	FirstName      string             `json:"first_name"`
-	MiddleInitial  string             `json:"middle_initial"`
-	LastName       string             `json:"last_name"`
-	PreferredName  string             `json:"preferred_name"`
-	NameSuffix     string             `json:"name_suffix"`
-	Party          string             `json:"party"`
-	WebFormURL     *string            `json:"web_form_url"`
-	Urls           []string           `json:"urls"`
-	EmailAddresses []string           `json:"email_addresses"`
-	PhotoOriginURL string             `json:"photo_origin_url"`
-	Notes          []string           `json:"notes" `
-	ValidFrom      string             `json:"valid_from"`
-	ValidTo        string             `json:"valid_to"`
-	Office         CiceroOffice       `json:"office"`
-	Addresses      []CiceroAddress    `json:"addresses"`
-	Identifiers    []CiceroIdentifier `json:"identifiers"`
-	Committees     []CiceroCommittee  `json:"committees"`
-}
+// Type aliases for backward compatibility with existing code
+// These reference the types from the cicero package
+type CiceroOfficial = cicero.CiceroOfficial
+type CiceroOffice = cicero.CiceroOffice
+type CiceroDistrict = cicero.CiceroDistrict
+type CiceroChamber = cicero.CiceroChamber
+type CiceroGovernment = cicero.CiceroGovernment
+type CiceroAddress = cicero.CiceroAddress
+type CiceroIdentifier = cicero.CiceroIdentifier
+type CiceroCommittee = cicero.CiceroCommittee
+type CiceroAPIResponse = cicero.CiceroAPIResponse
 
 type CommitteeOut struct {
 	Name     string   `json:"name"`
@@ -142,40 +46,73 @@ type CommitteeOut struct {
 	URLs     []string `json:"urls"`
 }
 
+type ImageOut struct {
+	URL  string `json:"url"`
+	Type string `json:"type"`
+}
+
+type DegreeOut struct {
+	Degree   string `json:"degree"`
+	Major    string `json:"major"`
+	School   string `json:"school"`
+	GradYear int    `json:"grad_year"`
+}
+
+type ExperienceOut struct {
+	Title        string `json:"title"`
+	Organization string `json:"organization"`
+	Type         string `json:"type"`
+	Start        string `json:"start"`
+	End          string `json:"end"`
+}
+
 type OfficialOut struct {
-	ID                uuid.UUID      `json:"id"`
-	ExternalID        int            `json:"external_id"`
-	FirstName         string         `json:"first_name"`
-	MiddleInitial     string         `json:"middle_initial"`
-	LastName          string         `json:"last_name"`
-	PreferredName     string         `json:"preferred_name"`
-	NameSuffix        string         `json:"name_suffix"`
-	FullName          string         `json:"full_name"`
-	Party             string         `json:"party"`
-	PhotoOriginURL    string         `json:"photo_origin_url"`
-	WebFormURL        string         `json:"web_form_url"`
-	URLs              []string       `json:"urls"`
-	EmailAddresses    []string       `json:"email_addresses"`
-	OfficeTitle       string         `json:"office_title"`
-	RepresentingState string         `json:"representing_state"`
-	RepresentingCity  string         `json:"representing_city"`
-	DistrictType      string         `json:"district_type"`
-	DistrictLabel     string         `json:"district_label"`
-	ChamberName       string         `json:"chamber_name"`
-	ChamberNameFormal string         `json:"chamber_name_formal"`
-	GovernmentName    string         `json:"government_name"`
-	IsElected         bool           `json:"is_elected"`
-	ElectionFrequency string         `json:"election_frequency,omitempty"`
-	Committees        []CommitteeOut `json:"committees"`
+	ID                 uuid.UUID       `json:"id"`
+	ExternalID         int             `json:"external_id"`
+	FirstName          string          `json:"first_name"`
+	MiddleInitial      string          `json:"middle_initial"`
+	LastName           string          `json:"last_name"`
+	PreferredName      string          `json:"preferred_name"`
+	NameSuffix         string          `json:"name_suffix"`
+	FullName           string          `json:"full_name"`
+	Party              string          `json:"party"`
+	PhotoOriginURL     string          `json:"photo_origin_url"`
+	WebFormURL         string          `json:"web_form_url"`
+	URLs               []string        `json:"urls"`
+	EmailAddresses     []string        `json:"email_addresses"`
+	OfficeTitle        string          `json:"office_title"`
+	RepresentingState  string          `json:"representing_state"`
+	RepresentingCity   string          `json:"representing_city"`
+	DistrictType       string          `json:"district_type"`
+	DistrictLabel      string          `json:"district_label"`
+	MTFCC              string          `json:"mtfcc"`
+	ChamberName        string          `json:"chamber_name"`
+	ChamberNameFormal  string          `json:"chamber_name_formal"`
+	GovernmentName     string          `json:"government_name"`
+	IsElected          bool            `json:"is_elected"`
+	ElectionFrequency  string          `json:"election_frequency,omitempty"`
+	Committees         []CommitteeOut  `json:"committees"`
+	BioText            string          `json:"bio_text,omitempty"`
+	BioguideID         string          `json:"bioguide_id,omitempty"`
+	Slug               string          `json:"slug,omitempty"`
+	TotalYearsInOffice int             `json:"total_years_in_office,omitempty"`
+	OfficeDescription  string          `json:"office_description,omitempty"`
+	Images             []ImageOut      `json:"images,omitempty"`
+	Degrees            []DegreeOut     `json:"degrees,omitempty"`
+	Experiences        []ExperienceOut `json:"experiences,omitempty"`
 }
 
 func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
 	zip := chi.URLParam(r, "zip")
 	if !isZip5(zip) {
 		http.Error(w, "Missing or invalid zip parameter", http.StatusBadRequest)
 		return
 	}
+	handleZipLookup(w, r, zip)
+}
+
+func handleZipLookup(w http.ResponseWriter, r *http.Request, zip string) {
+	ctx := r.Context()
 
 	const (
 		maxAge          = 90 * 24 * time.Hour
@@ -329,7 +266,7 @@ func upsertOfficial(ctx context.Context, off CiceroOfficial, timestamp time.Time
 					Columns: []clause.Column{{Name: "external_id"}},
 					DoUpdates: clause.AssignmentColumns([]string{
 						"ocd_id", "label", "district_type", "district_id", "subtype",
-						"state", "city", "num_officials", "valid_from", "valid_to",
+						"state", "city", "mtfcc", "num_officials", "valid_from", "valid_to",
 					}),
 				},
 				clause.Returning{Columns: []clause.Column{{Name: "id"}}},
@@ -586,7 +523,283 @@ func upsertOfficial(ctx context.Context, off CiceroOfficial, timestamp time.Time
 	return polID, err
 }
 
+// upsertNormalizedOfficial handles the database upsert logic for a NormalizedOfficial.
+// This is the provider-agnostic version of upsertOfficial.
+// Returns the politician ID if successful.
+func upsertNormalizedOfficial(ctx context.Context, off provider.NormalizedOfficial, timestamp time.Time) (uuid.UUID, error) {
+	tr, err := TransformNormalizedToModels(off)
+	if err != nil {
+		return uuid.Nil, err
+	}
 
+	var polID uuid.UUID
+
+	err = db.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// ==== District (upsert + RETURNING) ====
+		if tr.District != nil {
+			if err := tx.Clauses(
+				clause.OnConflict{
+					Columns: []clause.Column{{Name: "external_id"}},
+					DoUpdates: clause.AssignmentColumns([]string{
+						"ocd_id", "label", "district_type", "district_id", "subtype",
+						"state", "city", "mtfcc", "num_officials", "valid_from", "valid_to",
+					}),
+				},
+				clause.Returning{Columns: []clause.Column{{Name: "id"}}},
+			).Create(tr.District).Error; err != nil {
+				return err
+			}
+		}
+
+		// ==== Government (natural-key lookup) ====
+		var govID *uuid.UUID
+		if tr.Government != nil {
+			var existingGov Government
+			err := tx.Where(
+				"name = ? AND type = ? AND state = ? AND city = ?",
+				tr.Government.Name, tr.Government.Type, tr.Government.State, tr.Government.City,
+			).First(&existingGov).Error
+			if err == nil {
+				govID = &existingGov.ID
+			} else if errors.Is(err, gorm.ErrRecordNotFound) {
+				if err := tx.Create(tr.Government).Error; err != nil {
+					return err
+				}
+				govID = &tr.Government.ID
+			} else {
+				return err
+			}
+		}
+
+		// ==== Chamber (upsert + RETURNING) ====
+		if tr.Chamber != nil {
+			if govID != nil {
+				tr.Chamber.GovernmentID = *govID
+			}
+			if err := tx.Clauses(
+				clause.OnConflict{
+					Columns: []clause.Column{{Name: "external_id"}},
+					DoUpdates: clause.AssignmentColumns([]string{
+						"government_id", "name", "name_formal", "official_count",
+						"term_limit", "term_length", "inauguration_rules",
+						"election_frequency", "election_rules", "vacancy_rules", "remarks",
+					}),
+				},
+				clause.Returning{Columns: []clause.Column{{Name: "id"}}},
+			).Create(tr.Chamber).Error; err != nil {
+				return err
+			}
+		}
+
+		// ==== Politician (upsert + RETURNING id) ====
+		if tr.Politician != nil {
+			assign := map[string]interface{}{
+				"first_name":       gorm.Expr("excluded.first_name"),
+				"middle_initial":   gorm.Expr("excluded.middle_initial"),
+				"last_name":        gorm.Expr("excluded.last_name"),
+				"preferred_name":   gorm.Expr("excluded.preferred_name"),
+				"name_suffix":      gorm.Expr("excluded.name_suffix"),
+				"party":            gorm.Expr("excluded.party"),
+				"web_form_url":     gorm.Expr("excluded.web_form_url"),
+				"urls":             gorm.Expr("excluded.urls"),
+				"photo_origin_url": gorm.Expr(`COALESCE(NULLIF(excluded.photo_origin_url, ''), "essentials"."politicians"."photo_origin_url")`),
+				"notes":            gorm.Expr("excluded.notes"),
+				"valid_from":       gorm.Expr("excluded.valid_from"),
+				"valid_to":         gorm.Expr("excluded.valid_to"),
+				"email_addresses":  gorm.Expr("excluded.email_addresses"),
+				"office_id":        gorm.Expr("excluded.office_id"),
+				"source":           gorm.Expr("excluded.source"),
+				"last_synced":      timestamp,
+			}
+			if err := tx.
+				Omit("Addresses", "Identifiers", "Committees").
+				Clauses(
+					clause.OnConflict{
+						Columns:   []clause.Column{{Name: "external_id"}},
+						DoUpdates: clause.Assignments(assign),
+					},
+					clause.Returning{Columns: []clause.Column{{Name: "id"}}},
+				).
+				Create(tr.Politician).Error; err != nil {
+				return err
+			}
+		}
+
+		polID = tr.Politician.ID
+		if polID == uuid.Nil {
+			var persistedPol Politician
+			if err := tx.Where("external_id = ?", tr.Politician.ExternalID).First(&persistedPol).Error; err != nil {
+				return err
+			}
+			polID = persistedPol.ID
+		}
+
+		// Resolve IDs for office
+		var districtID, chamberID uuid.UUID
+		if tr.District != nil {
+			districtID = tr.District.ID
+		} else {
+			var ex District
+			if err := tx.Where("external_id = ?", off.Office.District.ExternalID).First(&ex).Error; err != nil {
+				return err
+			}
+			districtID = ex.ID
+		}
+		if tr.Chamber != nil {
+			chamberID = tr.Chamber.ID
+		} else {
+			var ex Chamber
+			if err := tx.Where("external_id = ?", off.Office.Chamber.ExternalID).First(&ex).Error; err != nil {
+				return err
+			}
+			chamberID = ex.ID
+		}
+
+		// ==== Office ====
+		office := Office{
+			ID:                tr.Politician.OfficeID,
+			PoliticianID:      polID,
+			ChamberID:         chamberID,
+			DistrictID:        districtID,
+			Title:             off.Office.Title,
+			RepresentingState: off.Office.RepresentingState,
+			RepresentingCity:  off.Office.RepresentingCity,
+		}
+		if err := tx.Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "politician_id"}},
+			DoUpdates: clause.AssignmentColumns([]string{"chamber_id", "district_id", "title", "representing_state", "representing_city"}),
+		}).Create(&office).Error; err != nil {
+			return err
+		}
+
+		// ==== Addresses ====
+		if err := tx.Where("politician_id = ?", polID).Delete(&Address{}).Error; err != nil {
+			return err
+		}
+		if len(tr.Politician.Addresses) > 0 {
+			for i := range tr.Politician.Addresses {
+				tr.Politician.Addresses[i].PoliticianID = polID
+			}
+			if err := tx.Create(&tr.Politician.Addresses).Error; err != nil {
+				return err
+			}
+		}
+
+		// ==== Identifiers ====
+		if err := tx.Where("politician_id = ?", polID).Delete(&Identifier{}).Error; err != nil {
+			return err
+		}
+		if len(tr.Politician.Identifiers) > 0 {
+			batch := make([]Identifier, 0, len(tr.Politician.Identifiers))
+			for _, it := range tr.Politician.Identifiers {
+				t := strings.TrimSpace(strings.ToLower(it.IdentifierType))
+				v := strings.TrimSpace(strings.ToLower(it.IdentifierValue))
+				if t == "" || v == "" {
+					continue
+				}
+				batch = append(batch, Identifier{
+					PoliticianID:    polID,
+					IdentifierType:  t,
+					IdentifierValue: v,
+				})
+			}
+			if len(batch) > 0 {
+				if err := tx.Clauses(clause.OnConflict{
+					Columns:   []clause.Column{{Name: "politician_id"}, {Name: "identifier_type"}, {Name: "identifier_value"}},
+					DoNothing: true,
+				}).Create(&batch).Error; err != nil {
+					return err
+				}
+			}
+		}
+
+		// ==== Committees ====
+		committeeIDByName := make(map[string]uuid.UUID)
+		norm := func(s string) string { return strings.ToLower(strings.TrimSpace(s)) }
+
+		names := make([]string, 0, len(tr.Committees))
+		for _, c := range tr.Committees {
+			if strings.TrimSpace(c.Name) == "" {
+				continue
+			}
+			names = append(names, c.Name)
+		}
+		if len(names) > 0 {
+			var existing []Committee
+			if err := tx.Where("LOWER(name) IN ?", names).Find(&existing).Error; err != nil {
+				return err
+			}
+			for _, ex := range existing {
+				committeeIDByName[norm(ex.Name)] = ex.ID
+			}
+			toCreate := make([]*Committee, 0)
+			for _, c := range tr.Committees {
+				k := norm(c.Name)
+				if _, ok := committeeIDByName[k]; !ok {
+					toCreate = append(toCreate, c)
+				}
+			}
+			if len(toCreate) > 0 {
+				if err := tx.Clauses(clause.OnConflict{
+					Columns:   []clause.Column{{Name: "name"}},
+					DoNothing: true,
+				}).Create(&toCreate).Error; err != nil {
+					return err
+				}
+				for _, c := range toCreate {
+					committeeIDByName[norm(c.Name)] = c.ID
+				}
+			}
+		}
+
+		// Build committee joins from normalized committees
+		type namePos struct{ Name, Position string }
+		posByName := make(map[string]namePos)
+		for _, kc := range off.Committees {
+			name := strings.TrimSpace(kc.Name)
+			if name == "" {
+				continue
+			}
+			k := norm(name)
+			pos := strings.TrimSpace(kc.Position)
+			if _, ok := posByName[k]; !ok || posByName[k].Position == "" {
+				posByName[k] = namePos{Name: name, Position: pos}
+			}
+		}
+
+		joins := make([]PoliticianCommittee, 0, len(posByName))
+		for k, np := range posByName {
+			cid, ok := committeeIDByName[k]
+			if !ok {
+				minimal := Committee{ID: uuid.New(), Name: np.Name}
+				if err := tx.Clauses(
+					clause.OnConflict{Columns: []clause.Column{{Name: "name"}}, DoNothing: true},
+					clause.Returning{Columns: []clause.Column{{Name: "id"}}},
+				).Create(&minimal).Error; err != nil {
+					return err
+				}
+				cid = minimal.ID
+			}
+			joins = append(joins, PoliticianCommittee{
+				PoliticianID: polID,
+				CommitteeID:  cid,
+				Position:     np.Position,
+			})
+		}
+		if len(joins) > 0 {
+			if err := tx.Clauses(clause.OnConflict{
+				Columns:   []clause.Column{{Name: "politician_id"}, {Name: "committee_id"}},
+				DoUpdates: clause.AssignmentColumns([]string{"position"}),
+			}).Create(&joins).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
+	return polID, err
+}
 
 // warmFederal fetches and caches federal officials (NATIONAL_*).
 // These are the same for all ZIP codes in the US.
@@ -594,24 +807,38 @@ func warmFederal(ctx context.Context) error {
 	warmStart := time.Now()
 	log.Printf("[warmFederal] starting federal data warm")
 
-	// Get any cached ZIP to use for the query (federal data is the same everywhere)
-	var sampleZip string
-	if err := db.DB.WithContext(ctx).Raw("SELECT zip FROM essentials.zip_caches LIMIT 1").Row().Scan(&sampleZip); err != nil || sampleZip == "" {
-		// No cached ZIPs yet - use a known valid ZIP (DC)
-		sampleZip = "20001"
-	}
+	// Use the provider abstraction if available
+	if Provider != nil {
+		officials, err := Provider.FetchFederal(ctx)
+		if err != nil {
+			return fmt.Errorf("provider fetch federal: %w", err)
+		}
 
-	officials, err := fetchCiceroOfficialsByTypes(sampleZip, []string{"NATIONAL_EXEC", "NATIONAL_UPPER", "NATIONAL_LOWER"})
-	if err != nil {
-		return fmt.Errorf("cicero fetch federal: %w", err)
-	}
+		log.Printf("[warmFederal] fetched %d federal officials via %s provider", len(officials), Provider.Name())
 
-	log.Printf("[warmFederal] fetched %d federal officials", len(officials))
+		for _, off := range officials {
+			if _, err := upsertNormalizedOfficial(ctx, off, warmStart); err != nil {
+				log.Printf("[warmFederal] upsert error for official %s: %v", off.ExternalID, err)
+			}
+		}
+	} else {
+		// Fallback to direct Cicero API call (legacy behavior)
+		var sampleZip string
+		if err := db.DB.WithContext(ctx).Raw("SELECT zip FROM essentials.zip_caches LIMIT 1").Row().Scan(&sampleZip); err != nil || sampleZip == "" {
+			sampleZip = "20001"
+		}
 
-	// Process and upsert all federal officials
-	for _, off := range officials {
-		if _, err := upsertOfficial(ctx, off, warmStart); err != nil {
-			log.Printf("[warmFederal] upsert error for official %d: %v", off.OfficialID, err)
+		officials, err := fetchCiceroOfficialsByTypes(sampleZip, []string{"NATIONAL_EXEC", "NATIONAL_UPPER", "NATIONAL_LOWER"})
+		if err != nil {
+			return fmt.Errorf("cicero fetch federal: %w", err)
+		}
+
+		log.Printf("[warmFederal] fetched %d federal officials via legacy Cicero", len(officials))
+
+		for _, off := range officials {
+			if _, err := upsertOfficial(ctx, off, warmStart); err != nil {
+				log.Printf("[warmFederal] upsert error for official %d: %v", off.OfficialID, err)
+			}
 		}
 	}
 
@@ -629,30 +856,46 @@ func warmFederal(ctx context.Context) error {
 
 // warmState fetches and caches state officials (STATE_*) for a specific state.
 // These are the same for all ZIP codes within the state.
-// Accepts a sample ZIP from the state to use for the Cicero query.
+// Accepts a sample ZIP from the state to use for the query.
 func warmState(ctx context.Context, state string, sampleZip string) error {
 	warmStart := time.Now()
 	log.Printf("[warmState] starting state data warm for state=%s using zip=%s", state, sampleZip)
 
-	officials, err := fetchCiceroOfficialsByTypes(sampleZip, []string{"STATE_EXEC", "STATE_UPPER", "STATE_LOWER"})
-	if err != nil {
-		return fmt.Errorf("cicero fetch state: %w", err)
-	}
-
-	// Filter to only officials from the target state
-	stateOfficials := make([]CiceroOfficial, 0)
-	for _, off := range officials {
-		if strings.EqualFold(off.Office.RepresentingState, state) || strings.EqualFold(off.Office.District.State, state) {
-			stateOfficials = append(stateOfficials, off)
+	// Use the provider abstraction if available
+	if Provider != nil {
+		officials, err := Provider.FetchByState(ctx, state, sampleZip)
+		if err != nil {
+			return fmt.Errorf("provider fetch state: %w", err)
 		}
-	}
 
-	log.Printf("[warmState] fetched %d state officials for %s", len(stateOfficials), state)
+		log.Printf("[warmState] fetched %d state officials for %s via %s provider", len(officials), state, Provider.Name())
 
-	// Process and upsert all state officials
-	for _, off := range stateOfficials {
-		if _, err := upsertOfficial(ctx, off, warmStart); err != nil {
-			log.Printf("[warmState] upsert error for official %d: %v", off.OfficialID, err)
+		for _, off := range officials {
+			if _, err := upsertNormalizedOfficial(ctx, off, warmStart); err != nil {
+				log.Printf("[warmState] upsert error for official %s: %v", off.ExternalID, err)
+			}
+		}
+	} else {
+		// Fallback to direct Cicero API call (legacy behavior)
+		officials, err := fetchCiceroOfficialsByTypes(sampleZip, []string{"STATE_EXEC", "STATE_UPPER", "STATE_LOWER"})
+		if err != nil {
+			return fmt.Errorf("cicero fetch state: %w", err)
+		}
+
+		// Filter to only officials from the target state
+		stateOfficials := make([]CiceroOfficial, 0)
+		for _, off := range officials {
+			if strings.EqualFold(off.Office.RepresentingState, state) || strings.EqualFold(off.Office.District.State, state) {
+				stateOfficials = append(stateOfficials, off)
+			}
+		}
+
+		log.Printf("[warmState] fetched %d state officials for %s via legacy Cicero", len(stateOfficials), state)
+
+		for _, off := range stateOfficials {
+			if _, err := upsertOfficial(ctx, off, warmStart); err != nil {
+				log.Printf("[warmState] upsert error for official %d: %v", off.OfficialID, err)
+			}
 		}
 	}
 
@@ -674,45 +917,82 @@ func warmLocal(ctx context.Context, zip string) error {
 	warmStart := time.Now()
 	log.Printf("[warmLocal] starting local data warm for zip=%s", zip)
 
-	// Fetch only local district types for this ZIP
-	officials, err := fetchCiceroOfficialsByTypes(zip, []string{"LOCAL_EXEC", "LOCAL", "COUNTY", "SCHOOL", "JUDICIAL"})
-	if err != nil {
-		return fmt.Errorf("cicero fetch local: %w", err)
-	}
-
-	log.Printf("[warmLocal] fetched %d local officials for %s", len(officials), zip)
-
-	// Extract state from first official (for ZipCache)
 	var zipState string
-	if len(officials) > 0 {
-		if officials[0].Office.RepresentingState != "" {
-			zipState = officials[0].Office.RepresentingState
-		} else if officials[0].Office.District.State != "" {
-			zipState = officials[0].Office.District.State
-		}
-	}
+	touched := make([]uuid.UUID, 0)
 
-	// Process and upsert all local officials
-	touched := make([]uuid.UUID, 0, len(officials))
-	for _, off := range officials {
-		polID, err := upsertOfficial(ctx, off, warmStart)
+	// Use the provider abstraction if available
+	if Provider != nil {
+		officials, err := Provider.FetchByZip(ctx, zip, provider.LocalDistrictTypes)
 		if err != nil {
-			log.Printf("[warmLocal] upsert error for official %d: %v", off.OfficialID, err)
-			continue
+			return fmt.Errorf("provider fetch local: %w", err)
 		}
-		if polID != uuid.Nil {
-			touched = append(touched, polID)
 
-			// Map this politician to the ZIP
-			if err := db.DB.WithContext(ctx).Clauses(clause.OnConflict{
-				Columns:   []clause.Column{{Name: "zip"}, {Name: "politician_id"}},
-				DoUpdates: clause.Assignments(map[string]any{"last_seen": warmStart}),
-			}).Create(&ZipPolitician{
-				Zip:          zip,
-				PoliticianID: polID,
-				LastSeen:     warmStart,
-			}).Error; err != nil {
-				log.Printf("[warmLocal] zip mapping error: %v", err)
+		log.Printf("[warmLocal] fetched %d local officials for %s via %s provider", len(officials), zip, Provider.Name())
+
+		// Extract state from first official
+		if len(officials) > 0 {
+			if officials[0].Office.RepresentingState != "" {
+				zipState = officials[0].Office.RepresentingState
+			} else if officials[0].Office.District.State != "" {
+				zipState = officials[0].Office.District.State
+			}
+		}
+
+		for _, off := range officials {
+			polID, err := upsertNormalizedOfficial(ctx, off, warmStart)
+			if err != nil {
+				log.Printf("[warmLocal] upsert error for official %s: %v", off.ExternalID, err)
+				continue
+			}
+			if polID != uuid.Nil {
+				touched = append(touched, polID)
+				if err := db.DB.WithContext(ctx).Clauses(clause.OnConflict{
+					Columns:   []clause.Column{{Name: "zip"}, {Name: "politician_id"}},
+					DoUpdates: clause.Assignments(map[string]any{"last_seen": warmStart}),
+				}).Create(&ZipPolitician{
+					Zip:          zip,
+					PoliticianID: polID,
+					LastSeen:     warmStart,
+				}).Error; err != nil {
+					log.Printf("[warmLocal] zip mapping error: %v", err)
+				}
+			}
+		}
+	} else {
+		// Fallback to direct Cicero API call (legacy behavior)
+		officials, err := fetchCiceroOfficialsByTypes(zip, []string{"LOCAL_EXEC", "LOCAL", "COUNTY", "SCHOOL", "JUDICIAL"})
+		if err != nil {
+			return fmt.Errorf("cicero fetch local: %w", err)
+		}
+
+		log.Printf("[warmLocal] fetched %d local officials for %s via legacy Cicero", len(officials), zip)
+
+		if len(officials) > 0 {
+			if officials[0].Office.RepresentingState != "" {
+				zipState = officials[0].Office.RepresentingState
+			} else if officials[0].Office.District.State != "" {
+				zipState = officials[0].Office.District.State
+			}
+		}
+
+		for _, off := range officials {
+			polID, err := upsertOfficial(ctx, off, warmStart)
+			if err != nil {
+				log.Printf("[warmLocal] upsert error for official %d: %v", off.OfficialID, err)
+				continue
+			}
+			if polID != uuid.Nil {
+				touched = append(touched, polID)
+				if err := db.DB.WithContext(ctx).Clauses(clause.OnConflict{
+					Columns:   []clause.Column{{Name: "zip"}, {Name: "politician_id"}},
+					DoUpdates: clause.Assignments(map[string]any{"last_seen": warmStart}),
+				}).Create(&ZipPolitician{
+					Zip:          zip,
+					PoliticianID: polID,
+					LastSeen:     warmStart,
+				}).Error; err != nil {
+					log.Printf("[warmLocal] zip mapping error: %v", err)
+				}
 			}
 		}
 	}
@@ -1153,28 +1433,34 @@ func waitForData(ctx context.Context, zip string, maxWait, tick time.Duration) (
 // Uses hierarchical queries instead of relying solely on zip_politicians mapping.
 func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 	type row struct {
-		ID                uuid.UUID
-		ExternalID        int
-		FirstName         string
-		MiddleInitial     string
-		LastName          string
-		PreferredName     string
-		NameSuffix        string
-		FullName          string
-		Party             string
-		PhotoOriginURL    string
-		WebFormURL        string
-		URLs              pq.StringArray `gorm:"type:text[]"`
-		EmailAddresses    pq.StringArray `gorm:"type:text[]"`
-		OfficeTitle       string
-		RepresentingState string
-		RepresentingCity  string
-		DistrictType      string
-		DistrictLabel     string
-		ChamberName       string
-		ChamberNameFormal string
-		GovernmentName    string
-		ElectionFrequency string
+		ID                 uuid.UUID
+		ExternalID         int
+		FirstName          string
+		MiddleInitial      string
+		LastName           string
+		PreferredName      string
+		NameSuffix         string
+		FullName           string
+		Party              string
+		PhotoOriginURL     string
+		WebFormURL         string
+		URLs               pq.StringArray `gorm:"type:text[]"`
+		EmailAddresses     pq.StringArray `gorm:"type:text[]"`
+		OfficeTitle        string
+		RepresentingState  string
+		RepresentingCity   string
+		DistrictType       string
+		DistrictLabel      string
+		MTFCC              string
+		ChamberName        string
+		ChamberNameFormal  string
+		GovernmentName     string
+		ElectionFrequency  string
+		BioText            string
+		BioguideID         string
+		Slug               string
+		TotalYearsInOffice int
+		OfficeDescription  string
 	}
 
 	var rows []row
@@ -1187,10 +1473,15 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
 		  p.web_form_url, p.urls, p.email_addresses,
 		  o.title AS office_title, o.representing_state, o.representing_city,
-		  d.district_type, d.label AS district_label,
+		  d.district_type, d.label AS district_label, d.mtfcc,
 		  c.name AS chamber_name, c.name_formal AS chamber_name_formal,
 		  g.name AS government_name,
-		  COALESCE(c.election_frequency, '') AS election_frequency
+		  COALESCE(c.election_frequency, '') AS election_frequency,
+		  COALESCE(p.bio_text, '') AS bio_text,
+		  COALESCE(p.bioguide_id, '') AS bioguide_id,
+		  COALESCE(p.slug, '') AS slug,
+		  COALESCE(p.total_years_in_office, 0) AS total_years_in_office,
+		  COALESCE(o.description, '') AS office_description
 		FROM essentials.politicians p
 		JOIN essentials.offices o ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
@@ -1260,6 +1551,88 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		})
 	}
 
+	// Fetch images
+	type imageRow struct {
+		PoliticianID uuid.UUID
+		URL          string
+		Type         string
+	}
+	var imageRows []imageRow
+	if err := db.DB.Raw(`
+		SELECT politician_id, url, type
+		FROM essentials.politician_images
+		WHERE politician_id = ANY(?)
+		ORDER BY type
+	`, pq.Array(ids)).Scan(&imageRows).Error; err != nil {
+		return nil, err
+	}
+
+	imagesByPol := make(map[uuid.UUID][]ImageOut)
+	for _, img := range imageRows {
+		imagesByPol[img.PoliticianID] = append(imagesByPol[img.PoliticianID], ImageOut{
+			URL:  img.URL,
+			Type: img.Type,
+		})
+	}
+
+	// Fetch degrees
+	type degreeRow struct {
+		PoliticianID uuid.UUID
+		Degree       string
+		Major        string
+		School       string
+		GradYear     int
+	}
+	var degreeRows []degreeRow
+	if err := db.DB.Raw(`
+		SELECT politician_id, degree, major, school, grad_year
+		FROM essentials.degrees
+		WHERE politician_id = ANY(?)
+		ORDER BY grad_year DESC
+	`, pq.Array(ids)).Scan(&degreeRows).Error; err != nil {
+		return nil, err
+	}
+
+	degreesByPol := make(map[uuid.UUID][]DegreeOut)
+	for _, deg := range degreeRows {
+		degreesByPol[deg.PoliticianID] = append(degreesByPol[deg.PoliticianID], DegreeOut{
+			Degree:   deg.Degree,
+			Major:    deg.Major,
+			School:   deg.School,
+			GradYear: deg.GradYear,
+		})
+	}
+
+	// Fetch experiences
+	type experienceRow struct {
+		PoliticianID uuid.UUID
+		Title        string
+		Organization string
+		Type         string
+		Start        string
+		End          string
+	}
+	var experienceRows []experienceRow
+	if err := db.DB.Raw(`
+		SELECT politician_id, title, organization, type, start, "end"
+		FROM essentials.experiences
+		WHERE politician_id = ANY(?)
+		ORDER BY start DESC
+	`, pq.Array(ids)).Scan(&experienceRows).Error; err != nil {
+		return nil, err
+	}
+
+	experiencesByPol := make(map[uuid.UUID][]ExperienceOut)
+	for _, exp := range experienceRows {
+		experiencesByPol[exp.PoliticianID] = append(experiencesByPol[exp.PoliticianID], ExperienceOut{
+			Title:        exp.Title,
+			Organization: exp.Organization,
+			Type:         exp.Type,
+			Start:        exp.Start,
+			End:          exp.End,
+		})
+	}
+
 	// Assemble final DTOs
 	out := make([]OfficialOut, 0, len(rows))
 	for _, r := range rows {
@@ -1271,11 +1644,236 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 			URLs: []string(r.URLs), EmailAddresses: []string(r.EmailAddresses),
 			OfficeTitle: r.OfficeTitle, RepresentingState: r.RepresentingState, RepresentingCity: r.RepresentingCity,
 			DistrictType: r.DistrictType, DistrictLabel: r.DistrictLabel,
+			MTFCC: r.MTFCC,
 			ChamberName: r.ChamberName, ChamberNameFormal: r.ChamberNameFormal,
-			GovernmentName:    r.GovernmentName,
-			IsElected:         isElectedPosition(r.DistrictType, r.OfficeTitle, r.ElectionFrequency),
-			ElectionFrequency: r.ElectionFrequency,
-			Committees:        byPol[r.ID],
+			GovernmentName:     r.GovernmentName,
+			IsElected:          isElectedPosition(r.DistrictType, r.OfficeTitle, r.ElectionFrequency),
+			ElectionFrequency:  r.ElectionFrequency,
+			Committees:         byPol[r.ID],
+			BioText:            r.BioText,
+			BioguideID:         r.BioguideID,
+			Slug:               r.Slug,
+			TotalYearsInOffice: r.TotalYearsInOffice,
+			OfficeDescription:  r.OfficeDescription,
+			Images:             imagesByPol[r.ID],
+			Degrees:            degreesByPol[r.ID],
+			Experiences:        experiencesByPol[r.ID],
+		})
+	}
+
+	return out, nil
+}
+
+// fetchFederalAndStateFromDB returns federal officials (nationwide) plus state-level officials
+// for the given state from the DB cache. Unlike fetchOfficialsFromDB, this does NOT require
+// a ZIP code or the zip_politicians mapping — it queries by district type directly.
+func fetchFederalAndStateFromDB(state string) ([]OfficialOut, error) {
+	type row struct {
+		ID                 uuid.UUID
+		ExternalID         int
+		FirstName          string
+		MiddleInitial      string
+		LastName           string
+		PreferredName      string
+		NameSuffix         string
+		FullName           string
+		Party              string
+		PhotoOriginURL     string
+		WebFormURL         string
+		URLs               pq.StringArray `gorm:"type:text[]"`
+		EmailAddresses     pq.StringArray `gorm:"type:text[]"`
+		OfficeTitle        string
+		RepresentingState  string
+		RepresentingCity   string
+		DistrictType       string
+		DistrictLabel      string
+		MTFCC              string
+		ChamberName        string
+		ChamberNameFormal  string
+		GovernmentName     string
+		ElectionFrequency  string
+		BioText            string
+		BioguideID         string
+		Slug               string
+		TotalYearsInOffice int
+		OfficeDescription  string
+	}
+
+	var rows []row
+
+	query := `
+		SELECT
+		  p.id, p.external_id, p.first_name, p.middle_initial, p.last_name,
+		  p.preferred_name, p.name_suffix, p.full_name, p.party,
+		  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
+		  p.web_form_url, p.urls, p.email_addresses,
+		  o.title AS office_title, o.representing_state, o.representing_city,
+		  d.district_type, d.label AS district_label, d.mtfcc,
+		  c.name AS chamber_name, c.name_formal AS chamber_name_formal,
+		  g.name AS government_name,
+		  COALESCE(c.election_frequency, '') AS election_frequency,
+		  COALESCE(p.bio_text, '') AS bio_text,
+		  COALESCE(p.bioguide_id, '') AS bioguide_id,
+		  COALESCE(p.slug, '') AS slug,
+		  COALESCE(p.total_years_in_office, 0) AS total_years_in_office,
+		  COALESCE(o.description, '') AS office_description
+		FROM essentials.politicians p
+		JOIN essentials.offices o ON o.politician_id = p.id
+		JOIN essentials.districts d ON d.id = o.district_id
+		JOIN essentials.chambers c ON c.id = o.chamber_id
+		JOIN essentials.governments g ON g.id = c.government_id
+		WHERE (
+		  d.district_type = 'NATIONAL_EXEC'
+		  OR (
+		    d.district_type IN ('NATIONAL_UPPER', 'NATIONAL_LOWER', 'STATE_EXEC', 'STATE_UPPER', 'STATE_LOWER')
+		    AND (o.representing_state = ? OR d.state = ?)
+		  )
+		)
+		ORDER BY d.district_type, o.title, p.last_name, p.first_name
+	`
+
+	if err := db.DB.Raw(query, state, state).Scan(&rows).Error; err != nil {
+		return nil, err
+	}
+
+	if len(rows) == 0 {
+		return []OfficialOut{}, nil
+	}
+
+	ids := make([]uuid.UUID, 0, len(rows))
+	for _, r := range rows {
+		ids = append(ids, r.ID)
+	}
+
+	type commRow struct {
+		PoliticianID uuid.UUID
+		Name         string
+		Position     string
+		URLs         pq.StringArray `gorm:"type:text[]"`
+	}
+	var commRows []commRow
+	if err := db.DB.Raw(`
+		SELECT pc.politician_id, cm.name, pc.position, cm.urls
+		FROM essentials.politician_committees pc
+		JOIN essentials.committees cm ON cm.id = pc.committee_id
+		WHERE pc.politician_id = ANY(?)
+	`, pq.Array(ids)).Scan(&commRows).Error; err != nil {
+		return nil, err
+	}
+
+	byPol := make(map[uuid.UUID][]CommitteeOut, len(ids))
+	for _, cr := range commRows {
+		byPol[cr.PoliticianID] = append(byPol[cr.PoliticianID], CommitteeOut{
+			Name: cr.Name, Position: cr.Position, URLs: []string(cr.URLs),
+		})
+	}
+
+	// Fetch images
+	type imageRow struct {
+		PoliticianID uuid.UUID
+		URL          string
+		Type         string
+	}
+	var imageRows []imageRow
+	if err := db.DB.Raw(`
+		SELECT politician_id, url, type
+		FROM essentials.politician_images
+		WHERE politician_id = ANY(?)
+		ORDER BY type
+	`, pq.Array(ids)).Scan(&imageRows).Error; err != nil {
+		return nil, err
+	}
+
+	imagesByPol := make(map[uuid.UUID][]ImageOut)
+	for _, img := range imageRows {
+		imagesByPol[img.PoliticianID] = append(imagesByPol[img.PoliticianID], ImageOut{
+			URL:  img.URL,
+			Type: img.Type,
+		})
+	}
+
+	// Fetch degrees
+	type degreeRow struct {
+		PoliticianID uuid.UUID
+		Degree       string
+		Major        string
+		School       string
+		GradYear     int
+	}
+	var degreeRows []degreeRow
+	if err := db.DB.Raw(`
+		SELECT politician_id, degree, major, school, grad_year
+		FROM essentials.degrees
+		WHERE politician_id = ANY(?)
+		ORDER BY grad_year DESC
+	`, pq.Array(ids)).Scan(&degreeRows).Error; err != nil {
+		return nil, err
+	}
+
+	degreesByPol := make(map[uuid.UUID][]DegreeOut)
+	for _, deg := range degreeRows {
+		degreesByPol[deg.PoliticianID] = append(degreesByPol[deg.PoliticianID], DegreeOut{
+			Degree:   deg.Degree,
+			Major:    deg.Major,
+			School:   deg.School,
+			GradYear: deg.GradYear,
+		})
+	}
+
+	// Fetch experiences
+	type experienceRow struct {
+		PoliticianID uuid.UUID
+		Title        string
+		Organization string
+		Type         string
+		Start        string
+		End          string
+	}
+	var experienceRows []experienceRow
+	if err := db.DB.Raw(`
+		SELECT politician_id, title, organization, type, start, "end"
+		FROM essentials.experiences
+		WHERE politician_id = ANY(?)
+		ORDER BY start DESC
+	`, pq.Array(ids)).Scan(&experienceRows).Error; err != nil {
+		return nil, err
+	}
+
+	experiencesByPol := make(map[uuid.UUID][]ExperienceOut)
+	for _, exp := range experienceRows {
+		experiencesByPol[exp.PoliticianID] = append(experiencesByPol[exp.PoliticianID], ExperienceOut{
+			Title:        exp.Title,
+			Organization: exp.Organization,
+			Type:         exp.Type,
+			Start:        exp.Start,
+			End:          exp.End,
+		})
+	}
+
+	out := make([]OfficialOut, 0, len(rows))
+	for _, r := range rows {
+		out = append(out, OfficialOut{
+			ID: r.ID, ExternalID: r.ExternalID,
+			FirstName: r.FirstName, MiddleInitial: r.MiddleInitial, LastName: r.LastName,
+			PreferredName: r.PreferredName, NameSuffix: r.NameSuffix, FullName: r.FullName,
+			Party: r.Party, PhotoOriginURL: r.PhotoOriginURL, WebFormURL: r.WebFormURL,
+			URLs: []string(r.URLs), EmailAddresses: []string(r.EmailAddresses),
+			OfficeTitle: r.OfficeTitle, RepresentingState: r.RepresentingState, RepresentingCity: r.RepresentingCity,
+			DistrictType: r.DistrictType, DistrictLabel: r.DistrictLabel,
+			MTFCC: r.MTFCC,
+			ChamberName: r.ChamberName, ChamberNameFormal: r.ChamberNameFormal,
+			GovernmentName:     r.GovernmentName,
+			IsElected:          isElectedPosition(r.DistrictType, r.OfficeTitle, r.ElectionFrequency),
+			ElectionFrequency:  r.ElectionFrequency,
+			Committees:         byPol[r.ID],
+			BioText:            r.BioText,
+			BioguideID:         r.BioguideID,
+			Slug:               r.Slug,
+			TotalYearsInOffice: r.TotalYearsInOffice,
+			OfficeDescription:  r.OfficeDescription,
+			Images:             imagesByPol[r.ID],
+			Degrees:            degreesByPol[r.ID],
+			Experiences:        experiencesByPol[r.ID],
 		})
 	}
 
@@ -1316,79 +1914,266 @@ func isElectedPosition(districtType, officeTitle, electionFrequency string) bool
 }
 
 // fetchCiceroOfficialsByTypes returns officials for a ZIP filtered by specific district types.
+// This is a legacy fallback used when the provider is not initialized.
+// It uses the cicero package's client directly.
 func fetchCiceroOfficialsByTypes(zip string, districtTypes []string) ([]CiceroOfficial, error) {
-	const pageMax = 199
-
-	apiURL := "https://app.cicerodata.com/v3.1/official"
-
-	// Static params
-	base := url.Values{}
-	base.Set("search_postal", zip)
-	base.Set("search_country", "US")
-	base.Set("format", "json")
-	base.Set("key", os.Getenv("CICERO_KEY"))
-	base.Set("max", strconv.Itoa(pageMax))
-
-	for _, dt := range districtTypes {
-		base.Add("district_type", dt)
-	}
-
-	var all []CiceroOfficial
-	offset := 0
-
-	for {
-		params := url.Values{}
-		for k, vs := range base {
-			for _, v := range vs {
-				params.Add(k, v)
-			}
-		}
-		params.Set("offset", strconv.Itoa(offset))
-
-		fullURL := fmt.Sprintf("%s?%s", apiURL, params.Encode())
-
-		resp, err := http.Get(fullURL)
-		if err != nil {
-			return nil, fmt.Errorf("cicero request failed: %w", err)
-		}
-		if resp.StatusCode != http.StatusOK {
-			_ = resp.Body.Close()
-			return nil, fmt.Errorf("cicero status %d", resp.StatusCode)
-		}
-
-		var page CiceroAPIResponse
-		if err := json.NewDecoder(resp.Body).Decode(&page); err != nil {
-			_ = resp.Body.Close()
-			return nil, fmt.Errorf("decode cicero: %w", err)
-		}
-		_ = resp.Body.Close()
-
-		// Flatten this page
-		pageCount := 0
-		for _, c := range page.Response.Results.Candidates {
-			all = append(all, c.Officials...)
-			pageCount += len(c.Officials)
-		}
-
-		// Stop if this page returned less than requested max
-		if pageCount < pageMax {
-			break
-		}
-
-		offset += pageCount
-	}
-
-	return all, nil
+	client := cicero.NewClient(provider.LoadFromEnv().CiceroKey)
+	return client.FetchOfficialsByZip(context.Background(), zip, districtTypes)
 }
 
 // fetchAllCiceroOfficials returns all officials for a ZIP (all district types).
 // Kept for backwards compatibility with the legacy warmZip function.
 func fetchAllCiceroOfficials(zip string) ([]CiceroOfficial, error) {
-	return fetchCiceroOfficialsByTypes(zip, []string{
-		"NATIONAL_EXEC", "NATIONAL_UPPER", "NATIONAL_LOWER",
-		"STATE_EXEC", "STATE_UPPER", "STATE_LOWER",
-		"LOCAL_EXEC", "LOCAL", "COUNTY", "SCHOOL", "JUDICIAL",
-	})
+	return fetchCiceroOfficialsByTypes(zip, provider.AllDistrictTypes)
+}
+
+// addressSearchNamespace is a fixed UUID v5 namespace for generating deterministic IDs
+// from external IDs when bypassing the database.
+var addressSearchNamespace = uuid.MustParse("b7e9c4a1-3f82-4d56-9e01-af2c68d17b34")
+
+// normalizedToOfficialOut converts a NormalizedOfficial directly to an OfficialOut,
+// bypassing the database. Used for address-based lookups where results are returned immediately.
+func normalizedToOfficialOut(off provider.NormalizedOfficial) OfficialOut {
+	extID, _ := strconv.Atoi(off.ExternalID)
+
+	// Generate a deterministic UUID from the external ID so React keys are unique/stable
+	id := uuid.NewSHA1(addressSearchNamespace, []byte(off.ExternalID))
+
+	// Build full name from parts if not available
+	fullName := strings.TrimSpace(off.FirstName + " " + off.LastName)
+
+	committees := make([]CommitteeOut, 0, len(off.Committees))
+	for _, c := range off.Committees {
+		committees = append(committees, CommitteeOut{
+			Name:     c.Name,
+			Position: c.Position,
+			URLs:     c.URLs,
+		})
+	}
+
+	// Map images
+	images := make([]ImageOut, 0, len(off.Images))
+	for _, img := range off.Images {
+		images = append(images, ImageOut{
+			URL:  img.URL,
+			Type: img.Type,
+		})
+	}
+
+	// Map degrees
+	degrees := make([]DegreeOut, 0, len(off.Degrees))
+	for _, deg := range off.Degrees {
+		degrees = append(degrees, DegreeOut{
+			Degree:   deg.Degree,
+			Major:    deg.Major,
+			School:   deg.School,
+			GradYear: deg.GradYear,
+		})
+	}
+
+	// Map experiences
+	experiences := make([]ExperienceOut, 0, len(off.Experiences))
+	for _, exp := range off.Experiences {
+		experiences = append(experiences, ExperienceOut{
+			Title:        exp.Title,
+			Organization: exp.Organization,
+			Type:         exp.Type,
+			Start:        exp.Start,
+			End:          exp.End,
+		})
+	}
+
+	return OfficialOut{
+		ID:                 id,
+		ExternalID:         extID,
+		FirstName:          off.FirstName,
+		MiddleInitial:      off.MiddleInitial,
+		LastName:           off.LastName,
+		PreferredName:      off.PreferredName,
+		NameSuffix:         off.NameSuffix,
+		FullName:           fullName,
+		Party:              off.Party,
+		PhotoOriginURL:     off.PhotoOriginURL,
+		WebFormURL:         off.WebFormURL,
+		URLs:               off.URLs,
+		EmailAddresses:     off.EmailAddresses,
+		OfficeTitle:        off.Office.Title,
+		RepresentingState:  off.Office.RepresentingState,
+		RepresentingCity:   off.Office.RepresentingCity,
+		DistrictType:       off.Office.District.DistrictType,
+		DistrictLabel:      off.Office.District.Label,
+		MTFCC:              off.Office.District.MTFCC,
+		ChamberName:        off.Office.Chamber.Name,
+		ChamberNameFormal:  off.Office.Chamber.NameFormal,
+		GovernmentName:     off.Office.Chamber.Government.Name,
+		IsElected:          isElectedPosition(off.Office.District.DistrictType, off.Office.Title, off.Office.Chamber.ElectionFrequency),
+		ElectionFrequency:  off.Office.Chamber.ElectionFrequency,
+		Committees:         committees,
+		BioText:            off.BioText,
+		BioguideID:         off.BioguideID,
+		Slug:               off.Slug,
+		TotalYearsInOffice: off.TotalYearsInOffice,
+		OfficeDescription:  off.Office.Description,
+		Images:             images,
+		Degrees:            degrees,
+		Experiences:        experiences,
+	}
+}
+
+// SearchPoliticians handles POST /politicians/search.
+// Accepts {"query": "..."} and detects ZIP vs address.
+// ZIP queries delegate to the existing warm/cache flow.
+// Address queries call BallotReady directly for precise results.
+func SearchPoliticians(w http.ResponseWriter, r *http.Request) {
+	var body struct {
+		Query string `json:"query"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+	query := strings.TrimSpace(body.Query)
+	if query == "" {
+		http.Error(w, "Query is required", http.StatusBadRequest)
+		return
+	}
+
+	// If the query is a 5-digit ZIP, delegate to existing ZIP flow
+	if isZip5(query) {
+		handleZipLookup(w, r, query)
+		return
+	}
+
+	// Address lookup — requires BallotReady provider
+	brProvider, ok := Provider.(*ballotready.BallotReadyProvider)
+	if !ok {
+		http.Error(w, "Address search requires the BallotReady provider", http.StatusServiceUnavailable)
+		return
+	}
+
+	ctx := r.Context()
+	nodes, err := brProvider.Client().FetchOfficeHoldersByAddress(ctx, query)
+	if err != nil {
+		log.Printf("[SearchPoliticians] address lookup error: %v", err)
+		http.Error(w, "Failed to fetch politicians for address", http.StatusBadGateway)
+		return
+	}
+
+	normalized := ballotready.TransformBatch(nodes)
+
+	// 1. Build response immediately (fast, uses SHA1-based UUIDs)
+	out := make([]OfficialOut, 0, len(normalized))
+	for _, off := range normalized {
+		out = append(out, normalizedToOfficialOut(off))
+	}
+
+	// 2. Fast batch lookup: resolve real DB UUIDs for known politicians
+	extIDs := make([]int, 0, len(out))
+	for _, o := range out {
+		if o.ExternalID != 0 {
+			extIDs = append(extIDs, o.ExternalID)
+		}
+	}
+	if len(extIDs) > 0 {
+		type idRow struct {
+			ID         uuid.UUID
+			ExternalID int
+		}
+		var rows []idRow
+		db.DB.Raw(`SELECT id, external_id FROM essentials.politicians WHERE external_id = ANY(?)`, pq.Array(extIDs)).Scan(&rows)
+		lookup := make(map[int]uuid.UUID, len(rows))
+		for _, r := range rows {
+			lookup[r.ExternalID] = r.ID
+		}
+		for i := range out {
+			if dbID, ok := lookup[out[i].ExternalID]; ok {
+				out[i].ID = dbID
+			}
+		}
+	}
+
+	// 3. Supplement with federal + state officials from DB cache
+	var searchState string
+	for _, o := range out {
+		if o.RepresentingState != "" {
+			searchState = strings.ToUpper(o.RepresentingState)
+			break
+		}
+	}
+
+	if searchState != "" {
+		seenExtIDs := make(map[int]bool, len(out))
+		for _, o := range out {
+			if o.ExternalID != 0 {
+				seenExtIDs[o.ExternalID] = true
+			}
+		}
+
+		supplemental, err := fetchFederalAndStateFromDB(searchState)
+		if err == nil {
+			for _, s := range supplemental {
+				if !seenExtIDs[s.ExternalID] {
+					out = append(out, s)
+					seenExtIDs[s.ExternalID] = true
+				}
+			}
+		}
+
+		// Kick background warmers if caches are stale
+		now := time.Now()
+		const maxAge = 90 * 24 * time.Hour
+
+		var federalCache FederalCache
+		if err := db.DB.First(&federalCache).Error; err != nil || now.Sub(federalCache.LastFetched) >= maxAge {
+			if tryAcquireLock(ctx, "federal") {
+				go func() {
+					defer releaseLock(context.Background(), "federal")
+					if err := warmFederal(context.Background()); err != nil {
+						log.Printf("[SearchPoliticians] warmFederal err=%v", err)
+					}
+				}()
+			}
+		}
+
+		var stateCache StateCache
+		if err := db.DB.Where("state = ?", searchState).First(&stateCache).Error; err != nil || now.Sub(stateCache.LastFetched) >= maxAge {
+			if tryAcquireLock(ctx, "state-"+searchState) {
+				go func() {
+					defer releaseLock(context.Background(), "state-"+searchState)
+					// Use a common ZIP from BallotReady results for the state warmer
+					sampleZip := ""
+					if err := db.DB.Raw("SELECT zip FROM essentials.zip_caches WHERE state = ? LIMIT 1", searchState).Row().Scan(&sampleZip); err != nil || sampleZip == "" {
+						sampleZip = "20001" // fallback
+					}
+					if err := warmState(context.Background(), searchState, sampleZip); err != nil {
+						log.Printf("[SearchPoliticians] warmState err=%v", err)
+					}
+				}()
+			}
+		}
+	}
+
+	// 4. Background upsert (non-blocking)
+	go func() {
+		bgCtx := context.Background()
+		ts := time.Now()
+		for _, off := range normalized {
+			if _, err := upsertNormalizedOfficial(bgCtx, off, ts); err != nil {
+				log.Printf("[SearchPoliticians] bg upsert error for %s: %v", off.ExternalID, err)
+			}
+		}
+	}()
+
+	w.Header().Set("X-Data-Status", "fresh")
+	writeJSON(w, out)
+}
+
+// PoliticianProfileOut is the enriched response for a single politician profile.
+type PoliticianProfileOut struct {
+	OfficialOut
+	Addresses   []Address    `json:"addresses"`
+	Identifiers []Identifier `json:"identifiers"`
+	Notes       []string     `json:"notes"`
 }
 
 func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
@@ -1398,18 +2183,175 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var politician Politician
-	err := db.DB.Preload("Addresses").Preload("Identifiers").Preload("Committees").First(&politician, "id = ?", id).Error
+	// Validate UUID format
+	parsedID, err := uuid.Parse(id)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			http.Error(w, "Not found", http.StatusNotFound)
-			return
-		}
-		http.Error(w, "DB fetch error", http.StatusInternalServerError)
+		http.Error(w, "Invalid id format", http.StatusBadRequest)
 		return
 	}
 
-	writeJSON(w, politician)
+	// 1. Fetch politician with joined office/district/chamber/government (same pattern as GetAllPoliticians)
+	type row struct {
+		ID                 uuid.UUID
+		ExternalID         int
+		FirstName          string
+		MiddleInitial      string
+		LastName           string
+		PreferredName      string
+		NameSuffix         string
+		FullName           string
+		Party              string
+		PhotoOriginURL     string
+		WebFormURL         string
+		URLs               pq.StringArray `gorm:"type:text[]"`
+		EmailAddresses     pq.StringArray `gorm:"type:text[]"`
+		Notes              pq.StringArray `gorm:"type:text[]"`
+		OfficeTitle        string
+		RepresentingState  string
+		RepresentingCity   string
+		DistrictType       string
+		DistrictLabel      string
+		MTFCC              string
+		ChamberName        string
+		ChamberNameFormal  string
+		GovernmentName     string
+		ElectionFrequency  string
+		BioText            string
+		BioguideID         string
+		Slug               string
+		TotalYearsInOffice int
+		OfficeDescription  string
+	}
+
+	var r0 row
+	if err := db.DB.Raw(`
+		SELECT
+		  p.id, p.external_id, p.first_name, p.middle_initial, p.last_name,
+		  p.preferred_name, p.name_suffix, p.full_name, p.party,
+		  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
+		  p.web_form_url, p.urls, p.email_addresses, p.notes,
+		  COALESCE(p.bio_text, '') AS bio_text,
+		  COALESCE(p.bioguide_id, '') AS bioguide_id,
+		  COALESCE(p.slug, '') AS slug,
+		  COALESCE(p.total_years_in_office, 0) AS total_years_in_office,
+		  o.title AS office_title, o.representing_state, o.representing_city,
+		  COALESCE(o.description, '') AS office_description,
+		  d.district_type, d.label AS district_label, d.mtfcc,
+		  c.name AS chamber_name, c.name_formal AS chamber_name_formal,
+		  g.name AS government_name,
+		  COALESCE(c.election_frequency, '') AS election_frequency
+		FROM essentials.politicians p
+		JOIN essentials.offices o ON o.politician_id = p.id
+		JOIN essentials.districts d ON d.id = o.district_id
+		JOIN essentials.chambers c ON c.id = o.chamber_id
+		JOIN essentials.governments g ON g.id = c.government_id
+		WHERE p.id = ?
+	`, parsedID).Scan(&r0).Error; err != nil {
+		http.Error(w, "DB fetch error", http.StatusInternalServerError)
+		return
+	}
+	if r0.ID == uuid.Nil {
+		http.Error(w, "Not found", http.StatusNotFound)
+		return
+	}
+
+	// 2. Fetch addresses
+	var addresses []Address
+	db.DB.Where("politician_id = ?", parsedID).Find(&addresses)
+
+	// 3. Fetch identifiers
+	var identifiers []Identifier
+	db.DB.Where("politician_id = ?", parsedID).Find(&identifiers)
+
+	// 4. Fetch committees with resolved names
+	type commRow struct {
+		Name     string
+		Position string
+		URLs     pq.StringArray `gorm:"type:text[]"`
+	}
+	var commRows []commRow
+	db.DB.Raw(`
+		SELECT cm.name, pc.position, cm.urls
+		FROM essentials.politician_committees pc
+		JOIN essentials.committees cm ON cm.id = pc.committee_id
+		WHERE pc.politician_id = ?
+	`, parsedID).Scan(&commRows)
+
+	committees := make([]CommitteeOut, 0, len(commRows))
+	for _, cr := range commRows {
+		committees = append(committees, CommitteeOut{
+			Name:     cr.Name,
+			Position: cr.Position,
+			URLs:     []string(cr.URLs),
+		})
+	}
+
+	// 5. Fetch images
+	var imageRows []PoliticianImage
+	db.DB.Where("politician_id = ?", parsedID).Find(&imageRows)
+	images := make([]ImageOut, 0, len(imageRows))
+	for _, img := range imageRows {
+		images = append(images, ImageOut{URL: img.URL, Type: img.Type})
+	}
+
+	// 6. Fetch degrees
+	var degreeRows []Degree
+	db.DB.Where("politician_id = ?", parsedID).Find(&degreeRows)
+	degrees := make([]DegreeOut, 0, len(degreeRows))
+	for _, deg := range degreeRows {
+		degrees = append(degrees, DegreeOut{
+			Degree:   deg.Degree,
+			Major:    deg.Major,
+			School:   deg.School,
+			GradYear: deg.GradYear,
+		})
+	}
+
+	// 7. Fetch experiences
+	var expRows []Experience
+	db.DB.Where("politician_id = ?", parsedID).Find(&expRows)
+	experiences := make([]ExperienceOut, 0, len(expRows))
+	for _, exp := range expRows {
+		experiences = append(experiences, ExperienceOut{
+			Title:        exp.Title,
+			Organization: exp.Organization,
+			Type:         exp.Type,
+			Start:        exp.Start,
+			End:          exp.End,
+		})
+	}
+
+	// 8. Assemble profile response
+	profile := PoliticianProfileOut{
+		OfficialOut: OfficialOut{
+			ID: r0.ID, ExternalID: r0.ExternalID,
+			FirstName: r0.FirstName, MiddleInitial: r0.MiddleInitial, LastName: r0.LastName,
+			PreferredName: r0.PreferredName, NameSuffix: r0.NameSuffix, FullName: r0.FullName,
+			Party: r0.Party, PhotoOriginURL: r0.PhotoOriginURL, WebFormURL: r0.WebFormURL,
+			URLs: []string(r0.URLs), EmailAddresses: []string(r0.EmailAddresses),
+			OfficeTitle: r0.OfficeTitle, RepresentingState: r0.RepresentingState, RepresentingCity: r0.RepresentingCity,
+			DistrictType: r0.DistrictType, DistrictLabel: r0.DistrictLabel,
+			MTFCC: r0.MTFCC,
+			ChamberName: r0.ChamberName, ChamberNameFormal: r0.ChamberNameFormal,
+			GovernmentName:     r0.GovernmentName,
+			IsElected:          isElectedPosition(r0.DistrictType, r0.OfficeTitle, r0.ElectionFrequency),
+			ElectionFrequency:  r0.ElectionFrequency,
+			Committees:         committees,
+			BioText:            r0.BioText,
+			BioguideID:         r0.BioguideID,
+			Slug:               r0.Slug,
+			TotalYearsInOffice: r0.TotalYearsInOffice,
+			OfficeDescription:  r0.OfficeDescription,
+			Images:             images,
+			Degrees:            degrees,
+			Experiences:        experiences,
+		},
+		Addresses:   addresses,
+		Identifiers: identifiers,
+		Notes:       []string(r0.Notes),
+	}
+
+	writeJSON(w, profile)
 }
 
 // GetAllPoliticians returns a (paged) list of politicians across the DB,
@@ -1440,6 +2382,7 @@ func GetAllPoliticians(w http.ResponseWriter, r *http.Request) {
 		RepresentingCity  string
 		DistrictType      string
 		DistrictLabel     string
+		MTFCC             string
 		ChamberName       string
 		ChamberNameFormal string
 		GovernmentName    string
@@ -1497,7 +2440,7 @@ func GetAllPoliticians(w http.ResponseWriter, r *http.Request) {
 	  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
 	  p.web_form_url, p.urls, p.email_addresses,
 	  o.title AS office_title, o.representing_state, o.representing_city,
-	  d.district_type, d.label AS district_label,
+	  d.district_type, d.label AS district_label, d.mtfcc,
 	  c.name AS chamber_name, c.name_formal AS chamber_name_formal,
 	  g.name AS government_name,
 	  COALESCE(c.election_frequency, '') AS election_frequency
@@ -1569,6 +2512,7 @@ func GetAllPoliticians(w http.ResponseWriter, r *http.Request) {
 			URLs: []string(r.URLs), EmailAddresses: []string(r.EmailAddresses),
 			OfficeTitle: r.OfficeTitle, RepresentingState: r.RepresentingState, RepresentingCity: r.RepresentingCity,
 			DistrictType: r.DistrictType, DistrictLabel: r.DistrictLabel,
+			MTFCC: r.MTFCC,
 			ChamberName: r.ChamberName, ChamberNameFormal: r.ChamberNameFormal,
 			GovernmentName:    r.GovernmentName,
 			IsElected:         isElectedPosition(r.DistrictType, r.OfficeTitle, r.ElectionFrequency),

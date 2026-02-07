@@ -12,6 +12,7 @@ func SetupRoutes() http.Handler {
 	// Public routes
 	r.Get("/politicians", GetAllPoliticians)
 	r.Get("/politicians/{zip}", GetPoliticiansByZip)
+	r.Post("/politicians/search", SearchPoliticians)
 	r.Get("/politician/{id}", GetPoliticianByID)
 
 	return r

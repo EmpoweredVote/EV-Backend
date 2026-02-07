@@ -31,8 +31,17 @@ type Politician struct {
 	Notes          pq.StringArray        `json:"notes" gorm:"type:text[]"`
 	Committees     []PoliticianCommittee `json:"committees" gorm:"foreignKey:PoliticianID"`
 
+	// New BallotReady fields
+	BioText            string            `json:"bio_text"`
+	BioguideID         string            `json:"bioguide_id"`
+	Slug               string            `json:"slug"`
+	TotalYearsInOffice int               `json:"total_years_in_office"`
+	Images             []PoliticianImage `json:"images" gorm:"foreignKey:PoliticianID"`
+	Degrees            []Degree          `json:"degrees" gorm:"foreignKey:PoliticianID"`
+	Experiences        []Experience      `json:"experiences" gorm:"foreignKey:PoliticianID"`
+
 	// Provenance / Syncing
-	Source     string    `json:"source"` // "cicero"
+	Source     string    `json:"source"` // "cicero" or "ballotready"
 	LastSynced time.Time `json:"last_synced"`
 }
 
@@ -44,6 +53,7 @@ type Office struct {
 	Title             string    `json:"title"`
 	RepresentingState string    `json:"representing_state"`
 	RepresentingCity  string    `json:"representing_city"`
+	Description       string    `json:"description"` // Position description from BallotReady
 }
 
 type Chamber struct {
@@ -72,6 +82,7 @@ type District struct {
 	Subtype        string    `json:"subtype"`
 	State          string    `json:"state"`
 	City           string    `json:"city"`
+	MTFCC          string    `json:"mtfcc"`
 	NumOfficials   int       `json:"num_officials"`
 	ValidFrom      string    `json:"valid_from"`
 	ValidTo        string    `json:"valid_to"`
@@ -141,6 +152,34 @@ type ZipPolitician struct {
 	LastSeen     time.Time `json:"last_seen"`
 }
 
+type PoliticianImage struct {
+	ID           uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	PoliticianID uuid.UUID `json:"politician_id" gorm:"type:uuid;index"`
+	URL          string    `json:"url"`
+	Type         string    `json:"type"` // "default", "thumb"
+}
+
+type Degree struct {
+	ID           uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	PoliticianID uuid.UUID `json:"politician_id" gorm:"type:uuid;index"`
+	ExternalID   string    `json:"external_id"` // ID from BallotReady
+	Degree       string    `json:"degree"`      // "Bachelor's", "JD", "Master's", etc.
+	Major        string    `json:"major"`
+	School       string    `json:"school"`
+	GradYear     int       `json:"grad_year"`
+}
+
+type Experience struct {
+	ID           uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	PoliticianID uuid.UUID `json:"politician_id" gorm:"type:uuid;index"`
+	ExternalID   string    `json:"external_id"` // ID from BallotReady
+	Title        string    `json:"title"`
+	Organization string    `json:"organization"`
+	Type         string    `json:"type"` // "elected_office", "employment", "military"
+	Start        string    `json:"start"`
+	End          string    `json:"end"` // Can be "Present" or a year
+}
+
 func (Politician) TableName() string {
 	return "essentials.politicians"
 }
@@ -191,4 +230,16 @@ func (ZipCache) TableName() string {
 
 func (ZipPolitician) TableName() string {
 	return "essentials.zip_politicians"
+}
+
+func (PoliticianImage) TableName() string {
+	return "essentials.politician_images"
+}
+
+func (Degree) TableName() string {
+	return "essentials.degrees"
+}
+
+func (Experience) TableName() string {
+	return "essentials.experiences"
 }

@@ -4,7 +4,16 @@ import (
 	"log"
 
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
+	"github.com/EmpoweredVote/EV-Backend/internal/essentials/provider"
+
+	// Import providers to register them via init()
+	_ "github.com/EmpoweredVote/EV-Backend/internal/essentials/ballotready"
+	_ "github.com/EmpoweredVote/EV-Backend/internal/essentials/cicero"
 )
+
+// Provider is the active politician data provider.
+// It is initialized in Init() based on environment configuration.
+var Provider provider.OfficialProvider
 
 func Init() {
 	// Ensure the essentials schema exists
@@ -30,6 +39,9 @@ func Init() {
 		&StateCache{},
 		&ZipCache{},
 		&ZipPolitician{},
+		&PoliticianImage{},
+		&Degree{},
+		&Experience{},
 	); err != nil {
 		log.Fatal("Failed to auto-migrate tables", err)
 	}
@@ -40,5 +52,17 @@ func Init() {
         ON essentials.committees (LOWER(name));
     `).Error; err != nil {
 		log.Fatal("Failed to create committees_name_ci_unique", err)
+	}
+
+	// Initialize the politician data provider
+	cfg := provider.LoadFromEnv()
+	var err error
+	Provider, err = provider.NewProvider(cfg)
+	if err != nil {
+		log.Printf("[essentials] WARNING: Failed to initialize %s provider: %v", cfg.Provider, err)
+		log.Printf("[essentials] Provider-based warming will be disabled")
+		Provider = nil
+	} else {
+		log.Printf("[essentials] Initialized %s provider", Provider.Name())
 	}
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -51,5 +52,7 @@ func main() {
 
 	fmt.Printf("Server listening on :%s...\n", port)
 
-	http.ListenAndServe("0.0.0.0:"+port, r)
+	if err := http.ListenAndServe("0.0.0.0:"+port, r); err != nil {
+		log.Fatal("Server failed: ", err)
+	}
 }
