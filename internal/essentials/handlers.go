@@ -164,7 +164,7 @@ func handleZipLookup(w http.ResponseWriter, r *http.Request, zip string) {
 
 	const (
 		maxAge          = 90 * 24 * time.Hour
-		shortWait       = 2 * time.Second
+		shortWait       = 10 * time.Second
 		shortWaitTick   = 200 * time.Millisecond
 		cdnTTLWhenFresh = 3600
 		swrSeconds      = 86400
@@ -1308,19 +1308,31 @@ func warmLocal(ctx context.Context, zip string) error {
 
 	// Use the provider abstraction if available
 	if Provider != nil {
-		officials, err := Provider.FetchByZip(ctx, zip, provider.LocalDistrictTypes)
+		// Fetch ALL officials for this ZIP (federal + state + local).
+		// BallotReady returns everything in a single call, so capture it all
+		// instead of throwing away federal/state data.
+		officials, err := Provider.FetchByZip(ctx, zip, nil)
 		if err != nil {
-			return fmt.Errorf("provider fetch local: %w", err)
+			return fmt.Errorf("provider fetch: %w", err)
 		}
 
-		log.Printf("[warmLocal] fetched %d local officials for %s via %s provider", len(officials), zip, Provider.Name())
+		log.Printf("[warmLocal] fetched %d officials (all levels) for %s via %s provider", len(officials), zip, Provider.Name())
+
+		// Build set of local district types for zip_politicians mapping
+		localTypes := make(map[string]bool, len(provider.LocalDistrictTypes))
+		for _, dt := range provider.LocalDistrictTypes {
+			localTypes[dt] = true
+		}
 
 		// Extract state from first official
-		if len(officials) > 0 {
-			if officials[0].Office.RepresentingState != "" {
-				zipState = officials[0].Office.RepresentingState
-			} else if officials[0].Office.District.State != "" {
-				zipState = officials[0].Office.District.State
+		for _, off := range officials {
+			if off.Office.RepresentingState != "" {
+				zipState = off.Office.RepresentingState
+				break
+			}
+			if off.Office.District.State != "" {
+				zipState = off.Office.District.State
+				break
 			}
 		}
 
@@ -1331,16 +1343,19 @@ func warmLocal(ctx context.Context, zip string) error {
 				continue
 			}
 			if polID != uuid.Nil {
-				touched = append(touched, polID)
-				if err := db.DB.WithContext(ctx).Clauses(clause.OnConflict{
-					Columns:   []clause.Column{{Name: "zip"}, {Name: "politician_id"}},
-					DoUpdates: clause.Assignments(map[string]any{"last_seen": warmStart}),
-				}).Create(&ZipPolitician{
-					Zip:          zip,
-					PoliticianID: polID,
-					LastSeen:     warmStart,
-				}).Error; err != nil {
-					log.Printf("[warmLocal] zip mapping error: %v", err)
+				// Only create zip_politicians mapping for local district types
+				if localTypes[off.Office.District.DistrictType] {
+					touched = append(touched, polID)
+					if err := db.DB.WithContext(ctx).Clauses(clause.OnConflict{
+						Columns:   []clause.Column{{Name: "zip"}, {Name: "politician_id"}},
+						DoUpdates: clause.Assignments(map[string]any{"last_seen": warmStart}),
+					}).Create(&ZipPolitician{
+						Zip:          zip,
+						PoliticianID: polID,
+						LastSeen:     warmStart,
+					}).Error; err != nil {
+						log.Printf("[warmLocal] zip mapping error: %v", err)
+					}
 				}
 			}
 		}
@@ -1430,7 +1445,7 @@ func warmLocal(ctx context.Context, zip string) error {
 		}
 	}
 
-	// Update zip cache and cleanup stale mappings
+	// Update zip cache, state cache, federal cache, and cleanup stale mappings
 	return db.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := tx.Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "zip"}},
@@ -1441,6 +1456,22 @@ func warmLocal(ctx context.Context, zip string) error {
 		// Remove stale local mappings for this zip
 		if err := tx.Where("zip = ? AND last_seen < ?", zip, warmStart).Delete(&ZipPolitician{}).Error; err != nil {
 			return err
+		}
+		// Also mark state cache as fresh (we already upserted state officials)
+		if zipState != "" {
+			if err := tx.Clauses(clause.OnConflict{
+				Columns:   []clause.Column{{Name: "state"}},
+				DoUpdates: clause.Assignments(map[string]any{"last_fetched": warmStart}),
+			}).Create(&StateCache{State: zipState, LastFetched: warmStart}).Error; err != nil {
+				log.Printf("[warmLocal] failed to update state cache: %v", err)
+			}
+		}
+		// Also mark federal cache as fresh (BallotReady returns federal officials in ZIP query)
+		if err := tx.Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "id"}},
+			DoUpdates: clause.Assignments(map[string]any{"last_fetched": warmStart}),
+		}).Create(&FederalCache{ID: 1, LastFetched: warmStart}).Error; err != nil {
+			log.Printf("[warmLocal] failed to update federal cache: %v", err)
 		}
 		return nil
 	})
@@ -1844,12 +1875,21 @@ func waitForDataMin(ctx context.Context, zip string, state string, maxWait, tick
 	t := time.NewTicker(tick)
 	defer t.Stop()
 
+	currentState := state
+
 	for {
 		select {
 		case <-ctx.Done():
 			return nil, false
 		case <-t.C:
-			officials, err := fetchOfficialsFromDB(zip, state)
+			// Re-read state from ZipCache if not yet known (warmLocal may have discovered it)
+			if currentState == "" {
+				var zipCache ZipCache
+				if err := db.DB.WithContext(ctx).Where("zip = ?", zip).First(&zipCache).Error; err == nil && zipCache.State != "" {
+					currentState = zipCache.State
+				}
+			}
+			officials, err := fetchOfficialsFromDB(zip, currentState)
 			if err == nil && len(officials) >= minCount {
 				return officials, true
 			}
@@ -1949,7 +1989,7 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 	if state != "" {
 		query += `
 		  OR (
-		    d.district_type IN ('NATIONAL_UPPER', 'STATE_EXEC', 'STATE_UPPER', 'STATE_LOWER')
+		    d.district_type IN ('NATIONAL_UPPER', 'NATIONAL_LOWER', 'STATE_EXEC', 'STATE_UPPER', 'STATE_LOWER')
 		    AND (o.representing_state = ? OR d.state = ?)
 		  )
 		`

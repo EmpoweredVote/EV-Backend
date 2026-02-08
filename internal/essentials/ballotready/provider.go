@@ -72,7 +72,8 @@ func (p *BallotReadyProvider) FetchByState(ctx context.Context, state, sampleZip
 	stateNodes := make([]OfficeHolderNode, 0)
 	for _, node := range nodes {
 		dt := districtTypeForNode(node)
-		isStateLevel := dt == "STATE_EXEC" || dt == "STATE_UPPER" || dt == "STATE_LOWER"
+		isStateLevel := dt == "STATE_EXEC" || dt == "STATE_UPPER" || dt == "STATE_LOWER" ||
+			dt == "NATIONAL_UPPER" || dt == "NATIONAL_LOWER"
 		if !isStateLevel {
 			continue
 		}
