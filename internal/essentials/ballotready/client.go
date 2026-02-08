@@ -487,71 +487,57 @@ query PositionsByZip($zip: String!) {
 `
 
 // candidacyQuery fetches candidacy history including endorsements and stances.
+// Uses Relay node interface to fetch Person by global ID.
 const candidacyQuery = `
 query CandidacyData($personId: ID!) {
-  person(id: $personId) {
-    id
-    databaseId
-    candidacies {
+  node(id: $personId) {
+    ... on Person {
       id
       databaseId
-      withdrawn
-      result
-      party {
-        name
-        shortName
-      }
-      race {
+      candidacies {
         id
         databaseId
-        isPrimary
-        isRunoff
-        isUnexpiredTerm
-        position {
-          id
-          databaseId
+        withdrawn
+        result
+        parties {
           name
+          shortName
         }
-        election {
+        race {
           id
           databaseId
-          name
-          day
+          isPrimary
+          isRunoff
+          position {
+            id
+            databaseId
+            name
+          }
+          election {
+            id
+            databaseId
+            name
+          }
         }
-      }
-      endorsements {
-        id
-        databaseId
-        endorserString
-        recommendation
-        status
-        endorser {
+        endorsements {
           id
           databaseId
-          name
-          description
-          logoUrl
-          issueName
-          state
+          endorser
+          recommendation
+          status
         }
-      }
-      stances {
-        id
-        databaseId
-        statement
-        referenceUrl
-        locale
-        issue {
+        stances {
           id
           databaseId
-          name
-          key
-          expandedText
-          parent {
+          statement
+          referenceUrl
+          locale
+          issue {
             id
             databaseId
             name
             key
+            expandedText
           }
         }
       }
@@ -615,12 +601,12 @@ func (c *Client) FetchCandidacyData(ctx context.Context, personGlobalID string) 
 		return nil, err
 	}
 
-	if gqlResp.Data == nil || gqlResp.Data.Person == nil {
+	if gqlResp.Data == nil || gqlResp.Data.Node == nil {
 		return nil, fmt.Errorf("no person data returned")
 	}
 
-	provider.LogResponse("ballotready", 200, time.Since(start), len(gqlResp.Data.Person.Candidacies))
-	return gqlResp.Data.Person, nil
+	provider.LogResponse("ballotready", 200, time.Since(start), len(gqlResp.Data.Node.Candidacies))
+	return gqlResp.Data.Node, nil
 }
 
 // PositionContainment represents a position ID with its containment status for a ZIP.

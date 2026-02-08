@@ -19,16 +19,15 @@ func TransformCandidaciesToNormalized(personWithCandidacies *PersonWithCandidaci
 			Result:              candidacy.Result,
 		}
 
-		// Party
-		if candidacy.Party != nil {
-			nc.PartyName = candidacy.Party.Name
+		// Party (take first party if multiple)
+		if len(candidacy.Parties) > 0 {
+			nc.PartyName = candidacy.Parties[0].Name
 		}
 
 		// Race and Election details
 		if candidacy.Race != nil {
 			nc.IsPrimary = candidacy.Race.IsPrimary
 			nc.IsRunoff = candidacy.Race.IsRunoff
-			nc.IsUnexpiredTerm = candidacy.Race.IsUnexpiredTerm
 
 			if candidacy.Race.Position != nil {
 				nc.PositionName = candidacy.Race.Position.Name
@@ -36,7 +35,8 @@ func TransformCandidaciesToNormalized(personWithCandidacies *PersonWithCandidaci
 
 			if candidacy.Race.Election != nil {
 				nc.ElectionName = candidacy.Race.Election.Name
-				nc.ElectionDate = candidacy.Race.Election.Day
+				// Note: Election.Date is not available in BallotReady candidacy queries
+				// ElectionDate remains empty
 			}
 		}
 
@@ -63,22 +63,10 @@ func transformEndorsements(endorsements []EndorsementBR, candidacyID, electionDa
 	for _, end := range endorsements {
 		ne := provider.NormalizedEndorsement{
 			CandidacyExternalID: candidacyID,
-			EndorserString:      end.EndorserString,
+			EndorserString:      end.Endorser,
 			Recommendation:      end.Recommendation,
 			Status:              end.Status,
 			ElectionDate:        electionDate,
-		}
-
-		// Organization details (if available)
-		if end.Endorser != nil {
-			ne.Organization = &provider.NormalizedEndorserOrganization{
-				ExternalID:  end.Endorser.ID,
-				Name:        end.Endorser.Name,
-				Description: end.Endorser.Description,
-				LogoURL:     end.Endorser.LogoURL,
-				IssueName:   end.Endorser.IssueName,
-				State:       end.Endorser.State,
-			}
 		}
 
 		normalized = append(normalized, ne)
@@ -128,10 +116,7 @@ func transformIssue(issue *IssueBR) *provider.NormalizedIssue {
 		ExpandedText: issue.ExpandedText,
 	}
 
-	// Recursively handle parent issue
-	if issue.Parent != nil {
-		ni.Parent = transformIssue(issue.Parent)
-	}
+	// Parent not available in BallotReady candidacy API
 
 	return ni
 }

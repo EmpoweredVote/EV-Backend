@@ -330,6 +330,7 @@ func TransformToNormalized(node OfficeHolderNode) *provider.NormalizedOfficial {
 
 	return &provider.NormalizedOfficial{
 		ExternalID:         strconv.Itoa(node.DatabaseID),
+		ExternalGlobalID:   person.ID, // Relay-style base64 ID for candidacy queries
 		FirstName:          person.FirstName,
 		MiddleInitial:      extractMiddleInitial(person.MiddleName),
 		LastName:           person.LastName,

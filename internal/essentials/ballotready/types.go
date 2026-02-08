@@ -210,9 +210,9 @@ type CandidacyGraphQLResponse struct {
 	Errors []GraphQLError         `json:"errors,omitempty"`
 }
 
-// CandidacyResponseData contains the person with candidacies.
+// CandidacyResponseData contains the person with candidacies via node query.
 type CandidacyResponseData struct {
-	Person *PersonWithCandidacies `json:"person"`
+	Node *PersonWithCandidacies `json:"node"`
 }
 
 // PersonWithCandidacies represents a person with their candidacy history.
@@ -228,7 +228,7 @@ type Candidacy struct {
 	DatabaseID   int              `json:"databaseId"`
 	Withdrawn    bool             `json:"withdrawn"`
 	Result       string           `json:"result"` // "WON", "LOST", "RUNOFF", etc.
-	Party        *Party           `json:"party"`
+	Parties      []Party          `json:"parties"`
 	Race         *Race            `json:"race"`
 	Endorsements []EndorsementBR  `json:"endorsements"`
 	Stances      []StanceBR       `json:"stances"`
@@ -236,13 +236,12 @@ type Candidacy struct {
 
 // Race represents an election race.
 type Race struct {
-	ID            string     `json:"id"`
-	DatabaseID    int        `json:"databaseId"`
-	IsPrimary     bool       `json:"isPrimary"`
-	IsRunoff      bool       `json:"isRunoff"`
-	IsUnexpiredTerm bool     `json:"isUnexpiredTerm"`
-	Position      *Position  `json:"position"`
-	Election      *Election  `json:"election"`
+	ID         string     `json:"id"`
+	DatabaseID int        `json:"databaseId"`
+	IsPrimary  bool       `json:"isPrimary"`
+	IsRunoff   bool       `json:"isRunoff"`
+	Position   *Position  `json:"position"`
+	Election   *Election  `json:"election"`
 }
 
 // Election represents an election event.
@@ -250,17 +249,16 @@ type Election struct {
 	ID         string `json:"id"`
 	DatabaseID int    `json:"databaseId"`
 	Name       string `json:"name"`
-	Day        string `json:"day"`
+	Date       string `json:"date"`
 }
 
 // EndorsementBR represents a BallotReady endorsement.
 type EndorsementBR struct {
-	ID             string      `json:"id"`
-	DatabaseID     int         `json:"databaseId"`
-	EndorserString string      `json:"endorserString"`
-	Recommendation string      `json:"recommendation"` // "PRO", "CON"
-	Status         string      `json:"status"`
-	Endorser       *EndorserBR `json:"endorser"`
+	ID             string `json:"id"`
+	DatabaseID     int    `json:"databaseId"`
+	Endorser       string `json:"endorser"`       // Endorser name (scalar string)
+	Recommendation string `json:"recommendation"` // "PRO", "CON"
+	Status         string `json:"status"`
 }
 
 // EndorserBR represents an endorsing organization.

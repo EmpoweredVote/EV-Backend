@@ -433,6 +433,7 @@ func TransformNormalizedToModels(off provider.NormalizedOfficial) (TransformResu
 	newPolitician := &Politician{
 		ID:                 polID,
 		ExternalID:         externalID,
+		ExternalGlobalID:   off.ExternalGlobalID,
 		FirstName:          off.FirstName,
 		MiddleInitial:      off.MiddleInitial,
 		LastName:           off.LastName,

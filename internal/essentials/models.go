@@ -211,14 +211,14 @@ type EndorserOrganization struct {
 }
 
 type Endorsement struct {
-	ID                   uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
-	PoliticianID         uuid.UUID `json:"politician_id" gorm:"type:uuid;uniqueIndex:idx_unique_endorsement"`
-	OrganizationID       uuid.UUID `json:"organization_id" gorm:"type:uuid;uniqueIndex:idx_unique_endorsement"`
-	EndorserString       string    `json:"endorser_string"` // Raw endorser text if organization not resolved
-	Recommendation       string    `json:"recommendation"`  // "PRO", "CON", or empty
-	Status               string    `json:"status"`          // "endorsed", "not_endorsed", etc.
-	ElectionDate         string    `json:"election_date"`
-	CandidacyExternalID  string    `json:"candidacy_external_id" gorm:"uniqueIndex:idx_unique_endorsement"` // Links to specific race
+	ID                   uuid.UUID  `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	PoliticianID         uuid.UUID  `json:"politician_id" gorm:"type:uuid;uniqueIndex:idx_unique_endorsement"`
+	OrganizationID       *uuid.UUID `json:"organization_id,omitempty" gorm:"type:uuid;uniqueIndex:idx_unique_endorsement"`
+	EndorserString       string     `json:"endorser_string"` // Raw endorser text if organization not resolved
+	Recommendation       string     `json:"recommendation"`  // "PRO", "CON", or empty
+	Status               string     `json:"status"`          // "endorsed", "not_endorsed", etc.
+	ElectionDate         string     `json:"election_date"`
+	CandidacyExternalID  string     `json:"candidacy_external_id" gorm:"uniqueIndex:idx_unique_endorsement"` // Links to specific race
 	Organization         *EndorserOrganization `json:"organization,omitempty" gorm:"foreignKey:OrganizationID"`
 }
 

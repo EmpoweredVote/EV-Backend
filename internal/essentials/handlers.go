@@ -198,8 +198,9 @@ func handleZipLookup(w http.ResponseWriter, r *http.Request, zip string) {
 	if zipCacheErr == nil && zipCache.State != "" {
 		state = zipCache.State
 	} else {
-		// Need to discover state - will be set during warmLocal
-		state = "" // Will warm local which will populate state
+		// Derive state from ZIP prefix immediately (static lookup, no API call)
+		state = zipPrefixToState(zip)
+		// Note: warmLocal will still discover and save state to zip_caches for future lookups
 	}
 
 	var stateFresh bool
@@ -714,6 +715,7 @@ func upsertNormalizedOfficial(ctx context.Context, off provider.NormalizedOffici
 				"bioguide_id":         gorm.Expr("excluded.bioguide_id"),
 				"slug":                gorm.Expr("excluded.slug"),
 				"total_years_in_office": gorm.Expr("excluded.total_years_in_office"),
+				"external_global_id":  gorm.Expr(`COALESCE(NULLIF(excluded.external_global_id, ''), "essentials"."politicians"."external_global_id")`),
 				"is_appointed":        gorm.Expr("excluded.is_appointed"),
 				"is_vacant":           gorm.Expr("excluded.is_vacant"),
 				"is_off_cycle":        gorm.Expr("excluded.is_off_cycle"),
@@ -1006,7 +1008,7 @@ func upsertCandidacyData(ctx context.Context, politicianID uuid.UUID, candidacie
 
 			// ==== Endorsements ====
 			for _, end := range cand.Endorsements {
-				var orgID uuid.UUID
+				var orgID *uuid.UUID
 
 				// Upsert endorser organization if present
 				if end.Organization != nil {
@@ -1027,7 +1029,7 @@ func upsertCandidacyData(ctx context.Context, politicianID uuid.UUID, candidacie
 					}).Create(&org).Error; err != nil {
 						return fmt.Errorf("upsert endorser organization: %w", err)
 					}
-					orgID = org.ID
+					orgID = &org.ID
 				}
 
 				// Upsert endorsement
@@ -1960,8 +1962,9 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		  p.web_form_url, p.urls, p.email_addresses,
 		  o.title AS office_title, o.representing_state, o.representing_city,
 		  d.district_type, d.label AS district_label, d.mtfcc,
-		  c.name AS chamber_name, c.name_formal AS chamber_name_formal,
-		  g.name AS government_name,
+		  COALESCE(c.name, '') AS chamber_name,
+		  COALESCE(c.name_formal, '') AS chamber_name_formal,
+		  COALESCE(g.name, '') AS government_name,
 		  COALESCE(c.election_frequency, '') AS election_frequency,
 		  p.is_appointed, p.is_vacant, p.is_off_cycle, p.specificity,
 		  o.seats, o.normalized_position_name, o.partisan_type, o.salary,
@@ -1975,8 +1978,8 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		FROM essentials.politicians p
 		JOIN essentials.offices o ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
-		JOIN essentials.chambers c ON c.id = o.chamber_id
-		JOIN essentials.governments g ON g.id = c.government_id
+		LEFT JOIN essentials.chambers c ON c.id = o.chamber_id
+		LEFT JOIN essentials.governments g ON g.id = c.government_id
 		LEFT JOIN essentials.zip_politicians zp ON zp.politician_id = p.id AND zp.zip = ?
 		WHERE (
 		  -- Federal executive officials (President, VP, Cabinet) - nationwide

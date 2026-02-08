@@ -55,6 +55,9 @@ type NormalizedOfficial struct {
 
 	// Source tracking
 	Source string `json:"source"` // "cicero" or "ballotready"
+
+	// Global ID from provider (BallotReady Relay ID for candidacy queries)
+	ExternalGlobalID string `json:"external_global_id"`
 }
 
 // NormalizedOffice represents an office held by an official.
