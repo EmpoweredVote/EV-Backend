@@ -316,30 +316,39 @@ func TransformNormalizedToModels(off provider.NormalizedOfficial) (TransformResu
 
 	// Office/District/Chamber/Government
 	newOffice := &Office{
-		ID:                officeID,
-		PoliticianID:      polID,
-		ChamberID:         chamberID,
-		DistrictID:        distID,
-		Title:             off.Office.Title,
-		RepresentingState: off.Office.RepresentingState,
-		Description:       off.Office.Description,
-		RepresentingCity:  off.Office.RepresentingCity,
+		ID:                   officeID,
+		PoliticianID:         polID,
+		ChamberID:            chamberID,
+		DistrictID:           distID,
+		Title:                off.Office.Title,
+		RepresentingState:    off.Office.RepresentingState,
+		Description:          off.Office.Description,
+		RepresentingCity:     off.Office.RepresentingCity,
+		Seats:                off.Office.Seats,
+		NormalizedPositionName: off.Office.NormalizedPositionName,
+		PartisanType:         off.Office.PartisanType,
+		Salary:               off.Office.Salary,
+		IsAppointedPosition:  off.Office.IsAppointedPosition,
 	}
 
 	newDistrict := &District{
-		ID:           distID,
-		ExternalID:   off.Office.District.ExternalID,
-		OCDID:        off.Office.District.OCDID,
-		Label:        off.Office.District.Label,
-		DistrictType: off.Office.District.DistrictType,
-		DistrictID:   off.Office.District.DistrictID,
-		Subtype:      off.Office.District.Subtype,
-		State:        off.Office.District.State,
-		City:         off.Office.District.City,
-		MTFCC:        off.Office.District.MTFCC,
-		NumOfficials: off.Office.District.NumOfficials,
-		ValidFrom:    off.Office.District.ValidFrom,
-		ValidTo:      off.Office.District.ValidTo,
+		ID:                  distID,
+		ExternalID:          off.Office.District.ExternalID,
+		OCDID:               off.Office.District.OCDID,
+		Label:               off.Office.District.Label,
+		DistrictType:        off.Office.District.DistrictType,
+		DistrictID:          off.Office.District.DistrictID,
+		Subtype:             off.Office.District.Subtype,
+		State:               off.Office.District.State,
+		City:                off.Office.District.City,
+		MTFCC:               off.Office.District.MTFCC,
+		NumOfficials:        off.Office.District.NumOfficials,
+		ValidFrom:           off.Office.District.ValidFrom,
+		ValidTo:             off.Office.District.ValidTo,
+		GeoID:               off.Office.District.GeoID,
+		IsJudicial:          off.Office.District.IsJudicial,
+		HasUnknownBoundaries: off.Office.District.HasUnknownBoundaries,
+		Retention:           off.Office.District.Retention,
 	}
 
 	newChamber := &Chamber{
@@ -356,6 +365,7 @@ func TransformNormalizedToModels(off provider.NormalizedOfficial) (TransformResu
 		ElectionRules:     off.Office.Chamber.ElectionRules,
 		VacancyRules:      off.Office.Chamber.VacancyRules,
 		Remarks:           off.Office.Chamber.Remarks,
+		StaggeredTerm:     off.Office.Chamber.StaggeredTerm,
 	}
 
 	newGovernment := &Government{
@@ -406,6 +416,20 @@ func TransformNormalizedToModels(off provider.NormalizedOfficial) (TransformResu
 		})
 	}
 
+	// Map contacts (person-level and officeholder-level)
+	newContacts := make([]PoliticianContact, 0, len(off.Contacts))
+	for _, contact := range off.Contacts {
+		newContacts = append(newContacts, PoliticianContact{
+			ID:           uuid.New(),
+			PoliticianID: polID,
+			Source:       contact.Source,
+			Email:        contact.Email,
+			Phone:        contact.Phone,
+			Fax:          contact.Fax,
+			ContactType:  contact.ContactType,
+		})
+	}
+
 	newPolitician := &Politician{
 		ID:                 polID,
 		ExternalID:         externalID,
@@ -415,6 +439,7 @@ func TransformNormalizedToModels(off provider.NormalizedOfficial) (TransformResu
 		PreferredName:      off.PreferredName,
 		NameSuffix:         off.NameSuffix,
 		Party:              off.Party,
+		PartyShortName:     off.PartyShortName,
 		WebFormURL:         off.WebFormURL,
 		URLs:               off.URLs,
 		PhotoOriginURL:     off.PhotoOriginURL,
@@ -430,9 +455,14 @@ func TransformNormalizedToModels(off provider.NormalizedOfficial) (TransformResu
 		BioguideID:         off.BioguideID,
 		Slug:               off.Slug,
 		TotalYearsInOffice: off.TotalYearsInOffice,
+		IsAppointed:        off.IsAppointed,
+		IsVacant:           off.IsVacant,
+		IsOffCycle:         off.IsOffCycle,
+		Specificity:        off.Specificity,
 		Images:             newImages,
 		Degrees:            newDegrees,
 		Experiences:        newExperiences,
+		Contacts:           newContacts,
 	}
 
 	// Build full name

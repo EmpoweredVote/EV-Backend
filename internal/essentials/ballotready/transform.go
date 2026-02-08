@@ -89,8 +89,10 @@ func TransformToNormalized(node OfficeHolderNode) *provider.NormalizedOfficial {
 
 	// Determine party from first party entry
 	party := ""
+	partyShortName := ""
 	if len(node.Parties) > 0 {
 		party = node.Parties[0].Name
+		partyShortName = node.Parties[0].ShortName
 	}
 
 	// Build URLs list from all url entries
@@ -210,6 +212,16 @@ func TransformToNormalized(node OfficeHolderNode) *provider.NormalizedOfficial {
 
 	if node.Position != nil {
 		district.Label = node.Position.Name
+		district.GeoID = node.Position.GeoID
+		district.IsJudicial = node.Position.Judicial
+		district.HasUnknownBoundaries = node.Position.HasUnknownBoundaries
+		district.Retention = node.Position.Retention
+
+		// Populate OCDID from first geofence if available
+		if node.Position.Geofences != nil && len(node.Position.Geofences.Nodes) > 0 {
+			district.OCDID = node.Position.Geofences.Nodes[0].OCDID
+		}
+
 		if node.Position.SubAreaValue != "" {
 			district.DistrictID = node.Position.SubAreaValue
 		}
@@ -228,16 +240,29 @@ func TransformToNormalized(node OfficeHolderNode) *provider.NormalizedOfficial {
 	}
 	if node.Position != nil {
 		chamber.Name = node.Position.Name
+		chamber.StaggeredTerm = node.Position.StaggeredTerm
 		chamber.Government = provider.NormalizedGovernment{
 			Name:  node.Position.Name,
 			State: positionState,
 		}
 	}
 
-	// Extract position description
+	// Extract position info
 	positionDescription := ""
-	if node.Position != nil && node.Position.NormalizedPosition != nil {
-		positionDescription = node.Position.NormalizedPosition.Description
+	normalizedPositionName := ""
+	seats := 0
+	partisanType := ""
+	salary := ""
+	isAppointedPosition := false
+	if node.Position != nil {
+		if node.Position.NormalizedPosition != nil {
+			positionDescription = node.Position.NormalizedPosition.Description
+			normalizedPositionName = node.Position.NormalizedPosition.Name
+		}
+		seats = node.Position.Seats
+		partisanType = node.Position.PartisanType
+		salary = node.Position.Salary
+		isAppointedPosition = node.Position.Appointed
 	}
 
 	// Map images
@@ -274,6 +299,35 @@ func TransformToNormalized(node OfficeHolderNode) *provider.NormalizedOfficial {
 		})
 	}
 
+	// Map contacts (combine person-level and officeholder-level)
+	contacts := make([]provider.NormalizedContact, 0)
+
+	// Person-level contacts
+	if person.Contacts != nil {
+		for _, c := range person.Contacts {
+			contacts = append(contacts, provider.NormalizedContact{
+				Source:      "person",
+				Email:       c.Email,
+				Phone:       c.Phone,
+				Fax:         c.Fax,
+				ContactType: c.Type,
+			})
+		}
+	}
+
+	// Officeholder-level contacts
+	if node.Contacts != nil {
+		for _, c := range node.Contacts {
+			contacts = append(contacts, provider.NormalizedContact{
+				Source:      "officeholder",
+				Email:       c.Email,
+				Phone:       c.Phone,
+				Fax:         c.Fax,
+				ContactType: c.Type,
+			})
+		}
+	}
+
 	return &provider.NormalizedOfficial{
 		ExternalID:         strconv.Itoa(node.DatabaseID),
 		FirstName:          person.FirstName,
@@ -282,6 +336,7 @@ func TransformToNormalized(node OfficeHolderNode) *provider.NormalizedOfficial {
 		PreferredName:      person.Nickname,
 		NameSuffix:         person.Suffix,
 		Party:              party,
+		PartyShortName:     partyShortName,
 		URLs:               urls,
 		EmailAddresses:     emails,
 		Addresses:          addresses,
@@ -294,15 +349,25 @@ func TransformToNormalized(node OfficeHolderNode) *provider.NormalizedOfficial {
 		BioguideID:         person.BioguideID,
 		Slug:               person.Slug,
 		TotalYearsInOffice: node.TotalYearsInOffice,
+		IsAppointed:        node.IsAppointed,
+		IsVacant:           node.IsVacant,
+		IsOffCycle:         node.IsOffCycle,
+		Specificity:        node.Specificity,
 		Images:             images,
 		Degrees:            degrees,
 		Experiences:        experiences,
+		Contacts:           contacts,
 		Office: provider.NormalizedOffice{
-			Title:             officeTitle,
-			RepresentingState: positionState,
-			Description:       positionDescription,
-			District:          district,
-			Chamber:           chamber,
+			Title:                officeTitle,
+			RepresentingState:    positionState,
+			Description:          positionDescription,
+			Seats:                seats,
+			NormalizedPositionName: normalizedPositionName,
+			PartisanType:         partisanType,
+			Salary:               salary,
+			IsAppointedPosition:  isAppointedPosition,
+			District:             district,
+			Chamber:              chamber,
 		},
 	}
 }

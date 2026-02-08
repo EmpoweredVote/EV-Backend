@@ -51,6 +51,8 @@ query OfficeHoldersByZip($zip: String!, $first: Int!, $after: String) {
         startAt
         endAt
         totalYearsInOffice
+        isOffCycle
+        specificity
         person {
           id
           databaseId
@@ -108,6 +110,13 @@ query OfficeHoldersByZip($zip: String!, $first: Int!, $after: String) {
           appointed
           subAreaName
           subAreaValue
+          geoId
+          seats
+          partisanType
+          salary
+          hasUnknownBoundaries
+          retention
+          staggeredTerm
           normalizedPosition {
             name
             description
@@ -116,6 +125,16 @@ query OfficeHoldersByZip($zip: String!, $first: Int!, $after: String) {
           electionFrequencies {
             frequency
             referenceYear
+          }
+          geofences(first: 3) {
+            nodes {
+              ocdId
+              geoId
+              name
+              state
+              validFrom
+              validTo
+            }
           }
         }
         addresses {
@@ -168,6 +187,8 @@ query OfficeHoldersByAddress($address: String!, $first: Int!, $after: String) {
         startAt
         endAt
         totalYearsInOffice
+        isOffCycle
+        specificity
         person {
           id
           databaseId
@@ -225,6 +246,13 @@ query OfficeHoldersByAddress($address: String!, $first: Int!, $after: String) {
           appointed
           subAreaName
           subAreaValue
+          geoId
+          seats
+          partisanType
+          salary
+          hasUnknownBoundaries
+          retention
+          staggeredTerm
           normalizedPosition {
             name
             description
@@ -233,6 +261,16 @@ query OfficeHoldersByAddress($address: String!, $first: Int!, $after: String) {
           electionFrequencies {
             frequency
             referenceYear
+          }
+          geofences(first: 3) {
+            nodes {
+              ocdId
+              geoId
+              name
+              state
+              validFrom
+              validTo
+            }
           }
         }
         addresses {
@@ -431,6 +469,237 @@ func (c *Client) FetchOfficeHoldersByAddress(ctx context.Context, address string
 
 	provider.LogResponse("ballotready", 200, time.Since(start), len(allNodes))
 	return allNodes, nil
+}
+
+// positionsByZipQuery is a lightweight query for checking position containment.
+// Only fetches position IDs and containment status, not full officeholder data.
+const positionsByZipQuery = `
+query PositionsByZip($zip: String!) {
+  positions(location: { zip: $zip }) {
+    edges {
+      isContained
+      node {
+        databaseId
+      }
+    }
+  }
+}
+`
+
+// candidacyQuery fetches candidacy history including endorsements and stances.
+const candidacyQuery = `
+query CandidacyData($personId: ID!) {
+  person(id: $personId) {
+    id
+    databaseId
+    candidacies {
+      id
+      databaseId
+      withdrawn
+      result
+      party {
+        name
+        shortName
+      }
+      race {
+        id
+        databaseId
+        isPrimary
+        isRunoff
+        isUnexpiredTerm
+        position {
+          id
+          databaseId
+          name
+        }
+        election {
+          id
+          databaseId
+          name
+          day
+        }
+      }
+      endorsements {
+        id
+        databaseId
+        endorserString
+        recommendation
+        status
+        endorser {
+          id
+          databaseId
+          name
+          description
+          logoUrl
+          issueName
+          state
+        }
+      }
+      stances {
+        id
+        databaseId
+        statement
+        referenceUrl
+        locale
+        issue {
+          id
+          databaseId
+          name
+          key
+          expandedText
+          parent {
+            id
+            databaseId
+            name
+            key
+          }
+        }
+      }
+    }
+  }
+}
+`
+
+// FetchCandidacyData fetches candidacy history for a person by their global ID.
+func (c *Client) FetchCandidacyData(ctx context.Context, personGlobalID string) (*PersonWithCandidacies, error) {
+	start := time.Now()
+	provider.LogRequest("ballotready", "POST", c.endpoint, map[string]interface{}{
+		"query":    "CandidacyData",
+		"personId": personGlobalID,
+	})
+
+	variables := map[string]interface{}{
+		"personId": personGlobalID,
+	}
+
+	reqBody := GraphQLRequest{
+		Query:     candidacyQuery,
+		Variables: variables,
+	}
+
+	body, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("marshal request: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", c.endpoint, bytes.NewReader(body))
+	if err != nil {
+		return nil, fmt.Errorf("create request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+c.apiKey)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		provider.LogError("ballotready", "fetch candidacy", err)
+		return nil, fmt.Errorf("ballotready request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		err := fmt.Errorf("ballotready status %d", resp.StatusCode)
+		provider.LogError("ballotready", "fetch candidacy", err)
+		return nil, err
+	}
+
+	var gqlResp CandidacyGraphQLResponse
+	if err := json.NewDecoder(resp.Body).Decode(&gqlResp); err != nil {
+		provider.LogError("ballotready", "decode candidacy", err)
+		return nil, fmt.Errorf("decode response: %w", err)
+	}
+
+	if len(gqlResp.Errors) > 0 {
+		err := fmt.Errorf("graphql errors: %s", gqlResp.Errors[0].Message)
+		provider.LogError("ballotready", "graphql candidacy", err)
+		return nil, err
+	}
+
+	if gqlResp.Data == nil || gqlResp.Data.Person == nil {
+		return nil, fmt.Errorf("no person data returned")
+	}
+
+	provider.LogResponse("ballotready", 200, time.Since(start), len(gqlResp.Data.Person.Candidacies))
+	return gqlResp.Data.Person, nil
+}
+
+// PositionContainment represents a position ID with its containment status for a ZIP.
+type PositionContainment struct {
+	PositionDatabaseID int
+	IsContained        bool
+}
+
+// FetchPositionContainmentByZip fetches lightweight containment data for all positions in a ZIP.
+// This is much faster than fetching full officeholder data and is used for caching optimization.
+func (c *Client) FetchPositionContainmentByZip(ctx context.Context, zip string) ([]PositionContainment, error) {
+	start := time.Now()
+	provider.LogRequest("ballotready", "POST", c.endpoint, map[string]interface{}{
+		"query": "PositionsByZip",
+		"zip":   zip,
+	})
+
+	variables := map[string]interface{}{
+		"zip": zip,
+	}
+
+	reqBody := GraphQLRequest{
+		Query:     positionsByZipQuery,
+		Variables: variables,
+	}
+
+	body, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("marshal request: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", c.endpoint, bytes.NewReader(body))
+	if err != nil {
+		return nil, fmt.Errorf("create request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+c.apiKey)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		provider.LogError("ballotready", "fetch positions", err)
+		return nil, fmt.Errorf("ballotready request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		err := fmt.Errorf("ballotready status %d", resp.StatusCode)
+		provider.LogError("ballotready", "fetch positions", err)
+		return nil, err
+	}
+
+	var gqlResp PositionContainmentResponse
+	if err := json.NewDecoder(resp.Body).Decode(&gqlResp); err != nil {
+		provider.LogError("ballotready", "decode positions", err)
+		return nil, fmt.Errorf("decode response: %w", err)
+	}
+
+	if len(gqlResp.Errors) > 0 {
+		err := fmt.Errorf("graphql errors: %s", gqlResp.Errors[0].Message)
+		provider.LogError("ballotready", "graphql positions", err)
+		return nil, err
+	}
+
+	if gqlResp.Data == nil || gqlResp.Data.Positions == nil {
+		provider.LogResponse("ballotready", 200, time.Since(start), 0)
+		return []PositionContainment{}, nil
+	}
+
+	result := make([]PositionContainment, 0, len(gqlResp.Data.Positions.Edges))
+	for _, edge := range gqlResp.Data.Positions.Edges {
+		result = append(result, PositionContainment{
+			PositionDatabaseID: edge.Node.DatabaseID,
+			IsContained:        edge.IsContained,
+		})
+	}
+
+	provider.LogResponse("ballotready", 200, time.Since(start), len(result))
+	return result, nil
 }
 
 // HealthCheck verifies the API key is valid.

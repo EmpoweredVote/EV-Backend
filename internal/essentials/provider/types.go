@@ -31,9 +31,15 @@ type NormalizedOfficial struct {
 	BioguideID         string              `json:"bioguide_id"`
 	Slug               string              `json:"slug"`
 	TotalYearsInOffice int                 `json:"total_years_in_office"`
+	PartyShortName     string              `json:"party_short_name"`
+	IsAppointed        bool                `json:"is_appointed"`
+	IsVacant           bool                `json:"is_vacant"`
+	IsOffCycle         bool                `json:"is_off_cycle"`
+	Specificity        string              `json:"specificity"`
 	Images             []NormalizedImage   `json:"images"`
 	Degrees            []NormalizedDegree  `json:"degrees"`
 	Experiences        []NormalizedExperience `json:"experiences"`
+	Contacts           []NormalizedContact    `json:"contacts"`
 
 	// Office and position
 	Office NormalizedOffice `json:"office"`
@@ -53,10 +59,15 @@ type NormalizedOfficial struct {
 
 // NormalizedOffice represents an office held by an official.
 type NormalizedOffice struct {
-	Title             string `json:"title"`
-	RepresentingState string `json:"representing_state"`
-	RepresentingCity  string `json:"representing_city"`
-	Description       string `json:"description"` // Position description
+	Title                string `json:"title"`
+	RepresentingState    string `json:"representing_state"`
+	RepresentingCity     string `json:"representing_city"`
+	Description          string `json:"description"` // Position description
+	Seats                int    `json:"seats"`
+	NormalizedPositionName string `json:"normalized_position_name"`
+	PartisanType         string `json:"partisan_type"`
+	Salary               string `json:"salary"`
+	IsAppointedPosition  bool   `json:"is_appointed_position"`
 
 	District NormalizedDistrict `json:"district"`
 	Chamber  NormalizedChamber  `json:"chamber"`
@@ -64,18 +75,22 @@ type NormalizedOffice struct {
 
 // NormalizedDistrict represents an electoral district.
 type NormalizedDistrict struct {
-	ExternalID   int    `json:"external_id"`
-	OCDID        string `json:"ocd_id"`
-	Label        string `json:"label"`
-	DistrictType string `json:"district_type"` // NATIONAL_EXEC, NATIONAL_UPPER, etc.
-	DistrictID   string `json:"district_id"`
-	Subtype      string `json:"subtype"`
-	State        string `json:"state"`
-	City         string `json:"city"`
-	MTFCC        string `json:"mtfcc"`
-	NumOfficials int    `json:"num_officials"`
-	ValidFrom    string `json:"valid_from"`
-	ValidTo      string `json:"valid_to"`
+	ExternalID          int    `json:"external_id"`
+	OCDID               string `json:"ocd_id"`
+	Label               string `json:"label"`
+	DistrictType        string `json:"district_type"` // NATIONAL_EXEC, NATIONAL_UPPER, etc.
+	DistrictID          string `json:"district_id"`
+	Subtype             string `json:"subtype"`
+	State               string `json:"state"`
+	City                string `json:"city"`
+	MTFCC               string `json:"mtfcc"`
+	NumOfficials        int    `json:"num_officials"`
+	ValidFrom           string `json:"valid_from"`
+	ValidTo             string `json:"valid_to"`
+	GeoID               string `json:"geo_id"`
+	IsJudicial          bool   `json:"is_judicial"`
+	HasUnknownBoundaries bool   `json:"has_unknown_boundaries"`
+	Retention           bool   `json:"retention"`
 }
 
 // NormalizedChamber represents a legislative chamber or governing body.
@@ -91,6 +106,7 @@ type NormalizedChamber struct {
 	ElectionRules     string `json:"election_rules"`
 	VacancyRules      string `json:"vacancy_rules"`
 	Remarks           string `json:"remarks"`
+	StaggeredTerm     bool   `json:"staggered_term"`
 
 	Government NormalizedGovernment `json:"government"`
 }
@@ -150,4 +166,70 @@ type NormalizedExperience struct {
 	Type         string `json:"type"` // "elected_office", "employment", "military"
 	Start        string `json:"start"`
 	End          string `json:"end"` // Can be "Present" or a year
+}
+
+// NormalizedContact represents contact information (email, phone, fax).
+type NormalizedContact struct {
+	Source      string `json:"source"` // "person" or "officeholder"
+	Email       string `json:"email"`
+	Phone       string `json:"phone"`
+	Fax         string `json:"fax"`
+	ContactType string `json:"contact_type"` // "district", "capitol", etc.
+}
+
+// Phase B: Candidacy data normalized types
+
+// NormalizedCandidacy represents a single candidacy/race participation.
+type NormalizedCandidacy struct {
+	CandidacyExternalID string                      `json:"candidacy_external_id"` // BallotReady candidacy ID
+	Withdrawn           bool                        `json:"withdrawn"`
+	Result              string                      `json:"result"` // "WON", "LOST", "RUNOFF", etc.
+	PartyName           string                      `json:"party_name"`
+	ElectionName        string                      `json:"election_name"`
+	ElectionDate        string                      `json:"election_date"`
+	PositionName        string                      `json:"position_name"`
+	IsPrimary           bool                        `json:"is_primary"`
+	IsRunoff            bool                        `json:"is_runoff"`
+	IsUnexpiredTerm     bool                        `json:"is_unexpired_term"`
+	Endorsements        []NormalizedEndorsement     `json:"endorsements"`
+	Stances             []NormalizedStance          `json:"stances"`
+}
+
+// NormalizedEndorsement represents an endorsement from an organization.
+type NormalizedEndorsement struct {
+	CandidacyExternalID string                          `json:"candidacy_external_id"`
+	EndorserString      string                          `json:"endorser_string"` // Raw endorser text
+	Recommendation      string                          `json:"recommendation"`  // "PRO", "CON"
+	Status              string                          `json:"status"`
+	ElectionDate        string                          `json:"election_date"`
+	Organization        *NormalizedEndorserOrganization `json:"organization,omitempty"`
+}
+
+// NormalizedEndorserOrganization represents an endorsing organization.
+type NormalizedEndorserOrganization struct {
+	ExternalID  string `json:"external_id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	LogoURL     string `json:"logo_url"`
+	IssueName   string `json:"issue_name"`
+	State       string `json:"state"`
+}
+
+// NormalizedStance represents a politician's stance on an issue.
+type NormalizedStance struct {
+	CandidacyExternalID string           `json:"candidacy_external_id"`
+	Statement           string           `json:"statement"`
+	ReferenceURL        string           `json:"reference_url"`
+	Locale              string           `json:"locale"`
+	ElectionDate        string           `json:"election_date"`
+	Issue               *NormalizedIssue `json:"issue"`
+}
+
+// NormalizedIssue represents a political issue.
+type NormalizedIssue struct {
+	ExternalID   string           `json:"external_id"`
+	Name         string           `json:"name"`
+	Key          string           `json:"key"`
+	ExpandedText string           `json:"expanded_text"`
+	Parent       *NormalizedIssue `json:"parent,omitempty"`
 }

@@ -63,6 +63,8 @@ type OfficeHolderNode struct {
 	StartAt           string `json:"startAt"`
 	EndAt             string `json:"endAt"`
 	TotalYearsInOffice int    `json:"totalYearsInOffice"`
+	IsOffCycle        bool   `json:"isOffCycle"`
+	Specificity       string `json:"specificity"`
 
 	Person    *Person    `json:"person"`
 	Parties   []Party    `json:"parties"`
@@ -126,18 +128,26 @@ type Party struct {
 
 // Position represents the elected/appointed position.
 type Position struct {
-	ID                 string              `json:"id"`
-	DatabaseID         int                 `json:"databaseId"`
-	Name               string              `json:"name"`
-	Level              string              `json:"level"`
-	Tier               interface{}         `json:"tier"`
-	State              string              `json:"state"`
-	Judicial           bool                `json:"judicial"`
-	Appointed          bool                `json:"appointed"`
-	SubAreaName        string              `json:"subAreaName"`
-	SubAreaValue       string              `json:"subAreaValue"`
-	NormalizedPosition *NormalizedPosition `json:"normalizedPosition"`
-	ElectionFrequencies []ElectionFrequency `json:"electionFrequencies"`
+	ID                  string               `json:"id"`
+	DatabaseID          int                  `json:"databaseId"`
+	Name                string               `json:"name"`
+	Level               string               `json:"level"`
+	Tier                interface{}          `json:"tier"`
+	State               string               `json:"state"`
+	Judicial            bool                 `json:"judicial"`
+	Appointed           bool                 `json:"appointed"`
+	SubAreaName         string               `json:"subAreaName"`
+	SubAreaValue        string               `json:"subAreaValue"`
+	GeoID               string               `json:"geoId"`
+	Seats               int                  `json:"seats"`
+	PartisanType        string               `json:"partisanType"`
+	Salary              string               `json:"salary"`
+	HasUnknownBoundaries bool                 `json:"hasUnknownBoundaries"`
+	Retention           bool                 `json:"retention"`
+	StaggeredTerm       bool                 `json:"staggeredTerm"`
+	NormalizedPosition  *NormalizedPosition  `json:"normalizedPosition"`
+	ElectionFrequencies []ElectionFrequency  `json:"electionFrequencies"`
+	Geofences           *GeofenceConnection  `json:"geofences"`
 }
 
 // NormalizedPosition contains the standardized position name and description.
@@ -175,4 +185,140 @@ type Contact struct {
 type URLEntry struct {
 	URL  string `json:"url"`
 	Type string `json:"type"`
+}
+
+// GeofenceConnection contains geofence nodes for a position.
+type GeofenceConnection struct {
+	Nodes []GeofenceNode `json:"nodes"`
+}
+
+// GeofenceNode represents a geographic boundary with identifiers.
+type GeofenceNode struct {
+	OCDID     string `json:"ocdId"`
+	GeoID     string `json:"geoId"`
+	Name      string `json:"name"`
+	State     string `json:"state"`
+	ValidFrom string `json:"validFrom"`
+	ValidTo   string `json:"validTo"`
+}
+
+// Phase B: Candidacy data types
+
+// CandidacyGraphQLResponse is the response for the candidacy query.
+type CandidacyGraphQLResponse struct {
+	Data   *CandidacyResponseData `json:"data"`
+	Errors []GraphQLError         `json:"errors,omitempty"`
+}
+
+// CandidacyResponseData contains the person with candidacies.
+type CandidacyResponseData struct {
+	Person *PersonWithCandidacies `json:"person"`
+}
+
+// PersonWithCandidacies represents a person with their candidacy history.
+type PersonWithCandidacies struct {
+	ID          string      `json:"id"`
+	DatabaseID  int         `json:"databaseId"`
+	Candidacies []Candidacy `json:"candidacies"`
+}
+
+// Candidacy represents a single candidacy/race participation.
+type Candidacy struct {
+	ID           string           `json:"id"`
+	DatabaseID   int              `json:"databaseId"`
+	Withdrawn    bool             `json:"withdrawn"`
+	Result       string           `json:"result"` // "WON", "LOST", "RUNOFF", etc.
+	Party        *Party           `json:"party"`
+	Race         *Race            `json:"race"`
+	Endorsements []EndorsementBR  `json:"endorsements"`
+	Stances      []StanceBR       `json:"stances"`
+}
+
+// Race represents an election race.
+type Race struct {
+	ID            string     `json:"id"`
+	DatabaseID    int        `json:"databaseId"`
+	IsPrimary     bool       `json:"isPrimary"`
+	IsRunoff      bool       `json:"isRunoff"`
+	IsUnexpiredTerm bool     `json:"isUnexpiredTerm"`
+	Position      *Position  `json:"position"`
+	Election      *Election  `json:"election"`
+}
+
+// Election represents an election event.
+type Election struct {
+	ID         string `json:"id"`
+	DatabaseID int    `json:"databaseId"`
+	Name       string `json:"name"`
+	Day        string `json:"day"`
+}
+
+// EndorsementBR represents a BallotReady endorsement.
+type EndorsementBR struct {
+	ID             string      `json:"id"`
+	DatabaseID     int         `json:"databaseId"`
+	EndorserString string      `json:"endorserString"`
+	Recommendation string      `json:"recommendation"` // "PRO", "CON"
+	Status         string      `json:"status"`
+	Endorser       *EndorserBR `json:"endorser"`
+}
+
+// EndorserBR represents an endorsing organization.
+type EndorserBR struct {
+	ID          string `json:"id"`
+	DatabaseID  int    `json:"databaseId"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	LogoURL     string `json:"logoUrl"`
+	IssueName   string `json:"issueName"`
+	State       string `json:"state"`
+}
+
+// StanceBR represents a politician's stance on an issue.
+type StanceBR struct {
+	ID           string   `json:"id"`
+	DatabaseID   int      `json:"databaseId"`
+	Statement    string   `json:"statement"`
+	ReferenceURL string   `json:"referenceUrl"`
+	Locale       string   `json:"locale"`
+	Issue        *IssueBR `json:"issue"`
+}
+
+// IssueBR represents a political issue.
+type IssueBR struct {
+	ID           string   `json:"id"`
+	DatabaseID   int      `json:"databaseId"`
+	Name         string   `json:"name"`
+	Key          string   `json:"key"`
+	ExpandedText string   `json:"expandedText"`
+	Parent       *IssueBR `json:"parent"`
+}
+
+// Phase C: Position containment types
+
+// PositionContainmentResponse is the GraphQL response for positions-by-ZIP containment query.
+type PositionContainmentResponse struct {
+	Data   *PositionContainmentData `json:"data"`
+	Errors []GraphQLError           `json:"errors,omitempty"`
+}
+
+// PositionContainmentData contains the positions connection.
+type PositionContainmentData struct {
+	Positions *PositionContainmentConnection `json:"positions"`
+}
+
+// PositionContainmentConnection is the Relay-style connection for positions.
+type PositionContainmentConnection struct {
+	Edges []PositionContainmentEdge `json:"edges"`
+}
+
+// PositionContainmentEdge contains containment status and minimal position data.
+type PositionContainmentEdge struct {
+	IsContained bool                  `json:"isContained"`
+	Node        PositionContainmentNode `json:"node"`
+}
+
+// PositionContainmentNode contains only the position database ID.
+type PositionContainmentNode struct {
+	DatabaseID int `json:"databaseId"`
 }

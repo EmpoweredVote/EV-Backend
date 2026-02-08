@@ -42,6 +42,13 @@ func Init() {
 		&PoliticianImage{},
 		&Degree{},
 		&Experience{},
+		// Phase B: Candidacy data models
+		&EndorserOrganization{},
+		&Endorsement{},
+		&Issue{},
+		&PoliticianStance{},
+		&ElectionRecord{},
+		&PoliticianContact{},
 	); err != nil {
 		log.Fatal("Failed to auto-migrate tables", err)
 	}
