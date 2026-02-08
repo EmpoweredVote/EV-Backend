@@ -10,6 +10,9 @@
 bin/
 pkg/
 vendor/
+ballotready_samples/
+*.log
+
 
 # Editor/OS files
 .DS_Store
@@ -22,3 +25,7 @@ vendor/
 .env.*
 
 /.apprunner/
+
+# Others
+test_zip.go
+check_db.go
