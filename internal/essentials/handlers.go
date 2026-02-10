@@ -101,6 +101,14 @@ type ElectionRecordOut struct {
 	IsUnexpiredTerm bool   `json:"is_unexpired_term"`
 }
 
+type CacheStatusResponse struct {
+	FederalFresh bool `json:"federalFresh"`
+	StateFresh   bool `json:"stateFresh"`
+	LocalFresh   bool `json:"localFresh"`
+	AllFresh     bool `json:"allFresh"`
+	Warming      bool `json:"warming"`
+}
+
 type OfficialOut struct {
 	ID                   uuid.UUID       `json:"id"`
 	ExternalID           int             `json:"external_id"`
@@ -157,6 +165,37 @@ func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	handleZipLookup(w, r, zip)
+}
+
+// GetCacheStatus returns cache freshness status for a ZIP code without triggering warmers.
+func GetCacheStatus(w http.ResponseWriter, r *http.Request) {
+	zip := chi.URLParam(r, "zip")
+	if !isZip5(zip) {
+		http.Error(w, "Invalid zip parameter", http.StatusBadRequest)
+		return
+	}
+
+	t0 := time.Now()
+
+	status, err := getCacheStatus(r.Context(), zip)
+	if err != nil {
+		log.Printf("[GetCacheStatus] zip=%s err=%v", zip, err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	// Add Server-Timing header with total query duration
+	addServerTiming(w, [2]string{"total", fmt.Sprintf("%d", time.Since(t0).Milliseconds())})
+
+	// If warming is in progress, suggest retry after 3 seconds
+	if status.Warming {
+		w.Header().Set("Retry-After", "3")
+	}
+
+	// Always prevent caching of status responses
+	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate")
+
+	writeJSON(w, status)
 }
 
 func handleZipLookup(w http.ResponseWriter, r *http.Request, zip string) {
@@ -1860,6 +1899,85 @@ func releaseLock(ctx context.Context, key string) {
 	_ = db.DB.WithContext(ctx).
 		Raw(`SELECT pg_advisory_unlock(hashtext(?))`, key).
 		Row().Scan(&dummy)
+}
+
+// isWarmingInProgress probes an advisory lock without blocking.
+// Returns true if warming is in progress (lock is held by another process).
+// Returns false if not warming (lock acquired and released, or on error).
+func isWarmingInProgress(ctx context.Context, key string) bool {
+	var acquired bool
+	if err := db.DB.WithContext(ctx).
+		Raw(`SELECT pg_try_advisory_lock(hashtext(?))`, key).
+		Row().Scan(&acquired); err != nil {
+		return false // Assume not warming on error
+	}
+
+	if acquired {
+		// Lock was acquired, so no warmer was running - release immediately
+		var dummy bool
+		_ = db.DB.WithContext(ctx).
+			Raw(`SELECT pg_advisory_unlock(hashtext(?))`, key).
+			Row().Scan(&dummy)
+		return false // Not warming
+	}
+
+	return true // Lock already held by warmer
+}
+
+// getCacheStatus checks cache freshness for all tiers without triggering warmers.
+// Returns cache status and error. Uses only indexed cache table lookups.
+func getCacheStatus(ctx context.Context, zip string) (CacheStatusResponse, error) {
+	const maxAge = 90 * 24 * time.Hour
+	now := time.Now()
+
+	// Check federal cache
+	var federalCache FederalCache
+	federalErr := db.DB.WithContext(ctx).First(&federalCache).Error
+	federalFresh := federalErr == nil && now.Sub(federalCache.LastFetched) < maxAge
+
+	// Determine state and check state cache
+	var zipCache ZipCache
+	zipCacheErr := db.DB.WithContext(ctx).Where("zip = ?", zip).First(&zipCache).Error
+
+	var state string
+	if zipCacheErr == nil && zipCache.State != "" {
+		state = zipCache.State
+	} else {
+		// Derive state from ZIP prefix immediately (static lookup, no API call)
+		state = zipPrefixToState(zip)
+	}
+
+	var stateFresh bool
+	if state != "" {
+		var stateCache StateCache
+		stateErr := db.DB.WithContext(ctx).Where("state = ?", state).First(&stateCache).Error
+		stateFresh = stateErr == nil && now.Sub(stateCache.LastFetched) < maxAge
+	} else {
+		stateFresh = true // No state means no state cache needed
+	}
+
+	// Check local/ZIP cache (reuse zipCache from state derivation)
+	localFresh := zipCacheErr == nil && now.Sub(zipCache.LastFetched) < maxAge
+
+	// Compute allFresh
+	allFresh := federalFresh && stateFresh && localFresh
+
+	// Check warming status for all tiers
+	federalWarming := isWarmingInProgress(ctx, "federal")
+	stateWarming := false
+	if state != "" {
+		stateWarming = isWarmingInProgress(ctx, "state-"+state)
+	}
+	zipWarming := isWarmingInProgress(ctx, "zip-"+zip)
+	warming := federalWarming || stateWarming || zipWarming
+
+	return CacheStatusResponse{
+		FederalFresh: federalFresh,
+		StateFresh:   stateFresh,
+		LocalFresh:   localFresh,
+		AllFresh:     allFresh,
+		Warming:      warming,
+	}, nil
 }
 
 // Legacy functions for backwards compatibility
