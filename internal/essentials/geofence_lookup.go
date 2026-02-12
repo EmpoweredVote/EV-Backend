@@ -79,22 +79,12 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 
 	for _, m := range matches {
 		if allowedTypes, ok := mtfccToDistrictTypes[m.MTFCC]; ok {
-			if m.MTFCC == "G5420" {
-				// School districts: use prefix matching so Census geofence geo_id
-				// (e.g. 1800630) matches BallotReady sub-district geo_ids (e.g. 180063000001)
-				conditions = append(conditions, fmt.Sprintf(
-					"(d.geo_id LIKE $%d AND d.district_type = ANY($%d))",
-					argIdx, argIdx+1,
-				))
-				args = append(args, m.GeoID+"%", pq.Array(allowedTypes))
-			} else {
-				// Known MTFCC: restrict to matching district types
-				conditions = append(conditions, fmt.Sprintf(
-					"(d.geo_id = $%d AND d.district_type = ANY($%d))",
-					argIdx, argIdx+1,
-				))
-				args = append(args, m.GeoID, pq.Array(allowedTypes))
-			}
+			// Known MTFCC: restrict to matching district types
+			conditions = append(conditions, fmt.Sprintf(
+				"(d.geo_id = $%d AND d.district_type = ANY($%d))",
+				argIdx, argIdx+1,
+			))
+			args = append(args, m.GeoID, pq.Array(allowedTypes))
 			argIdx += 2
 
 			// County match: extract state FIPS for state-level judicial lookup
