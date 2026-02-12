@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
@@ -11,6 +13,31 @@ import (
 	"github.com/go-chi/chi/v5"
 	"golang.org/x/crypto/bcrypt"
 )
+
+// sessionCookie returns a cookie configured for the current environment.
+// Local dev (PORT unset or localhost origins) uses Secure=false, SameSite=Lax
+// so cookies work over plain HTTP.
+func sessionCookie(name, value string, maxAge int) *http.Cookie {
+	secure := true
+	sameSite := http.SameSiteNoneMode
+
+	// Detect local development: PORT env not set typically means `go run .`
+	port := os.Getenv("PORT")
+	if port == "" || strings.HasPrefix(port, "5050") {
+		secure = false
+		sameSite = http.SameSiteLaxMode
+	}
+
+	return &http.Cookie{
+		Name:     name,
+		Value:    value,
+		Path:     "/",
+		MaxAge:   maxAge,
+		HttpOnly: true,
+		Secure:   secure,
+		SameSite: sameSite,
+	}
+}
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var user User
@@ -103,28 +130,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Passwords matched, set cookie
-	// uuid := utils.GenerateUUID()
-	// http.SetCookie(w, &http.Cookie{
-	// 	Name:     "session_id",
-	// 	Value:    uuid,
-	// 	Path:     "/",
-	// 	HttpOnly: true,
-	// 	SameSite: http.SameSiteLaxMode,
-	// 	Secure:   false,
-	// })
-
+	// Passwords matched, set session cookie
 	uuid := utils.GenerateUUID()
-	// NOTE: Domain is omitted for cross-domain dev (Netlify + Render).
-	// For production on empowered.vote subdomains, restore: Domain: ".empowered.vote"
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session_id",
-		Value:    uuid,
-		Path:     "/",
-		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode,
-		Secure:   true,
-	})
+	http.SetCookie(w, sessionCookie("session_id", uuid, 21600)) // 6 hours, matches session TTL
 
 	// Search db to see if session cookie already exists, update DB with new session_id if true
 	db.DB.Where("user_id = ?", user.UserID).First(&existing)
@@ -141,8 +149,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		db.DB.Create(&session)
 	}
 
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintln(w, "Login successful")
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"user_id":  user.UserID,
+		"username": user.Username,
+	})
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -170,29 +181,8 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		// If no err, delete session record
 		db.DB.Delete(&session)
 
-		// Replace the cookie with new expired/empty cookie
-		// NOTE: Domain is omitted for cross-domain dev (Netlify + Render).
-		// For production on empowered.vote subdomains, restore: Domain: ".empowered.vote"
-		http.SetCookie(w, &http.Cookie{
-			Name:     "session_id",
-			Value:    "",
-			Path:     "/",
-			MaxAge:   -1,
-			HttpOnly: true,
-			Secure:   true,
-			SameSite: http.SameSiteNoneMode,
-		})
-
-		// Clear host-only cookie (no Domain)
-		http.SetCookie(w, &http.Cookie{
-			Name:     "session_id",
-			Value:    "",
-			Path:     "/",
-			MaxAge:   -1,
-			HttpOnly: true,
-			Secure:   true,
-			SameSite: http.SameSiteNoneMode,
-		})
+		// Clear the session cookie
+		http.SetCookie(w, sessionCookie("session_id", "", -1))
 
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "Logout successful")

@@ -324,8 +324,9 @@ func UserAnswersHandler(w http.ResponseWriter, r *http.Request) {
 		var answers []Answer
 
 		var response []struct {
-			TopicID string `json:"topic_id"`
-			Value   int    `json:"value"`
+			TopicID     string  `json:"topic_id"`
+			Value       float64 `json:"value"`
+			WriteInText string  `json:"write_in_text,omitempty"`
 		}
 
 		cookie, err := r.Cookie("session_id")
@@ -354,8 +355,9 @@ func UserAnswersHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		// POST
 		var input struct {
-			TopicID uuid.UUID `json:"topic_id"`
-			Value   int       `json:"value"`
+			TopicID     uuid.UUID `json:"topic_id"`
+			Value       float64   `json:"value"`
+			WriteInText string    `json:"write_in_text,omitempty"`
 		}
 
 		if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -380,7 +382,10 @@ func UserAnswersHandler(w http.ResponseWriter, r *http.Request) {
 
 		if err == nil {
 			// If no error, answer already exists, update it
-			err = db.DB.Model(&existing).Update("value", input.Value).Error
+			err = db.DB.Model(&existing).Updates(map[string]interface{}{
+				"value":         input.Value,
+				"write_in_text": input.WriteInText,
+			}).Error
 			if err != nil {
 				http.Error(w, "Failed to update answer", http.StatusInternalServerError)
 				return
@@ -392,10 +397,11 @@ func UserAnswersHandler(w http.ResponseWriter, r *http.Request) {
 
 		if err == gorm.ErrRecordNotFound {
 			newAnswer := Answer{
-				ID:      uuid.NewString(),
-				UserID:  session.UserID,
-				TopicID: input.TopicID,
-				Value:   input.Value,
+				ID:          uuid.NewString(),
+				UserID:      session.UserID,
+				TopicID:     input.TopicID,
+				Value:       input.Value,
+				WriteInText: input.WriteInText,
 			}
 			if err = db.DB.Create(&newAnswer).Error; err != nil {
 				http.Error(w, "Failed to create answer", http.StatusInternalServerError)
@@ -604,8 +610,9 @@ func GetContextHandler(w http.ResponseWriter, r *http.Request) {
 // For each element in array, create a new answer for the user with matching username.
 func PopulateDummyAnswers(w http.ResponseWriter, r *http.Request) {
 	type answers struct {
-		TopicID uuid.UUID `json:"topic_id"`
-		Value   int       `json:"value"`
+		TopicID     uuid.UUID `json:"topic_id"`
+		Value       float64   `json:"value"`
+		WriteInText string    `json:"write_in_text,omitempty"`
 	}
 
 	var request struct {
@@ -635,10 +642,11 @@ func PopulateDummyAnswers(w http.ResponseWriter, r *http.Request) {
 	tx := db.DB.Begin()
 	for _, a := range request.Answers {
 		answer := Answer{
-			ID:      uuid.NewString(),
-			UserID:  user.UserID,
-			TopicID: a.TopicID,
-			Value:   a.Value,
+			ID:          uuid.NewString(),
+			UserID:      user.UserID,
+			TopicID:     a.TopicID,
+			Value:       a.Value,
+			WriteInText: a.WriteInText,
 		}
 		if err := tx.Create(&answer).Error; err != nil {
 			tx.Rollback()
@@ -654,9 +662,10 @@ func PopulateDummyAnswers(w http.ResponseWriter, r *http.Request) {
 
 func UpdateAnswerHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		UserID  string    `json:"user_id"`
-		TopicID uuid.UUID `json:"topic_id"`
-		Value   int       `json:"value"`
+		UserID      string    `json:"user_id"`
+		TopicID     uuid.UUID `json:"topic_id"`
+		Value       float64   `json:"value"`
+		WriteInText string    `json:"write_in_text,omitempty"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -686,7 +695,10 @@ func UpdateAnswerHandler(w http.ResponseWriter, r *http.Request) {
 	err = db.DB.Where("user_id = ? AND topic_id = ?", input.UserID, input.TopicID).First(&existing).Error
 	if err == nil {
 		// Exists, update
-		if err := db.DB.Model(&existing).Update("value", input.Value).Error; err != nil {
+		if err := db.DB.Model(&existing).Updates(map[string]interface{}{
+			"value":         input.Value,
+			"write_in_text": input.WriteInText,
+		}).Error; err != nil {
 			http.Error(w, "Failed to update answer", http.StatusInternalServerError)
 			return
 		}
@@ -697,10 +709,11 @@ func UpdateAnswerHandler(w http.ResponseWriter, r *http.Request) {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		// Create new
 		newAnswer := Answer{
-			ID:      uuid.NewString(),
-			UserID:  input.UserID,
-			TopicID: input.TopicID,
-			Value:   input.Value,
+			ID:          uuid.NewString(),
+			UserID:      input.UserID,
+			TopicID:     input.TopicID,
+			Value:       input.Value,
+			WriteInText: input.WriteInText,
 		}
 		if err := db.DB.Create(&newAnswer).Error; err != nil {
 			http.Error(w, "Failed to create answer", http.StatusInternalServerError)
@@ -865,11 +878,12 @@ func GetPoliticianAnswers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var out []struct {
-		TopicID uuid.UUID `json:"topic_id"`
-		Value   int       `json:"value"`
+		TopicID     uuid.UUID `json:"topic_id"`
+		Value       float64   `json:"value"`
+		WriteInText string    `json:"write_in_text,omitempty"`
 	}
 
-	if err := db.DB.Model(&Answer{}).Where("politician_id = ? AND value <> 0", pid).Select("topic_id, value").Order("topic_id").Scan(&out).Error; err != nil {
+	if err := db.DB.Model(&Answer{}).Where("politician_id = ? AND value <> 0", pid).Select("topic_id, value, write_in_text").Order("topic_id").Scan(&out).Error; err != nil {
 		http.Error(w, "DB error", http.StatusInternalServerError)
 		return
 	}
@@ -1045,8 +1059,9 @@ func UpsertPoliticianAnswers(w http.ResponseWriter, r *http.Request) {
 
 	// Payload
 	var body []struct {
-		TopicID uuid.UUID `json:"topic_id"`
-		Value   int       `json:"value"`
+		TopicID     uuid.UUID `json:"topic_id"`
+		Value       float64   `json:"value"`
+		WriteInText string    `json:"write_in_text,omitempty"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		http.Error(w, "Invalid JSON body", http.StatusBadRequest)
@@ -1070,7 +1085,10 @@ func UpsertPoliticianAnswers(w http.ResponseWriter, r *http.Request) {
 		err := tx.Where("politician_id = ? AND topic_id = ?", pid, it.TopicID).First(&existing).Error
 		switch {
 		case err == nil:
-			if err := tx.Model(&existing).Update("value", it.Value).Error; err != nil {
+			if err := tx.Model(&existing).Updates(map[string]interface{}{
+				"value":         it.Value,
+				"write_in_text": it.WriteInText,
+			}).Error; err != nil {
 				tx.Rollback()
 				http.Error(w, "Failed update", http.StatusInternalServerError)
 				return
@@ -1081,6 +1099,7 @@ func UpsertPoliticianAnswers(w http.ResponseWriter, r *http.Request) {
 				PoliticianID: pid,
 				TopicID:      it.TopicID,
 				Value:        it.Value,
+				WriteInText:  it.WriteInText,
 			}
 			if err := tx.Create(&a).Error; err != nil {
 				tx.Rollback()

@@ -29,3 +29,6 @@ ballotready_samples/
 # Others
 test_zip.go
 check_db.go
+
+# TIGER/Census shapefile data (imported into PostGIS, not needed at runtime)
+scripts/shapefile_data/

@@ -175,6 +175,8 @@ func GetCacheStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("[GetCacheStatus] zip=%s from=%s", zip, r.RemoteAddr)
+
 	t0 := time.Now()
 
 	status, err := getCacheStatus(r.Context(), zip)
@@ -182,6 +184,48 @@ func GetCacheStatus(w http.ResponseWriter, r *http.Request) {
 		log.Printf("[GetCacheStatus] zip=%s err=%v", zip, err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
+	}
+
+	// Trigger warming for stale tiers (if not already warming)
+	if !status.AllFresh {
+		state := zipPrefixToState(zip)
+
+		if !status.FederalFresh {
+			if tryAcquireLock(r.Context(), "federal") {
+				go func() {
+					defer releaseLock(context.Background(), "federal")
+					if err := warmFederal(context.Background()); err != nil {
+						log.Printf("[warmFederal] err=%v", err)
+					}
+				}()
+				status.Warming = true
+			}
+		}
+
+		if !status.StateFresh && state != "" {
+			if tryAcquireLock(r.Context(), "state-"+state) {
+				capturedZip := zip
+				go func() {
+					defer releaseLock(context.Background(), "state-"+state)
+					if err := warmState(context.Background(), state, capturedZip); err != nil {
+						log.Printf("[warmState] state=%s err=%v", state, err)
+					}
+				}()
+				status.Warming = true
+			}
+		}
+
+		if !status.LocalFresh {
+			if tryAcquireLock(r.Context(), "zip-"+zip) {
+				go func() {
+					defer releaseLock(context.Background(), "zip-"+zip)
+					if err := warmLocal(context.Background(), zip); err != nil {
+						log.Printf("[warmLocal] zip=%s err=%v", zip, err)
+					}
+				}()
+				status.Warming = true
+			}
+		}
 	}
 
 	// Add Server-Timing header with total query duration
@@ -827,7 +871,17 @@ func upsertNormalizedOfficial(ctx context.Context, off provider.NormalizedOffici
 				"chamber_id", "district_id", "title", "representing_state", "representing_city",
 				"description", "seats", "normalized_position_name", "partisan_type", "salary", "is_appointed_position",
 			}),
-		}).Create(&office).Error; err != nil {
+		}, clause.Returning{Columns: []clause.Column{{Name: "id"}}},
+		).Create(&office).Error; err != nil {
+			return err
+		}
+
+		// Sync politician's office_id to match the actual office ID returned by
+		// the upsert. On first insert this is a no-op (same value). On re-import
+		// the RETURNING clause gives back the existing office row's ID, fixing
+		// the orphaned FK that would otherwise point to a never-persisted UUID.
+		if err := tx.Model(&Politician{}).Where("id = ?", polID).
+			Update("office_id", office.ID).Error; err != nil {
 			return err
 		}
 
@@ -1933,11 +1987,17 @@ func getCacheStatus(ctx context.Context, zip string) (CacheStatusResponse, error
 	// Check federal cache
 	var federalCache FederalCache
 	federalErr := db.DB.WithContext(ctx).First(&federalCache).Error
+	if federalErr != nil && federalErr != gorm.ErrRecordNotFound {
+		return CacheStatusResponse{}, fmt.Errorf("database error: %w", federalErr)
+	}
 	federalFresh := federalErr == nil && now.Sub(federalCache.LastFetched) < maxAge
 
 	// Determine state and check state cache
 	var zipCache ZipCache
 	zipCacheErr := db.DB.WithContext(ctx).Where("zip = ?", zip).First(&zipCache).Error
+	if zipCacheErr != nil && zipCacheErr != gorm.ErrRecordNotFound {
+		return CacheStatusResponse{}, fmt.Errorf("database error: %w", zipCacheErr)
+	}
 
 	var state string
 	if zipCacheErr == nil && zipCache.State != "" {
@@ -1951,6 +2011,9 @@ func getCacheStatus(ctx context.Context, zip string) (CacheStatusResponse, error
 	if state != "" {
 		var stateCache StateCache
 		stateErr := db.DB.WithContext(ctx).Where("state = ?", state).First(&stateCache).Error
+		if stateErr != nil && stateErr != gorm.ErrRecordNotFound {
+			return CacheStatusResponse{}, fmt.Errorf("database error: %w", stateErr)
+		}
 		stateFresh = stateErr == nil && now.Sub(stateCache.LastFetched) < maxAge
 	} else {
 		stateFresh = true // No state means no state cache needed
@@ -2710,7 +2773,41 @@ func SearchPoliticians(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Address lookup — requires BallotReady provider
+	// Try geofence-based lookup: Google geocoding → PostGIS point-in-polygon → database
+	if GeoClient != nil {
+		geoResult, geoErr := GeoClient.Geocode(r.Context(), query)
+		if geoErr == nil {
+			log.Printf("[SearchPoliticians] Google geocoded %q → (%.6f, %.6f) %s", query, geoResult.Lat, geoResult.Lng, geoResult.Formatted)
+
+			// Find all geofences (districts) that contain this point
+			geoIDs, err := FindGeoIDsByPoint(r.Context(), geoResult.Lat, geoResult.Lng)
+			if err != nil {
+				log.Printf("[SearchPoliticians] geofence lookup error: %v", err)
+			} else if len(geoIDs) > 0 {
+				log.Printf("[SearchPoliticians] found %d geofences for point: %v", len(geoIDs), geoIDs)
+
+				// Look up politicians by geo-IDs
+				officials, err := FindPoliticiansByGeoIDs(r.Context(), geoIDs)
+				if err != nil {
+					log.Printf("[SearchPoliticians] politician lookup error: %v", err)
+				} else if len(officials) > 0 {
+					log.Printf("[SearchPoliticians] ✓ Served %d officials from local geofence data", len(officials))
+					w.Header().Set("X-Data-Status", "fresh-local")
+					w.Header().Set("X-Geofence-Count", fmt.Sprintf("%d", len(geoIDs)))
+					writeJSON(w, officials)
+					return
+				} else {
+					log.Printf("[SearchPoliticians] no politicians found for geo-IDs (area not pre-populated)")
+				}
+			} else {
+				log.Printf("[SearchPoliticians] no geofences found at (%.6f, %.6f) — area not imported yet", geoResult.Lat, geoResult.Lng)
+			}
+		} else {
+			log.Printf("[SearchPoliticians] Google geocoding failed for %q: %v", query, geoErr)
+		}
+	}
+
+	// Fallback: BallotReady address lookup (for areas not pre-populated with geofence data)
 	brProvider, ok := Provider.(*ballotready.BallotReadyProvider)
 	if !ok {
 		http.Error(w, "Address search requires the BallotReady provider", http.StatusServiceUnavailable)

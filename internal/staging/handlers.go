@@ -5,10 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/EmpoweredVote/EV-Backend/internal/compass"
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
+	"github.com/EmpoweredVote/EV-Backend/internal/essentials"
 	"github.com/EmpoweredVote/EV-Backend/internal/utils"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -19,19 +21,27 @@ import (
 
 const LockDuration = 10 * time.Minute
 
+// PoliticianOut is the unified shape the data-entry frontend expects.
+type PoliticianOut struct {
+	ID          string `json:"id"`
+	ExternalID  string `json:"external_id,omitempty"`
+	FullName    string `json:"full_name"`
+	Party       string `json:"party"`
+	Office      string `json:"office"`
+	OfficeLevel string `json:"office_level"`
+	State       string `json:"state"`
+	District    string `json:"district"`
+	Status      string `json:"status,omitempty"`
+	AddedBy     string `json:"added_by,omitempty"`
+	Source      string `json:"source"` // "essentials" or "staging"
+}
+
 // GetAllData returns all data needed by the data-entry frontend
 func GetAllData(w http.ResponseWriter, r *http.Request) {
 	// Get stances
 	var stances []StagingStance
 	if err := db.DB.Find(&stances).Error; err != nil {
 		http.Error(w, "Failed to fetch stances: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Get politicians from staging
-	var stagingPoliticians []StagingPolitician
-	if err := db.DB.Find(&stagingPoliticians).Error; err != nil {
-		http.Error(w, "Failed to fetch staging politicians: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -42,14 +52,98 @@ func GetAllData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Build unified politician list from essentials + staging
+	var politicians []PoliticianOut
+
+	// Fetch essentials politicians with office/district info
+	type essRow struct {
+		ID           string
+		ExternalID   int
+		FullName     string
+		Party        string
+		OfficeTitle  string
+		DistrictType string
+		State        string
+		DistrictLabel string
+	}
+	var essRows []essRow
+	if err := db.DB.
+		Table("essentials.politicians p").
+		Select(`p.id, p.external_id, p.full_name, p.party,
+				COALESCE(o.title, '') as office_title,
+				COALESCE(d.district_type, '') as district_type,
+				COALESCE(o.representing_state, '') as state,
+				COALESCE(d.label, '') as district_label`).
+		Joins("LEFT JOIN essentials.offices o ON o.politician_id = p.id").
+		Joins("LEFT JOIN essentials.districts d ON d.id = o.district_id").
+		Order("p.full_name ASC").
+		Find(&essRows).Error; err != nil {
+		http.Error(w, "Failed to fetch essentials politicians: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	for _, row := range essRows {
+		politicians = append(politicians, PoliticianOut{
+			ID:          row.ID,
+			ExternalID:  strconv.Itoa(row.ExternalID),
+			FullName:    row.FullName,
+			Party:       row.Party,
+			Office:      row.OfficeTitle,
+			OfficeLevel: districtTypeToLevel(row.DistrictType),
+			State:       row.State,
+			District:    row.DistrictLabel,
+			Source:      "essentials",
+		})
+	}
+
+	// Also include staging politicians (manually added, not yet in essentials)
+	var stagingPoliticians []StagingPolitician
+	if err := db.DB.Find(&stagingPoliticians).Error; err != nil {
+		http.Error(w, "Failed to fetch staging politicians: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	for _, sp := range stagingPoliticians {
+		extID := ""
+		if sp.ExternalID != nil {
+			extID = *sp.ExternalID
+		}
+		politicians = append(politicians, PoliticianOut{
+			ID:          sp.ID.String(),
+			ExternalID:  extID,
+			FullName:    sp.FullName,
+			Party:       sp.Party,
+			Office:      sp.Office,
+			OfficeLevel: sp.OfficeLevel,
+			State:       sp.State,
+			District:    sp.District,
+			Status:      sp.Status,
+			AddedBy:     sp.AddedBy,
+			Source:      "staging",
+		})
+	}
+
 	response := map[string]interface{}{
 		"stances":     stances,
-		"politicians": stagingPoliticians,
+		"politicians": politicians,
 		"topics":      topics,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+}
+
+// districtTypeToLevel maps BallotReady district types to simple level labels.
+func districtTypeToLevel(dt string) string {
+	switch dt {
+	case "NATIONAL_EXEC", "NATIONAL_UPPER", "NATIONAL_LOWER":
+		return "federal"
+	case "STATE_EXEC", "STATE_UPPER", "STATE_LOWER":
+		return "state"
+	case "LOCAL_EXEC", "LOCAL", "COUNTY", "SCHOOL", "JUDICIAL":
+		return "local"
+	default:
+		return dt
+	}
 }
 
 // ListStances returns all stances with optional filtering
@@ -404,20 +498,29 @@ func promoteToCompass(tx *gorm.DB, stance StagingStance) (string, error) {
 		return "", fmt.Errorf("topic not found: %s", stance.TopicKey)
 	}
 
-	// For now, we require a politician_external_id to link to essentials
-	// In the future, this could also match by name
+	// Require a politician_external_id to link to essentials
 	if stance.PoliticianExternalID == nil {
 		return "", errors.New("politician_external_id is required for approval")
+	}
+
+	// Convert external_id string to int and resolve the essentials politician UUID
+	extID, err := strconv.Atoi(*stance.PoliticianExternalID)
+	if err != nil {
+		return "", fmt.Errorf("invalid politician_external_id %q: %w", *stance.PoliticianExternalID, err)
+	}
+
+	var politician essentials.Politician
+	if err := tx.Select("id").First(&politician, "external_id = ?", extID).Error; err != nil {
+		return "", fmt.Errorf("politician not found in essentials for external_id %d: %w", extID, err)
 	}
 
 	// Create or update the answer
 	answerID := uuid.NewString()
 	answer := compass.Answer{
-		ID:      answerID,
-		TopicID: topic.ID,
-		Value:   stance.Value,
-		// Note: PoliticianID would need to be resolved from external_id
-		// This is a simplified version - full implementation would lookup in essentials
+		ID:           answerID,
+		PoliticianID: politician.ID,
+		TopicID:      topic.ID,
+		Value:        float64(stance.Value),
 	}
 
 	if err := tx.Clauses(clause.OnConflict{
@@ -430,10 +533,11 @@ func promoteToCompass(tx *gorm.DB, stance StagingStance) (string, error) {
 	// Also create a context entry if reasoning/sources provided
 	if stance.Reasoning != "" || len(stance.Sources) > 0 {
 		context := compass.Context{
-			ID:        uuid.NewString(),
-			TopicID:   topic.ID,
-			Reasoning: stance.Reasoning,
-			Sources:   stance.Sources,
+			ID:           uuid.NewString(),
+			PoliticianID: politician.ID,
+			TopicID:      topic.ID,
+			Reasoning:    stance.Reasoning,
+			Sources:      stance.Sources,
 		}
 		if err := tx.Create(&context).Error; err != nil {
 			// Non-fatal - context is supplementary

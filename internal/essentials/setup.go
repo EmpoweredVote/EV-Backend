@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
+	"github.com/EmpoweredVote/EV-Backend/internal/essentials/geocoding"
 	"github.com/EmpoweredVote/EV-Backend/internal/essentials/provider"
 
 	// Import providers to register them via init()
@@ -15,6 +16,9 @@ import (
 // It is initialized in Init() based on environment configuration.
 var Provider provider.OfficialProvider
 
+// GeoClient is the Google Maps geocoding client (nil if API key not set).
+var GeoClient *geocoding.Client
+
 func Init() {
 	// Ensure the essentials schema exists
 	if err := db.EnsureSchema(db.DB, "essentials"); err != nil {
@@ -23,6 +27,11 @@ func Init() {
 
 	if err := db.DB.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`).Error; err != nil {
 		log.Fatal("Failed to enable uuid-ossp extension:", err)
+	}
+
+	// Enable PostGIS extension for geospatial queries
+	if err := db.DB.Exec(`CREATE EXTENSION IF NOT EXISTS postgis`).Error; err != nil {
+		log.Fatal("Failed to enable postgis extension:", err)
 	}
 
 	if err := db.DB.AutoMigrate(
@@ -49,8 +58,17 @@ func Init() {
 		&PoliticianStance{},
 		&ElectionRecord{},
 		&PoliticianContact{},
+		// &GeofenceBoundary{}, // Table already exists, managed manually to avoid GORM constraint issues
 	); err != nil {
 		log.Fatal("Failed to auto-migrate tables", err)
+	}
+
+	// Create spatial index on geofence_boundaries geometry column
+	if err := db.DB.Exec(`
+		CREATE INDEX IF NOT EXISTS idx_geofence_boundaries_geometry
+		ON essentials.geofence_boundaries USING GIST (geometry);
+	`).Error; err != nil {
+		log.Fatal("Failed to create spatial index:", err)
 	}
 
 	// Case insensitive unique for committees.name
@@ -71,5 +89,15 @@ func Init() {
 		Provider = nil
 	} else {
 		log.Printf("[essentials] Initialized %s provider", Provider.Name())
+	}
+
+	// Initialize Google Maps geocoding client
+	GeoClient, err = geocoding.NewClient()
+	if err != nil {
+		log.Printf("[essentials] WARNING: Failed to initialize Google Maps geocoding: %v", err)
+	} else if GeoClient != nil {
+		log.Printf("[essentials] Initialized Google Maps geocoding client")
+	} else {
+		log.Printf("[essentials] Google Maps geocoding disabled (GOOGLE_MAPS_API_KEY not set)")
 	}
 }

@@ -12,7 +12,8 @@ type Answer struct {
 	PoliticianID uuid.UUID `json:"politician_id" gorm:"index:idx_pol_topic"`
 	UserID       string    `json:"user_id"      gorm:"index:idx_user_topic"`
 	TopicID      uuid.UUID `json:"topic_id"     gorm:"index:idx_pol_topic;index:idx_user_topic"`
-	Value        int       `gorm:"default: 0" json:"value"`
+	Value        float64   `gorm:"default: 0" json:"value"`
+	WriteInText  string    `json:"write_in_text,omitempty"`
 	CreatedAt    time.Time
 }
 
