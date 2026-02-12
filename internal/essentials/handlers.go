@@ -706,6 +706,11 @@ func upsertOfficial(ctx context.Context, off CiceroOfficial, timestamp time.Time
 }
 
 // upsertNormalizedOfficial handles the database upsert logic for a NormalizedOfficial.
+// UpsertNormalizedOfficial is the exported version for use by scripts/tools.
+func UpsertNormalizedOfficial(ctx context.Context, off provider.NormalizedOfficial, timestamp time.Time) (uuid.UUID, error) {
+	return upsertNormalizedOfficial(ctx, off, timestamp)
+}
+
 // This is the provider-agnostic version of upsertOfficial.
 // Returns the politician ID if successful.
 func upsertNormalizedOfficial(ctx context.Context, off provider.NormalizedOfficial, timestamp time.Time) (uuid.UUID, error) {

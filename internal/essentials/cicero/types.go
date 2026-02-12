@@ -81,6 +81,7 @@ type CiceroChamber struct {
 	ElectionRules     string           `json:"election_rules"`
 	VacancyRules      string           `json:"vacancy_rules"`
 	Remarks           string           `json:"remarks"`
+	IsAppointed       bool             `json:"is_appointed"`
 	Government        CiceroGovernment `json:"government"`
 }
 

@@ -65,11 +65,13 @@ func TransformToNormalized(off CiceroOfficial) provider.NormalizedOfficial {
 		Addresses:      addresses,
 		Identifiers:    identifiers,
 		Committees:     committees,
+		IsAppointed:    off.Office.Chamber.IsAppointed,
 		Source:         "cicero",
 		Office: provider.NormalizedOffice{
-			Title:             off.Office.Title,
-			RepresentingState: off.Office.RepresentingState,
-			RepresentingCity:  off.Office.RepresentingCity,
+			Title:               off.Office.Title,
+			RepresentingState:   off.Office.RepresentingState,
+			RepresentingCity:    off.Office.RepresentingCity,
+			IsAppointedPosition: off.Office.Chamber.IsAppointed,
 			District: provider.NormalizedDistrict{
 				ExternalID:   off.Office.District.SK,
 				OCDID:        off.Office.District.OCDID,
