@@ -68,6 +68,7 @@ var allowed = map[string]struct{}{
 	"https://ev-compassv2.netlify.app":      {},
 	"https://compassv2.netlify.app":         {},
 	"https://ev-compass.netlify.app":         {},
+	"https://ev-prototypes.netlify.app":      {},
 }
 
 func CORSMiddleware(next http.Handler) http.Handler {
