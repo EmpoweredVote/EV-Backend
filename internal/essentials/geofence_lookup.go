@@ -74,21 +74,51 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 	var args []interface{}
 	argIdx := 1
 
+	// Track state FIPS codes from county matches to include state-level judicial officials
+	stateFIPSSeen := make(map[string]bool)
+
 	for _, m := range matches {
 		if allowedTypes, ok := mtfccToDistrictTypes[m.MTFCC]; ok {
-			// Known MTFCC: restrict to matching district types
-			conditions = append(conditions, fmt.Sprintf(
-				"(d.geo_id = $%d AND d.district_type = ANY($%d))",
-				argIdx, argIdx+1,
-			))
-			args = append(args, m.GeoID, pq.Array(allowedTypes))
+			if m.MTFCC == "G5420" {
+				// School districts: use prefix matching so Census geofence geo_id
+				// (e.g. 1800630) matches BallotReady sub-district geo_ids (e.g. 180063000001)
+				conditions = append(conditions, fmt.Sprintf(
+					"(d.geo_id LIKE $%d AND d.district_type = ANY($%d))",
+					argIdx, argIdx+1,
+				))
+				args = append(args, m.GeoID+"%", pq.Array(allowedTypes))
+			} else {
+				// Known MTFCC: restrict to matching district types
+				conditions = append(conditions, fmt.Sprintf(
+					"(d.geo_id = $%d AND d.district_type = ANY($%d))",
+					argIdx, argIdx+1,
+				))
+				args = append(args, m.GeoID, pq.Array(allowedTypes))
+			}
 			argIdx += 2
+
+			// County match: extract state FIPS for state-level judicial lookup
+			if m.MTFCC == "G4020" && len(m.GeoID) >= 2 {
+				stateFIPSSeen[m.GeoID[:2]] = true
+			}
 		} else {
 			// Unknown MTFCC: match any district type for this geo_id
 			conditions = append(conditions, fmt.Sprintf("d.geo_id = $%d", argIdx))
 			args = append(args, m.GeoID)
 			argIdx++
 		}
+	}
+
+	// Include state-level judicial officials (Supreme Court, Appeals Court)
+	// whose geo_id is the state FIPS code (e.g. "18" for Indiana).
+	// These are retention ballot judges that all voters in the state see.
+	for fips := range stateFIPSSeen {
+		conditions = append(conditions, fmt.Sprintf(
+			"(d.geo_id = $%d AND d.district_type = 'JUDICIAL')",
+			argIdx,
+		))
+		args = append(args, fips)
+		argIdx++
 	}
 
 	whereClause := strings.Join(conditions, " OR ")
