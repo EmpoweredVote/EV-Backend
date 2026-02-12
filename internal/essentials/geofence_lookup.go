@@ -3,22 +3,37 @@ package essentials
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
 
+// GeoMatch represents a geofence hit: a geo_id + its MTFCC feature class code.
+// The MTFCC is needed to disambiguate SLDU vs SLDL boundaries that share geo_ids.
+type GeoMatch struct {
+	GeoID string
+	MTFCC string
+}
+
+// mtfccToDistrictTypes maps Census MTFCC codes to BallotReady district types.
+// Used to prevent cross-matching when SLDU and SLDL share the same geo_id.
+var mtfccToDistrictTypes = map[string][]string{
+	"G5210": {"STATE_UPPER"},                 // State Legislative District (Upper)
+	"G5220": {"STATE_LOWER"},                 // State Legislative District (Lower)
+	"G5200": {"NATIONAL_LOWER"},              // Congressional District
+	"G4020": {"COUNTY", "JUDICIAL"},          // County — also used for county-level judicial
+	"G4040": {"LOCAL", "LOCAL_EXEC"},         // County Subdivision (township)
+	"G5420": {"SCHOOL"},                      // Unified School District
+}
+
 // FindGeoIDsByPoint performs a PostGIS point-in-polygon query to find all
 // geofences (districts) that contain the given lat/lng coordinate.
-// Returns a list of Geo-IDs that can be used to look up politicians.
-func FindGeoIDsByPoint(ctx context.Context, lat, lng float64) ([]string, error) {
-	var geoIDs []string
-
-	// PostGIS query: ST_Contains checks if the geometry contains the point
-	// ST_SetSRID creates a point in WGS84 (SRID 4326)
+// Returns geo_id + MTFCC pairs for disambiguation.
+func FindGeoIDsByPoint(ctx context.Context, lat, lng float64) ([]GeoMatch, error) {
 	query := `
-		SELECT geo_id
+		SELECT geo_id, COALESCE(mtfcc, '') as mtfcc
 		FROM essentials.geofence_boundaries
 		WHERE ST_Contains(
 			geometry,
@@ -32,27 +47,52 @@ func FindGeoIDsByPoint(ctx context.Context, lat, lng float64) ([]string, error) 
 	}
 	defer rows.Close()
 
+	var matches []GeoMatch
 	for rows.Next() {
-		var geoID string
-		if err := rows.Scan(&geoID); err != nil {
-			return nil, fmt.Errorf("scan geo_id: %w", err)
+		var m GeoMatch
+		if err := rows.Scan(&m.GeoID, &m.MTFCC); err != nil {
+			return nil, fmt.Errorf("scan geo match: %w", err)
 		}
-		geoIDs = append(geoIDs, geoID)
+		matches = append(matches, m)
 	}
 
-	return geoIDs, nil
+	return matches, nil
 }
 
-// FindPoliticiansByGeoIDs looks up all politicians whose districts match
-// the given Geo-IDs. This is the second step after FindGeoIDsByPoint.
-func FindPoliticiansByGeoIDs(ctx context.Context, geoIDs []string) ([]OfficialOut, error) {
-	if len(geoIDs) == 0 {
+// FindPoliticiansByGeoMatches looks up all politicians whose districts match
+// the given geo matches. Uses MTFCC→district_type mapping to prevent
+// cross-matching between SLDU and SLDL when they share the same geo_id.
+func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]OfficialOut, error) {
+	if len(matches) == 0 {
 		return []OfficialOut{}, nil
 	}
 
-	// Use the existing fetchOfficialsFromDB pattern but filtered by geo_ids
-	// This reuses the complex query logic that already exists
-	query := `
+	// Build WHERE conditions: for each geo match, allow only compatible district types
+	// This prevents SLDU geo_id 18046 from matching SLDL district 46 (and vice versa)
+	var conditions []string
+	var args []interface{}
+	argIdx := 1
+
+	for _, m := range matches {
+		if allowedTypes, ok := mtfccToDistrictTypes[m.MTFCC]; ok {
+			// Known MTFCC: restrict to matching district types
+			conditions = append(conditions, fmt.Sprintf(
+				"(d.geo_id = $%d AND d.district_type = ANY($%d))",
+				argIdx, argIdx+1,
+			))
+			args = append(args, m.GeoID, pq.Array(allowedTypes))
+			argIdx += 2
+		} else {
+			// Unknown MTFCC: match any district type for this geo_id
+			conditions = append(conditions, fmt.Sprintf("d.geo_id = $%d", argIdx))
+			args = append(args, m.GeoID)
+			argIdx++
+		}
+	}
+
+	whereClause := strings.Join(conditions, " OR ")
+
+	query := fmt.Sprintf(`
 		SELECT DISTINCT ON (p.id)
 			p.id,
 			p.external_id,
@@ -97,11 +137,11 @@ func FindPoliticiansByGeoIDs(ctx context.Context, geoIDs []string) ([]OfficialOu
 		JOIN essentials.districts d ON o.district_id = d.id
 		LEFT JOIN essentials.chambers ch ON o.chamber_id = ch.id
 		LEFT JOIN essentials.governments g ON ch.government_id = g.id
-		WHERE d.geo_id = ANY($1)
+		WHERE (%s)
 		ORDER BY p.id, d.district_type
-	`
+	`, whereClause)
 
-	rows, err := db.DB.WithContext(ctx).Raw(query, geoIDs).Rows()
+	rows, err := db.DB.WithContext(ctx).Raw(query, args...).Rows()
 	if err != nil {
 		return nil, fmt.Errorf("politicians lookup failed: %w", err)
 	}

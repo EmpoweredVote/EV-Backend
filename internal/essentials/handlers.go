@@ -2354,10 +2354,24 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 	return out, nil
 }
 
+// fetchStatewideFromDB returns only truly statewide officials: NATIONAL_EXEC (president, VP,
+// cabinet), NATIONAL_UPPER (US senators), and STATE_EXEC (governor, lt gov, AG). These
+// officials represent everyone in the state. District-specific types (NATIONAL_LOWER,
+// STATE_UPPER, STATE_LOWER) are excluded — they should come from geofence matches.
+func fetchStatewideFromDB(state string) ([]OfficialOut, error) {
+	return fetchFederalAndStateFromDBFiltered(state, []string{"NATIONAL_EXEC", "NATIONAL_UPPER", "STATE_EXEC"})
+}
+
 // fetchFederalAndStateFromDB returns federal officials (nationwide) plus state-level officials
 // for the given state from the DB cache. Unlike fetchOfficialsFromDB, this does NOT require
 // a ZIP code or the zip_politicians mapping — it queries by district type directly.
 func fetchFederalAndStateFromDB(state string) ([]OfficialOut, error) {
+	return fetchFederalAndStateFromDBFiltered(state, []string{"NATIONAL_UPPER", "NATIONAL_LOWER", "STATE_EXEC", "STATE_UPPER", "STATE_LOWER"})
+}
+
+// fetchFederalAndStateFromDBFiltered is the shared implementation that accepts specific
+// district types to filter by (in addition to always including NATIONAL_EXEC).
+func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []string) ([]OfficialOut, error) {
 	type row struct {
 		ID                   uuid.UUID
 		ExternalID           int
@@ -2430,14 +2444,14 @@ func fetchFederalAndStateFromDB(state string) ([]OfficialOut, error) {
 		WHERE (
 		  d.district_type = 'NATIONAL_EXEC'
 		  OR (
-		    d.district_type IN ('NATIONAL_UPPER', 'NATIONAL_LOWER', 'STATE_EXEC', 'STATE_UPPER', 'STATE_LOWER')
+		    d.district_type = ANY(?)
 		    AND (o.representing_state = ? OR d.state = ?)
 		  )
 		)
 		ORDER BY d.district_type, o.title, p.last_name, p.first_name
 	`
 
-	if err := db.DB.Raw(query, state, state).Scan(&rows).Error; err != nil {
+	if err := db.DB.Raw(query, pq.Array(stateFilteredTypes), state, state).Scan(&rows).Error; err != nil {
 		return nil, err
 	}
 
@@ -2780,20 +2794,91 @@ func SearchPoliticians(w http.ResponseWriter, r *http.Request) {
 			log.Printf("[SearchPoliticians] Google geocoded %q → (%.6f, %.6f) %s", query, geoResult.Lat, geoResult.Lng, geoResult.Formatted)
 
 			// Find all geofences (districts) that contain this point
-			geoIDs, err := FindGeoIDsByPoint(r.Context(), geoResult.Lat, geoResult.Lng)
+			geoMatches, err := FindGeoIDsByPoint(r.Context(), geoResult.Lat, geoResult.Lng)
 			if err != nil {
 				log.Printf("[SearchPoliticians] geofence lookup error: %v", err)
-			} else if len(geoIDs) > 0 {
-				log.Printf("[SearchPoliticians] found %d geofences for point: %v", len(geoIDs), geoIDs)
+			} else if len(geoMatches) > 0 {
+				geoIDs := make([]string, len(geoMatches))
+				for i, m := range geoMatches {
+					geoIDs[i] = m.GeoID + "(" + m.MTFCC + ")"
+				}
+				log.Printf("[SearchPoliticians] found %d geofences for point: %v", len(geoMatches), geoIDs)
 
-				// Look up politicians by geo-IDs
-				officials, err := FindPoliticiansByGeoIDs(r.Context(), geoIDs)
+				// Look up politicians by geo matches (with MTFCC disambiguation)
+				officials, err := FindPoliticiansByGeoMatches(r.Context(), geoMatches)
 				if err != nil {
 					log.Printf("[SearchPoliticians] politician lookup error: %v", err)
 				} else if len(officials) > 0 {
-					log.Printf("[SearchPoliticians] ✓ Served %d officials from local geofence data", len(officials))
+					// Supplement geofence results with federal + state officials from DB cache
+					geoState := strings.ToUpper(geoResult.State)
+					if geoState == "" {
+						// Fall back to state from geofence-matched officials
+						for _, o := range officials {
+							if o.RepresentingState != "" {
+								geoState = strings.ToUpper(o.RepresentingState)
+								break
+							}
+						}
+					}
+
+					if geoState != "" {
+						seenExtIDs := make(map[int]bool, len(officials))
+						for _, o := range officials {
+							if o.ExternalID != 0 {
+								seenExtIDs[o.ExternalID] = true
+							}
+						}
+
+						supplemental, supErr := fetchStatewideFromDB(geoState)
+						if supErr == nil {
+							for _, s := range supplemental {
+								if !seenExtIDs[s.ExternalID] {
+									officials = append(officials, s)
+									seenExtIDs[s.ExternalID] = true
+								}
+							}
+						} else {
+							log.Printf("[SearchPoliticians] geofence supplemental fetch error: %v", supErr)
+						}
+
+						// Kick background warmers if federal/state caches are stale
+						now := time.Now()
+						const maxAge = 90 * 24 * time.Hour
+
+						var federalCache FederalCache
+						if err := db.DB.First(&federalCache).Error; err != nil || now.Sub(federalCache.LastFetched) >= maxAge {
+							if tryAcquireLock(r.Context(), "federal") {
+								go func() {
+									defer releaseLock(context.Background(), "federal")
+									if err := warmFederal(context.Background()); err != nil {
+										log.Printf("[SearchPoliticians] warmFederal err=%v", err)
+									}
+								}()
+							}
+						}
+
+						var stateCache StateCache
+						if err := db.DB.Where("state = ?", geoState).First(&stateCache).Error; err != nil || now.Sub(stateCache.LastFetched) >= maxAge {
+							if tryAcquireLock(r.Context(), "state-"+geoState) {
+								go func() {
+									defer releaseLock(context.Background(), "state-"+geoState)
+									sampleZip := geoResult.Zip
+									if sampleZip == "" {
+										if err := db.DB.Raw("SELECT zip FROM essentials.zip_caches WHERE state = ? LIMIT 1", geoState).Row().Scan(&sampleZip); err != nil || sampleZip == "" {
+											sampleZip = "20001"
+										}
+									}
+									if err := warmState(context.Background(), geoState, sampleZip); err != nil {
+										log.Printf("[SearchPoliticians] warmState err=%v", err)
+									}
+								}()
+							}
+						}
+					}
+
+					log.Printf("[SearchPoliticians] ✓ Served %d officials (%d geofence + supplemental) for state=%s", len(officials), len(geoMatches), geoState)
 					w.Header().Set("X-Data-Status", "fresh-local")
-					w.Header().Set("X-Geofence-Count", fmt.Sprintf("%d", len(geoIDs)))
+					w.Header().Set("X-Geofence-Count", fmt.Sprintf("%d", len(geoMatches)))
 					writeJSON(w, officials)
 					return
 				} else {
