@@ -32,6 +32,11 @@ SHAPEFILES = {
         "desc": "Indiana Congressional Districts (119th Congress)",
         "state_filter": "18",
     },
+    "place_in": {
+        "url": f"https://www2.census.gov/geo/tiger/TIGER{YEAR}/PLACE/tl_{YEAR}_18_place.zip",
+        "desc": "Indiana Incorporated Places (cities/towns)",
+        "state_filter": "18",
+    },
 }
 
 

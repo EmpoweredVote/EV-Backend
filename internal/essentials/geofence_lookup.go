@@ -25,6 +25,7 @@ var mtfccToDistrictTypes = map[string][]string{
 	"G5200": {"NATIONAL_LOWER"},              // Congressional District
 	"G4020": {"COUNTY", "JUDICIAL"},          // County — also used for county-level judicial
 	"G4040": {"LOCAL", "LOCAL_EXEC"},         // County Subdivision (township)
+	"G4110": {"LOCAL", "LOCAL_EXEC"},         // Incorporated Place (city/town)
 	"G5420": {"SCHOOL"},                      // Unified School District
 }
 
