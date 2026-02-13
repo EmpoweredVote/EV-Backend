@@ -1142,7 +1142,7 @@ func PoliticiansWithAnswersHandler(w http.ResponseWriter, r *http.Request) {
 		  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
 		  o.title AS office_title
 		FROM compass.answers a
-		JOIN essentials.politicians p ON p.id = a.politician_id
+		JOIN essentials.politicians p ON p.id::text = a.politician_id
 		LEFT JOIN essentials.offices o ON o.politician_id = p.id
 		WHERE a.politician_id != '00000000-0000-0000-0000-000000000000'
 		  AND a.value != 0
