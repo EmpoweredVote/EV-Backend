@@ -70,3 +70,13 @@ func (Category) TableName() string {
 func (Context) TableName() string {
 	return "compass.contexts"
 }
+
+type UserCompass struct {
+	UserID    string         `gorm:"primaryKey" json:"user_id"`
+	TopicIDs  pq.StringArray `gorm:"type:text[]" json:"topic_ids"`
+	UpdatedAt time.Time      `json:"updated_at"`
+}
+
+func (UserCompass) TableName() string {
+	return "compass.user_compasses"
+}

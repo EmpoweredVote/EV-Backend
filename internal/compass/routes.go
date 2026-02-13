@@ -22,6 +22,8 @@ func SetupRoutes() http.Handler {
 		r.Post("/answers", UserAnswersHandler)
 		r.Get("/answers", UserAnswersHandler)
 		r.Post("/answers/batch", UserAnswerBatchHandler)
+		r.Get("/selected-topics", SelectedTopicsHandler)
+		r.Put("/selected-topics", SelectedTopicsHandler)
 		r.Post("/politicians/{politician_id}/answers/batch", PoliticianAnswerBatch)
 		r.Post("/compare", CompareHandler)
 		r.Group(func(r chi.Router) {

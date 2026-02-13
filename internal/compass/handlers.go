@@ -9,8 +9,10 @@ import (
 
 	"github.com/EmpoweredVote/EV-Backend/internal/auth"
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
+	"github.com/EmpoweredVote/EV-Backend/internal/utils"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -1119,4 +1121,50 @@ func UpsertPoliticianAnswers(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "Upsert complete")
+}
+
+func SelectedTopicsHandler(w http.ResponseWriter, r *http.Request) {
+	userID, ok := utils.GetUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	switch r.Method {
+	case http.MethodGet:
+		var uc UserCompass
+		err := db.DB.Where("user_id = ?", userID).First(&uc).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode([]string{})
+			return
+		}
+		if err != nil {
+			http.Error(w, "Database error", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(uc.TopicIDs)
+
+	case http.MethodPut:
+		var input struct {
+			TopicIDs []string `json:"topic_ids"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		uc := UserCompass{
+			UserID:   userID,
+			TopicIDs: pq.StringArray(input.TopicIDs),
+		}
+		err := db.DB.Where("user_id = ?", userID).Assign(uc).FirstOrCreate(&uc).Error
+		if err != nil {
+			http.Error(w, "Failed to save", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(uc.TopicIDs)
+	}
 }
