@@ -16,6 +16,7 @@ func SetupRoutes() http.Handler {
 	r.Get("/categories", CategoryHandler)
 	r.Get("/politicians/{politician_id}/{topic_id}/context", GetPoliticianContext)
 	r.Get("/politicians/{politician_id}/answers", GetPoliticianAnswers)
+	r.Get("/politicians", PoliticiansWithAnswersHandler)
 
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.SessionMiddleware(sessionFetcher))

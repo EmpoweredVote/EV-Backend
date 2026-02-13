@@ -1123,6 +1123,41 @@ func UpsertPoliticianAnswers(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Upsert complete")
 }
 
+// PoliticiansWithAnswersHandler returns politicians that have at least one compass answer.
+func PoliticiansWithAnswersHandler(w http.ResponseWriter, r *http.Request) {
+	type polRow struct {
+		ID             uuid.UUID `json:"id"`
+		FirstName      string    `json:"first_name"`
+		LastName       string    `json:"last_name"`
+		PreferredName  string    `json:"preferred_name,omitempty"`
+		FullName       string    `json:"full_name,omitempty"`
+		PhotoOriginURL string    `json:"photo_origin_url,omitempty"`
+		OfficeTitle    string    `json:"office_title,omitempty"`
+	}
+
+	var results []polRow
+	err := db.DB.Raw(`
+		SELECT DISTINCT ON (p.id)
+		  p.id, p.first_name, p.last_name, p.preferred_name, p.full_name,
+		  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
+		  o.title AS office_title
+		FROM compass.answers a
+		JOIN essentials.politicians p ON p.id = a.politician_id
+		LEFT JOIN essentials.offices o ON o.politician_id = p.id
+		WHERE a.politician_id != '00000000-0000-0000-0000-000000000000'
+		  AND a.value != 0
+		ORDER BY p.id
+	`).Scan(&results).Error
+
+	if err != nil {
+		http.Error(w, "DB error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(results)
+}
+
 func SelectedTopicsHandler(w http.ResponseWriter, r *http.Request) {
 	userID, ok := utils.GetUserIDFromContext(r.Context())
 	if !ok {
