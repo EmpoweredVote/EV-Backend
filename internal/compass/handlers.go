@@ -19,7 +19,7 @@ import (
 func TopicHandler(w http.ResponseWriter, r *http.Request) {
 	var topics []Topic
 
-	result := db.DB.Preload("Stances", func(db *gorm.DB) *gorm.DB {
+	result := db.DB.Where("is_active = ?", true).Preload("Stances", func(db *gorm.DB) *gorm.DB {
 		return db.Order("value ASC")
 	}).Preload("Categories").Find(&topics)
 
