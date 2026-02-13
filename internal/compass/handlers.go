@@ -249,7 +249,7 @@ func StancesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 	var categories []Category
 
-	result := db.DB.Preload("Topics").Find(&categories)
+	result := db.DB.Preload("Topics", "is_active = ?", true).Find(&categories)
 	if result.Error != nil {
 		http.Error(w, "DB error: "+result.Error.Error(), http.StatusInternalServerError)
 		return
