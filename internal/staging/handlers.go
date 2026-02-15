@@ -816,8 +816,9 @@ func CreatePolitician(w http.ResponseWriter, r *http.Request) {
 		Contacts:    JSONB(req.Contacts),
 		Degrees:     JSONB(req.Degrees),
 		Experiences: JSONB(req.Experiences),
-		Status:      "pending",
+		Status:      "draft",
 		AddedBy:     userID,
+		ReviewedBy:  pq.StringArray{},
 	}
 
 	if err := db.DB.Create(&politician).Error; err != nil {
@@ -864,8 +865,8 @@ func UpdatePolitician(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Only the author can update this politician", http.StatusForbidden)
 		return
 	}
-	if politician.Status != "pending" {
-		http.Error(w, "Cannot update politician after approval/rejection", http.StatusBadRequest)
+	if politician.Status != "draft" && politician.Status != "pending" {
+		http.Error(w, "Cannot update politician after submission", http.StatusBadRequest)
 		return
 	}
 
@@ -948,8 +949,8 @@ func ApprovePolitician(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if politician.Status != "pending" {
-		http.Error(w, "Politician is not in pending status", http.StatusBadRequest)
+	if politician.Status != "pending" && politician.Status != "draft" && politician.Status != "needs_review" {
+		http.Error(w, "Politician is not in a reviewable status", http.StatusBadRequest)
 		return
 	}
 
@@ -966,8 +967,10 @@ func ApprovePolitician(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	now := time.Now()
 	politician.Status = "approved"
-	politician.ReviewedBy = &userID
+	politician.ReviewedBy = append(politician.ReviewedBy, userID)
+	politician.ApprovedAt = &now
 	politician.MergedToID = &mergedID
 
 	if err := tx.Save(&politician).Error; err != nil {
@@ -1004,13 +1007,13 @@ func RejectPolitician(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if politician.Status != "pending" {
-		http.Error(w, "Politician is not in pending status", http.StatusBadRequest)
+	if politician.Status != "pending" && politician.Status != "draft" && politician.Status != "needs_review" {
+		http.Error(w, "Politician is not in a rejectable status", http.StatusBadRequest)
 		return
 	}
 
 	politician.Status = "rejected"
-	politician.ReviewedBy = &userID
+	politician.ReviewedBy = append(politician.ReviewedBy, userID)
 
 	if err := db.DB.Save(&politician).Error; err != nil {
 		http.Error(w, "Failed to reject politician: "+err.Error(), http.StatusInternalServerError)
@@ -1019,6 +1022,414 @@ func RejectPolitician(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"status": "rejected"})
+}
+
+// SubmitPoliticianForReview changes status from draft/pending to needs_review
+func SubmitPoliticianForReview(w http.ResponseWriter, r *http.Request) {
+	userID, ok := utils.GetUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	id := chi.URLParam(r, "id")
+
+	var politician StagingPolitician
+	if err := db.DB.First(&politician, "id = ?", id).Error; err != nil {
+		http.Error(w, "Politician not found", http.StatusNotFound)
+		return
+	}
+
+	if politician.AddedBy != userID {
+		http.Error(w, "Only the author can submit this politician", http.StatusForbidden)
+		return
+	}
+
+	if politician.Status != "draft" && politician.Status != "pending" {
+		http.Error(w, "Politician is not in draft status", http.StatusBadRequest)
+		return
+	}
+
+	politician.Status = "needs_review"
+	if err := db.DB.Save(&politician).Error; err != nil {
+		http.Error(w, "Failed to submit politician: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "submitted"})
+}
+
+// GetPoliticianReviewQueue returns politicians that need review
+func GetPoliticianReviewQueue(w http.ResponseWriter, r *http.Request) {
+	userID, ok := utils.GetUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var politicians []StagingPolitician
+	if err := db.DB.Where("status = ?", "needs_review").
+		Where("added_by != ?", userID).
+		Order("created_at ASC").
+		Find(&politicians).Error; err != nil {
+		http.Error(w, "Failed to fetch review queue: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Filter out politicians already reviewed by this user or locked by someone else
+	now := time.Now()
+	var filtered []StagingPolitician
+	for _, p := range politicians {
+		alreadyReviewed := false
+		for _, reviewer := range p.ReviewedBy {
+			if reviewer == userID {
+				alreadyReviewed = true
+				break
+			}
+		}
+		if alreadyReviewed {
+			continue
+		}
+
+		// Check if locked by someone else
+		if p.LockedBy != nil && p.LockedAt != nil {
+			if now.Sub(*p.LockedAt) < LockDuration && *p.LockedBy != userID {
+				continue
+			}
+		}
+
+		filtered = append(filtered, p)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(filtered)
+}
+
+// ApprovePoliticianReview adds an approval (auto-promotes to essentials at 2)
+func ApprovePoliticianReview(w http.ResponseWriter, r *http.Request) {
+	userID, ok := utils.GetUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	id := chi.URLParam(r, "id")
+
+	tx := db.DB.Begin()
+	if tx.Error != nil {
+		http.Error(w, "Failed to start transaction", http.StatusInternalServerError)
+		return
+	}
+
+	var politician StagingPolitician
+	if err := tx.First(&politician, "id = ?", id).Error; err != nil {
+		tx.Rollback()
+		http.Error(w, "Politician not found", http.StatusNotFound)
+		return
+	}
+
+	if politician.Status != "needs_review" {
+		tx.Rollback()
+		http.Error(w, "Politician is not in review status", http.StatusBadRequest)
+		return
+	}
+
+	for _, reviewer := range politician.ReviewedBy {
+		if reviewer == userID {
+			tx.Rollback()
+			http.Error(w, "You have already reviewed this politician", http.StatusBadRequest)
+			return
+		}
+	}
+
+	if politician.AddedBy == userID {
+		tx.Rollback()
+		http.Error(w, "Cannot review your own submission", http.StatusForbidden)
+		return
+	}
+
+	politician.ReviewCount++
+	politician.ReviewedBy = append(politician.ReviewedBy, userID)
+	now := time.Now()
+	politician.LastReviewedAt = &now
+
+	reviewLog := PoliticianReviewLog{
+		PoliticianID: politician.ID,
+		ReviewerName: userID,
+		Action:       "approved",
+		CreatedAt:    now,
+	}
+	if err := tx.Create(&reviewLog).Error; err != nil {
+		tx.Rollback()
+		http.Error(w, "Failed to log review: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// If 2 approvals, promote to essentials
+	if politician.ReviewCount >= 2 {
+		politician.Status = "approved"
+		politician.ApprovedAt = &now
+
+		mergedID, err := promoteToEssentials(tx, politician)
+		if err != nil {
+			tx.Rollback()
+			http.Error(w, "Failed to promote to essentials: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		politician.MergedToID = &mergedID
+	}
+
+	if err := tx.Save(&politician).Error; err != nil {
+		tx.Rollback()
+		http.Error(w, "Failed to save politician: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		http.Error(w, "Failed to commit: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":       politician.Status,
+		"review_count": politician.ReviewCount,
+		"approved":     politician.Status == "approved",
+	})
+}
+
+// RejectPoliticianReview rejects a politician during peer review
+func RejectPoliticianReview(w http.ResponseWriter, r *http.Request) {
+	userID, ok := utils.GetUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	id := chi.URLParam(r, "id")
+
+	var req struct {
+		Comment string `json:"comment"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+
+	var politician StagingPolitician
+	if err := db.DB.First(&politician, "id = ?", id).Error; err != nil {
+		http.Error(w, "Politician not found", http.StatusNotFound)
+		return
+	}
+
+	if politician.Status != "needs_review" {
+		http.Error(w, "Politician is not in review status", http.StatusBadRequest)
+		return
+	}
+
+	if politician.AddedBy == userID {
+		http.Error(w, "Cannot reject your own submission", http.StatusForbidden)
+		return
+	}
+
+	politician.Status = "rejected"
+	now := time.Now()
+	politician.LastReviewedAt = &now
+
+	reviewLog := PoliticianReviewLog{
+		PoliticianID: politician.ID,
+		ReviewerName: userID,
+		Action:       "rejected",
+		Comment:      req.Comment,
+		CreatedAt:    now,
+	}
+
+	tx := db.DB.Begin()
+	tx.Create(&reviewLog)
+	tx.Save(&politician)
+	if err := tx.Commit().Error; err != nil {
+		http.Error(w, "Failed to reject politician: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "rejected"})
+}
+
+// EditAndResubmitPolitician allows a reviewer to edit and resubmit a politician
+func EditAndResubmitPolitician(w http.ResponseWriter, r *http.Request) {
+	userID, ok := utils.GetUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	id := chi.URLParam(r, "id")
+
+	var req struct {
+		FullName    *string         `json:"full_name,omitempty"`
+		Party       *string         `json:"party,omitempty"`
+		Office      *string         `json:"office,omitempty"`
+		OfficeLevel *string         `json:"office_level,omitempty"`
+		State       *string         `json:"state,omitempty"`
+		District    *string         `json:"district,omitempty"`
+		BioText     *string         `json:"bio_text,omitempty"`
+		PhotoURL    *string         `json:"photo_url,omitempty"`
+		Contacts    json.RawMessage `json:"contacts,omitempty"`
+		Degrees     json.RawMessage `json:"degrees,omitempty"`
+		Experiences json.RawMessage `json:"experiences,omitempty"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	var politician StagingPolitician
+	if err := db.DB.First(&politician, "id = ?", id).Error; err != nil {
+		http.Error(w, "Politician not found", http.StatusNotFound)
+		return
+	}
+
+	if politician.Status != "needs_review" {
+		http.Error(w, "Politician is not in review status", http.StatusBadRequest)
+		return
+	}
+
+	// Apply updates
+	if req.FullName != nil {
+		politician.FullName = *req.FullName
+	}
+	if req.Party != nil {
+		politician.Party = *req.Party
+	}
+	if req.Office != nil {
+		politician.Office = *req.Office
+	}
+	if req.OfficeLevel != nil {
+		politician.OfficeLevel = *req.OfficeLevel
+	}
+	if req.State != nil {
+		politician.State = *req.State
+	}
+	if req.District != nil {
+		politician.District = *req.District
+	}
+	if req.BioText != nil {
+		politician.BioText = *req.BioText
+	}
+	if req.PhotoURL != nil {
+		politician.PhotoURL = *req.PhotoURL
+	}
+	if req.Contacts != nil {
+		politician.Contacts = JSONB(req.Contacts)
+	}
+	if req.Degrees != nil {
+		politician.Degrees = JSONB(req.Degrees)
+	}
+	if req.Experiences != nil {
+		politician.Experiences = JSONB(req.Experiences)
+	}
+
+	// Editor becomes new author, reset reviews
+	politician.AddedBy = userID
+	politician.ReviewCount = 0
+	politician.ReviewedBy = pq.StringArray{}
+	politician.LastReviewedAt = nil
+	// Status stays as needs_review
+
+	reviewLog := PoliticianReviewLog{
+		PoliticianID: politician.ID,
+		ReviewerName: userID,
+		Action:       "edited",
+		CreatedAt:    time.Now(),
+	}
+
+	tx := db.DB.Begin()
+	tx.Create(&reviewLog)
+	tx.Save(&politician)
+	if err := tx.Commit().Error; err != nil {
+		http.Error(w, "Failed to edit politician: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "resubmitted"})
+}
+
+// AcquirePoliticianLock acquires a 10-minute lock on a politician
+func AcquirePoliticianLock(w http.ResponseWriter, r *http.Request) {
+	userID, ok := utils.GetUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	id := chi.URLParam(r, "id")
+
+	var politician StagingPolitician
+	if err := db.DB.First(&politician, "id = ?", id).Error; err != nil {
+		http.Error(w, "Politician not found", http.StatusNotFound)
+		return
+	}
+
+	now := time.Now()
+
+	if politician.LockedBy != nil && politician.LockedAt != nil {
+		if now.Sub(*politician.LockedAt) < LockDuration && *politician.LockedBy != userID {
+			expiresAt := politician.LockedAt.Add(LockDuration)
+			http.Error(w, fmt.Sprintf("Locked by %s until %s", *politician.LockedBy, expiresAt.Format(time.RFC3339)), http.StatusConflict)
+			return
+		}
+	}
+
+	politician.LockedBy = &userID
+	politician.LockedAt = &now
+
+	if err := db.DB.Save(&politician).Error; err != nil {
+		http.Error(w, "Failed to acquire lock: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"locked":     true,
+		"locked_by":  userID,
+		"expires_at": now.Add(LockDuration).Format(time.RFC3339),
+	})
+}
+
+// ReleasePoliticianLock releases a lock on a politician
+func ReleasePoliticianLock(w http.ResponseWriter, r *http.Request) {
+	userID, ok := utils.GetUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	id := chi.URLParam(r, "id")
+
+	var politician StagingPolitician
+	if err := db.DB.First(&politician, "id = ?", id).Error; err != nil {
+		http.Error(w, "Politician not found", http.StatusNotFound)
+		return
+	}
+
+	if politician.LockedBy != nil && *politician.LockedBy != userID {
+		if politician.LockedAt != nil && time.Since(*politician.LockedAt) < LockDuration {
+			http.Error(w, "You do not hold this lock", http.StatusForbidden)
+			return
+		}
+	}
+
+	politician.LockedBy = nil
+	politician.LockedAt = nil
+
+	if err := db.DB.Save(&politician).Error; err != nil {
+		http.Error(w, "Failed to release lock: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "released"})
 }
 
 // promoteToEssentials creates records in the essentials schema from a staged politician.

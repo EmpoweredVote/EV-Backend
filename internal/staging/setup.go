@@ -22,6 +22,7 @@ func Init() {
 		&StagingStance{},
 		&StagingPolitician{},
 		&ReviewLog{},
+		&PoliticianReviewLog{},
 	); err != nil {
 		log.Fatal("Failed to auto-migrate staging tables: ", err)
 	}

@@ -38,10 +38,19 @@ func SetupRoutes() http.Handler {
 		// Politician management
 		r.Get("/politicians", ListPoliticians)
 		r.Post("/politicians", CreatePolitician)
+		r.Get("/politicians/review-queue", GetPoliticianReviewQueue)
 		r.Get("/politicians/{id}", GetPolitician)
 		r.Put("/politicians/{id}", UpdatePolitician)
 
-		// Admin-only politician approval
+		// Politician review workflow
+		r.Post("/politicians/{id}/submit", SubmitPoliticianForReview)
+		r.Post("/politicians/{id}/review-approve", ApprovePoliticianReview)
+		r.Post("/politicians/{id}/review-reject", RejectPoliticianReview)
+		r.Post("/politicians/{id}/edit-resubmit", EditAndResubmitPolitician)
+		r.Post("/politicians/{id}/lock", AcquirePoliticianLock)
+		r.Delete("/politicians/{id}/lock", ReleasePoliticianLock)
+
+		// Admin-only politician approval (override)
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.AdminMiddleware(sessionFetcher))
 			r.Post("/politicians/{id}/approve", ApprovePolitician)

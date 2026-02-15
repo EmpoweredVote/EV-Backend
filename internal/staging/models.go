@@ -114,9 +114,20 @@ type StagingPolitician struct {
 	Experiences JSONB  `json:"experiences" gorm:"type:jsonb;default:'[]'"` // [{title, organization, type, start, end}]
 
 	// Workflow
-	Status     string  `gorm:"default:'pending';index" json:"status"` // pending, approved, rejected, merged
-	AddedBy    string  `gorm:"not null" json:"added_by"`
-	ReviewedBy *string `json:"reviewed_by,omitempty"`
+	Status  string `gorm:"default:'draft';index" json:"status"` // draft, needs_review, approved, rejected, merged
+	AddedBy string `gorm:"not null" json:"added_by"`
+
+	// Review tracking
+	ReviewCount    int            `gorm:"default:0" json:"review_count"`
+	ReviewedBy     pq.StringArray `gorm:"type:text[]" json:"reviewed_by"`
+	LastReviewedAt *time.Time     `json:"last_reviewed_at,omitempty"`
+
+	// Locking (10-min auto-expire)
+	LockedBy *string    `json:"locked_by,omitempty"`
+	LockedAt *time.Time `json:"locked_at,omitempty"`
+
+	// After approval
+	ApprovedAt *time.Time `json:"approved_at,omitempty"`
 
 	// If approved, link to essentials.politicians
 	MergedToID *uuid.UUID `gorm:"type:uuid" json:"merged_to_id,omitempty"`
@@ -143,4 +154,18 @@ type ReviewLog struct {
 
 func (ReviewLog) TableName() string {
 	return "staging.review_logs"
+}
+
+// PoliticianReviewLog tracks all review actions on politicians for audit purposes
+type PoliticianReviewLog struct {
+	ID           uuid.UUID `gorm:"type:uuid;primaryKey;default:uuid_generate_v4()" json:"id"`
+	PoliticianID uuid.UUID `gorm:"type:uuid;not null;index" json:"politician_id"`
+	ReviewerName string    `gorm:"not null" json:"reviewer_name"`
+	Action       string    `gorm:"not null" json:"action"` // approved, rejected, edited
+	Comment      string    `json:"comment,omitempty"`
+	CreatedAt    time.Time `json:"created_at"`
+}
+
+func (PoliticianReviewLog) TableName() string {
+	return "staging.politician_review_logs"
 }
