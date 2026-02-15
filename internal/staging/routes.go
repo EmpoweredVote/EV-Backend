@@ -39,6 +39,7 @@ func SetupRoutes() http.Handler {
 		r.Get("/politicians", ListPoliticians)
 		r.Post("/politicians", CreatePolitician)
 		r.Get("/politicians/{id}", GetPolitician)
+		r.Put("/politicians/{id}", UpdatePolitician)
 
 		// Admin-only politician approval
 		r.Group(func(r chi.Router) {

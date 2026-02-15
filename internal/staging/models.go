@@ -1,11 +1,55 @@
 package staging
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
+
+// JSONB wraps json.RawMessage with Scanner/Valuer for GORM JSONB columns.
+type JSONB json.RawMessage
+
+func (j JSONB) Value() (driver.Value, error) {
+	if len(j) == 0 {
+		return "[]", nil
+	}
+	return string(j), nil
+}
+
+func (j *JSONB) Scan(value interface{}) error {
+	if value == nil {
+		*j = JSONB("[]")
+		return nil
+	}
+	switch v := value.(type) {
+	case []byte:
+		*j = append((*j)[0:0], v...)
+	case string:
+		*j = JSONB(v)
+	default:
+		return fmt.Errorf("unsupported type: %T", value)
+	}
+	return nil
+}
+
+func (j JSONB) MarshalJSON() ([]byte, error) {
+	if len(j) == 0 {
+		return []byte("[]"), nil
+	}
+	return json.RawMessage(j).MarshalJSON()
+}
+
+func (j *JSONB) UnmarshalJSON(data []byte) error {
+	if j == nil {
+		return fmt.Errorf("JSONB: UnmarshalJSON on nil pointer")
+	}
+	*j = append((*j)[0:0], data...)
+	return nil
+}
 
 // StagingStance holds volunteer-entered stance data before approval
 type StagingStance struct {
@@ -61,6 +105,13 @@ type StagingPolitician struct {
 	OfficeLevel string   `json:"office_level"` // federal, state, local
 	State      string    `json:"state"`
 	District   string    `json:"district"`
+
+	// Optional biographical fields (stored as JSONB for flexibility)
+	BioText     string `json:"bio_text,omitempty"`
+	PhotoURL    string `json:"photo_url,omitempty"`
+	Contacts    JSONB  `json:"contacts" gorm:"type:jsonb;default:'[]'"`    // [{type, value, source}]
+	Degrees     JSONB  `json:"degrees" gorm:"type:jsonb;default:'[]'"`     // [{degree, major, school, grad_year}]
+	Experiences JSONB  `json:"experiences" gorm:"type:jsonb;default:'[]'"` // [{title, organization, type, start, end}]
 
 	// Workflow
 	Status     string  `gorm:"default:'pending';index" json:"status"` // pending, approved, rejected, merged

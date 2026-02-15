@@ -779,13 +779,18 @@ func CreatePolitician(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		ExternalID  *string `json:"external_id,omitempty"`
-		FullName    string  `json:"full_name"`
-		Party       string  `json:"party"`
-		Office      string  `json:"office"`
-		OfficeLevel string  `json:"office_level"`
-		State       string  `json:"state"`
-		District    string  `json:"district"`
+		ExternalID  *string         `json:"external_id,omitempty"`
+		FullName    string          `json:"full_name"`
+		Party       string          `json:"party"`
+		Office      string          `json:"office"`
+		OfficeLevel string          `json:"office_level"`
+		State       string          `json:"state"`
+		District    string          `json:"district"`
+		BioText     string          `json:"bio_text"`
+		PhotoURL    string          `json:"photo_url"`
+		Contacts    json.RawMessage `json:"contacts"`
+		Degrees     json.RawMessage `json:"degrees"`
+		Experiences json.RawMessage `json:"experiences"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -806,6 +811,11 @@ func CreatePolitician(w http.ResponseWriter, r *http.Request) {
 		OfficeLevel: req.OfficeLevel,
 		State:       req.State,
 		District:    req.District,
+		BioText:     req.BioText,
+		PhotoURL:    req.PhotoURL,
+		Contacts:    JSONB(req.Contacts),
+		Degrees:     JSONB(req.Degrees),
+		Experiences: JSONB(req.Experiences),
 		Status:      "pending",
 		AddedBy:     userID,
 	}
@@ -834,6 +844,94 @@ func GetPolitician(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(politician)
 }
 
+// UpdatePolitician allows the original author to update a pending politician
+func UpdatePolitician(w http.ResponseWriter, r *http.Request) {
+	userID, ok := utils.GetUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	id := chi.URLParam(r, "id")
+
+	var politician StagingPolitician
+	if err := db.DB.First(&politician, "id = ?", id).Error; err != nil {
+		http.Error(w, "Politician not found", http.StatusNotFound)
+		return
+	}
+
+	if politician.AddedBy != userID {
+		http.Error(w, "Only the author can update this politician", http.StatusForbidden)
+		return
+	}
+	if politician.Status != "pending" {
+		http.Error(w, "Cannot update politician after approval/rejection", http.StatusBadRequest)
+		return
+	}
+
+	var req struct {
+		FullName    *string         `json:"full_name,omitempty"`
+		Party       *string         `json:"party,omitempty"`
+		Office      *string         `json:"office,omitempty"`
+		OfficeLevel *string         `json:"office_level,omitempty"`
+		State       *string         `json:"state,omitempty"`
+		District    *string         `json:"district,omitempty"`
+		BioText     *string         `json:"bio_text,omitempty"`
+		PhotoURL    *string         `json:"photo_url,omitempty"`
+		Contacts    json.RawMessage `json:"contacts,omitempty"`
+		Degrees     json.RawMessage `json:"degrees,omitempty"`
+		Experiences json.RawMessage `json:"experiences,omitempty"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	updates := map[string]interface{}{}
+	if req.FullName != nil {
+		updates["full_name"] = *req.FullName
+	}
+	if req.Party != nil {
+		updates["party"] = *req.Party
+	}
+	if req.Office != nil {
+		updates["office"] = *req.Office
+	}
+	if req.OfficeLevel != nil {
+		updates["office_level"] = *req.OfficeLevel
+	}
+	if req.State != nil {
+		updates["state"] = *req.State
+	}
+	if req.District != nil {
+		updates["district"] = *req.District
+	}
+	if req.BioText != nil {
+		updates["bio_text"] = *req.BioText
+	}
+	if req.PhotoURL != nil {
+		updates["photo_url"] = *req.PhotoURL
+	}
+	if req.Contacts != nil {
+		updates["contacts"] = JSONB(req.Contacts)
+	}
+	if req.Degrees != nil {
+		updates["degrees"] = JSONB(req.Degrees)
+	}
+	if req.Experiences != nil {
+		updates["experiences"] = JSONB(req.Experiences)
+	}
+
+	if err := db.DB.Model(&politician).Updates(updates).Error; err != nil {
+		http.Error(w, "Failed to update politician: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "updated"})
+}
+
 // ApprovePolitician approves and merges a politician to essentials (admin only)
 func ApprovePolitician(w http.ResponseWriter, r *http.Request) {
 	userID, ok := utils.GetUserIDFromContext(r.Context())
@@ -855,18 +953,39 @@ func ApprovePolitician(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Actually merge to essentials.politicians
-	// For now, just mark as approved
+	tx := db.DB.Begin()
+	if tx.Error != nil {
+		http.Error(w, "Failed to start transaction", http.StatusInternalServerError)
+		return
+	}
+
+	mergedID, err := promoteToEssentials(tx, politician)
+	if err != nil {
+		tx.Rollback()
+		http.Error(w, "Failed to promote politician: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	politician.Status = "approved"
 	politician.ReviewedBy = &userID
+	politician.MergedToID = &mergedID
 
-	if err := db.DB.Save(&politician).Error; err != nil {
+	if err := tx.Save(&politician).Error; err != nil {
+		tx.Rollback()
 		http.Error(w, "Failed to approve politician: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"status": "approved"})
+	if err := tx.Commit().Error; err != nil {
+		http.Error(w, "Failed to commit: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":    "approved",
+		"merged_to": mergedID.String(),
+	})
 }
 
 // RejectPolitician rejects a politician (admin only)
@@ -900,4 +1019,166 @@ func RejectPolitician(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"status": "rejected"})
+}
+
+// promoteToEssentials creates records in the essentials schema from a staged politician.
+func promoteToEssentials(tx *gorm.DB, sp StagingPolitician) (uuid.UUID, error) {
+	now := time.Now()
+
+	// Map office_level to a BallotReady-style district_type for the essentials schema
+	districtType := officeLevelToDistrictType(sp.OfficeLevel)
+
+	// Create district
+	district := essentials.District{
+		Label:        sp.District,
+		DistrictType: districtType,
+		State:        sp.State,
+	}
+	if err := tx.Create(&district).Error; err != nil {
+		return uuid.Nil, fmt.Errorf("create district: %w", err)
+	}
+
+	// Create chamber (minimal — just enough for the office chain)
+	chamber := essentials.Chamber{
+		Name: sp.Office,
+	}
+	if err := tx.Create(&chamber).Error; err != nil {
+		return uuid.Nil, fmt.Errorf("create chamber: %w", err)
+	}
+
+	// Create politician
+	pol := essentials.Politician{
+		FullName:   sp.FullName,
+		Party:      sp.Party,
+		BioText:    sp.BioText,
+		Source:     "staging",
+		LastSynced: now,
+	}
+	if err := tx.Create(&pol).Error; err != nil {
+		return uuid.Nil, fmt.Errorf("create politician: %w", err)
+	}
+
+	// Create office linking politician → chamber → district
+	office := essentials.Office{
+		PoliticianID:      pol.ID,
+		ChamberID:         chamber.ID,
+		DistrictID:        district.ID,
+		Title:             sp.Office,
+		RepresentingState: sp.State,
+	}
+	if err := tx.Create(&office).Error; err != nil {
+		return uuid.Nil, fmt.Errorf("create office: %w", err)
+	}
+
+	// Create photo if provided
+	if sp.PhotoURL != "" {
+		img := essentials.PoliticianImage{
+			PoliticianID: pol.ID,
+			URL:          sp.PhotoURL,
+			Type:         "default",
+		}
+		if err := tx.Create(&img).Error; err != nil {
+			return uuid.Nil, fmt.Errorf("create image: %w", err)
+		}
+	}
+
+	// Unpack contacts JSONB → essentials.PoliticianContact rows
+	if len(sp.Contacts) > 0 {
+		var contacts []struct {
+			Type   string `json:"type"`
+			Value  string `json:"value"`
+			Source string `json:"source"`
+		}
+		if err := json.Unmarshal(sp.Contacts, &contacts); err == nil {
+			for _, c := range contacts {
+				contact := essentials.PoliticianContact{
+					PoliticianID: pol.ID,
+					Source:       "staging",
+				}
+				switch c.Type {
+				case "email":
+					contact.Email = c.Value
+				case "phone":
+					contact.Phone = c.Value
+				case "fax":
+					contact.Fax = c.Value
+				case "website":
+					contact.ContactType = "website"
+					contact.Email = c.Value
+				}
+				if err := tx.Create(&contact).Error; err != nil {
+					return uuid.Nil, fmt.Errorf("create contact: %w", err)
+				}
+			}
+		}
+	}
+
+	// Unpack degrees JSONB → essentials.Degree rows
+	if len(sp.Degrees) > 0 {
+		var degrees []struct {
+			Degree   string `json:"degree"`
+			Major    string `json:"major"`
+			School   string `json:"school"`
+			GradYear int    `json:"grad_year"`
+		}
+		if err := json.Unmarshal(sp.Degrees, &degrees); err == nil {
+			for _, d := range degrees {
+				deg := essentials.Degree{
+					PoliticianID: pol.ID,
+					Degree:       d.Degree,
+					Major:        d.Major,
+					School:       d.School,
+					GradYear:     d.GradYear,
+				}
+				if err := tx.Create(&deg).Error; err != nil {
+					return uuid.Nil, fmt.Errorf("create degree: %w", err)
+				}
+			}
+		}
+	}
+
+	// Unpack experiences JSONB → essentials.Experience rows
+	if len(sp.Experiences) > 0 {
+		var experiences []struct {
+			Title        string `json:"title"`
+			Organization string `json:"organization"`
+			Type         string `json:"type"`
+			Start        string `json:"start"`
+			End          string `json:"end"`
+		}
+		if err := json.Unmarshal(sp.Experiences, &experiences); err == nil {
+			for _, e := range experiences {
+				exp := essentials.Experience{
+					PoliticianID: pol.ID,
+					Title:        e.Title,
+					Organization: e.Organization,
+					Type:         e.Type,
+					Start:        e.Start,
+					End:          e.End,
+				}
+				if err := tx.Create(&exp).Error; err != nil {
+					return uuid.Nil, fmt.Errorf("create experience: %w", err)
+				}
+			}
+		}
+	}
+
+	return pol.ID, nil
+}
+
+// officeLevelToDistrictType maps the simple office_level values used in staging
+// to BallotReady-style district types used in essentials.
+func officeLevelToDistrictType(level string) string {
+	switch level {
+	case "federal":
+		return "NATIONAL_LOWER"
+	case "state":
+		return "STATE_LOWER"
+	case "municipal", "local":
+		return "LOCAL"
+	case "school_district":
+		return "SCHOOL"
+	default:
+		return "LOCAL"
+	}
 }
