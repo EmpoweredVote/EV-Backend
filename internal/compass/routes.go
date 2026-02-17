@@ -36,6 +36,7 @@ func SetupRoutes() http.Handler {
 			r.Post("/politicians/context", PoliticianContextHandler)
 			r.Put("/politicians/{politician_id}/answers", UpsertPoliticianAnswers)
 			r.Delete("/topics/delete/{id}", DeleteTopicHandler)
+			r.Delete("/answers/me", DeleteMyAnswersHandler)
 		})
 	})
 

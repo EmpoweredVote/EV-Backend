@@ -990,6 +990,29 @@ func GetPoliticianContext(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(ctx)
 }
 
+func DeleteMyAnswersHandler(w http.ResponseWriter, r *http.Request) {
+	userID, ok := utils.GetUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	tx := db.DB.Begin()
+	if err := tx.Where("user_id = ?", userID).Delete(&Answer{}).Error; err != nil {
+		tx.Rollback()
+		http.Error(w, "Failed to clear answers", http.StatusInternalServerError)
+		return
+	}
+	if err := tx.Where("user_id = ?", userID).Delete(&UserCompass{}).Error; err != nil {
+		tx.Rollback()
+		http.Error(w, "Failed to clear selected topics", http.StatusInternalServerError)
+		return
+	}
+	tx.Commit()
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Compass data cleared")
+}
+
 func PoliticianAnswerBatch(w http.ResponseWriter, r *http.Request) {
 	pidStr := chi.URLParam(r, "politician_id")
 	pid, err := uuid.Parse(pidStr)
