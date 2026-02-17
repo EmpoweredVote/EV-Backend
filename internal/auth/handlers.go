@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -11,8 +12,27 @@ import (
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/EmpoweredVote/EV-Backend/internal/utils"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
+	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 )
+
+type GuestAnswer struct {
+	TopicID     string  `json:"topic_id"`
+	Value       float64 `json:"value"`
+	WriteInText string  `json:"write_in_text,omitempty"`
+}
+
+type GuestState struct {
+	Answers        []GuestAnswer `json:"answers,omitempty"`
+	SelectedTopics []string      `json:"selected_topics,omitempty"`
+}
+
+type RegisterRequest struct {
+	Username   string      `json:"username"`
+	Password   string      `json:"password"`
+	GuestState *GuestState `json:"guest_state,omitempty"`
+}
 
 // sessionCookie returns a cookie configured for the current environment.
 // Local dev (PORT unset or localhost origins) uses Secure=false, SameSite=Lax
@@ -40,50 +60,107 @@ func sessionCookie(name, value string, maxAge int) *http.Cookie {
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	var user User
-
 	// Only allow POST requests
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
+	var req RegisterRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid Request Format", http.StatusBadRequest)
 		return
 	}
 
 	// Check if request has username & password
-	if user.Username == "" || user.Password == "" {
+	if req.Username == "" || req.Password == "" {
 		http.Error(w, "Username and password are required", http.StatusBadRequest)
 		return
 	}
 
 	// Check if username is taken
 	var existing User
-	err = db.DB.First(&existing, "username = ?", user.Username).Error
+	err := db.DB.First(&existing, "username = ?", req.Username).Error
 	if err == nil {
 		http.Error(w, "Username already taken", http.StatusConflict)
 		return
 	}
 
 	// Hash password
-	hashed, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	hashed, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		http.Error(w, "Server error hashing password", http.StatusInternalServerError)
 		return
 	}
-	user.HashedPassword = string(hashed)
-	user.UserID = utils.GenerateUUID()
 
-	// Clear user password
-	user.Password = ""
+	user := User{
+		UserID:         utils.GenerateUUID(),
+		Username:       req.Username,
+		HashedPassword: string(hashed),
+	}
 
 	// Save to DB
 	if err := db.DB.Create(&user).Error; err != nil {
 		http.Error(w, "Failed to register user", http.StatusInternalServerError)
 		return
+	}
+
+	// Auto-login: create session and set cookie
+	sessionID := utils.GenerateUUID()
+	http.SetCookie(w, sessionCookie("session_id", sessionID, 21600))
+	session := Session{
+		SessionID: sessionID,
+		UserID:    user.UserID,
+		ExpiresAt: time.Now().Add(6 * time.Hour),
+	}
+	db.DB.Create(&session)
+
+	// Process guest_state if present
+	// Note: we use table-level structs here to avoid a circular import with the compass package.
+	if req.GuestState != nil {
+		type guestAnswerRow struct {
+			ID          string    `gorm:"primaryKey"`
+			UserID      string
+			TopicID     uuid.UUID
+			Value       float64
+			WriteInText string
+		}
+
+		if len(req.GuestState.Answers) > 0 {
+			tx := db.DB.Begin()
+			for _, ga := range req.GuestState.Answers {
+				tid, err := uuid.Parse(ga.TopicID)
+				if err != nil {
+					continue // skip invalid UUIDs silently
+				}
+				a := guestAnswerRow{
+					ID:          utils.GenerateUUID(),
+					UserID:      user.UserID,
+					TopicID:     tid,
+					Value:       ga.Value,
+					WriteInText: ga.WriteInText,
+				}
+				if err := tx.Table("compass.answers").Create(&a).Error; err != nil {
+					tx.Rollback()
+					// Log but don't fail registration
+					log.Printf("Failed to insert guest answer for topic %s: %v", ga.TopicID, err)
+					break
+				}
+			}
+			tx.Commit()
+		}
+
+		if len(req.GuestState.SelectedTopics) > 0 {
+			type guestUserCompassRow struct {
+				UserID   string         `gorm:"primaryKey"`
+				TopicIDs pq.StringArray `gorm:"type:text[]"`
+			}
+			uc := guestUserCompassRow{
+				UserID:   user.UserID,
+				TopicIDs: pq.StringArray(req.GuestState.SelectedTopics),
+			}
+			db.DB.Table("compass.user_compasses").Create(&uc)
+		}
 	}
 
 	w.WriteHeader(http.StatusCreated)
