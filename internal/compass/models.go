@@ -31,7 +31,7 @@ type Topic struct {
 	ShortTitle   string    `gorm:"uniqueIndex" json:"short_title"`
 	StartPhrase  string    `json:"start_phrase"`
 	QuestionText string    `json:"question_text,omitempty"`
-	Level        string    `json:"level,omitempty"`
+	Level        pq.StringArray `gorm:"type:text[]" json:"level,omitempty"`
 	IsActive     bool      `gorm:"default:true" json:"is_active"`
 
 	Stances    []Stance   `gorm:"foreignKey:TopicID" json:"stances"`

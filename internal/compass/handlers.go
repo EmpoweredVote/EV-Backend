@@ -86,7 +86,7 @@ func TopicUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		Title        *string `json:"Title,omitempty"`
 		ShortTitle   *string `json:"ShortTitle,omitempty"`
 		QuestionText *string `json:"question_text,omitempty"`
-		Level        *string `json:"level,omitempty"`
+		Level        *[]string `json:"level,omitempty"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&topicRequest); err != nil {
@@ -111,7 +111,7 @@ func TopicUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		updates["question_text"] = *topicRequest.QuestionText
 	}
 	if topicRequest.Level != nil {
-		updates["level"] = *topicRequest.Level
+		updates["level"] = pq.StringArray(*topicRequest.Level)
 	}
 
 	if err := db.DB.Model(&topic).Updates(updates).Error; err != nil {
