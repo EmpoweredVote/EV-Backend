@@ -495,6 +495,7 @@ query RacesByZip($zip: String!, $electionDayGte: String!, $first: Int!, $after: 
         state
         judicial
         appointed
+        normalizedPosition { name }
       }
       election {
         id

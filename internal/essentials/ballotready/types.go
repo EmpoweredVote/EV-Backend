@@ -309,13 +309,14 @@ type RaceNode struct {
 
 // RacePositionNode describes the office being contested.
 type RacePositionNode struct {
-	ID         string `json:"id"`
-	DatabaseID int    `json:"databaseId"`
-	Name       string `json:"name"`
-	Level      string `json:"level"` // "FEDERAL", "STATE", "LOCAL"
-	State      string `json:"state"`
-	Judicial   bool   `json:"judicial"`
-	Appointed  bool   `json:"appointed"`
+	ID                 string              `json:"id"`
+	DatabaseID         int                 `json:"databaseId"`
+	Name               string              `json:"name"`
+	Level              string              `json:"level"` // "FEDERAL", "STATE", "LOCAL"
+	State              string              `json:"state"`
+	Judicial           bool                `json:"judicial"`
+	Appointed          bool                `json:"appointed"`
+	NormalizedPosition *NormalizedPosition `json:"normalizedPosition,omitempty"`
 }
 
 // RaceElectionNode describes the election event.

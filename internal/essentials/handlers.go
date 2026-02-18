@@ -3615,6 +3615,16 @@ type CandidateOut struct {
 	ChamberName       string `json:"chamber_name,omitempty"`
 }
 
+// raceChamberName derives a chamber name from BallotReady race position data.
+// Uses normalizedPosition.name first, then falls back to the position name directly.
+func raceChamberName(pos ballotready.RacePositionNode) string {
+	if pos.NormalizedPosition != nil && pos.NormalizedPosition.Name != "" {
+		return pos.NormalizedPosition.Name
+	}
+	// Fallback: use position name directly (covers most cases)
+	return pos.Name
+}
+
 // levelToDistrictType maps a BallotReady position level and name to an internal
 // district type string compatible with the frontend's classify.js tier system.
 func levelToDistrictType(level, posName string) string {
@@ -3715,6 +3725,7 @@ func GetCandidatesByZip(w http.ResponseWriter, r *http.Request) {
 				IsPrimary:         race.IsPrimary,
 				IsRunoff:          race.IsRunoff,
 				RepresentingState: race.Position.State,
+				ChamberName:       raceChamberName(race.Position),
 			})
 		}
 	}
