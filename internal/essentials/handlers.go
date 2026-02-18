@@ -156,6 +156,8 @@ type OfficialOut struct {
 	Degrees              []DegreeOut     `json:"degrees,omitempty"`
 	Experiences          []ExperienceOut `json:"experiences,omitempty"`
 	IsContained          *bool           `json:"is_contained,omitempty"` // For ZIP queries: true=position fully contains ZIP, false=partial overlap
+	TermStart            string          `json:"term_start,omitempty"`
+	TermEnd              string          `json:"term_end,omitempty"`
 }
 
 func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
@@ -2135,6 +2137,8 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		TotalYearsInOffice   int
 		OfficeDescription    string
 		IsContained          *bool
+		ValidFrom            string
+		ValidTo              string
 	}
 
 	var rows []row
@@ -2160,7 +2164,9 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		  COALESCE(p.slug, '') AS slug,
 		  COALESCE(p.total_years_in_office, 0) AS total_years_in_office,
 		  COALESCE(o.description, '') AS office_description,
-		  zp.is_contained
+		  zp.is_contained,
+		  COALESCE(p.valid_from, '') AS valid_from,
+		  COALESCE(p.valid_to, '') AS valid_to
 		FROM essentials.politicians p
 		JOIN essentials.offices o ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
@@ -2353,6 +2359,8 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 			Degrees:              degreesByPol[r.ID],
 			Experiences:          experiencesByPol[r.ID],
 			IsContained:          r.IsContained,
+			TermStart:            r.ValidFrom,
+			TermEnd:              r.ValidTo,
 		})
 	}
 
@@ -2418,6 +2426,8 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		Slug                 string
 		TotalYearsInOffice   int
 		OfficeDescription    string
+		ValidFrom            string
+		ValidTo              string
 	}
 
 	var rows []row
@@ -2440,7 +2450,9 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		  COALESCE(p.bioguide_id, '') AS bioguide_id,
 		  COALESCE(p.slug, '') AS slug,
 		  COALESCE(p.total_years_in_office, 0) AS total_years_in_office,
-		  COALESCE(o.description, '') AS office_description
+		  COALESCE(o.description, '') AS office_description,
+		  COALESCE(p.valid_from, '') AS valid_from,
+		  COALESCE(p.valid_to, '') AS valid_to
 		FROM essentials.politicians p
 		JOIN essentials.offices o ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
@@ -2610,6 +2622,8 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 			Images:               imagesByPol[r.ID],
 			Degrees:              degreesByPol[r.ID],
 			Experiences:          experiencesByPol[r.ID],
+			TermStart:            r.ValidFrom,
+			TermEnd:              r.ValidTo,
 		})
 	}
 
@@ -2765,6 +2779,8 @@ func normalizedToOfficialOut(off provider.NormalizedOfficial) OfficialOut {
 		Images:               images,
 		Degrees:              degrees,
 		Experiences:          experiences,
+		TermStart:            off.ValidFrom,
+		TermEnd:              off.ValidTo,
 	}
 }
 
@@ -3087,6 +3103,8 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 		Slug                 string
 		TotalYearsInOffice   int
 		OfficeDescription    string
+		ValidFrom            string
+		ValidTo              string
 	}
 
 	var r0 row
@@ -3109,7 +3127,9 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 		  d.geo_id, d.is_judicial, d.ocd_id,
 		  c.name AS chamber_name, c.name_formal AS chamber_name_formal,
 		  g.name AS government_name,
-		  COALESCE(c.election_frequency, '') AS election_frequency
+		  COALESCE(c.election_frequency, '') AS election_frequency,
+		  COALESCE(p.valid_from, '') AS valid_from,
+		  COALESCE(p.valid_to, '') AS valid_to
 		FROM essentials.politicians p
 		JOIN essentials.offices o ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
@@ -3230,6 +3250,8 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 			Images:               images,
 			Degrees:              degrees,
 			Experiences:          experiences,
+			TermStart:            r0.ValidFrom,
+			TermEnd:              r0.ValidTo,
 		},
 		Addresses:   addresses,
 		Identifiers: identifiers,
@@ -3567,4 +3589,139 @@ func GetAllPoliticians(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, out)
+}
+
+// --- Candidates endpoint (Phase D) -----------------------------------------
+
+// CandidateOut represents a single candidate in an upcoming election race.
+// The district_type field uses the same internal enum as OfficialOut for
+// compatibility with the frontend's classify.js system.
+type CandidateOut struct {
+	ExternalID        int    `json:"external_id"`
+	FirstName         string `json:"first_name"`
+	LastName          string `json:"last_name"`
+	FullName          string `json:"full_name"`
+	PhotoOriginURL    string `json:"photo_origin_url,omitempty"`
+	OfficeTitle       string `json:"office_title"`
+	DistrictType      string `json:"district_type"`
+	Party             string `json:"party,omitempty"`
+	PartyShortName    string `json:"party_short_name,omitempty"`
+	IsCandidate       bool   `json:"is_candidate"`
+	ElectionDate      string `json:"election_date"`
+	ElectionName      string `json:"election_name"`
+	IsPrimary         bool   `json:"is_primary"`
+	IsRunoff          bool   `json:"is_runoff"`
+	RepresentingState string `json:"representing_state,omitempty"`
+	ChamberName       string `json:"chamber_name,omitempty"`
+}
+
+// levelToDistrictType maps a BallotReady position level and name to an internal
+// district type string compatible with the frontend's classify.js tier system.
+func levelToDistrictType(level, posName string) string {
+	name := strings.ToLower(posName)
+	switch strings.ToUpper(level) {
+	case "FEDERAL":
+		if strings.Contains(name, "senate") || strings.Contains(name, "senator") {
+			return "NATIONAL_UPPER"
+		}
+		if strings.Contains(name, "house") || strings.Contains(name, "representative") {
+			return "NATIONAL_LOWER"
+		}
+		return "NATIONAL_EXEC"
+	case "STATE":
+		if strings.Contains(name, "senate") || strings.Contains(name, "senator") {
+			return "STATE_UPPER"
+		}
+		if strings.Contains(name, "house") || strings.Contains(name, "representative") || strings.Contains(name, "assembly") {
+			return "STATE_LOWER"
+		}
+		return "STATE_EXEC"
+	case "LOCAL":
+		if strings.Contains(name, "school") {
+			return "SCHOOL"
+		}
+		if strings.Contains(name, "county") {
+			return "COUNTY"
+		}
+		return "LOCAL"
+	default:
+		return "LOCAL"
+	}
+}
+
+// GetCandidatesByZip returns a flat list of candidates in upcoming elections for a ZIP code.
+// Fetches from BallotReady races query; only future elections are included (electionDayGte=today).
+// Returns an empty array (not an error) when no upcoming races exist or when BallotReady is unavailable.
+func GetCandidatesByZip(w http.ResponseWriter, r *http.Request) {
+	zip := chi.URLParam(r, "zip")
+	if !isZip5(zip) {
+		http.Error(w, "Missing or invalid zip parameter", http.StatusBadRequest)
+		return
+	}
+
+	log.Printf("[GetCandidatesByZip] zip=%s", zip)
+
+	brProvider, ok := Provider.(*ballotready.BallotReadyProvider)
+	if !ok {
+		// BallotReady not configured — return empty array (graceful degradation)
+		writeJSON(w, []CandidateOut{})
+		return
+	}
+
+	races, err := brProvider.Client().FetchRacesByZip(r.Context(), zip)
+	if err != nil {
+		log.Printf("[GetCandidatesByZip] error fetching races: %v", err)
+		// Return empty array on error (graceful degradation)
+		writeJSON(w, []CandidateOut{})
+		return
+	}
+
+	var candidates []CandidateOut
+	for _, race := range races {
+		for _, c := range race.Candidacies {
+			// Skip withdrawn candidacies
+			if c.Withdrawn {
+				continue
+			}
+
+			// Get best available photo URL (prefer "default" type)
+			var photoURL string
+			for _, img := range c.Candidate.Images {
+				if img.Type == "default" || photoURL == "" {
+					photoURL = img.URL
+				}
+			}
+
+			// Get party info from first party entry
+			var partyName, partyShort string
+			if len(c.Parties) > 0 {
+				partyName = c.Parties[0].Name
+				partyShort = c.Parties[0].ShortName
+			}
+
+			candidates = append(candidates, CandidateOut{
+				ExternalID:        c.DatabaseID,
+				FirstName:         c.Candidate.FirstName,
+				LastName:          c.Candidate.LastName,
+				FullName:          c.Candidate.FullName,
+				PhotoOriginURL:    photoURL,
+				OfficeTitle:       race.Position.Name,
+				DistrictType:      levelToDistrictType(race.Position.Level, race.Position.Name),
+				Party:             partyName,
+				PartyShortName:    partyShort,
+				IsCandidate:       true,
+				ElectionDate:      race.Election.Date,
+				ElectionName:      race.Election.Name,
+				IsPrimary:         race.IsPrimary,
+				IsRunoff:          race.IsRunoff,
+				RepresentingState: race.Position.State,
+			})
+		}
+	}
+
+	if candidates == nil {
+		candidates = []CandidateOut{}
+	}
+
+	writeJSON(w, candidates)
 }
