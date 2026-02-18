@@ -82,9 +82,11 @@ func TopicBatchHandler(w http.ResponseWriter, r *http.Request) {
 func TopicUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	var topicRequest struct {
-		ID         string  `json:"ID"`
-		Title      *string `json:"Title,omitempty"`
-		ShortTitle *string `json:"ShortTitle,omitempty"`
+		ID           string  `json:"ID"`
+		Title        *string `json:"Title,omitempty"`
+		ShortTitle   *string `json:"ShortTitle,omitempty"`
+		QuestionText *string `json:"question_text,omitempty"`
+		Level        *string `json:"level,omitempty"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&topicRequest); err != nil {
@@ -104,6 +106,12 @@ func TopicUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if topicRequest.ShortTitle != nil {
 		updates["short_title"] = *topicRequest.ShortTitle
+	}
+	if topicRequest.QuestionText != nil {
+		updates["question_text"] = *topicRequest.QuestionText
+	}
+	if topicRequest.Level != nil {
+		updates["level"] = *topicRequest.Level
 	}
 
 	if err := db.DB.Model(&topic).Updates(updates).Error; err != nil {
