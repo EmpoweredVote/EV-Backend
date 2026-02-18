@@ -292,6 +292,89 @@ type IssueBR struct {
 	Parent       *IssueBR `json:"parent"`
 }
 
+// Phase D: Races-by-ZIP types (upcoming election candidates)
+// These use distinct names (RaceNode, CandidacyNode, etc.) to avoid conflicts
+// with the Phase B candidacy types (Race, Candidacy) used for officeholder history.
+
+// RaceNode represents a BallotReady race (election contest for a position).
+type RaceNode struct {
+	ID          string          `json:"id"`
+	DatabaseID  int             `json:"databaseId"`
+	IsPrimary   bool            `json:"isPrimary"`
+	IsRunoff    bool            `json:"isRunoff"`
+	Position    RacePositionNode `json:"position"`
+	Election    RaceElectionNode `json:"election"`
+	Candidacies []CandidacyNode `json:"candidacies"`
+}
+
+// RacePositionNode describes the office being contested.
+type RacePositionNode struct {
+	ID         string `json:"id"`
+	DatabaseID int    `json:"databaseId"`
+	Name       string `json:"name"`
+	Level      string `json:"level"` // "FEDERAL", "STATE", "LOCAL"
+	State      string `json:"state"`
+	Judicial   bool   `json:"judicial"`
+	Appointed  bool   `json:"appointed"`
+}
+
+// RaceElectionNode describes the election event.
+type RaceElectionNode struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	Date string `json:"date"`
+}
+
+// CandidacyNode represents a single candidacy within a race.
+type CandidacyNode struct {
+	ID          string           `json:"id"`
+	DatabaseID  int              `json:"databaseId"`
+	IsCertified bool             `json:"isCertified"`
+	Withdrawn   bool             `json:"withdrawn"`
+	Parties     []CandidacyParty `json:"parties"`
+	Candidate   CandidacyPerson  `json:"candidate"`
+}
+
+// CandidacyParty is a party affiliation for a candidate.
+type CandidacyParty struct {
+	Name      string `json:"name"`
+	ShortName string `json:"shortName"`
+}
+
+// CandidacyPerson contains personal info for a candidate.
+type CandidacyPerson struct {
+	ID         string           `json:"id"`
+	FirstName  string           `json:"firstName"`
+	MiddleName string           `json:"middleName"`
+	LastName   string           `json:"lastName"`
+	Nickname   string           `json:"nickname"`
+	FullName   string           `json:"fullName"`
+	Images     []CandidacyImage `json:"images"`
+}
+
+// CandidacyImage is a photo for a candidate.
+type CandidacyImage struct {
+	URL  string `json:"url"`
+	Type string `json:"type"`
+}
+
+// RacesQueryResponse is the GraphQL response envelope for the races query.
+type RacesQueryResponse struct {
+	Data   *RacesQueryData `json:"data"`
+	Errors []GraphQLError  `json:"errors,omitempty"`
+}
+
+// RacesQueryData contains the races connection from the response.
+type RacesQueryData struct {
+	Races *RacesConnection `json:"races"`
+}
+
+// RacesConnection is the Relay-style paginated connection for races.
+type RacesConnection struct {
+	Nodes    []RaceNode `json:"nodes"`
+	PageInfo PageInfo   `json:"pageInfo"`
+}
+
 // Phase C: Position containment types
 
 // PositionContainmentResponse is the GraphQL response for positions-by-ZIP containment query.

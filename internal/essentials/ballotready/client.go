@@ -471,6 +471,143 @@ func (c *Client) FetchOfficeHoldersByAddress(ctx context.Context, address string
 	return allNodes, nil
 }
 
+// racesByZipQuery fetches upcoming election races for a ZIP code.
+// electionDayGte filters to future elections only.
+const racesByZipQuery = `
+query RacesByZip($zip: String!, $electionDayGte: String!, $first: Int!, $after: String) {
+  races(
+    location: { zip: $zip }
+    filterBy: { electionDay: { gte: $electionDayGte } }
+    orderBy: { field: ELECTION_DAY, direction: ASC }
+    first: $first
+    after: $after
+  ) {
+    nodes {
+      id
+      databaseId
+      isPrimary
+      isRunoff
+      position {
+        id
+        databaseId
+        name
+        level
+        state
+        judicial
+        appointed
+      }
+      election {
+        id
+        name
+        date
+      }
+      candidacies(includeUncertified: false) {
+        id
+        databaseId
+        isCertified
+        withdrawn
+        parties { name shortName }
+        candidate {
+          id
+          firstName
+          middleName
+          lastName
+          nickname
+          fullName
+          images { url type }
+        }
+      }
+    }
+    pageInfo { hasNextPage endCursor }
+  }
+}
+`
+
+// FetchRacesByZip fetches all upcoming election races for a ZIP code,
+// handling Relay cursor-based pagination automatically.
+// Only races with electionDay >= today are returned.
+func (c *Client) FetchRacesByZip(ctx context.Context, zip string) ([]RaceNode, error) {
+	today := time.Now().Format("2006-01-02")
+	var allRaces []RaceNode
+	var cursor *string
+	racesPageSize := 50
+
+	start := time.Now()
+	provider.LogRequest("ballotready", "POST", c.endpoint, map[string]interface{}{
+		"query": "RacesByZip",
+		"zip":   zip,
+	})
+
+	for {
+		variables := map[string]interface{}{
+			"zip":            zip,
+			"electionDayGte": today,
+			"first":          racesPageSize,
+		}
+		if cursor != nil {
+			variables["after"] = *cursor
+		}
+
+		reqBody := GraphQLRequest{
+			Query:     racesByZipQuery,
+			Variables: variables,
+		}
+
+		body, err := json.Marshal(reqBody)
+		if err != nil {
+			return nil, fmt.Errorf("marshal races request: %w", err)
+		}
+
+		req, err := http.NewRequestWithContext(ctx, "POST", c.endpoint, bytes.NewReader(body))
+		if err != nil {
+			return nil, fmt.Errorf("create races request: %w", err)
+		}
+
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+c.apiKey)
+
+		resp, err := c.httpClient.Do(req)
+		if err != nil {
+			provider.LogError("ballotready", "fetch races", err)
+			return nil, fmt.Errorf("ballotready races request: %w", err)
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			err := fmt.Errorf("ballotready races status %d", resp.StatusCode)
+			provider.LogError("ballotready", "fetch races", err)
+			return nil, err
+		}
+
+		var gqlResp RacesQueryResponse
+		if err := json.NewDecoder(resp.Body).Decode(&gqlResp); err != nil {
+			provider.LogError("ballotready", "decode races", err)
+			return nil, fmt.Errorf("decode races response: %w", err)
+		}
+
+		if len(gqlResp.Errors) > 0 {
+			err := fmt.Errorf("graphql races errors: %s", gqlResp.Errors[0].Message)
+			provider.LogError("ballotready", "graphql races", err)
+			return nil, err
+		}
+
+		if gqlResp.Data == nil || gqlResp.Data.Races == nil {
+			break
+		}
+
+		allRaces = append(allRaces, gqlResp.Data.Races.Nodes...)
+
+		if !gqlResp.Data.Races.PageInfo.HasNextPage {
+			break
+		}
+		endCursor := gqlResp.Data.Races.PageInfo.EndCursor
+		cursor = &endCursor
+	}
+
+	provider.LogResponse("ballotready", 200, time.Since(start), len(allRaces))
+	return allRaces, nil
+}
+
 // positionsByZipQuery is a lightweight query for checking position containment.
 // Only fetches position IDs and containment status, not full officeholder data.
 const positionsByZipQuery = `
