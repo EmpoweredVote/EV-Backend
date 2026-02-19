@@ -82,10 +82,11 @@ func TopicBatchHandler(w http.ResponseWriter, r *http.Request) {
 func TopicUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	var topicRequest struct {
-		ID           string  `json:"ID"`
-		Title        *string `json:"Title,omitempty"`
-		ShortTitle   *string `json:"ShortTitle,omitempty"`
-		QuestionText *string `json:"question_text,omitempty"`
+		ID           string    `json:"ID"`
+		Title        *string   `json:"Title,omitempty"`
+		ShortTitle   *string   `json:"ShortTitle,omitempty"`
+		ShortName    *string   `json:"short_name,omitempty"`
+		QuestionText *string   `json:"question_text,omitempty"`
 		Level        *[]string `json:"level,omitempty"`
 	}
 
@@ -106,6 +107,9 @@ func TopicUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if topicRequest.ShortTitle != nil {
 		updates["short_title"] = *topicRequest.ShortTitle
+	}
+	if topicRequest.ShortName != nil {
+		updates["short_name"] = *topicRequest.ShortName
 	}
 	if topicRequest.QuestionText != nil {
 		updates["question_text"] = *topicRequest.QuestionText

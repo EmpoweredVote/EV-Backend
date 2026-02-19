@@ -29,6 +29,7 @@ type Topic struct {
 	TopicKey     string    `gorm:"uniqueIndex;not null" json:"topic_key"`
 	Title        string    `json:"title"`
 	ShortTitle   string    `gorm:"uniqueIndex" json:"short_title"`
+	ShortName    string    `json:"short_name,omitempty"`
 	StartPhrase  string    `json:"start_phrase"`
 	QuestionText string    `json:"question_text,omitempty"`
 	Level        pq.StringArray `gorm:"type:text[]" json:"level,omitempty"`
