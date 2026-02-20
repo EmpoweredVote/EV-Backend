@@ -27,6 +27,7 @@ func SetupRoutes() http.Handler {
 		r.Put("/selected-topics", SelectedTopicsHandler)
 		r.Post("/politicians/{politician_id}/answers/batch", PoliticianAnswerBatch)
 		r.Post("/compare", CompareHandler)
+		r.Delete("/answers/me", DeleteMyAnswersHandler)
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.AdminMiddleware(sessionFetcher))
 			r.Patch("/topics/update", TopicUpdateHandler)
@@ -36,7 +37,6 @@ func SetupRoutes() http.Handler {
 			r.Post("/politicians/context", PoliticianContextHandler)
 			r.Put("/politicians/{politician_id}/answers", UpsertPoliticianAnswers)
 			r.Delete("/topics/delete/{id}", DeleteTopicHandler)
-			r.Delete("/answers/me", DeleteMyAnswersHandler)
 		})
 	})
 
