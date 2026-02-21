@@ -25,15 +25,13 @@ type Stance struct {
 }
 
 type Topic struct {
-	ID           uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
-	TopicKey     string    `gorm:"uniqueIndex;not null" json:"topic_key"`
-	Title        string    `json:"title"`
-	ShortTitle   string    `gorm:"uniqueIndex" json:"short_title"`
-	ShortName    string    `json:"short_name,omitempty"`
-	StartPhrase  string    `json:"start_phrase"`
-	QuestionText string    `json:"question_text,omitempty"`
+	ID           uuid.UUID      `gorm:"type:uuid;primaryKey" json:"id"`
+	TopicKey     string         `gorm:"uniqueIndex;not null" json:"topic_key"`
+	Title        string         `json:"title"`
+	ShortTitle   string         `gorm:"uniqueIndex" json:"short_title"`
+	QuestionText string         `json:"question_text,omitempty"`
 	Level        pq.StringArray `gorm:"type:text[]" json:"level,omitempty"`
-	IsActive     bool      `gorm:"default:true" json:"is_active"`
+	IsActive     bool           `gorm:"default:true" json:"is_active"`
 
 	Stances    []Stance   `gorm:"foreignKey:TopicID" json:"stances"`
 	Categories []Category `gorm:"many2many:compass.topic_categories;" json:"categories"`
