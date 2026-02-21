@@ -85,7 +85,6 @@ func TopicUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		ID           string    `json:"ID"`
 		Title        *string   `json:"Title,omitempty"`
 		ShortTitle   *string   `json:"ShortTitle,omitempty"`
-		ShortName    *string   `json:"short_name,omitempty"`
 		QuestionText *string   `json:"question_text,omitempty"`
 		Level        *[]string `json:"level,omitempty"`
 	}
@@ -107,9 +106,6 @@ func TopicUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if topicRequest.ShortTitle != nil {
 		updates["short_title"] = *topicRequest.ShortTitle
-	}
-	if topicRequest.ShortName != nil {
-		updates["short_name"] = *topicRequest.ShortName
 	}
 	if topicRequest.QuestionText != nil {
 		updates["question_text"] = *topicRequest.QuestionText
