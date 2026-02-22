@@ -126,8 +126,12 @@ func (c *Client) Geocode(ctx context.Context, address string) (*Result, error) {
 		}
 	}
 
-	if out.Zip == "" {
-		return nil, fmt.Errorf("no ZIP code found in geocoding result for: %s", address)
+	// ZIP is optional — only coordinates and state are required for geofence + federal/state lookup.
+	if out.Lat == 0 && out.Lng == 0 {
+		return nil, fmt.Errorf("geocoding returned no usable coordinates for: %s", address)
+	}
+	if out.State == "" {
+		return nil, fmt.Errorf("geocoding could not determine US state for: %s", address)
 	}
 
 	return out, nil

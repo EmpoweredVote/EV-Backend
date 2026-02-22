@@ -86,7 +86,7 @@ func CORSMiddleware(next http.Handler) http.Handler {
 				"Content-Type, Authorization")
 		}
 
-		w.Header().Set("Access-Control-Expose-Headers", "X-Data-Status, Server-Timing, Retry-After, Cache-Control")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Data-Status, X-Formatted-Address, X-Geofence-Count, Server-Timing, Retry-After, Cache-Control")
 
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
