@@ -257,6 +257,7 @@ type ElectionRecord struct {
 	IsPrimary           bool      `json:"is_primary"`
 	IsRunoff            bool      `json:"is_runoff"`
 	IsUnexpiredTerm     bool      `json:"is_unexpired_term"`
+	IsActive            bool      `json:"is_active" gorm:"default:false"` // Manually set to true for currently running candidates
 }
 
 type PoliticianContact struct {

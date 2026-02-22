@@ -3522,53 +3522,11 @@ type CandidateOut struct {
 	ChamberName       string `json:"chamber_name,omitempty"`
 }
 
-// raceChamberName derives a chamber name from BallotReady race position data.
-// Uses normalizedPosition.name first, then falls back to the position name directly.
-func raceChamberName(pos ballotready.RacePositionNode) string {
-	if pos.NormalizedPosition != nil && pos.NormalizedPosition.Name != "" {
-		return pos.NormalizedPosition.Name
-	}
-	// Fallback: use position name directly (covers most cases)
-	return pos.Name
-}
-
-// levelToDistrictType maps a BallotReady position level and name to an internal
-// district type string compatible with the frontend's classify.js tier system.
-func levelToDistrictType(level, posName string) string {
-	name := strings.ToLower(posName)
-	switch strings.ToUpper(level) {
-	case "FEDERAL":
-		if strings.Contains(name, "senate") || strings.Contains(name, "senator") {
-			return "NATIONAL_UPPER"
-		}
-		if strings.Contains(name, "house") || strings.Contains(name, "representative") {
-			return "NATIONAL_LOWER"
-		}
-		return "NATIONAL_EXEC"
-	case "STATE":
-		if strings.Contains(name, "senate") || strings.Contains(name, "senator") {
-			return "STATE_UPPER"
-		}
-		if strings.Contains(name, "house") || strings.Contains(name, "representative") || strings.Contains(name, "assembly") {
-			return "STATE_LOWER"
-		}
-		return "STATE_EXEC"
-	case "LOCAL":
-		if strings.Contains(name, "school") {
-			return "SCHOOL"
-		}
-		if strings.Contains(name, "county") {
-			return "COUNTY"
-		}
-		return "LOCAL"
-	default:
-		return "LOCAL"
-	}
-}
-
-// GetCandidatesByZip returns a flat list of candidates in upcoming elections for a ZIP code.
-// Fetches from BallotReady races query; only future elections are included (electionDayGte=today).
-// Returns an empty array (not an error) when no upcoming races exist or when BallotReady is unavailable.
+// GetCandidatesByZip returns active candidates from the election_records table.
+// No live API call is made. Candidates are filtered by is_active=true and withdrawn=false.
+// Results include candidates of all geographic tiers; frontend classify.js handles tier grouping.
+// For local candidates, ZIP filtering is applied via zip_politicians.
+// For state/federal candidates, filtering is by representing_state matching the derived state.
 func GetCandidatesByZip(w http.ResponseWriter, r *http.Request) {
 	zip := chi.URLParam(r, "zip")
 	if !isZip5(zip) {
@@ -3576,69 +3534,91 @@ func GetCandidatesByZip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("[GetCandidatesByZip] zip=%s", zip)
+	log.Printf("[GetCandidatesByZip] zip=%s (DB-only)", zip)
 
-	brProvider, ok := Provider.(*ballotready.BallotReadyProvider)
-	if !ok {
-		// BallotReady not configured — return empty array (graceful degradation)
+	// Derive state from ZIP for state-level candidate filtering
+	state := zipPrefixToState(zip)
+
+	type candidateRow struct {
+		ExternalID        int
+		FirstName         string
+		LastName          string
+		FullName          string
+		PhotoOriginURL    string
+		OfficeTitle       string
+		DistrictType      string
+		Party             string
+		PartyShortName    string
+		ElectionDate      string
+		ElectionName      string
+		IsPrimary         bool
+		IsRunoff          bool
+		RepresentingState string
+		ChamberName       string
+	}
+
+	var rows []candidateRow
+	if err := db.DB.Raw(`
+		SELECT
+		  p.external_id,
+		  p.first_name, p.last_name, p.full_name,
+		  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
+		  o.title AS office_title,
+		  d.district_type,
+		  COALESCE(p.party, '') AS party,
+		  COALESCE(p.party_short_name, '') AS party_short_name,
+		  er.election_date,
+		  er.election_name,
+		  er.is_primary,
+		  er.is_runoff,
+		  COALESCE(o.representing_state, '') AS representing_state,
+		  COALESCE(c.name, '') AS chamber_name
+		FROM essentials.election_records er
+		JOIN essentials.politicians p ON p.id = er.politician_id
+		JOIN essentials.offices o ON o.politician_id = p.id
+		JOIN essentials.districts d ON d.id = o.district_id
+		LEFT JOIN essentials.chambers c ON c.id = o.chamber_id
+		WHERE er.is_active = true
+		  AND er.withdrawn = false
+		  AND (
+		    -- Local: politician has a zip_politicians entry for this ZIP
+		    (d.district_type IN ('LOCAL_EXEC','LOCAL','COUNTY','SCHOOL','JUDICIAL')
+		     AND EXISTS (
+		       SELECT 1 FROM essentials.zip_politicians zp
+		       WHERE zp.politician_id = p.id AND zp.zip = ?
+		     ))
+		    OR
+		    -- State and federal: match by representing_state
+		    (d.district_type IN ('STATE_EXEC','STATE_UPPER','STATE_LOWER','NATIONAL_EXEC','NATIONAL_UPPER','NATIONAL_LOWER')
+		     AND (o.representing_state = ? OR ? = ''))
+		  )
+		ORDER BY er.election_date ASC
+	`, zip, state, state).Scan(&rows).Error; err != nil {
+		log.Printf("[GetCandidatesByZip] DB error: %v", err)
 		writeJSON(w, []CandidateOut{})
 		return
 	}
 
-	races, err := brProvider.Client().FetchRacesByZip(r.Context(), zip)
-	if err != nil {
-		log.Printf("[GetCandidatesByZip] error fetching races: %v", err)
-		// Return empty array on error (graceful degradation)
-		writeJSON(w, []CandidateOut{})
-		return
-	}
-
-	var candidates []CandidateOut
-	for _, race := range races {
-		for _, c := range race.Candidacies {
-			// Skip withdrawn candidacies
-			if c.Withdrawn {
-				continue
-			}
-
-			// Get best available photo URL (prefer "default" type)
-			var photoURL string
-			for _, img := range c.Candidate.Images {
-				if img.Type == "default" || photoURL == "" {
-					photoURL = img.URL
-				}
-			}
-
-			// Get party info from first party entry
-			var partyName, partyShort string
-			if len(c.Parties) > 0 {
-				partyName = c.Parties[0].Name
-				partyShort = c.Parties[0].ShortName
-			}
-
-			candidates = append(candidates, CandidateOut{
-				ExternalID:        c.DatabaseID,
-				FirstName:         c.Candidate.FirstName,
-				LastName:          c.Candidate.LastName,
-				FullName:          c.Candidate.FullName,
-				PhotoOriginURL:    photoURL,
-				OfficeTitle:       race.Position.Name,
-				DistrictType:      levelToDistrictType(race.Position.Level, race.Position.Name),
-				Party:             partyName,
-				PartyShortName:    partyShort,
-				IsCandidate:       true,
-				ElectionDate:      race.Election.Date,
-				ElectionName:      race.Election.Name,
-				IsPrimary:         race.IsPrimary,
-				IsRunoff:          race.IsRunoff,
-				RepresentingState: race.Position.State,
-				ChamberName:       raceChamberName(race.Position),
-			})
-		}
-	}
-
-	if candidates == nil {
-		candidates = []CandidateOut{}
+	candidates := make([]CandidateOut, 0, len(rows))
+	for _, row := range rows {
+		candidates = append(candidates, CandidateOut{
+			ExternalID:        row.ExternalID,
+			FirstName:         row.FirstName,
+			LastName:          row.LastName,
+			FullName:          row.FullName,
+			PhotoOriginURL:    row.PhotoOriginURL,
+			OfficeTitle:       row.OfficeTitle,
+			DistrictType:      row.DistrictType,
+			Party:             row.Party,
+			PartyShortName:    row.PartyShortName,
+			IsCandidate:       true,
+			ElectionDate:      row.ElectionDate,
+			ElectionName:      row.ElectionName,
+			IsPrimary:         row.IsPrimary,
+			IsRunoff:          row.IsRunoff,
+			RepresentingState: row.RepresentingState,
+			ChamberName:       row.ChamberName,
+		})
 	}
 
 	writeJSON(w, candidates)
