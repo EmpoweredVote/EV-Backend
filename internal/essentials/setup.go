@@ -5,16 +5,10 @@ import (
 
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/EmpoweredVote/EV-Backend/internal/essentials/geocoding"
-	"github.com/EmpoweredVote/EV-Backend/internal/essentials/provider"
 
-	// Import providers to register them via init()
-	_ "github.com/EmpoweredVote/EV-Backend/internal/essentials/ballotready"
+	// Import cicero to register it via init()
 	_ "github.com/EmpoweredVote/EV-Backend/internal/essentials/cicero"
 )
-
-// Provider is the active politician data provider.
-// It is initialized in Init() based on environment configuration.
-var Provider provider.OfficialProvider
 
 // GeoClient is the Google Maps geocoding client (nil if API key not set).
 var GeoClient *geocoding.Client
@@ -34,6 +28,11 @@ func Init() {
 		log.Fatal("Failed to enable postgis extension:", err)
 	}
 
+	// Drop legacy cache tracking tables (no longer used after BallotReady warmer removal)
+	db.DB.Exec("DROP TABLE IF EXISTS essentials.federal_cache")
+	db.DB.Exec("DROP TABLE IF EXISTS essentials.state_caches")
+	db.DB.Exec("DROP TABLE IF EXISTS essentials.zip_caches")
+
 	if err := db.DB.AutoMigrate(
 		&Politician{},
 		&Office{},
@@ -44,9 +43,6 @@ func Init() {
 		&Identifier{},
 		&Committee{},
 		&PoliticianCommittee{},
-		&FederalCache{},
-		&StateCache{},
-		&ZipCache{},
 		&ZipPolitician{},
 		&PoliticianImage{},
 		&Degree{},
@@ -79,19 +75,8 @@ func Init() {
 		log.Fatal("Failed to create committees_name_ci_unique", err)
 	}
 
-	// Initialize the politician data provider
-	cfg := provider.LoadFromEnv()
-	var err error
-	Provider, err = provider.NewProvider(cfg)
-	if err != nil {
-		log.Printf("[essentials] WARNING: Failed to initialize %s provider: %v", cfg.Provider, err)
-		log.Printf("[essentials] Provider-based warming will be disabled")
-		Provider = nil
-	} else {
-		log.Printf("[essentials] Initialized %s provider", Provider.Name())
-	}
-
 	// Initialize Google Maps geocoding client
+	var err error
 	GeoClient, err = geocoding.NewClient()
 	if err != nil {
 		log.Printf("[essentials] WARNING: Failed to initialize Google Maps geocoding: %v", err)
