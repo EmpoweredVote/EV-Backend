@@ -2808,233 +2808,140 @@ func SearchPoliticians(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Try geofence-based lookup: Google geocoding → PostGIS point-in-polygon → database
-	if GeoClient != nil {
-		geoResult, geoErr := GeoClient.Geocode(r.Context(), query)
-		if geoErr == nil {
-			log.Printf("[SearchPoliticians] Google geocoded %q → (%.6f, %.6f) %s", query, geoResult.Lat, geoResult.Lng, geoResult.Formatted)
+	// Address search requires geocoding — no BallotReady fallback.
+	if GeoClient == nil {
+		http.Error(w, "Address search requires geocoding service configuration", http.StatusServiceUnavailable)
+		return
+	}
 
-			// Find all geofences (districts) that contain this point
-			geoMatches, err := FindGeoIDsByPoint(r.Context(), geoResult.Lat, geoResult.Lng)
-			if err != nil {
-				log.Printf("[SearchPoliticians] geofence lookup error: %v", err)
-			} else if len(geoMatches) > 0 {
-				geoIDs := make([]string, len(geoMatches))
-				for i, m := range geoMatches {
-					geoIDs[i] = m.GeoID + "(" + m.MTFCC + ")"
+	// Geocode the address to coordinates + state.
+	geoResult, geoErr := GeoClient.Geocode(r.Context(), query)
+	if geoErr != nil {
+		log.Printf("[SearchPoliticians] Google geocoding failed for %q: %v", query, geoErr)
+		if strings.Contains(geoErr.Error(), "could not determine US state") {
+			http.Error(w, "Address must be within the United States", http.StatusUnprocessableEntity)
+			return
+		}
+		http.Error(w, "Could not resolve address", http.StatusBadRequest)
+		return
+	}
+	log.Printf("[SearchPoliticians] Google geocoded %q → (%.6f, %.6f) %s", query, geoResult.Lat, geoResult.Lng, geoResult.Formatted)
+
+	// Find all geofences (districts) that contain this point.
+	geoMatches, err := FindGeoIDsByPoint(r.Context(), geoResult.Lat, geoResult.Lng)
+	if err != nil {
+		log.Printf("[SearchPoliticians] geofence lookup error: %v", err)
+	}
+
+	if len(geoMatches) > 0 {
+		geoIDs := make([]string, len(geoMatches))
+		for i, m := range geoMatches {
+			geoIDs[i] = m.GeoID + "(" + m.MTFCC + ")"
+		}
+		log.Printf("[SearchPoliticians] found %d geofences for point: %v", len(geoMatches), geoIDs)
+
+		// Look up politicians by geo matches (with MTFCC disambiguation).
+		officials, err := FindPoliticiansByGeoMatches(r.Context(), geoMatches)
+		if err != nil {
+			log.Printf("[SearchPoliticians] politician lookup error: %v", err)
+		} else if len(officials) > 0 {
+			// Supplement geofence results with federal + state officials from DB cache.
+			geoState := strings.ToUpper(geoResult.State)
+			if geoState == "" {
+				// Fall back to state from geofence-matched officials.
+				for _, o := range officials {
+					if o.RepresentingState != "" {
+						geoState = strings.ToUpper(o.RepresentingState)
+						break
+					}
 				}
-				log.Printf("[SearchPoliticians] found %d geofences for point: %v", len(geoMatches), geoIDs)
+			}
 
-				// Look up politicians by geo matches (with MTFCC disambiguation)
-				officials, err := FindPoliticiansByGeoMatches(r.Context(), geoMatches)
-				if err != nil {
-					log.Printf("[SearchPoliticians] politician lookup error: %v", err)
-				} else if len(officials) > 0 {
-					// Supplement geofence results with federal + state officials from DB cache
-					geoState := strings.ToUpper(geoResult.State)
-					if geoState == "" {
-						// Fall back to state from geofence-matched officials
-						for _, o := range officials {
-							if o.RepresentingState != "" {
-								geoState = strings.ToUpper(o.RepresentingState)
-								break
-							}
+			if geoState != "" {
+				seenExtIDs := make(map[int]bool, len(officials))
+				for _, o := range officials {
+					if o.ExternalID != 0 {
+						seenExtIDs[o.ExternalID] = true
+					}
+				}
+
+				supplemental, supErr := fetchStatewideFromDB(geoState)
+				if supErr == nil {
+					for _, s := range supplemental {
+						if !seenExtIDs[s.ExternalID] {
+							officials = append(officials, s)
+							seenExtIDs[s.ExternalID] = true
 						}
 					}
+				} else {
+					log.Printf("[SearchPoliticians] geofence supplemental fetch error: %v", supErr)
+				}
 
-					if geoState != "" {
-						seenExtIDs := make(map[int]bool, len(officials))
-						for _, o := range officials {
-							if o.ExternalID != 0 {
-								seenExtIDs[o.ExternalID] = true
+				// Kick background warmers if federal/state caches are stale.
+				now := time.Now()
+				const maxAge = 90 * 24 * time.Hour
+
+				var federalCache FederalCache
+				if err := db.DB.First(&federalCache).Error; err != nil || now.Sub(federalCache.LastFetched) >= maxAge {
+					if tryAcquireLock(r.Context(), "federal") {
+						go func() {
+							defer releaseLock(context.Background(), "federal")
+							if err := warmFederal(context.Background()); err != nil {
+								log.Printf("[SearchPoliticians] warmFederal err=%v", err)
 							}
-						}
+						}()
+					}
+				}
 
-						supplemental, supErr := fetchStatewideFromDB(geoState)
-						if supErr == nil {
-							for _, s := range supplemental {
-								if !seenExtIDs[s.ExternalID] {
-									officials = append(officials, s)
-									seenExtIDs[s.ExternalID] = true
+				var stateCache StateCache
+				if err := db.DB.Where("state = ?", geoState).First(&stateCache).Error; err != nil || now.Sub(stateCache.LastFetched) >= maxAge {
+					if tryAcquireLock(r.Context(), "state-"+geoState) {
+						go func() {
+							defer releaseLock(context.Background(), "state-"+geoState)
+							sampleZip := geoResult.Zip
+							if sampleZip == "" {
+								if err := db.DB.Raw("SELECT zip FROM essentials.zip_caches WHERE state = ? LIMIT 1", geoState).Row().Scan(&sampleZip); err != nil || sampleZip == "" {
+									sampleZip = "20001"
 								}
 							}
-						} else {
-							log.Printf("[SearchPoliticians] geofence supplemental fetch error: %v", supErr)
-						}
-
-						// Kick background warmers if federal/state caches are stale
-						now := time.Now()
-						const maxAge = 90 * 24 * time.Hour
-
-						var federalCache FederalCache
-						if err := db.DB.First(&federalCache).Error; err != nil || now.Sub(federalCache.LastFetched) >= maxAge {
-							if tryAcquireLock(r.Context(), "federal") {
-								go func() {
-									defer releaseLock(context.Background(), "federal")
-									if err := warmFederal(context.Background()); err != nil {
-										log.Printf("[SearchPoliticians] warmFederal err=%v", err)
-									}
-								}()
+							if err := warmState(context.Background(), geoState, sampleZip); err != nil {
+								log.Printf("[SearchPoliticians] warmState err=%v", err)
 							}
-						}
-
-						var stateCache StateCache
-						if err := db.DB.Where("state = ?", geoState).First(&stateCache).Error; err != nil || now.Sub(stateCache.LastFetched) >= maxAge {
-							if tryAcquireLock(r.Context(), "state-"+geoState) {
-								go func() {
-									defer releaseLock(context.Background(), "state-"+geoState)
-									sampleZip := geoResult.Zip
-									if sampleZip == "" {
-										if err := db.DB.Raw("SELECT zip FROM essentials.zip_caches WHERE state = ? LIMIT 1", geoState).Row().Scan(&sampleZip); err != nil || sampleZip == "" {
-											sampleZip = "20001"
-										}
-									}
-									if err := warmState(context.Background(), geoState, sampleZip); err != nil {
-										log.Printf("[SearchPoliticians] warmState err=%v", err)
-									}
-								}()
-							}
-						}
+						}()
 					}
-
-					log.Printf("[SearchPoliticians] ✓ Served %d officials (%d geofence + supplemental) for state=%s", len(officials), len(geoMatches), geoState)
-					w.Header().Set("X-Data-Status", "fresh-local")
-					w.Header().Set("X-Geofence-Count", fmt.Sprintf("%d", len(geoMatches)))
-					writeJSON(w, officials)
-					return
-				} else {
-					log.Printf("[SearchPoliticians] no politicians found for geo-IDs (area not pre-populated)")
 				}
-			} else {
-				log.Printf("[SearchPoliticians] no geofences found at (%.6f, %.6f) — area not imported yet", geoResult.Lat, geoResult.Lng)
 			}
-		} else {
-			log.Printf("[SearchPoliticians] Google geocoding failed for %q: %v", query, geoErr)
+
+			log.Printf("[SearchPoliticians] ✓ Served %d officials (%d geofence + supplemental) for state=%s", len(officials), len(geoMatches), geoState)
+			w.Header().Set("X-Data-Status", "fresh-local")
+			w.Header().Set("X-Geofence-Count", fmt.Sprintf("%d", len(geoMatches)))
+			w.Header().Set("X-Formatted-Address", geoResult.Formatted)
+			writeJSON(w, officials)
+			return
 		}
+		log.Printf("[SearchPoliticians] no politicians found for geo-IDs (area not pre-populated)")
+	} else {
+		log.Printf("[SearchPoliticians] no geofences found at (%.6f, %.6f) — area not imported yet", geoResult.Lat, geoResult.Lng)
 	}
 
-	// Fallback: BallotReady address lookup (for areas not pre-populated with geofence data)
-	brProvider, ok := Provider.(*ballotready.BallotReadyProvider)
-	if !ok {
-		http.Error(w, "Address search requires the BallotReady provider", http.StatusServiceUnavailable)
+	// No local geofence data — return federal + state officials from cache.
+	geoState := strings.ToUpper(geoResult.State)
+	if geoState == "" {
+		http.Error(w, "Address must be within the United States", http.StatusUnprocessableEntity)
 		return
 	}
 
-	ctx := r.Context()
-	nodes, err := brProvider.Client().FetchOfficeHoldersByAddress(ctx, query)
+	officials, err := fetchFederalAndStateFromDB(geoState)
 	if err != nil {
-		log.Printf("[SearchPoliticians] address lookup error: %v", err)
-		http.Error(w, "Failed to fetch politicians for address", http.StatusBadGateway)
+		log.Printf("[SearchPoliticians] no-geofence DB fetch error for state=%s: %v", geoState, err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	normalized := ballotready.TransformBatch(nodes)
-
-	// 1. Build response immediately (fast, uses SHA1-based UUIDs)
-	out := make([]OfficialOut, 0, len(normalized))
-	for _, off := range normalized {
-		out = append(out, normalizedToOfficialOut(off))
-	}
-
-	// 2. Fast batch lookup: resolve real DB UUIDs for known politicians
-	extIDs := make([]int, 0, len(out))
-	for _, o := range out {
-		if o.ExternalID != 0 {
-			extIDs = append(extIDs, o.ExternalID)
-		}
-	}
-	if len(extIDs) > 0 {
-		type idRow struct {
-			ID         uuid.UUID
-			ExternalID int
-		}
-		var rows []idRow
-		db.DB.Raw(`SELECT id, external_id FROM essentials.politicians WHERE external_id = ANY(?)`, pq.Array(extIDs)).Scan(&rows)
-		lookup := make(map[int]uuid.UUID, len(rows))
-		for _, r := range rows {
-			lookup[r.ExternalID] = r.ID
-		}
-		for i := range out {
-			if dbID, ok := lookup[out[i].ExternalID]; ok {
-				out[i].ID = dbID
-			}
-		}
-	}
-
-	// 3. Supplement with federal + state officials from DB cache
-	var searchState string
-	for _, o := range out {
-		if o.RepresentingState != "" {
-			searchState = strings.ToUpper(o.RepresentingState)
-			break
-		}
-	}
-
-	if searchState != "" {
-		seenExtIDs := make(map[int]bool, len(out))
-		for _, o := range out {
-			if o.ExternalID != 0 {
-				seenExtIDs[o.ExternalID] = true
-			}
-		}
-
-		supplemental, err := fetchFederalAndStateFromDB(searchState)
-		if err == nil {
-			for _, s := range supplemental {
-				if !seenExtIDs[s.ExternalID] {
-					out = append(out, s)
-					seenExtIDs[s.ExternalID] = true
-				}
-			}
-		}
-
-		// Kick background warmers if caches are stale
-		now := time.Now()
-		const maxAge = 90 * 24 * time.Hour
-
-		var federalCache FederalCache
-		if err := db.DB.First(&federalCache).Error; err != nil || now.Sub(federalCache.LastFetched) >= maxAge {
-			if tryAcquireLock(ctx, "federal") {
-				go func() {
-					defer releaseLock(context.Background(), "federal")
-					if err := warmFederal(context.Background()); err != nil {
-						log.Printf("[SearchPoliticians] warmFederal err=%v", err)
-					}
-				}()
-			}
-		}
-
-		var stateCache StateCache
-		if err := db.DB.Where("state = ?", searchState).First(&stateCache).Error; err != nil || now.Sub(stateCache.LastFetched) >= maxAge {
-			if tryAcquireLock(ctx, "state-"+searchState) {
-				go func() {
-					defer releaseLock(context.Background(), "state-"+searchState)
-					// Use a common ZIP from BallotReady results for the state warmer
-					sampleZip := ""
-					if err := db.DB.Raw("SELECT zip FROM essentials.zip_caches WHERE state = ? LIMIT 1", searchState).Row().Scan(&sampleZip); err != nil || sampleZip == "" {
-						sampleZip = "20001" // fallback
-					}
-					if err := warmState(context.Background(), searchState, sampleZip); err != nil {
-						log.Printf("[SearchPoliticians] warmState err=%v", err)
-					}
-				}()
-			}
-		}
-	}
-
-	// 4. Background upsert (non-blocking)
-	go func() {
-		bgCtx := context.Background()
-		ts := time.Now()
-		for _, off := range normalized {
-			if _, err := upsertNormalizedOfficial(bgCtx, off, ts); err != nil {
-				log.Printf("[SearchPoliticians] bg upsert error for %s: %v", off.ExternalID, err)
-			}
-		}
-	}()
-
-	w.Header().Set("X-Data-Status", "fresh")
-	writeJSON(w, out)
+	log.Printf("[SearchPoliticians] no-geofence fallback: returned %d federal+state officials for state=%s", len(officials), geoState)
+	w.Header().Set("X-Data-Status", "no-geofence-data")
+	w.Header().Set("X-Formatted-Address", geoResult.Formatted)
+	writeJSON(w, officials)
 }
 
 // PoliticianProfileOut is the enriched response for a single politician profile.
