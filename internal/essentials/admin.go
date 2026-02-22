@@ -10,7 +10,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/EmpoweredVote/EV-Backend/internal/essentials/provider"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 )
@@ -135,63 +134,20 @@ func ListImportJobs(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(jobs)
 }
 
-// WarmZip exports warmLocal for use by CLI tools (e.g., cmd/bulk-import).
-func WarmZip(zip string) error {
-	return warmLocal(context.Background(), zip)
-}
-
-// WarmZipWith imports a ZIP using a specific provider (e.g., Cicero for seeding)
-// without changing the live Provider setting.
-func WarmZipWith(p provider.OfficialProvider, zip string) error {
-	origProvider := Provider
-	Provider = p
-	err := warmLocal(context.Background(), zip)
-	Provider = origProvider
-	return err
-}
-
-// runBulkImport processes ZIPs sequentially with a delay between each.
+// runBulkImport is a placeholder — live BallotReady warmer calls have been removed.
+// Bulk import now requires a data pipeline reimplementation (Phase 27+).
 func runBulkImport(job *ImportJob, zips []string) {
-	ctx := context.Background()
-	delay := time.Duration(job.DelayMs) * time.Millisecond
-
-	log.Printf("[BulkImport] job=%s starting import of %d ZIPs", job.ID, len(zips))
-
-	for i, zip := range zips {
-		importJobsMu.Lock()
-		job.CurrentZip = zip
-		importJobsMu.Unlock()
-
-		log.Printf("[BulkImport] job=%s processing ZIP %s (%d/%d)", job.ID, zip, i+1, len(zips))
-
-		if err := warmLocal(ctx, zip); err != nil {
-			log.Printf("[BulkImport] job=%s ZIP %s failed: %v", job.ID, zip, err)
-			importJobsMu.Lock()
-			job.Failed++
-			job.FailedZips = append(job.FailedZips, zip)
-			importJobsMu.Unlock()
-		} else {
-			importJobsMu.Lock()
-			job.Completed++
-			importJobsMu.Unlock()
-		}
-
-		// Delay between ZIPs to avoid rate limiting (skip after last)
-		if i < len(zips)-1 {
-			time.Sleep(delay)
-		}
-	}
+	_ = context.Background() // retain import
+	log.Printf("[BulkImport] job=%s BallotReady warmer removed — bulk import via live API no longer supported", job.ID)
 
 	now := time.Now()
 	importJobsMu.Lock()
 	job.CurrentZip = ""
 	job.CompletedAt = &now
-	if job.Failed > 0 {
-		job.Status = "completed_with_errors"
-	} else {
-		job.Status = "completed"
-	}
+	job.Status = "failed"
+	job.FailedZips = zips
+	job.Failed = len(zips)
 	importJobsMu.Unlock()
 
-	log.Printf("[BulkImport] job=%s finished — completed=%d failed=%d", job.ID, job.Completed, job.Failed)
+	log.Printf("[BulkImport] job=%s marked failed — live warmer no longer available", job.ID)
 }

@@ -15,7 +15,6 @@ func SetupRoutes() http.Handler {
 	r.Get("/politicians", GetAllPoliticians)
 	r.Get("/politicians/{zip}", GetPoliticiansByZip)
 	r.Post("/politicians/search", SearchPoliticians)
-	r.Get("/cache-status/{zip}", GetCacheStatus)
 	r.Get("/politician/{id}", GetPoliticianByID)
 	r.Get("/candidates/{zip}", GetCandidatesByZip)
 
