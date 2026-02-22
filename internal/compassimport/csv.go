@@ -11,12 +11,11 @@ import (
 )
 
 type Row struct {
-	TopicKey    string
-	Title       string
-	ShortTitle  string
-	StartPhrase string
-	Stances     [5]string
-	Categories  []string
+	TopicKey   string
+	Title      string
+	ShortTitle string
+	Stances    [5]string
+	Categories []string
 }
 
 var keyRe = regexp.MustCompile(`^[a-z0-9]+(?:-[a-z0-9]+)*$`)
@@ -51,7 +50,7 @@ func ParseCSV(path string) ([]Row, error) {
 	}
 
 	req := []string{
-		"topic_key", "title", "short_title", "start_phrase",
+		"topic_key", "title", "short_title",
 		"stance_1", "stance_2", "stance_3", "stance_4", "stance_5",
 		"categories",
 	}
@@ -107,12 +106,11 @@ func ParseCSV(path string) ([]Row, error) {
 		}
 
 		out = append(out, Row{
-			TopicKey:    tk,
-			Title:       get("title"),
-			ShortTitle:  get("short_title"),
-			StartPhrase: get("start_phrase"),
-			Stances:     st,
-			Categories:  cats,
+			TopicKey:   tk,
+			Title:      get("title"),
+			ShortTitle: get("short_title"),
+			Stances:    st,
+			Categories: cats,
 		})
 	}
 

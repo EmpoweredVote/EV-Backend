@@ -7,7 +7,6 @@ type Topic struct {
 	TopicKey    string    `gorm:"column:topic_key"`
 	Title       string    `gorm:"column:title"`
 	ShortTitle  string    `gorm:"column:short_title"`
-	StartPhrase string    `gorm:"column:start_phrase"`
 	IsActive    bool      `gorm:"column:is_active"`
 }
 

@@ -65,12 +65,11 @@ func Run(cfg Config) error {
 			tid := TopicID(ns, r.TopicKey)
 
 			topics = append(topics, Topic{
-				ID:          tid,
-				TopicKey:    r.TopicKey,
-				Title:       r.Title,
-				ShortTitle:  r.ShortTitle,
-				StartPhrase: r.StartPhrase,
-				IsActive:    true,
+				ID:         tid,
+				TopicKey:   r.TopicKey,
+				Title:      r.Title,
+				ShortTitle: r.ShortTitle,
+				IsActive:   true,
 			})
 
 			for i := 1; i <= 5; i++ {
