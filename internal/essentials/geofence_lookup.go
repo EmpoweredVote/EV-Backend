@@ -27,6 +27,7 @@ var mtfccToDistrictTypes = map[string][]string{
 	"G4040": {"LOCAL", "LOCAL_EXEC"},         // County Subdivision (township)
 	"G4110": {"LOCAL", "LOCAL_EXEC"},         // Incorporated Place (city/town)
 	"G5420": {"SCHOOL"},                      // Unified School District
+	"X0001": {"LOCAL"},                        // City council sub-districts (BallotReady custom MTFCC)
 }
 
 // FindGeoIDsByPoint performs a PostGIS point-in-polygon query to find all
