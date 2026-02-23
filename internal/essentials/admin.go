@@ -138,7 +138,7 @@ func ListImportJobs(w http.ResponseWriter, r *http.Request) {
 // Bulk import now requires a data pipeline reimplementation (Phase 27+).
 func runBulkImport(job *ImportJob, zips []string) {
 	_ = context.Background() // retain import
-	log.Printf("[BulkImport] job=%s BallotReady warmer removed — bulk import via live API no longer supported", job.ID)
+	log.Printf("[BulkImport] job=%s bulk import via live API is no longer supported — a new pipeline is required", job.ID)
 
 	now := time.Now()
 	importJobsMu.Lock()

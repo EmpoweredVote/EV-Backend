@@ -8,13 +8,12 @@ import (
 
 // Common errors
 var (
-	ErrMissingCiceroKey      = errors.New("CICERO_KEY environment variable is required for cicero provider")
-	ErrMissingBallotReadyKey = errors.New("BALLOTREADY_KEY environment variable is required for ballotready provider")
-	ErrUnknownProvider       = errors.New("unknown provider type")
+	ErrMissingCiceroKey = errors.New("CICERO_KEY environment variable is required for cicero provider")
+	ErrUnknownProvider  = errors.New("unknown provider type")
 )
 
 // OfficialProvider is the interface that all politician data providers must implement.
-// It abstracts the differences between Cicero API, BallotReady API, and any future providers.
+// It abstracts the data provider implementation from the essentials module.
 type OfficialProvider interface {
 	// Name returns the provider name for logging purposes.
 	Name() string
