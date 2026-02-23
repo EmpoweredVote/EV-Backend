@@ -152,7 +152,8 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 			d.ocd_id,
 			p.bio_text,
 			p.bioguide_id,
-			p.slug
+			p.slug,
+			COALESCE(d.district_id, '') AS district_id_text
 		FROM essentials.politicians p
 		JOIN essentials.offices o ON o.politician_id = p.id
 		JOIN essentials.districts d ON o.district_id = d.id
@@ -211,6 +212,7 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 			&off.BioText,
 			&off.BioguideID,
 			&off.Slug,
+			&off.DistrictID,
 		); err != nil {
 			return nil, fmt.Errorf("scan official: %w", err)
 		}

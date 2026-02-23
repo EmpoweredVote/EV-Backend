@@ -120,6 +120,7 @@ type OfficialOut struct {
 	RepresentingCity     string          `json:"representing_city"`
 	DistrictType         string          `json:"district_type"`
 	DistrictLabel        string          `json:"district_label"`
+	DistrictID           string          `json:"district_id,omitempty"`
 	MTFCC                string          `json:"mtfcc"`
 	ChamberName          string          `json:"chamber_name"`
 	ChamberNameFormal    string          `json:"chamber_name_formal"`
@@ -1075,6 +1076,7 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		RepresentingCity     string
 		DistrictType         string
 		DistrictLabel        string
+		DistrictIDText       string
 		MTFCC                string
 		ChamberName          string
 		ChamberNameFormal    string
@@ -1111,7 +1113,9 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
 		  p.web_form_url, p.urls, p.email_addresses,
 		  o.title AS office_title, o.representing_state, o.representing_city,
-		  d.district_type, d.label AS district_label, d.mtfcc,
+		  d.district_type, d.label AS district_label,
+		  COALESCE(d.district_id, '') AS district_id_text,
+		  d.mtfcc,
 		  COALESCE(c.name, '') AS chamber_name,
 		  COALESCE(c.name_formal, '') AS chamber_name_formal,
 		  COALESCE(g.name, '') AS government_name,
@@ -1293,6 +1297,7 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 			URLs: []string(r.URLs), EmailAddresses: []string(r.EmailAddresses),
 			OfficeTitle: r.OfficeTitle, RepresentingState: r.RepresentingState, RepresentingCity: r.RepresentingCity,
 			DistrictType: r.DistrictType, DistrictLabel: r.DistrictLabel,
+			DistrictID:           r.DistrictIDText,
 			MTFCC: r.MTFCC,
 			ChamberName: r.ChamberName, ChamberNameFormal: r.ChamberNameFormal,
 			GovernmentName:       r.GovernmentName,
@@ -1365,6 +1370,7 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		RepresentingCity     string
 		DistrictType         string
 		DistrictLabel        string
+		DistrictIDText       string
 		MTFCC                string
 		ChamberName          string
 		ChamberNameFormal    string
@@ -1399,7 +1405,9 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
 		  p.web_form_url, p.urls, p.email_addresses,
 		  o.title AS office_title, o.representing_state, o.representing_city,
-		  d.district_type, d.label AS district_label, d.mtfcc,
+		  d.district_type, d.label AS district_label,
+		  COALESCE(d.district_id, '') AS district_id_text,
+		  d.mtfcc,
 		  c.name AS chamber_name, c.name_formal AS chamber_name_formal,
 		  g.name AS government_name,
 		  COALESCE(c.election_frequency, '') AS election_frequency,
@@ -1557,6 +1565,7 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 			URLs: []string(r.URLs), EmailAddresses: []string(r.EmailAddresses),
 			OfficeTitle: r.OfficeTitle, RepresentingState: r.RepresentingState, RepresentingCity: r.RepresentingCity,
 			DistrictType: r.DistrictType, DistrictLabel: r.DistrictLabel,
+			DistrictID:           r.DistrictIDText,
 			MTFCC: r.MTFCC,
 			ChamberName: r.ChamberName, ChamberNameFormal: r.ChamberNameFormal,
 			GovernmentName:       r.GovernmentName,
@@ -1913,6 +1922,7 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 		RepresentingCity     string
 		DistrictType         string
 		DistrictLabel        string
+		DistrictIDText       string
 		MTFCC                string
 		ChamberName          string
 		ChamberNameFormal    string
@@ -1954,7 +1964,9 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 		  o.title AS office_title, o.representing_state, o.representing_city,
 		  COALESCE(o.description, '') AS office_description,
 		  o.seats, o.normalized_position_name, o.partisan_type, o.salary,
-		  d.district_type, d.label AS district_label, d.mtfcc,
+		  d.district_type, d.label AS district_label,
+		  COALESCE(d.district_id, '') AS district_id_text,
+		  d.mtfcc,
 		  d.geo_id, d.is_judicial, d.ocd_id,
 		  c.name AS chamber_name, c.name_formal AS chamber_name_formal,
 		  g.name AS government_name,
@@ -2053,6 +2065,7 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 			URLs: []string(r0.URLs), EmailAddresses: []string(r0.EmailAddresses),
 			OfficeTitle: r0.OfficeTitle, RepresentingState: r0.RepresentingState, RepresentingCity: r0.RepresentingCity,
 			DistrictType: r0.DistrictType, DistrictLabel: r0.DistrictLabel,
+			DistrictID:           r0.DistrictIDText,
 			MTFCC: r0.MTFCC,
 			ChamberName: r0.ChamberName, ChamberNameFormal: r0.ChamberNameFormal,
 			GovernmentName:       r0.GovernmentName,
