@@ -1,0 +1,37 @@
+{
+  "sources": [
+    {
+      "id": "la_county_supervisors",
+      "name": "LA County Board of Supervisors",
+      "url": "https://bos.lacounty.gov/executive-office/about-us/board-of-supervisors/",
+      "parser": "la_county_bos",
+      "district_type": "LOCAL",
+      "title": "Supervisor",
+      "ocd_id_template": "ocd-division/country:us/state:ca/county:los_angeles/council_district:{n}",
+      "state": "CA",
+      "expected_count": 5
+    },
+    {
+      "id": "la_city_council",
+      "name": "LA City Council Members",
+      "url": "https://clerk.lacity.gov/articles/current-elected-officials",
+      "parser": "la_city_clerk",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "ocd_id_template": "ocd-division/country:us/state:ca/place:los_angeles/council_district:{n}",
+      "state": "CA",
+      "expected_count": 15
+    },
+    {
+      "id": "la_city_mayor",
+      "name": "LA City Mayor",
+      "url": "https://clerk.lacity.gov/articles/current-elected-officials",
+      "parser": "la_city_clerk_mayor",
+      "district_type": "LOCAL_EXEC",
+      "title": "Mayor",
+      "ocd_id": "ocd-division/country:us/state:ca/place:los_angeles",
+      "state": "CA",
+      "expected_count": 1
+    }
+  ]
+}
