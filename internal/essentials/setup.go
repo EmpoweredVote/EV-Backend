@@ -67,6 +67,29 @@ func Init() {
 		log.Fatal("Failed to create spatial index:", err)
 	}
 
+	// Remove duplicate (geo_id, mtfcc) rows, keeping the most recently imported one.
+	// Required before CREATE UNIQUE INDEX if import scripts ran without the constraint.
+	if err := db.DB.Exec(`
+		DELETE FROM essentials.geofence_boundaries
+		WHERE id NOT IN (
+		    SELECT DISTINCT ON (geo_id, mtfcc) id
+		    FROM essentials.geofence_boundaries
+		    ORDER BY geo_id, mtfcc, id DESC
+		)
+	`).Error; err != nil {
+		log.Printf("[essentials] WARNING: Dedup cleanup failed (table may not exist yet): %v", err)
+	}
+
+	// Composite unique constraint: prevents duplicate rows when importing
+	// multiple MTFCC layer types that share the same geo_id value.
+	// Required for ON CONFLICT idempotency in import scripts (Phases 34-35).
+	if err := db.DB.Exec(`
+		CREATE UNIQUE INDEX IF NOT EXISTS idx_geofence_boundaries_geo_id_mtfcc
+		ON essentials.geofence_boundaries (geo_id, mtfcc);
+	`).Error; err != nil {
+		log.Fatal("Failed to create geofence_boundaries unique constraint:", err)
+	}
+
 	// Case insensitive unique for committees.name
 	if err := db.DB.Exec(`
         CREATE UNIQUE INDEX IF NOT EXISTS committees_name_ci_unique
