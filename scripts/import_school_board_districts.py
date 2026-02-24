@@ -19,9 +19,12 @@ import sys
 import json
 import geopandas as gpd
 from shapely.geometry import shape
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
 from pathlib import Path
 from datetime import datetime
+
+sys.path.insert(0, str(Path(__file__).parent))
+from utils import get_engine, load_env
 
 # Map ArcGIS district numbers to BallotReady geo_ids in essentials.districts
 DISTRICT_GEO_IDS = {
@@ -42,39 +45,6 @@ ARCGIS_URL = (
     "?where=1%3D1&outFields=District,DistrictName,Board_Members"
     "&f=geojson&outSR=4326"
 )
-
-
-def load_env():
-    """Load DATABASE_URL from .env.local if not already set"""
-    if os.getenv("DATABASE_URL"):
-        return
-    env_path = Path(__file__).parent.parent / ".env.local"
-    if env_path.exists():
-        with open(env_path) as f:
-            for line in f:
-                line = line.strip()
-                if line.startswith("DATABASE_URL="):
-                    os.environ["DATABASE_URL"] = line.split("=", 1)[1]
-                    print(f"  Loaded DATABASE_URL from {env_path}")
-                    return
-    print("Error: DATABASE_URL not set and .env.local not found")
-    sys.exit(1)
-
-
-def get_engine():
-    """Create SQLAlchemy engine, URL-encoding the password if needed"""
-    from urllib.parse import urlparse, quote_plus, urlunparse
-    raw_url = os.getenv("DATABASE_URL")
-    parsed = urlparse(raw_url)
-    if parsed.password:
-        encoded_pw = quote_plus(parsed.password)
-        netloc = f"{parsed.username}:{encoded_pw}@{parsed.hostname}"
-        if parsed.port:
-            netloc += f":{parsed.port}"
-        safe_url = urlunparse((parsed.scheme, netloc, parsed.path, parsed.params, parsed.query, parsed.fragment))
-    else:
-        safe_url = raw_url
-    return create_engine(safe_url)
 
 
 def download_geojson():
