@@ -1,0 +1,3916 @@
+{
+  "cities": [
+    {
+      "id": "agoura_hills_city_council",
+      "name": "City of Agoura Hills",
+      "place_geoid": "0600394",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:agoura_hills",
+      "url": "https://www.agourahillscity.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Penny Sylvester",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Kate Anderson",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Chris Anstead",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Deborah Klein Lopez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "alhambra_city_council",
+      "name": "City of Alhambra",
+      "place_geoid": "0600884",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:alhambra",
+      "url": "https://www.cityofalhambra.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Katherine Lee",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Adele Andrade-Stadler",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Ross J. Maza",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Noya Wang",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "arcadia_city_council",
+      "name": "City of Arcadia",
+      "place_geoid": "0602462",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:arcadia",
+      "url": "https://www.arcadiaca.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Dr. Michael Cao",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Paul Cheng",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "David Fu",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Eileen Wang",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "artesia_city_council",
+      "name": "City of Artesia",
+      "place_geoid": "0602896",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:artesia",
+      "url": "https://www.cityofartesia.us/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Ali Taj",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Ali Taj",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Rene Trevino",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Monica Manalo",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Zeel Ahir",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Melissa Ramoso",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "avalon_city_council",
+      "name": "City of Avalon",
+      "place_geoid": "0603274",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:avalon",
+      "url": "https://www.cityofavalon.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Ann Marshall",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Michael Ponce",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Yesenia De La",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Mary Schickling",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "azusa_city_council",
+      "name": "City of Azusa",
+      "place_geoid": "0603386",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:azusa",
+      "url": "https://www.ci.azusa.ca.us/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Robert Gonzales",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Jesse Avila Jr",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Andrew N. Mendez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Sabrina Bow",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "baldwin_park_city_council",
+      "name": "City of Baldwin Park",
+      "place_geoid": "0603666",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:baldwin_park",
+      "url": "https://www.baldwinpark.com/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Alejandra Avila",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Jean M. Ayala",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Emmanuel J. Estrada",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Manuel Lozano",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "bell_city_council",
+      "name": "City of Bell",
+      "place_geoid": "0604870",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:bell",
+      "url": "https://www.cityofbell.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Ali Saleh",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Alicia Romero",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Francis Flores",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Ana Maria Quintana",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "bell_gardens_city_council",
+      "name": "City of Bell Gardens",
+      "place_geoid": "0604996",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:bell_gardens",
+      "url": "https://www.cityofbellgardens.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Miguel De La Rosa",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Marco Barcena",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Jorgel Chavez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Francis De",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Leon Sanchez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "bellflower_city_council",
+      "name": "City of Bellflower",
+      "place_geoid": "0604982",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:bellflower",
+      "url": "https://www.bellflower.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Ray Dunton",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Dan Koops",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Wendi Morse",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Victor A. Sanchez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "beverly_hills_city_council",
+      "name": "City of Beverly Hills",
+      "place_geoid": "0606308",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:beverly_hills",
+      "url": "https://www.beverlyhills.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Lester Friedman",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "John A. Mirisch",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Craig A. Corman",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Mary N. Wells",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "bradbury_city_council",
+      "name": "City of Bradbury",
+      "place_geoid": "0607946",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:bradbury",
+      "url": "https://www.ci.bradbury.ca.us",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Richard T. Hale",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Richard G. Barakat",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Bruce Lathrop",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Melodie Szymkowski",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "burbank_city_council",
+      "name": "City of Burbank",
+      "place_geoid": "0608954",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:burbank",
+      "url": "https://www.burbankca.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Nikki Perez",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Konstantine Anthony",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Zizette Mullins",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "calabasas_city_council",
+      "name": "City of Calabasas",
+      "place_geoid": "0609598",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:calabasas",
+      "url": "https://www.cityofcalabasas.com/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "James R. Bozajian",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "David J. Shapiro",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Peter Kraut",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Alicia Weintraub",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "carson_city_council",
+      "name": "City of Carson",
+      "place_geoid": "0611530",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:carson",
+      "url": "https://www.carson.ca.us/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Lula Davis Holmes",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Mayor Lula Davis Holmes",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "cerritos_city_council",
+      "name": "City of Cerritos",
+      "place_geoid": "0612552",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:cerritos",
+      "url": "https://www.cerritos.us/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Frank Aurelio Yokoyama",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Jennifer Hong",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Mark E. Pulido",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Sophia M. Tse",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "claremont_city_council",
+      "name": "City of Claremont",
+      "place_geoid": "0613756",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:claremont",
+      "url": "https://www.ci.claremont.ca.us/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Corey Calaycay",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Jed Leano",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Sal Medina",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Ed Reece",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "commerce_city_council",
+      "name": "City of Commerce",
+      "place_geoid": "0614974",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:commerce",
+      "url": "https://www.ci.commerce.ca.us/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Ivan Altamirano",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Hugo Argumedo",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Mireya Garcia",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Oralia Rebollo",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "compton_city_council",
+      "name": "City of Compton",
+      "place_geoid": "0615044",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:compton",
+      "url": "https://www.comptoncity.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Emma Sharif",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Emma Sharif -",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Deidre Duhart -",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Andre Spicer -",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Jonathan Bowers -",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Lillie Darden -",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "covina_city_council",
+      "name": "City of Covina",
+      "place_geoid": "0616742",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:covina",
+      "url": "https://www.covinaca.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Patricia Cortez",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Patricia Cortez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Victor Linares",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "John King",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Walter Allen III",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "cudahy_city_council",
+      "name": "City of Cudahy",
+      "place_geoid": "0617498",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:cudahy",
+      "url": "https://www.cityofcudahy.com/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Elizabeth Alcantar Loza",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Daisy Lomel\u00ed",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Martin U. Fuentes",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Amanda Gomez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "culver_city_city_council",
+      "name": "City of Culver City",
+      "place_geoid": "0617568",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:culver_city",
+      "url": "https://www.culvercity.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Dan O'Brien",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Bryan \"Bubba\" Fish",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Yasmine-Imani McMorrin",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "diamond_bar_city_council",
+      "name": "City of Diamond Bar",
+      "place_geoid": "0619192",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:diamond_bar",
+      "url": "https://www.diamondbarca.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Chia Yu Teng",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Andrew Chou",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Stan Liu",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Ruth M. Low",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "downey_city_council",
+      "name": "City of Downey",
+      "place_geoid": "0619766",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:downey",
+      "url": "https://www.downeyca.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Hector Sosa",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Horacio Ortiz -",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Hector Sosa -",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Dorothy Pemberton -",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Claudia M",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Frometa -",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Mario Trujillo -",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "duarte_city_council",
+      "name": "City of Duarte",
+      "place_geoid": "0619990",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:duarte",
+      "url": "https://www.accessduarte.com/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Cesar A. Garcia",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        }
+      ]
+    },
+    {
+      "id": "el_monte_city_council",
+      "name": "City of El Monte",
+      "place_geoid": "0622230",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:el_monte",
+      "url": "https://www.ci.el-monte.ca.us/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Jessica Ancona",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Sheila Crippen-Thomas",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Cindy Galvan",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Martin Herrera",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Viviana Longoria",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Dr. Julia Ruedas",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "el_segundo_city_council",
+      "name": "City of El Segundo",
+      "place_geoid": "0622412",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:el_segundo",
+      "url": "https://www.elsegundo.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Chris Pimentel",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Drew Boyles",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Lance Giroux",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Michelle Keldorf",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "gardena_city_council",
+      "name": "City of Gardena",
+      "place_geoid": "0628168",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:gardena",
+      "url": "https://www.cityofgardena.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Tasha Cerda",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Mark Henderson",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Paulette Francis",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Wanda Love",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "glendale_city_council",
+      "name": "City of Glendale",
+      "place_geoid": "0630000",
+      "election_type": "district",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:glendale",
+      "url": "https://www.glendaleca.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Elen Asatryan",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Elen Asatryan",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Ardy Kassakhian",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Ara Najarian",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Dan Brotman",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Vartan Gharpetian",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ],
+      "ocd_id_template": "ocd-division/country:us/state:ca/place:glendale/council_district:{n}",
+      "num_districts": 5
+    },
+    {
+      "id": "glendora_city_council",
+      "name": "City of Glendora",
+      "place_geoid": "0630014",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:glendora",
+      "url": "https://www.glendoracityhall.com/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "David Fredendall",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Michael Allawos",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Dristict 2 - David",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Shaunna Elias",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Karen Davis",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Mendell Thompson",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "hawaiian_gardens_city_council",
+      "name": "City of Hawaiian Gardens",
+      "place_geoid": "0632506",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:hawaiian_gardens",
+      "url": "https://www.hgcity.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Dandy De Paula",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Victor Farfan",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Luis Roa",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Ernie Vargas",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "hawthorne_city_council",
+      "name": "City of Hawthorne",
+      "place_geoid": "0632548",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:hawthorne",
+      "url": "https://www.cityofhawthorne.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Alex Vargas",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Alex Vargas",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Haidar Awad",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Angie Reyes English",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "David Patterson",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "hermosa_beach_city_council",
+      "name": "City of Hermosa Beach",
+      "place_geoid": "0633364",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:hermosa_beach",
+      "url": "https://www.hermosabeach.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Dean Francois",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Dean Francois",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Rob Saemann",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Michael Detoy",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Raymond Jackson",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Michael Keegan",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "hidden_hills_city_council",
+      "name": "City of Hidden Hills",
+      "place_geoid": "0633518",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:hidden_hills",
+      "url": "https://www.hiddenhillscity.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Larry G. Weber",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Eniko Gold",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Laura McCorkindale and Adam",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "huntington_park_city_council",
+      "name": "City of Huntington Park",
+      "place_geoid": "0636056",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:huntington_park",
+      "url": "https://www.hpca.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Arturo Flores",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        }
+      ]
+    },
+    {
+      "id": "industry_city_council",
+      "name": "City of Industry",
+      "place_geoid": "0636490",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:industry",
+      "url": "https://www.cityofindustry.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Cory Moss",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Mark Radecki",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Newell Ruggles",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Steve Marcucci",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "inglewood_city_council",
+      "name": "City of Inglewood",
+      "place_geoid": "0636546",
+      "election_type": "district",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:inglewood",
+      "url": "https://www.cityofinglewood.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "James T. Butts Jr.",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "James T. Butts Jr.",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Eloy Morales Jr.",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "George Dotson",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Alex Padilla",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Dionne Faulk",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ],
+      "ocd_id_template": "ocd-division/country:us/state:ca/place:inglewood/council_district:{n}",
+      "num_districts": 4
+    },
+    {
+      "id": "irwindale_city_council",
+      "name": "City of Irwindale",
+      "place_geoid": "0636826",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:irwindale",
+      "url": "https://www.ci.irwindale.ca.us/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Larry G. Burrola",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Albert F. Ambriz",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Mark A. Breceda",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Manuel R. Garcia",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "la_canada_flintridge_city_council",
+      "name": "City of La Canada Flintridge",
+      "place_geoid": "0639003",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:la_canada_flintridge",
+      "url": "https://lcf.ca.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Michael T. Davitt",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Keith Eich",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Stephanie Fossan",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Jeanne K. Hobson",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "la_habra_heights_city_council",
+      "name": "City of La Habra Heights",
+      "place_geoid": "0639304",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:la_habra_heights",
+      "url": "https://www.lahabraheights.com/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "John Pespisa",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Brian Bergman",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Greg Stefflre",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Norm Zezula",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "la_mirada_city_council",
+      "name": "City of La Mirada",
+      "place_geoid": "0640032",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:la_mirada",
+      "url": "https://www.cityoflamirada.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "John Lewis",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Michelle Velasquez Bean",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Steve De Ruse",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "la_palma_city_council",
+      "name": "City of La Palma",
+      "place_geoid": "0640256",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:la_palma",
+      "url": "https://www.cityoflapalma.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Mark I. Waldman",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Debbie S. Baker",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Janet Keo Conklin",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Vikesh P. Patel",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "la_puente_city_council",
+      "name": "City of La Puente",
+      "place_geoid": "0640340",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:la_puente",
+      "url": "https://www.lapuente.net/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Valerie Munoz",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "David E. Argudo",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Nadia Mendoza",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Gabriel Quinones",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "la_verne_city_council",
+      "name": "City of La Verne",
+      "place_geoid": "0640830",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:la_verne",
+      "url": "https://www.laverneca.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Timothy Hepburn",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Wendy Lau",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Rick Crosby",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Meshal \"Kash\" Kashifalghita",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "lakewood_city_council",
+      "name": "City of Lakewood",
+      "place_geoid": "0639892",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:lakewood",
+      "url": "https://www.lakewoodcity.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Todd Rogers",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "David Arellano",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Steve Croft",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Jeff Wood",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "lancaster_city_council",
+      "name": "City of Lancaster",
+      "place_geoid": "0640130",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:lancaster",
+      "url": "https://www.cityoflancasterca.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "R. Rex Parris",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Lauren Hughes-Leslie",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Raj Malhi",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Ken Mann",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "lawndale_city_council",
+      "name": "City of Lawndale",
+      "place_geoid": "0640886",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:lawndale",
+      "url": "https://www.lawndalecity.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Robert Pullen-Miles",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Sirley Cuevas",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Bernadette Suarez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Frank Talavera",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "lomita_city_council",
+      "name": "City of Lomita",
+      "place_geoid": "0642468",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:lomita",
+      "url": "https://www.lomitacity.com/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Mark A. Waronek",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "James Gazeley",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Bill Uphoff",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Barry Waite",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "long_beach_city_council",
+      "name": "City of Long Beach",
+      "place_geoid": "0643000",
+      "election_type": "district",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:long_beach",
+      "url": "https://www.longbeach.gov/council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Rex Richardson",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Mary Zendejas",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Cindy Allen",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Kristina Duggan",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Megan Kerr",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Suely Saro",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Roberto Uranga",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Joni Ricks-Oddie",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ],
+      "ocd_id_template": "ocd-division/country:us/state:ca/place:long_beach/council_district:{n}",
+      "num_districts": 9
+    },
+    {
+      "id": "los_alamitos_city_council",
+      "name": "City of Los Alamitos",
+      "place_geoid": "0643224",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:los_alamitos",
+      "url": "https://www.cityoflosalamitos.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Shelley Hasselbrink",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Emily Hibard",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Gary Loe",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Jordan Nefulda",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "lynwood_city_council",
+      "name": "City of Lynwood",
+      "place_geoid": "0644574",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:lynwood",
+      "url": "https://www.lynwood.ca.us/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Rita Soto",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Rita Soto",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Gabriela Camacho",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Luis Gerardo Cuellar",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Juan Mu\u00f1oz-Guevara",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Lorraine Avila Moore",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "malibu_city_council",
+      "name": "City of Malibu",
+      "place_geoid": "0645246",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:malibu",
+      "url": "https://www.malibucity.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Doug Stewart",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Haylynn Conrad",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Bruce Silverstein",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Steve Uhring",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "manhattan_beach_city_council",
+      "name": "City of Manhattan Beach",
+      "place_geoid": "0645400",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:manhattan_beach",
+      "url": "https://www.citymb.info/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Amy Thomas Howorth",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Joe Franklin",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Nina Trieu Tarnay",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Steve S. Charelian",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "maywood_city_council",
+      "name": "City of Maywood",
+      "place_geoid": "0646492",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:maywood",
+      "url": "https://www.cityofmaywood.com/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Mayra Aguiluz",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Eddie De La",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Jaime Flores",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Frank Garcia",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "monrovia_city_council",
+      "name": "City of Monrovia",
+      "place_geoid": "0648648",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:monrovia",
+      "url": "https://www.cityofmonrovia.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Becky A. Shevlin",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Larry J. Spicer",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Sergio Jimenez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Edward Belden",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "montebello_city_council",
+      "name": "City of Montebello",
+      "place_geoid": "0648816",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:montebello",
+      "url": "https://www.ci.montebello.ca.us/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Scarlet Peralta",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Scarlet Peralta",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Georgina Tamayo",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Salvador Melendez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "David Torres",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Angie Jimenez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "monterey_park_city_council",
+      "name": "City of Monterey Park",
+      "place_geoid": "0648914",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:monterey_park",
+      "url": "https://www.montereypark.ca.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Vinh Ngo",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Henry Lo",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Jose Sanchez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Thomas Wong",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "norwalk_city_council",
+      "name": "City of Norwalk",
+      "place_geoid": "0652526",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:norwalk",
+      "url": "https://www.norwalkca.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Tony Ayala",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Rick Ramirez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Margarita L. Rios",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Ana Valencia",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "palmdale_city_council",
+      "name": "City of Palmdale",
+      "place_geoid": "0655156",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:palmdale",
+      "url": "https://www.cityofpalmdale.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Richard J. Loa",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Austin Bishop",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Eric Ohlsen",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Andrea Alarcon",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "palos_verdes_estates_city_council",
+      "name": "City of Palos Verdes Estates",
+      "place_geoid": "0655380",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:palos_verdes_estates",
+      "url": "https://www.pvestates.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Jim Roos",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Jim Roos",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "David McGowan",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Michael Kemps",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Dawn Murdock",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "paramount_city_council",
+      "name": "City of Paramount",
+      "place_geoid": "0655618",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:paramount",
+      "url": "https://www.paramountcity.com/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Peggy Lemons",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Isabel Aguayo",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Annette C. Delgadillo",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Vilma Cuellar Stallings",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "pasadena_city_council",
+      "name": "City of Pasadena",
+      "place_geoid": "0656000",
+      "election_type": "district",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:pasadena",
+      "url": "https://www.cityofpasadena.net/council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Victor M. Gordo",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Tyron Hampton",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Rick Cole",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Justin Jones",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Steve Madison",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Jason Lyon",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ],
+      "ocd_id_template": "ocd-division/country:us/state:ca/place:pasadena/council_district:{n}",
+      "num_districts": 7
+    },
+    {
+      "id": "pico_rivera_city_council",
+      "name": "City of Pico Rivera",
+      "place_geoid": "0656924",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:pico_rivera",
+      "url": "https://www.pico-rivera.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "John R. Garcia",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Andrew C. Lara",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Erik Lutz",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Dr. Monica Sanchez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "pomona_city_council",
+      "name": "City of Pomona",
+      "place_geoid": "0658072",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:pomona",
+      "url": "https://www.ci.pomona.ca.us/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Tim Sandoval",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Debra Martin",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Victor Preciado",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Nora Garcia",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Lorraine Canales",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Steve Lustro",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "rancho_palos_verdes_city_council",
+      "name": "City of Rancho Palos Verdes",
+      "place_geoid": "0659514",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:rancho_palos_verdes",
+      "url": "https://www.rpvca.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "David L. Bradley",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Barbara Ferraro",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Stephen Perestam",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "George Lewis",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "redondo_beach_city_council",
+      "name": "City of Redondo Beach",
+      "place_geoid": "0660018",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:redondo_beach",
+      "url": "https://www.redondo.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "James A Light",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Brad Waller",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Chadwick Castle",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Paige Kaluderovic",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Zein Obagi",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Scott Behrendt",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "rolling_hills_city_council",
+      "name": "City of Rolling Hills",
+      "place_geoid": "0662602",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:rolling_hills",
+      "url": "https://www.rolling-hills.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Jeff Pieper",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Leah Mirsch",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Pat Wilson",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "James Black M.D",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "rolling_hills_estates_city_council",
+      "name": "City of Rolling Hills Estates",
+      "place_geoid": "0662644",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:rolling_hills_estates",
+      "url": "https://www.rolling-hills-estates.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Debby Stegura",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Pam Brown Schachter",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Britt Huff",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Velveth Schmitz",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "rosemead_city_council",
+      "name": "City of Rosemead",
+      "place_geoid": "0662896",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:rosemead",
+      "url": "https://www.cityofrosemead.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Margaret Clark",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Sean Dang",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Polly Low",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Steven Ly",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "san_dimas_city_council",
+      "name": "City of San Dimas",
+      "place_geoid": "0666070",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:san_dimas",
+      "url": "https://www.cityofsandimas.com/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Emmett G. Badar",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Rachel Bratakos",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Ryan A. Vienna",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Eric Weber",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "san_fernando_city_council",
+      "name": "City of San Fernando",
+      "place_geoid": "0666140",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:san_fernando",
+      "url": "https://www.ci.san-fernando.ca.us/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Mary Mendoza",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Joel Fajardo",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Victoria Garcia",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Patty Lopez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "san_gabriel_city_council",
+      "name": "City of San Gabriel",
+      "place_geoid": "0667042",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:san_gabriel",
+      "url": "https://www.sangabrielcity.com/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Denise Menchaca",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Eric Chan",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Tony Ding",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Jorge Herrera Avila",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "san_marino_city_council",
+      "name": "City of San Marino",
+      "place_geoid": "0668224",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:san_marino",
+      "url": "https://www.cityofsanmarino.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Gretchen Shepherd Romey",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Hunter Chang",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "John Chou",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Calvin Lo",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "santa_clarita_city_council",
+      "name": "City of Santa Clarita",
+      "place_geoid": "0669088",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:santa_clarita",
+      "url": "https://www.santa-clarita.com/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Bill Miranda",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Patsy Ayala",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Jason Gibbs",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Marsha McLean",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "santa_fe_springs_city_council",
+      "name": "City of Santa Fe Springs",
+      "place_geoid": "0669154",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:santa_fe_springs",
+      "url": "https://www.santafesprings.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "William K. Rounds",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Annette Rodriguez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Juanita Martin",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "John M. Mora",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "santa_monica_city_council",
+      "name": "City of Santa Monica",
+      "place_geoid": "0670000",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:santa_monica",
+      "url": "https://www.santamonica.gov/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Lana Negrete",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Phil Brock",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Lana Negrete",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Oscar de la Torre",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Christine Parra",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Caroline Torosis",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Jesse Zwick",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "sierra_madre_city_council",
+      "name": "City of Sierra Madre",
+      "place_geoid": "0671806",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:sierra_madre",
+      "url": "https://www.cityofsicrramadre.com/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Robert Parkhurst",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Edward T. Garcia",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Gene Goss",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Kelly Kriebs",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "signal_hill_city_council",
+      "name": "City of Signal Hill",
+      "place_geoid": "0671876",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:signal_hill",
+      "url": "https://www.cityofsignalhill.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Keir Jones",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Robert Copeland",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Charlie Honeycutt",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Lori Woods",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "south_el_monte_city_council",
+      "name": "City of South El Monte",
+      "place_geoid": "0672996",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:south_el_monte",
+      "url": "https://www.soelmonte.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Gloria Olmos",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Manuel Acosta",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Rudy Bojorquez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Larry Rodriguez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "south_gate_city_council",
+      "name": "City of South Gate",
+      "place_geoid": "0673080",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:south_gate",
+      "url": "https://www.cityofsouthgate.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Maria Davila",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Gil Hurtado",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Al Rios",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Maria del Pilar Avalos",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "south_pasadena_city_council",
+      "name": "City of South Pasadena",
+      "place_geoid": "0673220",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:south_pasadena",
+      "url": "https://www.southpasadenaca.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Janet Braun (District 5)",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Omari Ferguson",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Michael A. Cacciotti",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "temple_city_city_council",
+      "name": "City of Temple City",
+      "place_geoid": "0678148",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:temple_city",
+      "url": "https://www.templecity.us/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Cynthia Sternquist",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Tom Chavez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Ed Chen",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Vincent Yu",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "torrance_city_council",
+      "name": "City of Torrance",
+      "place_geoid": "0680000",
+      "election_type": "district",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:torrance",
+      "url": "https://www.torranceca.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "George Chen",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Jon Kaji",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Brigitte Lewis",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Asam Sheikh",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Aurelio Mattucci",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Jeremy Gerson",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ],
+      "ocd_id_template": "ocd-division/country:us/state:ca/place:torrance/council_district:{n}",
+      "num_districts": 6
+    },
+    {
+      "id": "vernon_city_council",
+      "name": "City of Vernon",
+      "place_geoid": "0682422",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:vernon",
+      "url": "https://www.cityofvernon.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Leticia Lopez",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Jesus Rivera",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Crystal Larios",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Judith Merlo",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "walnut_city_council",
+      "name": "City of Walnut",
+      "place_geoid": "0683332",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:walnut",
+      "url": "https://www.walnut-ca.gov/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Linda Freedman",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Kaylee May Law",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Nancy Tragarz",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Allen Wu",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "west_covina_city_council",
+      "name": "City of West Covina",
+      "place_geoid": "0684200",
+      "election_type": "district",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:west_covina",
+      "url": "https://www.westcovina.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Tony Wu",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Ollie Cantos",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Rosario Diaz",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Brian Gutierrez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ],
+      "ocd_id_template": "ocd-division/country:us/state:ca/place:west_covina/council_district:{n}",
+      "num_districts": 5
+    },
+    {
+      "id": "west_hollywood_city_council",
+      "name": "City of West Hollywood",
+      "place_geoid": "0684410",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:west_hollywood",
+      "url": "https://www.weho.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Chelsea Lee Byers",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "John M. Erickson",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Danny Hang",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Lauren Meister",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "westlake_village_city_council",
+      "name": "City of Westlake Village",
+      "place_geoid": "0684438",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:westlake_village",
+      "url": "https://www.wlv.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Kelly Honig",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Brad Halpern",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Ray Pearl",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Ned E Davis",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    },
+    {
+      "id": "whittier_city_council",
+      "name": "City of Whittier",
+      "place_geoid": "0685292",
+      "election_type": "at-large",
+      "district_type": "LOCAL",
+      "title": "Council Member",
+      "mayor_title": "Mayor",
+      "state": "CA",
+      "expected_council_count": null,
+      "has_mayor": true,
+      "ocd_id_base": "ocd-division/country:us/state:ca/place:whittier",
+      "url": "https://www.cityofwhittier.org/government/city-council",
+      "status": "pending",
+      "failure_reason": null,
+      "roster": [
+        {
+          "name": "Joe Vinatieri",
+          "district": 0,
+          "party": "",
+          "role": "Mayor"
+        },
+        {
+          "name": "Octavio Martinez",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Fernando Dutra",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        },
+        {
+          "name": "Mary Ann Pacheco",
+          "district": 0,
+          "party": "",
+          "role": "Council Member"
+        }
+      ]
+    }
+  ]
+}
