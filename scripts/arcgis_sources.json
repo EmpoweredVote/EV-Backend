@@ -31,75 +31,61 @@
       "place_geoid": "0643000",
       "election_type": "district",
       "districts": 9,
-      "source_url": "TBD",
-      "district_field": "TBD",
+      "source_url": "https://services6.arcgis.com/yCArG7wGXGyWLqav/arcgis/rest/services/City_of_Long_Beach_Council_Districts/FeatureServer/0/query?where=1%3D1&outFields=COUNCIL_NUMBER%2CPOPULATION%2CREPRESENTATIVE&f=geojson&outSR=4326",
+      "district_field": "COUNCIL_NUMBER",
       "mtfcc": "X0001",
       "geo_id_template": "ocd-division/country:us/state:ca/place:long_beach/council_district:{n}",
       "name_template": "Long Beach City Council District {n}",
       "source_label": "long_beach_arcgis_council_districts",
       "state": "06",
       "quality_flag": null,
-      "notes": "ArcGIS Hub at hub.arcgis.com/datasets/c21dc4adc0d344c49a3298e3bc4adeb3 — REST FeatureServer URL needs resolution"
+      "notes": "Verified 2026-02-24: 9 districts, COUNCIL_NUMBER field (integer 1-9). ArcGIS item c21dc4adc0d344c49a3298e3bc4adeb3."
     },
     {
       "city": "Pasadena",
       "place_geoid": "0656000",
       "election_type": "district",
       "districts": 7,
-      "source_url": "TBD",
-      "district_field": "TBD",
+      "source_url": "https://services2.arcgis.com/zNjnZafDYCAJAbN0/arcgis/rest/services/City_Council_Districts_view/FeatureServer/0/query?where=1%3D1&outFields=DISTRICT%2CDISTRICT_NAME&f=geojson&outSR=4326",
+      "district_field": "DISTRICT",
       "mtfcc": "X0001",
       "geo_id_template": "ocd-division/country:us/state:ca/place:pasadena/council_district:{n}",
       "name_template": "Pasadena City Council District {n}",
       "source_label": "pasadena_arcgis_council_districts",
       "state": "06",
       "quality_flag": null,
-      "notes": "District-based since 2018 — GIS portal URL TBD"
+      "notes": "Verified 2026-02-24: 7 districts, DISTRICT field (integer 1-7). Owner: CityOfPasadenaCAGIS."
     },
     {
       "city": "Torrance",
       "place_geoid": "0680000",
       "election_type": "district",
       "districts": 6,
-      "source_url": "TBD",
-      "district_field": "TBD",
+      "source_url": "https://services1.arcgis.com/38fAqAZVRCrVtPUU/arcgis/rest/services/City_Council_Districts/FeatureServer/0/query?where=1%3D1&outFields=FID%2CDISTRICTID%2CName&f=geojson&outSR=4326",
+      "district_field": "DISTRICTID",
+      "district_field_format": "District {n}",
       "mtfcc": "X0001",
       "geo_id_template": "ocd-division/country:us/state:ca/place:torrance/council_district:{n}",
       "name_template": "Torrance City Council District {n}",
       "source_label": "torrance_arcgis_council_districts",
       "state": "06",
       "quality_flag": null,
-      "notes": "Districts phased in 2020-2022 — open-data-torranceca.hub.arcgis.com portal, REST URL TBD"
+      "notes": "Verified 2026-02-24: 6 districts, DISTRICTID field is 'District N' string (e.g., 'District 6'). Owner: TorranceCA_GIS."
     },
     {
       "city": "Inglewood",
       "place_geoid": "0636546",
       "election_type": "district",
       "districts": 4,
-      "source_url": "TBD",
-      "district_field": "TBD",
+      "source_url": "https://services.arcgis.com/YkFgoL8JnWkLrVRi/arcgis/rest/services/CityofInglewoodCDAreas_Aug2025/FeatureServer/0/query?where=1%3D1&outFields=CD%2CELCTOFF&f=geojson&outSR=4326",
+      "district_field": "CD",
       "mtfcc": "X0001",
       "geo_id_template": "ocd-division/country:us/state:ca/place:inglewood/council_district:{n}",
       "name_template": "Inglewood City Council District {n}",
-      "source_label": "inglewood_arcgis_council_districts",
+      "source_label": "inglewood_arcgis_council_districts_2025",
       "state": "06",
       "quality_flag": null,
-      "notes": "4-district council — REST URL TBD"
-    },
-    {
-      "city": "Downey",
-      "place_geoid": "0619766",
-      "election_type": "district",
-      "districts": 5,
-      "source_url": "TBD",
-      "district_field": "TBD",
-      "mtfcc": "X0001",
-      "geo_id_template": "ocd-division/country:us/state:ca/place:downey/council_district:{n}",
-      "name_template": "Downey City Council District {n}",
-      "source_label": "downey_arcgis_council_districts",
-      "state": "06",
-      "quality_flag": null,
-      "notes": "District-based elections — REST URL TBD"
+      "notes": "Verified 2026-02-24: 4 districts (CD 1-4), service has 5 features (CD=2 appears twice with different areas — smaller polygon ~1.1M m2 is likely a geographic fragment; larger polygon ~42M m2 is the district boundary). Import will dissolve duplicate CD values using unary_union. Owner: elsa79."
     },
     {
       "city": "Glendale",
@@ -120,32 +106,69 @@
       "city": "West Covina",
       "place_geoid": "0685292",
       "election_type": "district",
-      "districts": null,
-      "source_url": "TBD",
-      "district_field": "TBD",
+      "districts": 5,
+      "source_url": "https://services8.arcgis.com/WV8ogNubjFL2BKPt/arcgis/rest/services/Council_Districts/FeatureServer/2/query?where=1%3D1&outFields=OBJECTID%2CDISTRICT%2CMemberName&f=geojson&outSR=4326",
+      "district_field": "DISTRICT",
+      "district_field_format": "District {n}",
       "mtfcc": "X0001",
       "geo_id_template": "ocd-division/country:us/state:ca/place:west_covina/council_district:{n}",
       "name_template": "West Covina City Council District {n}",
       "source_label": "west_covina_arcgis_council_districts",
       "state": "06",
       "quality_flag": null,
-      "notes": "Has district records in DB — REST URL TBD"
+      "notes": "Verified 2026-02-24: 5 districts, DISTRICT field is 'District N' string (e.g., 'District 1'). Owner: TVictoria_westcovina. Layer ID is 2 (not 0)."
     },
     {
       "city": "Santa Clarita",
       "place_geoid": "0669088",
       "election_type": "district",
       "districts": null,
-      "source_url": "TBD",
-      "district_field": "TBD",
+      "source_url": null,
+      "district_field": null,
       "mtfcc": "X0001",
       "geo_id_template": "ocd-division/country:us/state:ca/place:santa_clarita/council_district:{n}",
       "name_template": "Santa Clarita City Council District {n}",
       "source_label": "santa_clarita_arcgis_council_districts",
       "state": "06",
       "quality_flag": null,
-      "notes": "Has district records in DB — REST URL TBD"
+      "notes": "GAP: No ArcGIS FeatureServer URL found after investigation (2026-02-24). City does not appear to publish district boundaries on ArcGIS Online. DB has districts 1 and 3."
     }
   ],
-  "gaps": []
+  "gaps": [
+    {
+      "city": "Santa Clarita",
+      "place_geoid": "0669088",
+      "reason": "No ArcGIS boundary published",
+      "db_districts": ["ocd-division/country:us/state:ca/place:santa_clarita/council_district:1", "ocd-division/country:us/state:ca/place:santa_clarita/council_district:3"],
+      "investigation_notes": "Searched ArcGIS Online, no city-owned council district FeatureService found. City has 5 council districts elected by district per CVRA consent decree."
+    },
+    {
+      "city": "Downey",
+      "place_geoid": "0619766",
+      "reason": "No ArcGIS boundary published",
+      "db_districts": ["ocd-division/country:us/state:ca/place:downey/council_district:2", "ocd-division/country:us/state:ca/place:downey/council_district:3", "ocd-division/country:us/state:ca/place:downey/council_district:4"],
+      "investigation_notes": "Searched ArcGIS Online, no official City of Downey council district FeatureService found. One result (lacounty owner) returned 400 errors."
+    },
+    {
+      "city": "El Monte",
+      "place_geoid": "0623042",
+      "reason": "No ArcGIS boundary published",
+      "db_districts": ["ocd-division/country:us/state:ca/place:elmonte/council_district:3", "ocd-division/country:us/state:ca/place:elmonte/council_district:/4"],
+      "investigation_notes": "Searched ArcGIS Online, no council district FeatureService found. Note: DB has malformed OCD-ID 'elmonte/council_district:/4' (extra slash)."
+    },
+    {
+      "city": "Palmdale",
+      "place_geoid": "0655156",
+      "reason": "No ArcGIS boundary published",
+      "db_districts": ["ocd-division/country:us/state:ca/place:palmdale/council_district:2", "ocd-division/country:us/state:ca/place:palmdale/council_district:4", "ocd-division/country:us/state:ca/place:palmdale/council_district:5"],
+      "investigation_notes": "Searched ArcGIS Online, no council district FeatureService found."
+    },
+    {
+      "city": "Pomona",
+      "place_geoid": "0658072",
+      "reason": "No ArcGIS boundary published",
+      "db_districts": ["ocd-division/country:us/state:ca/place:pomona/council_district:1", "ocd-division/country:us/state:ca/place:pomona/council_district:2", "ocd-division/country:us/state:ca/place:pomona/council_district:6"],
+      "investigation_notes": "Searched ArcGIS Online, no council district FeatureService found."
+    }
+  ]
 }
