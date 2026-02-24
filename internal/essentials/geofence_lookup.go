@@ -26,8 +26,11 @@ var mtfccToDistrictTypes = map[string][]string{
 	"G4020": {"COUNTY", "JUDICIAL"},          // County — also used for county-level judicial
 	"G4040": {"LOCAL", "LOCAL_EXEC"},         // County Subdivision (township)
 	"G4110": {"LOCAL", "LOCAL_EXEC"},         // Incorporated Place (city/town)
+	"G4120": {"LOCAL", "LOCAL_EXEC"},         // Consolidated City (e.g. Nashville-Davidson)
+	"G5400": {"SCHOOL"},                      // Elementary School District
+	"G5410": {"SCHOOL"},                      // Secondary School District
 	"G5420": {"SCHOOL"},                      // Unified School District
-	"X0001": {"LOCAL"},                        // City council sub-districts (BallotReady custom MTFCC)
+	"X0001": {"LOCAL"},                       // City council sub-districts (BallotReady custom MTFCC)
 }
 
 // FindGeoIDsByPoint performs a PostGIS point-in-polygon query to find all
@@ -37,7 +40,7 @@ func FindGeoIDsByPoint(ctx context.Context, lat, lng float64) ([]GeoMatch, error
 	query := `
 		SELECT geo_id, COALESCE(mtfcc, '') as mtfcc
 		FROM essentials.geofence_boundaries
-		WHERE ST_Contains(
+		WHERE ST_Covers(
 			geometry,
 			ST_SetSRID(ST_MakePoint($1, $2), 4326)
 		)
