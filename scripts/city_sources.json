@@ -13,34 +13,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:agoura_hills",
       "url": "https://www.agourahillscity.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Penny Sylvester",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Kate Anderson",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Chris Anstead",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Deborah Klein Lopez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:22:50.778011"
     },
     {
       "id": "alhambra_city_council",
@@ -55,34 +60,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:alhambra",
       "url": "https://www.cityofalhambra.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Katherine Lee",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Adele Andrade-Stadler",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Ross J. Maza",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Noya Wang",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:22:51.475803"
     },
     {
       "id": "arcadia_city_council",
@@ -97,34 +107,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:arcadia",
       "url": "https://www.arcadiaca.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Dr. Michael Cao",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Paul Cheng",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "David Fu",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Eileen Wang",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:22:52.168815"
     },
     {
       "id": "artesia_city_council",
@@ -139,46 +154,53 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:artesia",
       "url": "https://www.cityofartesia.us/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Ali Taj",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Ali Taj",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Rene Trevino",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Monica Manalo",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Zeel Ahir",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Melissa Ramoso",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:22:53.142463"
     },
     {
       "id": "avalon_city_council",
@@ -193,34 +215,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:avalon",
       "url": "https://www.cityofavalon.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Ann Marshall",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Michael Ponce",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Yesenia De La",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Mary Schickling",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:22:53.839474"
     },
     {
       "id": "azusa_city_council",
@@ -235,34 +262,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:azusa",
       "url": "https://www.ci.azusa.ca.us/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Robert Gonzales",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jesse Avila Jr",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Andrew N. Mendez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Sabrina Bow",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:22:54.537828"
     },
     {
       "id": "baldwin_park_city_council",
@@ -277,34 +309,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:baldwin_park",
       "url": "https://www.baldwinpark.com/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Alejandra Avila",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jean M. Ayala",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Emmanuel J. Estrada",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Manuel Lozano",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:22:55.238826"
     },
     {
       "id": "bell_city_council",
@@ -319,34 +356,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:bell",
       "url": "https://www.cityofbell.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Ali Saleh",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Alicia Romero",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Francis Flores",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Ana Maria Quintana",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:22:55.936046"
     },
     {
       "id": "bell_gardens_city_council",
@@ -361,40 +403,46 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:bell_gardens",
       "url": "https://www.cityofbellgardens.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Miguel De La Rosa",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Marco Barcena",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jorgel Chavez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Francis De",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Leon Sanchez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:22:56.778429"
     },
     {
       "id": "bellflower_city_council",
@@ -409,34 +457,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:bellflower",
       "url": "https://www.bellflower.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Ray Dunton",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Dan Koops",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Wendi Morse",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Victor A. Sanchez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:22:57.482344"
     },
     {
       "id": "beverly_hills_city_council",
@@ -451,34 +504,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:beverly_hills",
       "url": "https://www.beverlyhills.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Lester Friedman",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "John A. Mirisch",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Craig A. Corman",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Mary N. Wells",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:22:58.186635"
     },
     {
       "id": "bradbury_city_council",
@@ -493,34 +551,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:bradbury",
       "url": "https://www.ci.bradbury.ca.us",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Richard T. Hale",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Richard G. Barakat",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Bruce Lathrop",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Melodie Szymkowski",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:22:58.887897"
     },
     {
       "id": "burbank_city_council",
@@ -535,28 +598,32 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:burbank",
       "url": "https://www.burbankca.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Nikki Perez",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Konstantine Anthony",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Zizette Mullins",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:22:59.443764"
     },
     {
       "id": "calabasas_city_council",
@@ -571,34 +638,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:calabasas",
       "url": "https://www.cityofcalabasas.com/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "James R. Bozajian",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "David J. Shapiro",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Peter Kraut",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Alicia Weintraub",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:00.138601"
     },
     {
       "id": "carson_city_council",
@@ -613,22 +685,25 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:carson",
       "url": "https://www.carson.ca.us/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Lula Davis Holmes",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Mayor Lula Davis Holmes",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:00.560623"
     },
     {
       "id": "cerritos_city_council",
@@ -643,34 +718,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:cerritos",
       "url": "https://www.cerritos.us/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Frank Aurelio Yokoyama",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jennifer Hong",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Mark E. Pulido",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Sophia M. Tse",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:01.258319"
     },
     {
       "id": "claremont_city_council",
@@ -685,34 +765,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:claremont",
       "url": "https://www.ci.claremont.ca.us/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Corey Calaycay",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jed Leano",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Sal Medina",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Ed Reece",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:01.958137"
     },
     {
       "id": "commerce_city_council",
@@ -727,34 +812,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:commerce",
       "url": "https://www.ci.commerce.ca.us/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Ivan Altamirano",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Hugo Argumedo",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Mireya Garcia",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Oralia Rebollo",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:02.656683"
     },
     {
       "id": "compton_city_council",
@@ -769,46 +859,53 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:compton",
       "url": "https://www.comptoncity.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Emma Sharif",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Emma Sharif -",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Deidre Duhart -",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Andre Spicer -",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jonathan Bowers -",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Lillie Darden -",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:03.500672"
     },
     {
       "id": "covina_city_council",
@@ -823,40 +920,46 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:covina",
       "url": "https://www.covinaca.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Patricia Cortez",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Patricia Cortez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Victor Linares",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "John King",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Walter Allen III",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:04.382840"
     },
     {
       "id": "cudahy_city_council",
@@ -871,34 +974,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:cudahy",
       "url": "https://www.cityofcudahy.com/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Elizabeth Alcantar Loza",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Daisy Lomel\u00ed",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Martin U. Fuentes",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Amanda Gomez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:05.195821"
     },
     {
       "id": "culver_city_city_council",
@@ -913,28 +1021,32 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:culver_city",
       "url": "https://www.culvercity.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Dan O'Brien",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Bryan \"Bubba\" Fish",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Yasmine-Imani McMorrin",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:05.775235"
     },
     {
       "id": "diamond_bar_city_council",
@@ -949,34 +1061,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:diamond_bar",
       "url": "https://www.diamondbarca.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Chia Yu Teng",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Andrew Chou",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Stan Liu",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Ruth M. Low",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:06.534794"
     },
     {
       "id": "downey_city_council",
@@ -991,52 +1108,60 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:downey",
       "url": "https://www.downeyca.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Hector Sosa",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Horacio Ortiz -",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Hector Sosa -",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Dorothy Pemberton -",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Claudia M",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Frometa -",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Mario Trujillo -",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:07.506880"
     },
     {
       "id": "duarte_city_council",
@@ -1051,16 +1176,18 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:duarte",
       "url": "https://www.accessduarte.com/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Cesar A. Garcia",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:07.750294"
     },
     {
       "id": "el_monte_city_council",
@@ -1075,46 +1202,53 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:el_monte",
       "url": "https://www.ci.el-monte.ca.us/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Jessica Ancona",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Sheila Crippen-Thomas",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Cindy Galvan",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Martin Herrera",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Viviana Longoria",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Dr. Julia Ruedas",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:08.731558"
     },
     {
       "id": "el_segundo_city_council",
@@ -1129,34 +1263,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:el_segundo",
       "url": "https://www.elsegundo.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Chris Pimentel",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Drew Boyles",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Lance Giroux",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Michelle Keldorf",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:09.427638"
     },
     {
       "id": "gardena_city_council",
@@ -1171,34 +1310,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:gardena",
       "url": "https://www.cityofgardena.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Tasha Cerda",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Mark Henderson",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Paulette Francis",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Wanda Love",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:10.126050"
     },
     {
       "id": "glendale_city_council",
@@ -1213,48 +1357,55 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:glendale",
       "url": "https://www.glendaleca.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Elen Asatryan",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Elen Asatryan",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Ardy Kassakhian",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Ara Najarian",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Dan Brotman",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Vartan Gharpetian",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
       "ocd_id_template": "ocd-division/country:us/state:ca/place:glendale/council_district:{n}",
-      "num_districts": 5
+      "num_districts": 5,
+      "last_scraped": "2026-02-24T14:23:11.252713"
     },
     {
       "id": "glendora_city_council",
@@ -1269,46 +1420,53 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:glendora",
       "url": "https://www.glendoracityhall.com/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "David Fredendall",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Michael Allawos",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Dristict 2 - David",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Shaunna Elias",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Karen Davis",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Mendell Thompson",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:12.208077"
     },
     {
       "id": "hawaiian_gardens_city_council",
@@ -1323,34 +1481,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:hawaiian_gardens",
       "url": "https://www.hgcity.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Dandy De Paula",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Victor Farfan",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Luis Roa",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Ernie Vargas",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:12.913201"
     },
     {
       "id": "hawthorne_city_council",
@@ -1365,40 +1528,46 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:hawthorne",
       "url": "https://www.cityofhawthorne.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Alex Vargas",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Alex Vargas",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Haidar Awad",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Angie Reyes English",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "David Patterson",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:13.757373"
     },
     {
       "id": "hermosa_beach_city_council",
@@ -1413,46 +1582,53 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:hermosa_beach",
       "url": "https://www.hermosabeach.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Dean Francois",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Dean Francois",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Rob Saemann",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Michael Detoy",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Raymond Jackson",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Michael Keegan",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:14.733578"
     },
     {
       "id": "hidden_hills_city_council",
@@ -1467,28 +1643,32 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:hidden_hills",
       "url": "https://www.hiddenhillscity.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Larry G. Weber",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Eniko Gold",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Laura McCorkindale and Adam",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:15.304178"
     },
     {
       "id": "huntington_park_city_council",
@@ -1503,16 +1683,18 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:huntington_park",
       "url": "https://www.hpca.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Arturo Flores",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:15.550761"
     },
     {
       "id": "industry_city_council",
@@ -1527,40 +1709,45 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:industry",
       "url": "https://www.cityofindustry.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Cory Moss",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Mark Radecki",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Newell Ruggles",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Steve Marcucci",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:16.248692"
     },
     {
       "id": "inglewood_city_council",
       "name": "City of Inglewood",
       "place_geoid": "0636546",
-      "election_type": "district",
+      "election_type": "at-large",
       "district_type": "LOCAL",
       "title": "Council Member",
       "mayor_title": "Mayor",
@@ -1569,48 +1756,46 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:inglewood",
       "url": "https://www.cityofinglewood.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "James T. Butts Jr.",
           "district": 0,
           "party": "",
-          "role": "Mayor"
-        },
-        {
-          "name": "James T. Butts Jr.",
-          "district": 0,
-          "party": "",
-          "role": "Council Member"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Eloy Morales Jr.",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "George Dotson",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Alex Padilla",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Dionne Faulk",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "ocd_id_template": "ocd-division/country:us/state:ca/place:inglewood/council_district:{n}",
-      "num_districts": 4
+      "last_scraped": "2026-02-24T14:23:16.915207"
     },
     {
       "id": "irwindale_city_council",
@@ -1625,34 +1810,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:irwindale",
       "url": "https://www.ci.irwindale.ca.us/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Larry G. Burrola",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Albert F. Ambriz",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Mark A. Breceda",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Manuel R. Garcia",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:17.616455"
     },
     {
       "id": "la_canada_flintridge_city_council",
@@ -1667,34 +1857,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:la_canada_flintridge",
       "url": "https://lcf.ca.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Michael T. Davitt",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Keith Eich",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Stephanie Fossan",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jeanne K. Hobson",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:18.321068"
     },
     {
       "id": "la_habra_heights_city_council",
@@ -1709,34 +1904,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:la_habra_heights",
       "url": "https://www.lahabraheights.com/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "John Pespisa",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Brian Bergman",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Greg Stefflre",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Norm Zezula",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:19.021109"
     },
     {
       "id": "la_mirada_city_council",
@@ -1751,28 +1951,32 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:la_mirada",
       "url": "https://www.cityoflamirada.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "John Lewis",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Michelle Velasquez Bean",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Steve De Ruse",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:19.581617"
     },
     {
       "id": "la_palma_city_council",
@@ -1787,34 +1991,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:la_palma",
       "url": "https://www.cityoflapalma.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Mark I. Waldman",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Debbie S. Baker",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Janet Keo Conklin",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Vikesh P. Patel",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:20.284703"
     },
     {
       "id": "la_puente_city_council",
@@ -1829,34 +2038,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:la_puente",
       "url": "https://www.lapuente.net/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Valerie Munoz",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "David E. Argudo",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Nadia Mendoza",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Gabriel Quinones",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:20.989110"
     },
     {
       "id": "la_verne_city_council",
@@ -1871,34 +2085,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:la_verne",
       "url": "https://www.laverneca.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Timothy Hepburn",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Wendy Lau",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Rick Crosby",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Meshal \"Kash\" Kashifalghita",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:21.692961"
     },
     {
       "id": "lakewood_city_council",
@@ -1913,34 +2132,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:lakewood",
       "url": "https://www.lakewoodcity.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Todd Rogers",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "David Arellano",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Steve Croft",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jeff Wood",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:22.394588"
     },
     {
       "id": "lancaster_city_council",
@@ -1955,34 +2179,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:lancaster",
       "url": "https://www.cityoflancasterca.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "R. Rex Parris",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Lauren Hughes-Leslie",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Raj Malhi",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Ken Mann",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:23.089598"
     },
     {
       "id": "lawndale_city_council",
@@ -1997,34 +2226,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:lawndale",
       "url": "https://www.lawndalecity.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Robert Pullen-Miles",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Sirley Cuevas",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Bernadette Suarez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Frank Talavera",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:23.789196"
     },
     {
       "id": "lomita_city_council",
@@ -2039,40 +2273,45 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:lomita",
       "url": "https://www.lomitacity.com/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Mark A. Waronek",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "James Gazeley",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Bill Uphoff",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Barry Waite",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:24.491686"
     },
     {
       "id": "long_beach_city_council",
       "name": "City of Long Beach",
       "place_geoid": "0643000",
-      "election_type": "district",
+      "election_type": "at-large",
       "district_type": "LOCAL",
       "title": "Council Member",
       "mayor_title": "Mayor",
@@ -2081,60 +2320,67 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:long_beach",
       "url": "https://www.longbeach.gov/council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Rex Richardson",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Mary Zendejas",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Cindy Allen",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Kristina Duggan",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Megan Kerr",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Suely Saro",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Roberto Uranga",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Joni Ricks-Oddie",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "ocd_id_template": "ocd-division/country:us/state:ca/place:long_beach/council_district:{n}",
-      "num_districts": 9
+      "last_scraped": "2026-02-24T14:23:25.475017"
     },
     {
       "id": "los_alamitos_city_council",
@@ -2149,34 +2395,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:los_alamitos",
       "url": "https://www.cityoflosalamitos.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Shelley Hasselbrink",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Emily Hibard",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Gary Loe",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jordan Nefulda",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:26.170691"
     },
     {
       "id": "lynwood_city_council",
@@ -2191,46 +2442,53 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:lynwood",
       "url": "https://www.lynwood.ca.us/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Rita Soto",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Rita Soto",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Gabriela Camacho",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Luis Gerardo Cuellar",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Juan Mu\u00f1oz-Guevara",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Lorraine Avila Moore",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:27.150217"
     },
     {
       "id": "malibu_city_council",
@@ -2245,34 +2503,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:malibu",
       "url": "https://www.malibucity.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Doug Stewart",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Haylynn Conrad",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Bruce Silverstein",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Steve Uhring",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:27.850969"
     },
     {
       "id": "manhattan_beach_city_council",
@@ -2287,34 +2550,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:manhattan_beach",
       "url": "https://www.citymb.info/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Amy Thomas Howorth",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Joe Franklin",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Nina Trieu Tarnay",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Steve S. Charelian",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:28.550230"
     },
     {
       "id": "maywood_city_council",
@@ -2329,34 +2597,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:maywood",
       "url": "https://www.cityofmaywood.com/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Mayra Aguiluz",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Eddie De La",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jaime Flores",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Frank Garcia",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:29.249417"
     },
     {
       "id": "monrovia_city_council",
@@ -2371,34 +2644,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:monrovia",
       "url": "https://www.cityofmonrovia.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Becky A. Shevlin",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Larry J. Spicer",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Sergio Jimenez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Edward Belden",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:29.946212"
     },
     {
       "id": "montebello_city_council",
@@ -2413,46 +2691,53 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:montebello",
       "url": "https://www.ci.montebello.ca.us/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Scarlet Peralta",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Scarlet Peralta",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Georgina Tamayo",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Salvador Melendez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "David Torres",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Angie Jimenez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:30.925041"
     },
     {
       "id": "monterey_park_city_council",
@@ -2467,34 +2752,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:monterey_park",
       "url": "https://www.montereypark.ca.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Vinh Ngo",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Henry Lo",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jose Sanchez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Thomas Wong",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:31.625027"
     },
     {
       "id": "norwalk_city_council",
@@ -2509,34 +2799,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:norwalk",
       "url": "https://www.norwalkca.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Tony Ayala",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Rick Ramirez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Margarita L. Rios",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Ana Valencia",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:32.328002"
     },
     {
       "id": "palmdale_city_council",
@@ -2551,34 +2846,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:palmdale",
       "url": "https://www.cityofpalmdale.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Richard J. Loa",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Austin Bishop",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Eric Ohlsen",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Andrea Alarcon",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:33.027529"
     },
     {
       "id": "palos_verdes_estates_city_council",
@@ -2593,40 +2893,46 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:palos_verdes_estates",
       "url": "https://www.pvestates.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Jim Roos",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jim Roos",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "David McGowan",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Michael Kemps",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Dawn Murdock",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:33.868035"
     },
     {
       "id": "paramount_city_council",
@@ -2641,40 +2947,45 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:paramount",
       "url": "https://www.paramountcity.com/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Peggy Lemons",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Isabel Aguayo",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Annette C. Delgadillo",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Vilma Cuellar Stallings",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:34.577234"
     },
     {
       "id": "pasadena_city_council",
       "name": "City of Pasadena",
       "place_geoid": "0656000",
-      "election_type": "district",
+      "election_type": "at-large",
       "district_type": "LOCAL",
       "title": "Council Member",
       "mayor_title": "Mayor",
@@ -2683,48 +2994,53 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:pasadena",
       "url": "https://www.cityofpasadena.net/council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Victor M. Gordo",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Tyron Hampton",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Rick Cole",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Justin Jones",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Steve Madison",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jason Lyon",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "ocd_id_template": "ocd-division/country:us/state:ca/place:pasadena/council_district:{n}",
-      "num_districts": 7
+      "last_scraped": "2026-02-24T14:23:35.355880"
     },
     {
       "id": "pico_rivera_city_council",
@@ -2739,34 +3055,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:pico_rivera",
       "url": "https://www.pico-rivera.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "John R. Garcia",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Andrew C. Lara",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Erik Lutz",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Dr. Monica Sanchez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:36.056824"
     },
     {
       "id": "pomona_city_council",
@@ -2781,46 +3102,53 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:pomona",
       "url": "https://www.ci.pomona.ca.us/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Tim Sandoval",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Debra Martin",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Victor Preciado",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Nora Garcia",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Lorraine Canales",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Steve Lustro",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:37.039736"
     },
     {
       "id": "rancho_palos_verdes_city_council",
@@ -2835,34 +3163,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:rancho_palos_verdes",
       "url": "https://www.rpvca.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "David L. Bradley",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Barbara Ferraro",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Stephen Perestam",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "George Lewis",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:37.742139"
     },
     {
       "id": "redondo_beach_city_council",
@@ -2877,46 +3210,53 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:redondo_beach",
       "url": "https://www.redondo.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "James A Light",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Brad Waller",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Chadwick Castle",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Paige Kaluderovic",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Zein Obagi",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Scott Behrendt",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:38.730400"
     },
     {
       "id": "rolling_hills_city_council",
@@ -2931,34 +3271,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:rolling_hills",
       "url": "https://www.rolling-hills.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Jeff Pieper",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Leah Mirsch",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Pat Wilson",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "James Black M.D",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:39.429395"
     },
     {
       "id": "rolling_hills_estates_city_council",
@@ -2973,34 +3318,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:rolling_hills_estates",
       "url": "https://www.rolling-hills-estates.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Debby Stegura",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Pam Brown Schachter",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Britt Huff",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Velveth Schmitz",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:40.127689"
     },
     {
       "id": "rosemead_city_council",
@@ -3015,34 +3365,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:rosemead",
       "url": "https://www.cityofrosemead.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Margaret Clark",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Sean Dang",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Polly Low",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Steven Ly",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:40.823861"
     },
     {
       "id": "san_dimas_city_council",
@@ -3057,34 +3412,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:san_dimas",
       "url": "https://www.cityofsandimas.com/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Emmett G. Badar",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Rachel Bratakos",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Ryan A. Vienna",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Eric Weber",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:41.520443"
     },
     {
       "id": "san_fernando_city_council",
@@ -3099,34 +3459,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:san_fernando",
       "url": "https://www.ci.san-fernando.ca.us/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Mary Mendoza",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Joel Fajardo",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Victoria Garcia",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Patty Lopez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:42.226131"
     },
     {
       "id": "san_gabriel_city_council",
@@ -3141,34 +3506,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:san_gabriel",
       "url": "https://www.sangabrielcity.com/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Denise Menchaca",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Eric Chan",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Tony Ding",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jorge Herrera Avila",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:42.924377"
     },
     {
       "id": "san_marino_city_council",
@@ -3183,34 +3553,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:san_marino",
       "url": "https://www.cityofsanmarino.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Gretchen Shepherd Romey",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Hunter Chang",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "John Chou",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Calvin Lo",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:43.623830"
     },
     {
       "id": "santa_clarita_city_council",
@@ -3225,34 +3600,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:santa_clarita",
       "url": "https://www.santa-clarita.com/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Bill Miranda",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Patsy Ayala",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jason Gibbs",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Marsha McLean",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:44.322126"
     },
     {
       "id": "santa_fe_springs_city_council",
@@ -3267,34 +3647,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:santa_fe_springs",
       "url": "https://www.santafesprings.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "William K. Rounds",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Annette Rodriguez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Juanita Martin",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "John M. Mora",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:45.026432"
     },
     {
       "id": "santa_monica_city_council",
@@ -3309,52 +3694,60 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:santa_monica",
       "url": "https://www.santamonica.gov/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Lana Negrete",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Phil Brock",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Lana Negrete",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Oscar de la Torre",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Christine Parra",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Caroline Torosis",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jesse Zwick",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:46.150087"
     },
     {
       "id": "sierra_madre_city_council",
@@ -3369,34 +3762,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:sierra_madre",
       "url": "https://www.cityofsicrramadre.com/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Robert Parkhurst",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Edward T. Garcia",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Gene Goss",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Kelly Kriebs",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:46.856183"
     },
     {
       "id": "signal_hill_city_council",
@@ -3411,34 +3809,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:signal_hill",
       "url": "https://www.cityofsignalhill.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Keir Jones",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Robert Copeland",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Charlie Honeycutt",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Lori Woods",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:47.555621"
     },
     {
       "id": "south_el_monte_city_council",
@@ -3453,34 +3856,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:south_el_monte",
       "url": "https://www.soelmonte.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Gloria Olmos",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Manuel Acosta",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Rudy Bojorquez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Larry Rodriguez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:48.260422"
     },
     {
       "id": "south_gate_city_council",
@@ -3495,34 +3903,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:south_gate",
       "url": "https://www.cityofsouthgate.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Maria Davila",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Gil Hurtado",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Al Rios",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Maria del Pilar Avalos",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:48.958582"
     },
     {
       "id": "south_pasadena_city_council",
@@ -3537,28 +3950,32 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:south_pasadena",
       "url": "https://www.southpasadenaca.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Janet Braun (District 5)",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Omari Ferguson",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Michael A. Cacciotti",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:49.518342"
     },
     {
       "id": "temple_city_city_council",
@@ -3573,40 +3990,45 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:temple_city",
       "url": "https://www.templecity.us/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Cynthia Sternquist",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Tom Chavez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Ed Chen",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Vincent Yu",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:50.218921"
     },
     {
       "id": "torrance_city_council",
       "name": "City of Torrance",
       "place_geoid": "0680000",
-      "election_type": "district",
+      "election_type": "at-large",
       "district_type": "LOCAL",
       "title": "Council Member",
       "mayor_title": "Mayor",
@@ -3615,48 +4037,53 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:torrance",
       "url": "https://www.torranceca.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "George Chen",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jon Kaji",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Brigitte Lewis",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Asam Sheikh",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Aurelio Mattucci",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jeremy Gerson",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "ocd_id_template": "ocd-division/country:us/state:ca/place:torrance/council_district:{n}",
-      "num_districts": 6
+      "last_scraped": "2026-02-24T14:23:50.995478"
     },
     {
       "id": "vernon_city_council",
@@ -3671,34 +4098,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:vernon",
       "url": "https://www.cityofvernon.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Leticia Lopez",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Jesus Rivera",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Crystal Larios",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Judith Merlo",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:51.695969"
     },
     {
       "id": "walnut_city_council",
@@ -3713,40 +4145,45 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:walnut",
       "url": "https://www.walnut-ca.gov/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Linda Freedman",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Kaylee May Law",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Nancy Tragarz",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Allen Wu",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:52.395030"
     },
     {
       "id": "west_covina_city_council",
       "name": "City of West Covina",
       "place_geoid": "0684200",
-      "election_type": "district",
+      "election_type": "at-large",
       "district_type": "LOCAL",
       "title": "Council Member",
       "mayor_title": "Mayor",
@@ -3755,36 +4192,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:west_covina",
       "url": "https://www.westcovina.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Tony Wu",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Ollie Cantos",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Rosario Diaz",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Brian Gutierrez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "ocd_id_template": "ocd-division/country:us/state:ca/place:west_covina/council_district:{n}",
-      "num_districts": 5
+      "last_scraped": "2026-02-24T14:23:52.959304"
     },
     {
       "id": "west_hollywood_city_council",
@@ -3799,34 +4239,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:west_hollywood",
       "url": "https://www.weho.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Chelsea Lee Byers",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "John M. Erickson",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Danny Hang",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Lauren Meister",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:53.663422"
     },
     {
       "id": "westlake_village_city_council",
@@ -3841,34 +4286,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:westlake_village",
       "url": "https://www.wlv.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Kelly Honig",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Brad Halpern",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Ray Pearl",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Ned E Davis",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:54.373409"
     },
     {
       "id": "whittier_city_council",
@@ -3883,34 +4333,39 @@
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:whittier",
       "url": "https://www.cityofwhittier.org/government/city-council",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "roster": [
         {
           "name": "Joe Vinatieri",
           "district": 0,
           "party": "",
-          "role": "Mayor"
+          "role": "Mayor",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Octavio Martinez",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Fernando Dutra",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         },
         {
           "name": "Mary Ann Pacheco",
           "district": 0,
           "party": "",
-          "role": "Council Member"
+          "role": "Council Member",
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
-      ]
+      ],
+      "last_scraped": "2026-02-24T14:23:55.072490"
     }
   ]
 }
