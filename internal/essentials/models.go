@@ -50,6 +50,8 @@ type Politician struct {
 	// Provenance / Syncing
 	Source     string    `json:"source"` // "cicero" or "ballotready"
 	LastSynced time.Time `json:"last_synced"`
+	IsActive   bool      `json:"is_active" gorm:"default:true"` // true = currently serving in their primary seat
+	DataSource string    `json:"data_source,omitempty"`         // e.g. "ballotready", "scraped", "manual"
 }
 
 type Office struct {
