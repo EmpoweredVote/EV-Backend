@@ -15,9 +15,10 @@
       "url": "https://www.abcusd.us/domain/44",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:abc_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:56:59.470052"
     },
     {
       "id": "acton_agua_dulce_unified",
@@ -30,9 +31,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:acton_agua_dulce_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:00.300492"
     },
     {
       "id": "alhambra_unified",
@@ -45,9 +47,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:alhambra_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:01.130245"
     },
     {
       "id": "antelope_valley",
@@ -60,9 +63,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:antelope_valley",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:01.959634"
     },
     {
       "id": "arcadia_unified",
@@ -75,9 +79,10 @@
       "url": "https://www.ausd.net/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:arcadia_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:02.788589"
     },
     {
       "id": "azusa_unified",
@@ -90,9 +95,10 @@
       "url": "https://www.azusausd.net/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:azusa_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:03.610943"
     },
     {
       "id": "baldwin_park_unified",
@@ -105,9 +111,10 @@
       "url": "https://www.bpusd.net/domain/44",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:baldwin_park_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:04.434392"
     },
     {
       "id": "bassett_unified",
@@ -120,9 +127,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:bassett_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:05.263847"
     },
     {
       "id": "bellflower_unified",
@@ -135,9 +143,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:bellflower_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:06.091829"
     },
     {
       "id": "beverly_hills_unified",
@@ -150,9 +159,10 @@
       "url": "https://www.bhusd.org/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:beverly_hills_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:06.856730"
     },
     {
       "id": "bonita_unified",
@@ -165,9 +175,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:bonita_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:07.691052"
     },
     {
       "id": "burbank_unified",
@@ -180,9 +191,10 @@
       "url": "https://www.burbankusd.org/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:burbank_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:08.529229"
     },
     {
       "id": "castaic",
@@ -195,9 +207,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:castaic",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:09.370579"
     },
     {
       "id": "centinela_valley",
@@ -210,9 +223,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:centinela_valley",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:10.169257"
     },
     {
       "id": "charter_oak_unified",
@@ -225,9 +239,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:charter_oak_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:11.004263"
     },
     {
       "id": "claremont_unified",
@@ -240,9 +255,10 @@
       "url": "https://www.claremont.edu/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:claremont_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:11.829376"
     },
     {
       "id": "compton_unified",
@@ -255,9 +271,10 @@
       "url": "https://www.compton.k12.ca.us/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:compton_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:12.592726"
     },
     {
       "id": "covina_valley_unified",
@@ -270,9 +287,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:covina_valley_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:13.415239"
     },
     {
       "id": "culver_unified",
@@ -285,9 +303,10 @@
       "url": "https://www.ccusd.org/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:culver_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:14.247874"
     },
     {
       "id": "downey_unified",
@@ -300,9 +319,10 @@
       "url": "https://www.dusd.net/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:downey_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:15.072094"
     },
     {
       "id": "duarte_unified",
@@ -315,9 +335,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:duarte_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:15.901957"
     },
     {
       "id": "east_whittier",
@@ -330,9 +351,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:east_whittier",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:16.732580"
     },
     {
       "id": "eastside",
@@ -345,12 +367,13 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:eastside",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:17.564804"
     },
     {
-      "id": "el_monte",
+      "id": "el_monte_city",
       "name": "El Monte City",
       "cd_code": "1964501",
       "fed_id": "0612090",
@@ -359,13 +382,14 @@
       "election_type": "at-large",
       "url": null,
       "expected_board_count": 5,
-      "ocd_id_base": "ocd-division/country:us/state:ca/school_district:el_monte",
-      "status": "pending",
+      "ocd_id_base": "ocd-division/country:us/state:ca/school_district:el_monte_city",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:18.388328"
     },
     {
-      "id": "el_monte",
+      "id": "el_monte_union_high",
       "name": "El Monte Union High",
       "cd_code": "1964519",
       "fed_id": "0612120",
@@ -374,10 +398,11 @@
       "election_type": "at-large",
       "url": null,
       "expected_board_count": 5,
-      "ocd_id_base": "ocd-division/country:us/state:ca/school_district:el_monte",
-      "status": "pending",
+      "ocd_id_base": "ocd-division/country:us/state:ca/school_district:el_monte_union_high",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:19.214729"
     },
     {
       "id": "el_rancho_unified",
@@ -390,9 +415,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:el_rancho_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:20.043252"
     },
     {
       "id": "el_segundo_unified",
@@ -405,9 +431,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:el_segundo_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:20.869524"
     },
     {
       "id": "garvey",
@@ -420,9 +447,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:garvey",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:21.696924"
     },
     {
       "id": "glendale_unified",
@@ -435,9 +463,10 @@
       "url": "https://www.gusd.net/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:glendale_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:22.453093"
     },
     {
       "id": "glendora_unified",
@@ -450,9 +479,10 @@
       "url": "https://www.gusd.k12.ca.us/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:glendora_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:23.246553"
     },
     {
       "id": "gorman_joint",
@@ -465,9 +495,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:gorman_joint",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:23.857909"
     },
     {
       "id": "hacienda_la_puente_unified",
@@ -480,9 +511,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:hacienda_la_puente_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:24.940197"
     },
     {
       "id": "hawthorne",
@@ -495,9 +527,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:hawthorne",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:25.732042"
     },
     {
       "id": "hermosa_beach",
@@ -510,9 +543,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:hermosa_beach",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:26.569901"
     },
     {
       "id": "hughes_elizabeth_lakes",
@@ -525,9 +559,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:hughes_elizabeth_lakes",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:27.183966"
     },
     {
       "id": "inglewood_unified",
@@ -540,9 +575,10 @@
       "url": "https://www.inglewood.k12.ca.us/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:inglewood_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:28.014302"
     },
     {
       "id": "keppel",
@@ -555,9 +591,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:keppel",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:28.839443"
     },
     {
       "id": "la_canada_unified",
@@ -570,9 +607,10 @@
       "url": "https://www.lcusd.net/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:la_canada_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:29.663104"
     },
     {
       "id": "lancaster",
@@ -585,9 +623,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:lancaster",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:30.490783"
     },
     {
       "id": "las_virgenes_unified",
@@ -600,9 +639,10 @@
       "url": "https://www.lvusd.org/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:las_virgenes_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:31.244274"
     },
     {
       "id": "lawndale",
@@ -615,9 +655,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:lawndale",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:32.068679"
     },
     {
       "id": "lennox",
@@ -630,9 +671,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:lennox",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:32.891064"
     },
     {
       "id": "little_lake",
@@ -645,9 +687,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:little_lake",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:33.717981"
     },
     {
       "id": "long_beach_unified",
@@ -660,9 +703,10 @@
       "url": "https://www.lbschools.net/district/board_of_education/",
       "expected_board_count": 7,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:long_beach_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:34.691080"
     },
     {
       "id": "los_angeles_unified",
@@ -675,11 +719,12 @@
       "url": "https://boe.lausd.net/",
       "expected_board_count": 7,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:los_angeles_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
       "has_geofence": true,
       "trustee_areas": 7,
-      "trustee_boundary_url": null
+      "trustee_boundary_url": null,
+      "last_scraped": "2026-02-24T14:57:35.734966"
     },
     {
       "id": "los_nietos",
@@ -692,9 +737,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:los_nietos",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:36.560501"
     },
     {
       "id": "lynwood_unified",
@@ -707,9 +753,10 @@
       "url": "https://www.lynwood.k12.ca.us/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:lynwood_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:37.351060"
     },
     {
       "id": "manhattan_beach_unified",
@@ -722,9 +769,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:manhattan_beach_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:38.195748"
     },
     {
       "id": "monrovia_unified",
@@ -737,9 +785,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:monrovia_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:39.023789"
     },
     {
       "id": "montebello_unified",
@@ -752,9 +801,10 @@
       "url": "https://www.montebello.k12.ca.us/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:montebello_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:40.065799"
     },
     {
       "id": "mountain_view",
@@ -767,9 +817,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:mountain_view",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:40.890311"
     },
     {
       "id": "newhall",
@@ -782,9 +833,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:newhall",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:41.719078"
     },
     {
       "id": "norwalk_la_mirada_unified",
@@ -797,9 +849,10 @@
       "url": "https://www.nlmusd.org/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:norwalk_la_mirada_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:42.475839"
     },
     {
       "id": "palmdale",
@@ -812,9 +865,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:palmdale",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:43.297532"
     },
     {
       "id": "palos_verdes_peninsula_unified",
@@ -827,9 +881,10 @@
       "url": "https://www.pvpusd.net/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:palos_verdes_peninsula_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:44.049695"
     },
     {
       "id": "paramount_unified",
@@ -842,9 +897,10 @@
       "url": "https://www.paramount.k12.ca.us/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:paramount_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:44.806510"
     },
     {
       "id": "pasadena_unified",
@@ -857,9 +913,10 @@
       "url": "https://www.pusd.us/domain/50",
       "expected_board_count": 7,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:pasadena_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:45.790235"
     },
     {
       "id": "pomona_unified",
@@ -872,9 +929,10 @@
       "url": "https://www.pomona.k12.ca.us/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:pomona_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:46.840490"
     },
     {
       "id": "redondo_beach_unified",
@@ -887,9 +945,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:redondo_beach_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:47.678450"
     },
     {
       "id": "rosemead",
@@ -902,9 +961,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:rosemead",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:48.502577"
     },
     {
       "id": "rowland_unified",
@@ -917,9 +977,10 @@
       "url": "https://www.rowlandschools.org/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:rowland_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:49.341416"
     },
     {
       "id": "san_gabriel_unified",
@@ -932,9 +993,10 @@
       "url": "https://www.sgpusd.net/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:san_gabriel_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:50.177961"
     },
     {
       "id": "san_marino_unified",
@@ -947,9 +1009,10 @@
       "url": "https://www.smmusd.org/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:san_marino_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:50.934985"
     },
     {
       "id": "santa_monica_malibu_unified",
@@ -962,9 +1025,10 @@
       "url": "https://www.smmusd.org/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:santa_monica_malibu_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:51.930103"
     },
     {
       "id": "saugus",
@@ -977,9 +1041,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:saugus",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:52.773397"
     },
     {
       "id": "south_pasadena_unified",
@@ -992,9 +1057,10 @@
       "url": "https://www.spusd.net/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:south_pasadena_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:53.617417"
     },
     {
       "id": "south_whittier",
@@ -1007,9 +1073,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:south_whittier",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:54.437091"
     },
     {
       "id": "sulphur_springs",
@@ -1022,9 +1089,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:sulphur_springs",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:55.280250"
     },
     {
       "id": "temple_unified",
@@ -1037,9 +1105,10 @@
       "url": "https://www.tcusd.org/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:temple_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:56.054816"
     },
     {
       "id": "torrance_unified",
@@ -1052,9 +1121,10 @@
       "url": "https://www.tusd.org/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:torrance_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:56.880568"
     },
     {
       "id": "valle_lindo",
@@ -1067,9 +1137,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:valle_lindo",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:57.713913"
     },
     {
       "id": "walnut_valley_unified",
@@ -1082,9 +1153,10 @@
       "url": "https://www.walnutvalleyunified.org/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:walnut_valley_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:58.540151"
     },
     {
       "id": "west_covina_unified",
@@ -1097,9 +1169,10 @@
       "url": "https://www.wcusd.org/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:west_covina_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:57:59.305988"
     },
     {
       "id": "westside",
@@ -1112,12 +1185,13 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:westside",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:58:00.135375"
     },
     {
-      "id": "whittier",
+      "id": "whittier_city",
       "name": "Whittier City",
       "cd_code": "1965110",
       "fed_id": "0642450",
@@ -1126,13 +1200,14 @@
       "election_type": "at-large",
       "url": null,
       "expected_board_count": 5,
-      "ocd_id_base": "ocd-division/country:us/state:ca/school_district:whittier",
-      "status": "pending",
+      "ocd_id_base": "ocd-division/country:us/state:ca/school_district:whittier_city",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:58:00.891381"
     },
     {
-      "id": "whittier",
+      "id": "whittier_union_high",
       "name": "Whittier Union High",
       "cd_code": "1965128",
       "fed_id": "0642480",
@@ -1141,10 +1216,11 @@
       "election_type": "at-large",
       "url": null,
       "expected_board_count": 5,
-      "ocd_id_base": "ocd-division/country:us/state:ca/school_district:whittier",
-      "status": "pending",
+      "ocd_id_base": "ocd-division/country:us/state:ca/school_district:whittier_union_high",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:58:01.718828"
     },
     {
       "id": "william_s_hart",
@@ -1157,9 +1233,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:william_s_hart",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:58:02.554877"
     },
     {
       "id": "wilsona",
@@ -1172,9 +1249,10 @@
       "url": null,
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:wilsona",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": false
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:58:03.172144"
     },
     {
       "id": "wiseburn_unified",
@@ -1187,9 +1265,10 @@
       "url": "https://www.wiseburnusd.org/domain/50",
       "expected_board_count": 5,
       "ocd_id_base": "ocd-division/country:us/state:ca/school_district:wiseburn_unified",
-      "status": "pending",
+      "status": "scraped",
       "failure_reason": null,
-      "has_geofence": true
+      "has_geofence": true,
+      "last_scraped": "2026-02-24T14:58:03.999587"
     }
   ]
 }
