@@ -46,7 +46,8 @@ import psycopg2.extras
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-from Levenshtein import distance as levenshtein_distance
+from rapidfuzz.distance import Levenshtein
+levenshtein_distance = Levenshtein.distance
 
 # Register UUID adapter (consistent with promote_scraped_officials.py)
 psycopg2.extras.register_uuid()
