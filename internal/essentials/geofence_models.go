@@ -8,7 +8,7 @@ import (
 // This enables point-in-polygon queries to determine which districts contain a given lat/lng.
 type GeofenceBoundary struct {
 	ID       uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
-	GeoID    string    `gorm:"size:50" json:"geo_id"` // Census GEOID - primary link to districts (unique constraint managed manually)
+	GeoID    string    `gorm:"size:255" json:"geo_id"` // Census GEOID or OCD-ID - primary link to districts (unique constraint managed manually)
 	OCDID    string    `gorm:"index;size:255" json:"ocd_id"`      // Open Civic Data ID
 	Name     string    `json:"name"`
 	State    string    `gorm:"index;size:2" json:"state"`
@@ -19,10 +19,11 @@ type GeofenceBoundary struct {
 	Geometry string `gorm:"type:geometry(Geometry,4326)" json:"-"`
 
 	// Metadata
-	Source      string `json:"source"`       // e.g., "census_tiger_2024"
-	ValidFrom   string `json:"valid_from"`   // Date range for validity
+	Source      string `json:"source"`                      // e.g., "census_tiger_2024"
+	ValidFrom   string `json:"valid_from"`                  // Date range for validity
 	ValidTo     string `json:"valid_to"`
 	ImportedAt  string `json:"imported_at"`
+	QualityFlag string `json:"quality_flag,omitempty"` // NULL=clean, "geometry_repaired", "source_outdated", etc.
 }
 
 func (GeofenceBoundary) TableName() string {
