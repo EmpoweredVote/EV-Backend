@@ -25,12 +25,13 @@ Key behaviors:
 
 Usage:
     cd EV-Backend/scripts
-    python3 scrape_city_headshots.py                  # all cities
-    python3 scrape_city_headshots.py --dry-run        # no upload/DB writes
+    python3 scrape_city_headshots.py                   # all cities
+    python3 scrape_city_headshots.py --dry-run         # no upload/DB writes
     python3 scrape_city_headshots.py --city burbank_city_council
-    python3 scrape_city_headshots.py --resume         # skip to first pending
-    python3 scrape_city_headshots.py --limit 10       # process at most 10 cities
-    python3 scrape_city_headshots.py --check-coverage # coverage validation only
+    python3 scrape_city_headshots.py --resume          # skip to first pending
+    python3 scrape_city_headshots.py --limit 10        # process at most 10 cities
+    python3 scrape_city_headshots.py --check-coverage  # coverage validation only
+    python3 scrape_city_headshots.py --force-retry     # reset failed cities and re-attempt
 
 Requirements:
     - DATABASE_URL and SUPABASE_URL/SUPABASE_SERVICE_KEY in EV-Backend/.env.local
@@ -133,23 +134,28 @@ def is_cloudflare_blocked(response):
 # HTML fetching with Playwright fallback
 # ============================================================
 
-def fetch_council_page(url):
+def fetch_council_page(url, keep_page=False):
     """Fetch HTML of a council page with Playwright fallback.
 
     Strategy:
     1. Try requests.get() with BROWSER_HEADERS
-    2. If Cloudflare detected: return (None, False, "cloudflare")
+    2. If Cloudflare detected: return (None, False, "cloudflare", None, None)
     3. If text content < 500 chars: fall back to Playwright
     4. Playwright: headless Chromium, wait for networkidle
-    5. If Playwright HTML contains Cloudflare challenge: return (None, True, "cloudflare")
+    5. If Playwright HTML contains Cloudflare challenge: return (None, True, "cloudflare", None, None)
 
     Imports playwright lazily (only when needed) to avoid hard dependency.
 
+    If keep_page=True and Playwright was needed, returns (html, True, None, page, browser)
+    so the caller can run page.evaluate() for CSS extraction before closing.
+    Normal mode returns (html, used_playwright, blocked_reason, None, None).
+
     Args:
         url: Council page URL to fetch
+        keep_page: If True and Playwright was used, do NOT close browser — return (html, True, None, page, browser)
 
     Returns:
-        tuple: (html: str|None, used_playwright: bool, blocked_reason: str|None)
+        tuple: (html: str|None, used_playwright: bool, blocked_reason: str|None, page: obj|None, browser: obj|None)
             blocked_reason is "cloudflare" or "fetch_failed" on failure, None on success.
     """
     try:
@@ -157,14 +163,14 @@ def fetch_council_page(url):
 
         # Check for Cloudflare BEFORE raise_for_status
         if is_cloudflare_blocked(resp):
-            return None, False, "cloudflare"
+            return None, False, "cloudflare", None, None
 
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
         body_text = soup.get_text(strip=True)
 
         if len(body_text) > 500:
-            return resp.text, False, None
+            return resp.text, False, None, None, None
 
         # Content too short — likely JS-rendered, fall through to Playwright
         print(f"    Content too short ({len(body_text)} chars) — falling back to Playwright")
@@ -176,26 +182,33 @@ def fetch_council_page(url):
     print(f"    Launching Playwright for: {url}")
     try:
         from playwright.sync_api import sync_playwright
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
-            page.goto(url, timeout=30000)
-            page.wait_for_load_state("networkidle", timeout=30000)
-            html = page.content()
-            browser.close()
+        pw_instance = sync_playwright().start()
+        browser = pw_instance.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(url, timeout=30000)
+        page.wait_for_load_state("networkidle", timeout=30000)
+        html = page.content()
 
         # Check for Cloudflare challenge in rendered HTML
         if "Checking your browser" in html or "cf-ray" in html.lower():
-            return None, True, "cloudflare"
+            browser.close()
+            pw_instance.stop()
+            return None, True, "cloudflare", None, None
 
-        return html, True, None
+        if keep_page:
+            # Caller is responsible for closing browser and pw_instance
+            return html, True, None, page, (browser, pw_instance)
+        else:
+            browser.close()
+            pw_instance.stop()
+            return html, True, None, None, None
 
     except ImportError:
         print("    Playwright not installed — cannot fall back")
-        return None, False, "fetch_failed"
+        return None, False, "fetch_failed", None, None
     except Exception as e:
         print(f"    Playwright failed: {e}")
-        return None, False, "fetch_failed"
+        return None, False, "fetch_failed", None, None
 
 
 # ============================================================
@@ -266,12 +279,54 @@ def extract_headshot_url(html, member_name, city_url):
                     return urljoin(city_url, src)
             container = container.parent
 
+    # Strategy 1b: CSS background-image near name text
+    # Many CMS card galleries use div[style*="background-image"] instead of <img>
+    for name_el in name_els:
+        container = name_el.parent
+        for _ in range(4):  # walk up to 4 parent levels
+            if container is None:
+                break
+            # Check all elements with style attributes containing background-image
+            styled_els = container.find_all(style=re.compile(r"background-image", re.I))
+            for styled_el in styled_els:
+                style = styled_el.get("style", "")
+                # Extract URL from background-image: url("...")  or url('...')  or url(...)
+                bg_match = re.search(
+                    r'background-image:\s*url\(["\']?([^"\')\s]+)["\']?\)', style, re.I
+                )
+                if bg_match:
+                    bg_url = bg_match.group(1)
+                    # Validate: must have portrait extension and not be excluded pattern
+                    path_part = bg_url.split("?")[0].split("#")[0]
+                    ext = ""
+                    if "." in path_part:
+                        ext = "." + path_part.rsplit(".", 1)[-1].lower()
+                    if ext in PORTRAIT_EXTENSIONS and not EXCLUDE_PATTERNS.search(bg_url):
+                        return urljoin(city_url, bg_url)
+            container = container.parent
+
     # Strategy 2: Alt text match — scan all imgs on page
     for img in soup.find_all("img"):
         src = img.get("src", "")
         alt = img.get("alt", "").lower()
         if last_name in alt and is_valid_img(src, alt):
             return urljoin(city_url, src)
+
+    # Strategy 2b: All background-image elements on page, match by URL containing last name
+    for styled_el in soup.find_all(style=re.compile(r"background-image", re.I)):
+        style = styled_el.get("style", "")
+        bg_match = re.search(
+            r'background-image:\s*url\(["\']?([^"\')\s]+)["\']?\)', style, re.I
+        )
+        if bg_match:
+            bg_url = bg_match.group(1)
+            if last_name in bg_url.lower():
+                path_part = bg_url.split("?")[0].split("#")[0]
+                ext = ""
+                if "." in path_part:
+                    ext = "." + path_part.rsplit(".", 1)[-1].lower()
+                if ext in PORTRAIT_EXTENSIONS and not EXCLUDE_PATTERNS.search(bg_url):
+                    return urljoin(city_url, bg_url)
 
     # Strategy 3: Wikipedia fallback — try member's Wikipedia article
     # Only attempt if name has at least 2 parts (First Last)
@@ -292,14 +347,109 @@ def extract_headshot_url(html, member_name, city_url):
                     if infobox_img:
                         src = infobox_img.get("src", "")
                         if src:
-                            # Wikipedia uses protocol-relative URLs (//upload.wikimedia.org/...)
-                            if src.startswith("//"):
-                                src = "https:" + src
-                            return src
+                            # Validate article is about a current politician, not a historical figure
+                            # Check first paragraph for geographic/role relevance
+                            first_para = wiki_soup.find("p", class_=False)
+                            if first_para:
+                                para_text = first_para.get_text().lower()
+                                # Must mention California, council, mayor, or a city-related term
+                                relevance_terms = [
+                                    "california", "council", "mayor", "city of",
+                                    "city council", "los angeles", "la county",
+                                    "municipal", "alderman", "councilmember",
+                                ]
+                                # Extract city name from city_url for matching
+                                city_domain = urlparse(city_url).hostname or ""
+                                city_words = [
+                                    w for w in re.split(r"[.\-_]", city_domain)
+                                    if len(w) > 3 and w not in ("www", "city", "org", "gov", "com")
+                                ]
+                                relevance_terms.extend(city_words)
+
+                                if not any(term in para_text for term in relevance_terms):
+                                    # Article doesn't appear to be about a California politician
+                                    # Skip to avoid false positives like historical figures
+                                    pass  # fall through to return None
+                                else:
+                                    # Article is relevant — return the image
+                                    if src.startswith("//"):
+                                        src = "https:" + src
+                                    return src
+                            else:
+                                # No first paragraph to validate — skip to avoid false positives
+                                pass
         except requests.RequestException:
             pass  # Wikipedia lookup failure is non-fatal — return None
 
     return None
+
+
+# ============================================================
+# Playwright-based CSS background-image extraction
+# ============================================================
+
+def extract_headshot_url_playwright(page, member_name, city_url):
+    """Extract headshot URL using Playwright's computed styles for CSS background-image.
+
+    This catches images loaded via JavaScript or CSS that are invisible to
+    BeautifulSoup's static HTML parsing.
+
+    Args:
+        page: Playwright page object (still open)
+        member_name: Full name of the council member
+        city_url: Base URL for resolving relative URLs
+
+    Returns:
+        str: Absolute image URL, or None if no portrait found.
+    """
+    last_name = member_name.strip().split()[-1].lower()
+
+    try:
+        # Use page.evaluate to find elements with computed background-image near the name
+        result = page.evaluate("""(lastName) => {
+            // Find all text nodes containing the last name
+            const walker = document.createTreeWalker(
+                document.body,
+                NodeFilter.SHOW_TEXT,
+                { acceptNode: (node) =>
+                    node.textContent.toLowerCase().includes(lastName)
+                    ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+                }
+            );
+
+            const results = [];
+            let textNode;
+            while (textNode = walker.nextNode()) {
+                // Walk up to 5 parent levels looking for background-image
+                let el = textNode.parentElement;
+                for (let i = 0; i < 5 && el; i++) {
+                    // Check this element and its children for background-image
+                    const candidates = [el, ...el.querySelectorAll('*')];
+                    for (const candidate of candidates) {
+                        const style = window.getComputedStyle(candidate);
+                        const bg = style.backgroundImage;
+                        if (bg && bg !== 'none' && bg.startsWith('url(')) {
+                            const url = bg.slice(4, -1).replace(/['"]/g, '');
+                            // Filter out gradients, SVGs, data URIs, small icons
+                            if (url.startsWith('http') &&
+                                !url.includes('gradient') &&
+                                !url.includes('.svg') &&
+                                !url.startsWith('data:') &&
+                                (url.includes('.jpg') || url.includes('.jpeg') ||
+                                 url.includes('.png') || url.includes('.webp'))) {
+                                results.push(url);
+                            }
+                        }
+                    }
+                    el = el.parentElement;
+                }
+            }
+            return results.length > 0 ? results[0] : null;
+        }""", last_name)
+
+        return result
+    except Exception:
+        return None
 
 
 # ============================================================
@@ -555,8 +705,10 @@ def process_city(conn, city_config, dry_run=False):
 
     print(f"\n  Fetching: {city_name} ({city_url})")
 
-    # Step 1: Fetch council page
-    html, used_playwright, blocked_reason = fetch_council_page(city_url)
+    # Step 1: Fetch council page (keep_page=True so Playwright page stays open for CSS extraction)
+    html, used_playwright, blocked_reason, pw_page, pw_browser_handle = fetch_council_page(
+        city_url, keep_page=True
+    )
 
     if blocked_reason == "cloudflare":
         print(f"    Cloudflare blocked: {city_name}")
@@ -574,12 +726,37 @@ def process_city(conn, city_config, dry_run=False):
         member_name = member.get("name", "").strip()
         if not member_name:
             continue
-        headshot_url = extract_headshot_url(html, member_name, city_url)
-        member_urls[member_name] = headshot_url
-        if headshot_url:
-            print(f"    Found: {member_name} -> {headshot_url}")
+        # Check for manual headshot_url override in roster entry
+        manual_url = member.get("headshot_url", "").strip() if member.get("headshot_url") else ""
+        if manual_url:
+            headshot_url = manual_url
+            print(f"    Override: {member_name} -> {manual_url}")
         else:
+            headshot_url = extract_headshot_url(html, member_name, city_url)
+        member_urls[member_name] = headshot_url
+        if headshot_url and not manual_url:
+            print(f"    Found: {member_name} -> {headshot_url}")
+        elif not headshot_url:
             print(f"    None: {member_name}")
+
+    # Step 2b: Playwright CSS extraction for members still without URL
+    if pw_page is not None:
+        for member in roster:
+            member_name = member.get("name", "").strip()
+            if not member_name:
+                continue
+            if member_urls.get(member_name) is None:
+                pw_url = extract_headshot_url_playwright(pw_page, member_name, city_url)
+                if pw_url:
+                    member_urls[member_name] = pw_url
+                    print(f"    Found (Playwright CSS): {member_name} -> {pw_url}")
+        # Close Playwright browser now
+        try:
+            browser_obj, pw_instance = pw_browser_handle
+            browser_obj.close()
+            pw_instance.stop()
+        except Exception:
+            pass
 
     # Step 3: Duplicate URL detection
     # If all non-None URLs are identical, likely extracted a logo for all members
@@ -768,12 +945,13 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python3 scrape_city_headshots.py                  # process all pending cities
-  python3 scrape_city_headshots.py --dry-run        # download only, no upload/DB writes
+  python3 scrape_city_headshots.py                   # process all pending cities
+  python3 scrape_city_headshots.py --dry-run         # download only, no upload/DB writes
   python3 scrape_city_headshots.py --city burbank_city_council
-  python3 scrape_city_headshots.py --resume         # skip to first non-scraped/non-blocked city
-  python3 scrape_city_headshots.py --limit 10       # process at most 10 cities
-  python3 scrape_city_headshots.py --check-coverage # run coverage validation only
+  python3 scrape_city_headshots.py --resume          # skip to first non-scraped/non-blocked city
+  python3 scrape_city_headshots.py --limit 10        # process at most 10 cities
+  python3 scrape_city_headshots.py --check-coverage  # run coverage validation only
+  python3 scrape_city_headshots.py --force-retry     # reset failed cities and re-attempt
         """,
     )
     parser.add_argument(
@@ -804,6 +982,11 @@ Examples:
         action="store_true",
         help="Run HEAD-request coverage validation only (no scraping)",
     )
+    parser.add_argument(
+        "--force-retry",
+        action="store_true",
+        help="Reset all 'failed' cities to pending (re-attempt after URL fixes)",
+    )
     args = parser.parse_args()
 
     print("=" * 60)
@@ -828,6 +1011,17 @@ Examples:
         config = json.load(f)
     cities = config.get("cities", [])
     print(f"\nLoaded {len(cities)} cities from {config_path}")
+
+    # --force-retry: reset all "failed" cities to pending before processing
+    if args.force_retry:
+        retry_count = 0
+        for city_config in cities:
+            if city_config.get("headshot_status") == "failed":
+                city_config["headshot_status"] = None
+                # Clear old failure metadata
+                city_config.pop("headshot_failure_reason", None)
+                retry_count += 1
+        print(f"Reset {retry_count} failed cities to pending (--force-retry)")
 
     # Connect to DB
     conn = get_connection()
