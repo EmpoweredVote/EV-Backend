@@ -48,10 +48,11 @@ type Politician struct {
 	Contacts           []PoliticianContact `json:"contacts" gorm:"foreignKey:PoliticianID"`
 
 	// Provenance / Syncing
-	Source     string    `json:"source"` // "cicero" or "ballotready"
-	LastSynced time.Time `json:"last_synced"`
-	IsActive   bool      `json:"is_active" gorm:"default:true"` // true = currently serving in their primary seat
-	DataSource string    `json:"data_source,omitempty"`         // e.g. "ballotready", "scraped", "manual"
+	Source           string    `json:"source"` // "cicero" or "ballotready"
+	LastSynced       time.Time `json:"last_synced"`
+	IsActive         bool      `json:"is_active" gorm:"default:true"` // true = currently serving in their primary seat
+	DataSource       string    `json:"data_source,omitempty"`         // e.g. "ballotready", "scraped", "manual"
+	TermDatePrecision string   `json:"term_date_precision,omitempty"` // "year", "month", "day"
 }
 
 type Office struct {
@@ -160,7 +161,8 @@ type PoliticianImage struct {
 	ID           uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
 	PoliticianID uuid.UUID `json:"politician_id" gorm:"type:uuid;index"`
 	URL          string    `json:"url"`
-	Type         string    `json:"type"` // "default", "thumb"
+	Type         string    `json:"type"`                          // "default", "thumb"
+	PhotoLicense string    `json:"photo_license,omitempty"`       // "cc_by_sa", "press_use", "scraped_no_license", etc.
 }
 
 type Degree struct {
@@ -268,6 +270,18 @@ type PositionDescription struct {
 	Source                 string    `json:"source"` // "ballotready", "manual"
 }
 
+// BuildingPhoto stores city hall / government building photos for place-based display.
+// Keyed by Census GEOID (e.g., "0644000" for City of Los Angeles).
+type BuildingPhoto struct {
+	PlaceGeoid  string    `json:"place_geoid" gorm:"primaryKey;size:20"`
+	URL         string    `json:"url"`         // Supabase CDN URL
+	SourceURL   string    `json:"source_url"`  // Original Wikimedia URL
+	License     string    `json:"license"`     // e.g., "cc_by_sa"
+	Attribution string    `json:"attribution"` // Author/uploader credit
+	WikiTitle   string    `json:"wiki_title"`  // Wikimedia file title for re-fetch
+	FetchedAt   time.Time `json:"fetched_at"`
+}
+
 func (Politician) TableName() string {
 	return "essentials.politicians"
 }
@@ -346,4 +360,8 @@ func (PoliticianContact) TableName() string {
 
 func (PositionDescription) TableName() string {
 	return "essentials.position_descriptions"
+}
+
+func (BuildingPhoto) TableName() string {
+	return "essentials.building_photos"
 }
