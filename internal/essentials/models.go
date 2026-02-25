@@ -251,11 +251,12 @@ type ElectionRecord struct {
 type PoliticianContact struct {
 	ID           uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
 	PoliticianID uuid.UUID `json:"politician_id" gorm:"type:uuid;index"`
-	Source       string    `json:"source"` // "person" or "officeholder"
+	Source       string    `json:"source"` // "person", "officeholder", or "scraped"
 	Email        string    `json:"email"`
 	Phone        string    `json:"phone"`
 	Fax          string    `json:"fax"`
-	ContactType  string    `json:"contact_type"` // "district", "capitol", etc.
+	WebsiteURL   string    `json:"website_url,omitempty"`
+	ContactType  string    `json:"contact_type"` // "district", "capitol", "city_website", etc.
 }
 
 // PositionDescription provides reusable descriptions for positions by normalized name.
