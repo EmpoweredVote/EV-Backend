@@ -12,7 +12,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:agoura_hills",
-      "url": "https://www.agourahillscity.org/government/city-council",
+      "url": "https://www.agourahillscity.gov/government/city_council/index.php",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -45,7 +45,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:50.778011"
+      "last_scraped": "2026-02-24T14:22:50.778011",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "duplicate_url_detected"
     },
     {
       "id": "alhambra_city_council",
@@ -92,7 +94,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:51.475803"
+      "last_scraped": "2026-02-24T14:22:51.475803",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:23:11.467280",
+      "headshot_count": 0
     },
     {
       "id": "arcadia_city_council",
@@ -106,7 +111,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:arcadia",
-      "url": "https://www.arcadiaca.gov/government/city-council",
+      "url": "https://www.arcadiaca.gov/government/city_council/index.php",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -115,31 +120,38 @@
           "district": 0,
           "party": "",
           "role": "Mayor",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://www.arcadiaca.gov/Images/Government/Government/City%20Council/Council%20Member%20Michael%20Cao%2C%20M.D/Michael%20Cao.jpg"
         },
         {
           "name": "Paul Cheng",
           "district": 0,
           "party": "",
           "role": "Council Member",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://www.arcadiaca.gov/Images/Government/Government/City%20Council/Council%20Member%20Paul%20P.%20Cheng/Paul%20P.%20Cheng.jpg"
         },
         {
           "name": "David Fu",
           "district": 0,
           "party": "",
           "role": "Council Member",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://www.arcadiaca.gov/Images/Government/Government/City%20Council/Council%20Member%20David%20Fu/David%20Fu.jpg"
         },
         {
           "name": "Eileen Wang",
           "district": 0,
           "party": "",
           "role": "Council Member",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://www.arcadiaca.gov/Images/Government/Government/City%20Council/Mayor%20Pro%20Tem%20Eileen%20Wang/Eileen%20Wang.jpg"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:52.168815"
+      "last_scraped": "2026-02-24T14:22:52.168815",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:22:45.376444",
+      "headshot_count": 4
     },
     {
       "id": "artesia_city_council",
@@ -200,7 +212,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:53.142463"
+      "last_scraped": "2026-02-24T14:22:53.142463",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:23:26.386105",
+      "headshot_count": 0
     },
     {
       "id": "avalon_city_council",
@@ -247,7 +262,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:53.839474"
+      "last_scraped": "2026-02-24T14:22:53.839474",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:23:36.399736",
+      "headshot_count": 0
     },
     {
       "id": "azusa_city_council",
@@ -294,7 +312,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:54.537828"
+      "last_scraped": "2026-02-24T14:22:54.537828",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:23:46.690366",
+      "headshot_count": 0
     },
     {
       "id": "baldwin_park_city_council",
@@ -341,7 +362,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:55.238826"
+      "last_scraped": "2026-02-24T14:22:55.238826",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:23:57.020689",
+      "headshot_count": 0
     },
     {
       "id": "bell_city_council",
@@ -462,7 +486,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:bellflower",
-      "url": "https://www.bellflower.org/government/city-council",
+      "url": "https://bellflower.ca.gov/government/city_council/index.php",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -471,31 +495,38 @@
           "district": 0,
           "party": "",
           "role": "Mayor",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://bellflower.ca.gov/photo_gallery/Government/City%20Council/dunton%20web.jpg"
         },
         {
           "name": "Dan Koops",
           "district": 0,
           "party": "",
           "role": "Council Member",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://bellflower.ca.gov/photo_gallery/Government/City%20Council/koops%20web.jpg"
         },
         {
           "name": "Wendi Morse",
           "district": 0,
           "party": "",
           "role": "Council Member",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://bellflower.ca.gov/photo_gallery/Government/City%20Council/morse%20web.jpg"
         },
         {
           "name": "Victor A. Sanchez",
           "district": 0,
           "party": "",
           "role": "Council Member",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://bellflower.ca.gov/photo_gallery/Government/City%20Council/sanchez%20web.jpg"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:57.482344"
+      "last_scraped": "2026-02-24T14:22:57.482344",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:22:32.648552",
+      "headshot_count": 4
     },
     {
       "id": "beverly_hills_city_council",
@@ -559,7 +590,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:bradbury",
-      "url": "https://www.cityofbradbury.org/city-council",
+      "url": "https://www.cityofbradbury.org/government/city_council/index.php",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -592,7 +623,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:58.887897"
+      "last_scraped": "2026-02-24T14:22:58.887897",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:24:07.918475",
+      "headshot_count": 0
     },
     {
       "id": "burbank_city_council",
@@ -632,7 +666,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:59.443764"
+      "last_scraped": "2026-02-24T14:22:59.443764",
+      "headshot_status": "blocked",
+      "headshot_blocked_reason": "cloudflare"
     },
     {
       "id": "calabasas_city_council",
@@ -679,7 +715,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:00.138601"
+      "last_scraped": "2026-02-24T14:23:00.138601",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:24:19.754538",
+      "headshot_count": 0
     },
     {
       "id": "carson_city_council",
@@ -713,7 +752,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:00.560623"
+      "last_scraped": "2026-02-24T14:23:00.560623",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "cerritos_city_council",
@@ -760,7 +801,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:01.258319"
+      "last_scraped": "2026-02-24T14:23:01.258319",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:25:05.965308",
+      "headshot_count": 0
     },
     {
       "id": "claremont_city_council",
@@ -807,7 +851,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:01.958137"
+      "last_scraped": "2026-02-24T14:23:01.958137",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "duplicate_url_detected"
     },
     {
       "id": "commerce_city_council",
@@ -854,7 +900,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:02.656683"
+      "last_scraped": "2026-02-24T14:23:02.656683",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:25:20.783227",
+      "headshot_count": 0
     },
     {
       "id": "compton_city_council",
@@ -989,7 +1038,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:cudahy",
-      "url": "https://www.cityofcudahy.com/government/city-council",
+      "url": "https://www.cityofcudahyca.gov/173/City-Council",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -1022,7 +1071,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:05.195821"
+      "last_scraped": "2026-02-24T14:23:05.195821",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:25:31.230192",
+      "headshot_count": 0
     },
     {
       "id": "culver_city_city_council",
@@ -1112,7 +1164,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:06.534794"
+      "last_scraped": "2026-02-24T14:23:06.534794",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:25:41.608167",
+      "headshot_count": 0
     },
     {
       "id": "downey_city_council",
@@ -1180,7 +1235,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:07.506880"
+      "last_scraped": "2026-02-24T14:23:07.506880",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:25:59.542305",
+      "headshot_count": 0
     },
     {
       "id": "duarte_city_council",
@@ -1206,7 +1264,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:07.750294"
+      "last_scraped": "2026-02-24T14:23:07.750294",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:26:03.225236",
+      "headshot_count": 0
     },
     {
       "id": "el_monte_city_council",
@@ -1267,7 +1328,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:08.731558"
+      "last_scraped": "2026-02-24T14:23:08.731558",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:26:18.351500",
+      "headshot_count": 0
     },
     {
       "id": "el_segundo_city_council",
@@ -1314,7 +1378,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:09.427638"
+      "last_scraped": "2026-02-24T14:23:09.427638",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:26:29.186770",
+      "headshot_count": 0
     },
     {
       "id": "gardena_city_council",
@@ -1328,7 +1395,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:gardena",
-      "url": "https://www.cityofgardena.org/government/city-council",
+      "url": "https://cityofgardena.org/government/city_council/index.php",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -1361,7 +1428,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:10.126050"
+      "last_scraped": "2026-02-24T14:23:10.126050",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:26:40.902543",
+      "headshot_count": 0
     },
     {
       "id": "glendale_city_council",
@@ -1447,7 +1517,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:glendora",
-      "url": "https://www.glendoracityhall.com/government/city-council",
+      "url": "https://www.cityofglendora.org/government/city-council",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -1494,7 +1564,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:12.208077"
+      "last_scraped": "2026-02-24T14:23:12.208077",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:27:00.770263",
+      "headshot_count": 0
     },
     {
       "id": "hawaiian_gardens_city_council",
@@ -1541,7 +1614,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:12.913201"
+      "last_scraped": "2026-02-24T14:23:12.913201",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:27:11.647065",
+      "headshot_count": 0
     },
     {
       "id": "hawthorne_city_council",
@@ -1676,7 +1752,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:hidden_hills",
-      "url": "https://www.hiddenhillscity.org/government/city-council",
+      "url": "https://hiddenhills.gov/city-council/",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -1685,24 +1761,30 @@
           "district": 0,
           "party": "",
           "role": "Mayor",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://hiddenhills.gov/wp-content/uploads/Larry-Weber-2011-Gray-website-400x520-1-138x180.jpg"
         },
         {
           "name": "Eniko Gold",
           "district": 0,
           "party": "",
           "role": "Council Member",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://hiddenhills.gov/wp-content/uploads/Eniko-Gold-Headshot-for-Web-520x400-2-138x180.jpg"
         },
         {
           "name": "Laura McCorkindale and Adam",
           "district": 0,
           "party": "",
           "role": "Council Member",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://hiddenhills.gov/wp-content/uploads/Laura-McCorkindale-website-400x520-1-138x180.jpg"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:15.304178"
+      "last_scraped": "2026-02-24T14:23:15.304178",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T16:33:34.061934",
+      "headshot_count": 3
     },
     {
       "id": "huntington_park_city_council",
@@ -1728,7 +1810,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:15.550761"
+      "last_scraped": "2026-02-24T14:23:15.550761",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:27:14.363487",
+      "headshot_count": 0
     },
     {
       "id": "industry_city_council",
@@ -1775,7 +1860,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:16.248692"
+      "last_scraped": "2026-02-24T14:23:16.248692",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:27:24.667243",
+      "headshot_count": 0
     },
     {
       "id": "inglewood_city_council",
@@ -1879,7 +1967,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:17.616455"
+      "last_scraped": "2026-02-24T14:23:17.616455",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:27:34.923275",
+      "headshot_count": 0
     },
     {
       "id": "la_canada_flintridge_city_council",
@@ -1976,7 +2067,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:19.021109"
+      "last_scraped": "2026-02-24T14:23:19.021109",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "la_mirada_city_council",
@@ -2033,7 +2126,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:la_palma",
-      "url": "https://www.cityoflapalma.org/government/city-council",
+      "url": "https://www.lapalmaca.gov/194/City-Council",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -2066,7 +2159,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:20.284703"
+      "last_scraped": "2026-02-24T14:23:20.284703",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:27:46.918012",
+      "headshot_count": 0
     },
     {
       "id": "la_puente_city_council",
@@ -2130,7 +2226,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:la_verne",
-      "url": "https://www.laverneca.gov/government/city-council",
+      "url": "https://www.laverneca.gov/government/city_council/index.php",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -2163,7 +2259,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:21.692961"
+      "last_scraped": "2026-02-24T14:23:21.692961",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:27:57.182352",
+      "headshot_count": 0
     },
     {
       "id": "lakewood_city_council",
@@ -2210,7 +2309,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:22.394588"
+      "last_scraped": "2026-02-24T14:23:22.394588",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:28:04.296307",
+      "headshot_count": 0
     },
     {
       "id": "lancaster_city_council",
@@ -2307,7 +2409,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:23.789196"
+      "last_scraped": "2026-02-24T14:23:23.789196",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:28:15.067403",
+      "headshot_count": 0
     },
     {
       "id": "lomita_city_council",
@@ -2330,31 +2435,38 @@
           "district": 0,
           "party": "",
           "role": "Mayor",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://lomitacity.com/wp-content/uploads/2021/10/IMG_5668-e1638342929107.jpg"
         },
         {
           "name": "James Gazeley",
           "district": 0,
           "party": "",
           "role": "Council Member",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://lomitacity.com/wp-content/uploads/2021/10/clip_image005-e1636142621117.jpeg"
         },
         {
           "name": "Bill Uphoff",
           "district": 0,
           "party": "",
           "role": "Council Member",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://lomitacity.com/wp-content/uploads/2021/10/Bill-Uphoff.jpeg"
         },
         {
           "name": "Barry Waite",
           "district": 0,
           "party": "",
           "role": "Council Member",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://lomitacity.com/wp-content/uploads/2021/10/Barry-Waite.jpeg"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:24.491686"
+      "last_scraped": "2026-02-24T14:23:24.491686",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:22:52.550710",
+      "headshot_count": 4
     },
     {
       "id": "long_beach_city_council",
@@ -2479,7 +2591,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:26.170691"
+      "last_scraped": "2026-02-24T14:23:26.170691",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:28:25.443187",
+      "headshot_count": 0
     },
     {
       "id": "lynwood_city_council",
@@ -2540,7 +2655,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:27.150217"
+      "last_scraped": "2026-02-24T14:23:27.150217",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:28:41.120276",
+      "headshot_count": 0
     },
     {
       "id": "malibu_city_council",
@@ -2554,7 +2672,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:malibu",
-      "url": "https://www.malibucity.org/government/city-council",
+      "url": "https://www.malibucity.org/government/elected-officials/city-council",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -2587,7 +2705,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:27.850969"
+      "last_scraped": "2026-02-24T14:23:27.850969",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:28:51.241320",
+      "headshot_count": 0
     },
     {
       "id": "manhattan_beach_city_council",
@@ -2684,7 +2805,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:29.249417"
+      "last_scraped": "2026-02-24T14:23:29.249417",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:29:01.304775",
+      "headshot_count": 0
     },
     {
       "id": "monrovia_city_council",
@@ -2731,7 +2855,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:29.946212"
+      "last_scraped": "2026-02-24T14:23:29.946212",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:29:12.196864",
+      "headshot_count": 0
     },
     {
       "id": "montebello_city_council",
@@ -2745,7 +2872,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:montebello",
-      "url": "https://www.cityofmontebello.com/government/city-council",
+      "url": "https://www.montebelloca.gov/cms/one.aspx?pageId=61463",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -2754,28 +2881,32 @@
           "district": 0,
           "party": "",
           "role": "Mayor",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://cdnsm5-hosted2.civiclive.com/UserFiles/Servers/Server_58672/Image/Departments/Administration/City Clerk's Office/Pictures/Council Reorg 12-2025/Councilmember Scarlet Peralta.png"
         },
         {
           "name": "Scarlet Peralta",
           "district": 0,
           "party": "",
           "role": "Council Member",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://cdnsm5-hosted2.civiclive.com/UserFiles/Servers/Server_58672/Image/Departments/Administration/City Clerk's Office/Pictures/Council Reorg 12-2025/Councilmember Scarlet Peralta.png"
         },
         {
           "name": "Georgina Tamayo",
           "district": 0,
           "party": "",
           "role": "Council Member",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://cdnsm5-hosted2.civiclive.com/UserFiles/Servers/Server_58672/Image/Departments/Administration/City Clerk's Office/Pictures/Council Reorg 12-2025/Mayor Georgina Tamayo.png"
         },
         {
           "name": "Salvador Melendez",
           "district": 0,
           "party": "",
           "role": "Council Member",
-          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
+          "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf",
+          "headshot_url": "https://cdnsm5-hosted2.civiclive.com/UserFiles/Servers/Server_58672/Image/Departments/Administration/City Clerk's Office/Pictures/Council Reorg 12-2025/Councilmember Salvador Melendez.png"
         },
         {
           "name": "David Torres",
@@ -2792,7 +2923,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:30.925041"
+      "last_scraped": "2026-02-24T14:23:30.925041",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T16:35:18.381549",
+      "headshot_count": 5
     },
     {
       "id": "monterey_park_city_council",
@@ -2806,7 +2940,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:monterey_park",
-      "url": "https://www.montereypark.ca.gov/government/city-council",
+      "url": "https://www.montereypark.ca.gov/191/City-Council",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -2839,7 +2973,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:31.625027"
+      "last_scraped": "2026-02-24T14:23:31.625027",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:29:22.381439",
+      "headshot_count": 1
     },
     {
       "id": "norwalk_city_council",
@@ -2993,7 +3130,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:33.868035"
+      "last_scraped": "2026-02-24T14:23:33.868035",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:29:34.965205",
+      "headshot_count": 0
     },
     {
       "id": "paramount_city_council",
@@ -3040,7 +3180,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:34.577234"
+      "last_scraped": "2026-02-24T14:23:34.577234",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "pasadena_city_council",
@@ -3220,7 +3362,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:37.039736"
+      "last_scraped": "2026-02-24T14:23:37.039736",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:30:16.951434",
+      "headshot_count": 0
     },
     {
       "id": "rancho_palos_verdes_city_council",
@@ -3267,7 +3412,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:37.742139"
+      "last_scraped": "2026-02-24T14:23:37.742139",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:30:26.737649",
+      "headshot_count": 0
     },
     {
       "id": "redondo_beach_city_council",
@@ -3281,7 +3429,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:redondo_beach",
-      "url": "https://www.redondo.org/departments/city_council/default.asp",
+      "url": "https://www.redondo.org/government/elected-officials/city-council",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -3328,7 +3476,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:38.730400"
+      "last_scraped": "2026-02-24T14:23:38.730400",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "duplicate_url_detected"
     },
     {
       "id": "rolling_hills_city_council",
@@ -3342,7 +3492,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:rolling_hills",
-      "url": "https://www.rolling-hills.org/government/city-council",
+      "url": "https://www.rolling-hills.org/government/city_council/index.php",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -3375,7 +3525,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:39.429395"
+      "last_scraped": "2026-02-24T14:23:39.429395",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:30:44.755354",
+      "headshot_count": 0
     },
     {
       "id": "rolling_hills_estates_city_council",
@@ -3422,7 +3575,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:40.127689"
+      "last_scraped": "2026-02-24T14:23:40.127689",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "rosemead_city_council",
@@ -3436,7 +3591,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:rosemead",
-      "url": "https://www.cityofrosemead.org/government/city-council",
+      "url": "https://rosemeadca.gov/government/elected-officials/city-council",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -3469,7 +3624,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:40.823861"
+      "last_scraped": "2026-02-24T14:23:40.823861",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "duplicate_url_detected"
     },
     {
       "id": "san_dimas_city_council",
@@ -3633,7 +3790,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:san_marino",
-      "url": "https://www.cityofsanmarino.org/government/city-council",
+      "url": "https://sanmarinoca.gov/government/elected-officials/city-council",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -3666,7 +3823,11 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:43.623830"
+      "last_scraped": "2026-02-24T14:23:43.623830",
+      "headshot_status": "failed",
+      "headshot_scraped_at": "2026-02-25T16:56:59.053213",
+      "headshot_count": 0,
+      "headshot_failure_reason": "duplicate_url_detected"
     },
     {
       "id": "santa_clarita_city_council",
@@ -3763,7 +3924,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:45.026432"
+      "last_scraped": "2026-02-24T14:23:45.026432",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:31:07.835871",
+      "headshot_count": 0
     },
     {
       "id": "santa_monica_city_council",
@@ -3838,7 +4002,10 @@
           "headshot_url": "https://www.santamonica.gov/sites/default/files/Council/zwick-jesse-600x600.jpg"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:46.150087"
+      "last_scraped": "2026-02-24T14:23:46.150087",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:31:12.722310",
+      "headshot_count": 0
     },
     {
       "id": "sierra_madre_city_council",
@@ -3885,7 +4052,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:46.856183"
+      "last_scraped": "2026-02-24T14:23:46.856183",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "signal_hill_city_council",
@@ -3899,7 +4068,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:signal_hill",
-      "url": "https://www.cityofsignalhill.org/government/city-council",
+      "url": "https://www.cityofsignalhill.org/government/city_council/index.php",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -3932,7 +4101,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:47.555621"
+      "last_scraped": "2026-02-24T14:23:47.555621",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:31:24.377937",
+      "headshot_count": 0
     },
     {
       "id": "south_el_monte_city_council",
@@ -3946,7 +4118,7 @@
       "expected_council_count": null,
       "has_mayor": true,
       "ocd_id_base": "ocd-division/country:us/state:ca/place:south_el_monte",
-      "url": "https://www.ci.south-el-monte.ca.us/government/city-council",
+      "url": "https://www.soelmonte.org/city-government/city-council",
       "status": "scraped",
       "failure_reason": null,
       "roster": [
@@ -3979,7 +4151,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:48.260422"
+      "last_scraped": "2026-02-24T14:23:48.260422",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "south_gate_city_council",
@@ -4026,7 +4200,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:48.958582"
+      "last_scraped": "2026-02-24T14:23:48.958582",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:32:11.829832",
+      "headshot_count": 0
     },
     {
       "id": "south_pasadena_city_council",
@@ -4066,7 +4243,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:49.518342"
+      "last_scraped": "2026-02-24T14:23:49.518342",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:32:20.964623",
+      "headshot_count": 0
     },
     {
       "id": "temple_city_city_council",
@@ -4113,7 +4293,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:50.218921"
+      "last_scraped": "2026-02-24T14:23:50.218921",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:32:31.286947",
+      "headshot_count": 0
     },
     {
       "id": "torrance_city_council",
@@ -4224,7 +4407,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:51.695969"
+      "last_scraped": "2026-02-24T14:23:51.695969",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:32:42.484080",
+      "headshot_count": 0
     },
     {
       "id": "walnut_city_council",
@@ -4271,7 +4457,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:52.395030"
+      "last_scraped": "2026-02-24T14:23:52.395030",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "west_covina_city_council",
@@ -4368,7 +4556,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:53.663422"
+      "last_scraped": "2026-02-24T14:23:53.663422",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T17:32:54.746094",
+      "headshot_count": 0
     },
     {
       "id": "westlake_village_city_council",

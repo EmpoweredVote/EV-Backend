@@ -62,6 +62,52 @@ from utils import load_env, load_supabase_env, upload_photo_to_storage
 
 
 # ============================================================
+# Module-level Playwright browser instance (shared across all cities)
+# ============================================================
+# A single browser is launched once and reused for all cities that need
+# Playwright. This avoids the "Playwright Sync API inside asyncio loop"
+# error that occurs when sync_playwright().start() is called multiple
+# times in the same process (each call creates a new event loop context
+# that conflicts with the previous one).
+_PW_INSTANCE = None
+_PW_BROWSER = None
+
+
+def get_playwright_browser():
+    """Get or create the shared Playwright browser instance.
+
+    Lazily initializes a headless Chromium browser on first call.
+    Subsequent calls return the same browser object.
+
+    Returns:
+        playwright.sync_api.Browser: Shared headless Chromium browser.
+    """
+    global _PW_INSTANCE, _PW_BROWSER
+    if _PW_BROWSER is None or not _PW_BROWSER.is_connected():
+        from playwright.sync_api import sync_playwright
+        _PW_INSTANCE = sync_playwright().start()
+        _PW_BROWSER = _PW_INSTANCE.chromium.launch(headless=True)
+    return _PW_BROWSER
+
+
+def stop_playwright_browser():
+    """Stop and clean up the shared Playwright browser instance."""
+    global _PW_INSTANCE, _PW_BROWSER
+    if _PW_BROWSER is not None:
+        try:
+            _PW_BROWSER.close()
+        except Exception:
+            pass
+        _PW_BROWSER = None
+    if _PW_INSTANCE is not None:
+        try:
+            _PW_INSTANCE.stop()
+        except Exception:
+            pass
+        _PW_INSTANCE = None
+
+
+# ============================================================
 # Constants
 # ============================================================
 
@@ -84,7 +130,13 @@ PORTRAIT_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 EXCLUDE_PATTERNS = re.compile(
     r"(logo|icon|banner|header|footer|background|bg[-_]|pattern|seal|flag|"
     r"map|arrow|chevron|search|menu|nav|sprite|button|placeholder|blank|"
-    r"default-avatar|generic)",
+    r"default-avatar|generic|twitter|facebook|linkedin|instagram|youtube|"
+    r"social[-_]|share[-_]|email[-_]|phone[-_]|fax[-_]|x[-_]icon|xicon|"
+    r"twitter-x|snapchat|tiktok|pinterest|rss[-_]|feed[-_]|"
+    r"chat[_-]bubble|chat_icon|speech[_-]bubble|comment[_-]|"
+    r"document[-_]icon|pdf[-_]icon|file[-_]icon|download[-_]icon|"
+    r"print[-_]|share[-_]|translate[-_]|language[-_]|accessibility[-_]|"
+    r"star[-_]|rating[-_]|alert[-_]|warning[-_]|info[-_]icon)",
     re.I,
 )
 
@@ -159,48 +211,66 @@ def fetch_council_page(url, keep_page=False):
             blocked_reason is "cloudflare" or "fetch_failed" on failure, None on success.
     """
     try:
-        resp = requests.get(url, headers=BROWSER_HEADERS, timeout=TIMEOUT)
+        resp = requests.get(url, headers=BROWSER_HEADERS, timeout=TIMEOUT, allow_redirects=True)
 
         # Check for Cloudflare BEFORE raise_for_status
         if is_cloudflare_blocked(resp):
             return None, False, "cloudflare", None, None
 
-        resp.raise_for_status()
+        # Accept any response with sufficient content, regardless of HTTP status.
+        # Many government CMS sites return 404 status but still serve the full
+        # council page (CivicPlus, Revize, etc.) when the path is a soft-404.
+        # Only raise on 5xx server errors (not on 4xx content-bearing responses).
         soup = BeautifulSoup(resp.text, "html.parser")
         body_text = soup.get_text(strip=True)
 
         if len(body_text) > 500:
-            return resp.text, False, None, None, None
+            if resp.status_code >= 500:
+                # Server error — try Playwright
+                print(f"    Server error {resp.status_code} — falling back to Playwright")
+            else:
+                # 200, 301/302 final, or soft-404 with content — use it
+                return resp.text, False, None, None, None
 
-        # Content too short — likely JS-rendered, fall through to Playwright
-        print(f"    Content too short ({len(body_text)} chars) — falling back to Playwright")
+        else:
+            if resp.status_code >= 400:
+                try:
+                    resp.raise_for_status()
+                except Exception as e:
+                    print(f"    requests failed: {e} — falling back to Playwright")
+            else:
+                # Content too short — likely JS-rendered, fall through to Playwright
+                print(f"    Content too short ({len(body_text)} chars) — falling back to Playwright")
 
     except requests.RequestException as e:
         print(f"    requests failed: {e} — falling back to Playwright")
 
     # Playwright fallback for JS-heavy sites
+    # Use the shared module-level browser to avoid asyncio event loop conflicts
+    # when sync_playwright() is called multiple times in the same process.
     print(f"    Launching Playwright for: {url}")
     try:
-        from playwright.sync_api import sync_playwright
-        pw_instance = sync_playwright().start()
-        browser = pw_instance.chromium.launch(headless=True)
+        browser = get_playwright_browser()
         page = browser.new_page()
-        page.goto(url, timeout=30000)
-        page.wait_for_load_state("networkidle", timeout=30000)
+        page.goto(url, timeout=20000)
+        try:
+            page.wait_for_load_state("networkidle", timeout=15000)
+        except Exception:
+            # networkidle timeout is non-fatal — use whatever loaded
+            pass
         html = page.content()
 
         # Check for Cloudflare challenge in rendered HTML
         if "Checking your browser" in html or "cf-ray" in html.lower():
-            browser.close()
-            pw_instance.stop()
+            page.close()
             return None, True, "cloudflare", None, None
 
         if keep_page:
-            # Caller is responsible for closing browser and pw_instance
-            return html, True, None, page, (browser, pw_instance)
+            # Caller is responsible for closing the page
+            # Browser is kept alive (module-level shared instance)
+            return html, True, None, page, (None, None)  # browser_handle is (None, None) — shared browser not closed by caller
         else:
-            browser.close()
-            pw_instance.stop()
+            page.close()
             return html, True, None, None, None
 
     except ImportError:
@@ -281,21 +351,29 @@ def extract_headshot_url(html, member_name, city_url):
 
     # Strategy 1b: CSS background-image near name text
     # Many CMS card galleries use div[style*="background-image"] instead of <img>
+    # Also catches Avada theme's --awb-background-image-front CSS custom property
+    def extract_urls_from_style(style_str):
+        """Extract all image URLs from a style attribute, regardless of CSS property name.
+
+        Handles standard background-image: url(...) and Avada theme's custom
+        --awb-background-image-front:url(...) properties.
+
+        Returns:
+            list of URL strings found in the style attribute.
+        """
+        # Match any CSS property value containing url(...)
+        return re.findall(r'url\(["\']?([^"\')\s]+)["\']?\)', style_str, re.I)
+
     for name_el in name_els:
         container = name_el.parent
         for _ in range(4):  # walk up to 4 parent levels
             if container is None:
                 break
-            # Check all elements with style attributes containing background-image
-            styled_els = container.find_all(style=re.compile(r"background-image", re.I))
+            # Check all elements with style attributes that contain url(
+            styled_els = container.find_all(style=re.compile(r"url\(", re.I))
             for styled_el in styled_els:
                 style = styled_el.get("style", "")
-                # Extract URL from background-image: url("...")  or url('...')  or url(...)
-                bg_match = re.search(
-                    r'background-image:\s*url\(["\']?([^"\')\s]+)["\']?\)', style, re.I
-                )
-                if bg_match:
-                    bg_url = bg_match.group(1)
+                for bg_url in extract_urls_from_style(style):
                     # Validate: must have portrait extension and not be excluded pattern
                     path_part = bg_url.split("?")[0].split("#")[0]
                     ext = ""
@@ -312,14 +390,10 @@ def extract_headshot_url(html, member_name, city_url):
         if last_name in alt and is_valid_img(src, alt):
             return urljoin(city_url, src)
 
-    # Strategy 2b: All background-image elements on page, match by URL containing last name
-    for styled_el in soup.find_all(style=re.compile(r"background-image", re.I)):
+    # Strategy 2b: All elements with style attributes containing url(), match by URL containing last name
+    for styled_el in soup.find_all(style=re.compile(r"url\(", re.I)):
         style = styled_el.get("style", "")
-        bg_match = re.search(
-            r'background-image:\s*url\(["\']?([^"\')\s]+)["\']?\)', style, re.I
-        )
-        if bg_match:
-            bg_url = bg_match.group(1)
+        for bg_url in extract_urls_from_style(style):
             if last_name in bg_url.lower():
                 path_part = bg_url.split("?")[0].split("#")[0]
                 ext = ""
@@ -632,30 +706,46 @@ def upsert_politician_image(cur, politician_id, cdn_url, photo_license):
 # Image download
 # ============================================================
 
-def download_image(url, timeout=15):
+def download_image(url, timeout=15, referer=None):
     """Download image bytes from URL with appropriate headers per domain.
 
     Uses Wikipedia-specific User-Agent for wikimedia.org/wikipedia.org URLs.
     Uses browser User-Agent for government CDN URLs.
     Derives content_type from response Content-Type header (not URL extension).
 
+    If the initial request returns 403, retries with a Referer header derived
+    from the image URL's domain (some government sites require same-origin Referer).
+
     Args:
         url: Direct image URL (.jpg, .png, .webp, etc.)
         timeout: Request timeout in seconds (default 15)
+        referer: Optional Referer URL to include in request headers
 
     Returns:
         tuple: (image_bytes: bytes, content_type: str)
 
     Raises:
-        requests.HTTPError: If server returns 4xx/5xx
+        requests.HTTPError: If server returns 4xx/5xx after retries
         requests.RequestException: If connection fails or times out
     """
     if "wikimedia.org" in url or "wikipedia.org" in url:
         headers = WIKIPEDIA_HEADERS
     else:
-        headers = BROWSER_HEADERS
+        headers = dict(BROWSER_HEADERS)
+        if referer:
+            headers["Referer"] = referer
 
     resp = requests.get(url, headers=headers, timeout=timeout)
+
+    # Retry with Referer header derived from image domain if 403
+    if resp.status_code == 403 and not referer:
+        from urllib.parse import urlparse
+        parsed = urlparse(url)
+        domain_referer = f"{parsed.scheme}://{parsed.netloc}/"
+        retry_headers = dict(BROWSER_HEADERS)
+        retry_headers["Referer"] = domain_referer
+        resp = requests.get(url, headers=retry_headers, timeout=timeout)
+
     resp.raise_for_status()
 
     # Derive content-type from response header (not URL extension)
@@ -750,11 +840,9 @@ def process_city(conn, city_config, dry_run=False):
                 if pw_url:
                     member_urls[member_name] = pw_url
                     print(f"    Found (Playwright CSS): {member_name} -> {pw_url}")
-        # Close Playwright browser now
+        # Close the page (NOT the shared browser — it's reused across cities)
         try:
-            browser_obj, pw_instance = pw_browser_handle
-            browser_obj.close()
-            pw_instance.stop()
+            pw_page.close()
         except Exception:
             pass
 
@@ -1131,6 +1219,9 @@ Examples:
     print(f"\nUpdated {config_path} with headshot_status fields")
 
     conn.close()
+
+    # Stop shared Playwright browser if it was used
+    stop_playwright_browser()
 
     # Summary
     print("\n" + "=" * 60)
