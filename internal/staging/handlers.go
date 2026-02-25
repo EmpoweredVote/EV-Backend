@@ -34,6 +34,34 @@ type PoliticianOut struct {
 	Status      string `json:"status,omitempty"`
 	AddedBy     string `json:"added_by,omitempty"`
 	Source      string `json:"source"` // "essentials" or "staging"
+
+	// Extended fields (populated for staging politicians that have them)
+	BioText                string          `json:"bio_text,omitempty"`
+	PhotoURL               string          `json:"photo_url,omitempty"`
+	Contacts               json.RawMessage `json:"contacts,omitempty"`
+	Degrees                json.RawMessage `json:"degrees,omitempty"`
+	Experiences            json.RawMessage `json:"experiences,omitempty"`
+	URLs                   json.RawMessage `json:"urls,omitempty"`
+	WebFormURL             string          `json:"web_form_url,omitempty"`
+	Images                 json.RawMessage `json:"images,omitempty"`
+	Addresses              json.RawMessage `json:"addresses,omitempty"`
+	ValidFrom              string          `json:"valid_from,omitempty"`
+	ValidTo                string          `json:"valid_to,omitempty"`
+	TotalYearsInOffice     int             `json:"total_years_in_office,omitempty"`
+	OfficeDescription      string          `json:"office_description,omitempty"`
+	OfficeSeats            int             `json:"office_seats,omitempty"`
+	PartisanType           string          `json:"partisan_type,omitempty"`
+	Salary                 string          `json:"salary,omitempty"`
+	NormalizedPositionName string          `json:"normalized_position_name,omitempty"`
+	DistrictType           string          `json:"district_type_full,omitempty"`
+	DistrictOCDID          string          `json:"district_ocd_id,omitempty"`
+	DistrictGeoID          string          `json:"district_geo_id,omitempty"`
+	ChamberName            string          `json:"chamber_name,omitempty"`
+	TermLimit              string          `json:"term_limit,omitempty"`
+	TermLength             string          `json:"term_length,omitempty"`
+	ElectionFrequency      string          `json:"election_frequency,omitempty"`
+	IsAppointed            bool            `json:"is_appointed,omitempty"`
+	IsVacant               bool            `json:"is_vacant,omitempty"`
 }
 
 // GetAllData returns all data needed by the data-entry frontend
@@ -108,17 +136,43 @@ func GetAllData(w http.ResponseWriter, r *http.Request) {
 			extID = *sp.ExternalID
 		}
 		politicians = append(politicians, PoliticianOut{
-			ID:          sp.ID.String(),
-			ExternalID:  extID,
-			FullName:    sp.FullName,
-			Party:       sp.Party,
-			Office:      sp.Office,
-			OfficeLevel: sp.OfficeLevel,
-			State:       sp.State,
-			District:    sp.District,
-			Status:      sp.Status,
-			AddedBy:     sp.AddedBy,
-			Source:      "staging",
+			ID:                     sp.ID.String(),
+			ExternalID:             extID,
+			FullName:               sp.FullName,
+			Party:                  sp.Party,
+			Office:                 sp.Office,
+			OfficeLevel:            sp.OfficeLevel,
+			State:                  sp.State,
+			District:               sp.District,
+			Status:                 sp.Status,
+			AddedBy:                sp.AddedBy,
+			Source:                 "staging",
+			BioText:                sp.BioText,
+			PhotoURL:               sp.PhotoURL,
+			Contacts:               json.RawMessage(sp.Contacts),
+			Degrees:                json.RawMessage(sp.Degrees),
+			Experiences:            json.RawMessage(sp.Experiences),
+			URLs:                   json.RawMessage(sp.URLs),
+			WebFormURL:             sp.WebFormURL,
+			Images:                 json.RawMessage(sp.Images),
+			Addresses:              json.RawMessage(sp.Addresses),
+			ValidFrom:              sp.ValidFrom,
+			ValidTo:                sp.ValidTo,
+			TotalYearsInOffice:     sp.TotalYearsInOffice,
+			OfficeDescription:      sp.OfficeDescription,
+			OfficeSeats:            sp.OfficeSeats,
+			PartisanType:           sp.PartisanType,
+			Salary:                 sp.Salary,
+			NormalizedPositionName: sp.NormalizedPositionName,
+			DistrictType:           sp.DistrictType,
+			DistrictOCDID:          sp.DistrictOCDID,
+			DistrictGeoID:          sp.DistrictGeoID,
+			ChamberName:            sp.ChamberName,
+			TermLimit:              sp.TermLimit,
+			TermLength:             sp.TermLength,
+			ElectionFrequency:      sp.ElectionFrequency,
+			IsAppointed:            sp.IsAppointed,
+			IsVacant:               sp.IsVacant,
 		})
 	}
 
@@ -788,9 +842,30 @@ func CreatePolitician(w http.ResponseWriter, r *http.Request) {
 		District    string          `json:"district"`
 		BioText     string          `json:"bio_text"`
 		PhotoURL    string          `json:"photo_url"`
-		Contacts    json.RawMessage `json:"contacts"`
-		Degrees     json.RawMessage `json:"degrees"`
-		Experiences json.RawMessage `json:"experiences"`
+		Contacts               json.RawMessage `json:"contacts"`
+		Degrees                json.RawMessage `json:"degrees"`
+		Experiences            json.RawMessage `json:"experiences"`
+		URLs                   json.RawMessage `json:"urls,omitempty"`
+		WebFormURL             string          `json:"web_form_url,omitempty"`
+		Images                 json.RawMessage `json:"images,omitempty"`
+		Addresses              json.RawMessage `json:"addresses,omitempty"`
+		ValidFrom              string          `json:"valid_from,omitempty"`
+		ValidTo                string          `json:"valid_to,omitempty"`
+		TotalYearsInOffice     int             `json:"total_years_in_office,omitempty"`
+		OfficeDescription      string          `json:"office_description,omitempty"`
+		OfficeSeats            int             `json:"office_seats,omitempty"`
+		PartisanType           string          `json:"partisan_type,omitempty"`
+		Salary                 string          `json:"salary,omitempty"`
+		NormalizedPositionName string          `json:"normalized_position_name,omitempty"`
+		DistrictType           string          `json:"district_type,omitempty"`
+		DistrictOCDID          string          `json:"district_ocd_id,omitempty"`
+		DistrictGeoID          string          `json:"district_geo_id,omitempty"`
+		ChamberName            string          `json:"chamber_name,omitempty"`
+		TermLimit              string          `json:"term_limit,omitempty"`
+		TermLength             string          `json:"term_length,omitempty"`
+		ElectionFrequency      string          `json:"election_frequency,omitempty"`
+		IsAppointed            bool            `json:"is_appointed,omitempty"`
+		IsVacant               bool            `json:"is_vacant,omitempty"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -804,21 +879,42 @@ func CreatePolitician(w http.ResponseWriter, r *http.Request) {
 	}
 
 	politician := StagingPolitician{
-		ExternalID:  req.ExternalID,
-		FullName:    req.FullName,
-		Party:       req.Party,
-		Office:      req.Office,
-		OfficeLevel: req.OfficeLevel,
-		State:       req.State,
-		District:    req.District,
-		BioText:     req.BioText,
-		PhotoURL:    req.PhotoURL,
-		Contacts:    JSONB(req.Contacts),
-		Degrees:     JSONB(req.Degrees),
-		Experiences: JSONB(req.Experiences),
-		Status:      "draft",
-		AddedBy:     userID,
-		ReviewedBy:  pq.StringArray{},
+		ExternalID:             req.ExternalID,
+		FullName:               req.FullName,
+		Party:                  req.Party,
+		Office:                 req.Office,
+		OfficeLevel:            req.OfficeLevel,
+		State:                  req.State,
+		District:               req.District,
+		BioText:                req.BioText,
+		PhotoURL:               req.PhotoURL,
+		Contacts:               JSONB(req.Contacts),
+		Degrees:                JSONB(req.Degrees),
+		Experiences:            JSONB(req.Experiences),
+		URLs:                   JSONB(req.URLs),
+		WebFormURL:             req.WebFormURL,
+		Images:                 JSONB(req.Images),
+		Addresses:              JSONB(req.Addresses),
+		ValidFrom:              req.ValidFrom,
+		ValidTo:                req.ValidTo,
+		TotalYearsInOffice:     req.TotalYearsInOffice,
+		OfficeDescription:      req.OfficeDescription,
+		OfficeSeats:            req.OfficeSeats,
+		PartisanType:           req.PartisanType,
+		Salary:                 req.Salary,
+		NormalizedPositionName: req.NormalizedPositionName,
+		DistrictType:           req.DistrictType,
+		DistrictOCDID:          req.DistrictOCDID,
+		DistrictGeoID:          req.DistrictGeoID,
+		ChamberName:            req.ChamberName,
+		TermLimit:              req.TermLimit,
+		TermLength:             req.TermLength,
+		ElectionFrequency:      req.ElectionFrequency,
+		IsAppointed:            req.IsAppointed,
+		IsVacant:               req.IsVacant,
+		Status:                 "draft",
+		AddedBy:                userID,
+		ReviewedBy:             pq.StringArray{},
 	}
 
 	if err := db.DB.Create(&politician).Error; err != nil {
@@ -845,9 +941,9 @@ func GetPolitician(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(politician)
 }
 
-// UpdatePolitician allows the original author to update a pending politician
+// UpdatePolitician allows any authenticated user to update a draft/pending politician
 func UpdatePolitician(w http.ResponseWriter, r *http.Request) {
-	userID, ok := utils.GetUserIDFromContext(r.Context())
+	_, ok := utils.GetUserIDFromContext(r.Context())
 	if !ok {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -861,10 +957,6 @@ func UpdatePolitician(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if politician.AddedBy != userID {
-		http.Error(w, "Only the author can update this politician", http.StatusForbidden)
-		return
-	}
 	if politician.Status != "draft" && politician.Status != "pending" {
 		http.Error(w, "Cannot update politician after submission", http.StatusBadRequest)
 		return
@@ -879,9 +971,30 @@ func UpdatePolitician(w http.ResponseWriter, r *http.Request) {
 		District    *string         `json:"district,omitempty"`
 		BioText     *string         `json:"bio_text,omitempty"`
 		PhotoURL    *string         `json:"photo_url,omitempty"`
-		Contacts    json.RawMessage `json:"contacts,omitempty"`
-		Degrees     json.RawMessage `json:"degrees,omitempty"`
-		Experiences json.RawMessage `json:"experiences,omitempty"`
+		Contacts               json.RawMessage `json:"contacts,omitempty"`
+		Degrees                json.RawMessage `json:"degrees,omitempty"`
+		Experiences            json.RawMessage `json:"experiences,omitempty"`
+		URLs                   json.RawMessage `json:"urls,omitempty"`
+		WebFormURL             *string         `json:"web_form_url,omitempty"`
+		Images                 json.RawMessage `json:"images,omitempty"`
+		Addresses              json.RawMessage `json:"addresses,omitempty"`
+		ValidFrom              *string         `json:"valid_from,omitempty"`
+		ValidTo                *string         `json:"valid_to,omitempty"`
+		TotalYearsInOffice     *int            `json:"total_years_in_office,omitempty"`
+		OfficeDescription      *string         `json:"office_description,omitempty"`
+		OfficeSeats            *int            `json:"office_seats,omitempty"`
+		PartisanType           *string         `json:"partisan_type,omitempty"`
+		Salary                 *string         `json:"salary,omitempty"`
+		NormalizedPositionName *string         `json:"normalized_position_name,omitempty"`
+		DistrictType           *string         `json:"district_type,omitempty"`
+		DistrictOCDID          *string         `json:"district_ocd_id,omitempty"`
+		DistrictGeoID          *string         `json:"district_geo_id,omitempty"`
+		ChamberName            *string         `json:"chamber_name,omitempty"`
+		TermLimit              *string         `json:"term_limit,omitempty"`
+		TermLength             *string         `json:"term_length,omitempty"`
+		ElectionFrequency      *string         `json:"election_frequency,omitempty"`
+		IsAppointed            *bool           `json:"is_appointed,omitempty"`
+		IsVacant               *bool           `json:"is_vacant,omitempty"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -922,6 +1035,69 @@ func UpdatePolitician(w http.ResponseWriter, r *http.Request) {
 	}
 	if req.Experiences != nil {
 		updates["experiences"] = JSONB(req.Experiences)
+	}
+	if req.URLs != nil {
+		updates["urls"] = JSONB(req.URLs)
+	}
+	if req.WebFormURL != nil {
+		updates["web_form_url"] = *req.WebFormURL
+	}
+	if req.Images != nil {
+		updates["images"] = JSONB(req.Images)
+	}
+	if req.Addresses != nil {
+		updates["addresses"] = JSONB(req.Addresses)
+	}
+	if req.ValidFrom != nil {
+		updates["valid_from"] = *req.ValidFrom
+	}
+	if req.ValidTo != nil {
+		updates["valid_to"] = *req.ValidTo
+	}
+	if req.TotalYearsInOffice != nil {
+		updates["total_years_in_office"] = *req.TotalYearsInOffice
+	}
+	if req.OfficeDescription != nil {
+		updates["office_description"] = *req.OfficeDescription
+	}
+	if req.OfficeSeats != nil {
+		updates["office_seats"] = *req.OfficeSeats
+	}
+	if req.PartisanType != nil {
+		updates["partisan_type"] = *req.PartisanType
+	}
+	if req.Salary != nil {
+		updates["salary"] = *req.Salary
+	}
+	if req.NormalizedPositionName != nil {
+		updates["normalized_position_name"] = *req.NormalizedPositionName
+	}
+	if req.DistrictType != nil {
+		updates["district_type"] = *req.DistrictType
+	}
+	if req.DistrictOCDID != nil {
+		updates["district_ocd_id"] = *req.DistrictOCDID
+	}
+	if req.DistrictGeoID != nil {
+		updates["district_geo_id"] = *req.DistrictGeoID
+	}
+	if req.ChamberName != nil {
+		updates["chamber_name"] = *req.ChamberName
+	}
+	if req.TermLimit != nil {
+		updates["term_limit"] = *req.TermLimit
+	}
+	if req.TermLength != nil {
+		updates["term_length"] = *req.TermLength
+	}
+	if req.ElectionFrequency != nil {
+		updates["election_frequency"] = *req.ElectionFrequency
+	}
+	if req.IsAppointed != nil {
+		updates["is_appointed"] = *req.IsAppointed
+	}
+	if req.IsVacant != nil {
+		updates["is_vacant"] = *req.IsVacant
 	}
 
 	if err := db.DB.Model(&politician).Updates(updates).Error; err != nil {
@@ -1143,12 +1319,6 @@ func ApprovePoliticianReview(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if politician.AddedBy == userID {
-		tx.Rollback()
-		http.Error(w, "Cannot review your own submission", http.StatusForbidden)
-		return
-	}
-
 	politician.ReviewCount++
 	politician.ReviewedBy = append(politician.ReviewedBy, userID)
 	now := time.Now()
@@ -1166,8 +1336,8 @@ func ApprovePoliticianReview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// If 2 approvals, promote to essentials
-	if politician.ReviewCount >= 2 {
+	// If 1 approval, promote to essentials
+	if politician.ReviewCount >= 1 {
 		politician.Status = "approved"
 		politician.ApprovedAt = &now
 

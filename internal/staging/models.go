@@ -113,6 +113,43 @@ type StagingPolitician struct {
 	Degrees     JSONB  `json:"degrees" gorm:"type:jsonb;default:'[]'"`     // [{degree, major, school, grad_year}]
 	Experiences JSONB  `json:"experiences" gorm:"type:jsonb;default:'[]'"` // [{title, organization, type, start, end}]
 
+	// Online presence
+	URLs       JSONB  `json:"urls" gorm:"type:jsonb;default:'[]'"`          // ["https://...", ...]
+	WebFormURL string `json:"web_form_url,omitempty"`
+
+	// Photos
+	Images JSONB `json:"images" gorm:"type:jsonb;default:'[]'"` // [{url, type}]
+
+	// Addresses
+	Addresses JSONB `json:"addresses" gorm:"type:jsonb;default:'[]'"` // [{address_1, address_2, state, postal_code, phone_1, phone_2}]
+
+	// Term dates
+	ValidFrom          string `json:"valid_from,omitempty"`
+	ValidTo            string `json:"valid_to,omitempty"`
+	TotalYearsInOffice int    `json:"total_years_in_office,omitempty"`
+
+	// Office details
+	OfficeDescription      string `json:"office_description,omitempty"`
+	OfficeSeats            int    `json:"office_seats,omitempty"`
+	PartisanType           string `json:"partisan_type,omitempty"`
+	Salary                 string `json:"salary,omitempty"`
+	NormalizedPositionName string `json:"normalized_position_name,omitempty"`
+
+	// District/Geo identifiers
+	DistrictType  string `json:"district_type,omitempty"`
+	DistrictOCDID string `json:"district_ocd_id,omitempty"`
+	DistrictGeoID string `json:"district_geo_id,omitempty"`
+
+	// Chamber/Term info
+	ChamberName       string `json:"chamber_name,omitempty"`
+	TermLimit         string `json:"term_limit,omitempty"`
+	TermLength        string `json:"term_length,omitempty"`
+	ElectionFrequency string `json:"election_frequency,omitempty"`
+
+	// Status flags
+	IsAppointed bool `json:"is_appointed,omitempty"`
+	IsVacant    bool `json:"is_vacant,omitempty"`
+
 	// Workflow
 	Status  string `gorm:"default:'draft';index" json:"status"` // draft, needs_review, approved, rejected, merged
 	AddedBy string `gorm:"not null" json:"added_by"`
