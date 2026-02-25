@@ -164,6 +164,19 @@
           }
         ]
       },
+      "building_photos": [
+        {"city": "City of Los Angeles",  "place_geoid": "0644000", "wiki_title": "Los_Angeles_City_Hall.jpg",              "license": "public_domain"},
+        {"city": "City of Long Beach",   "place_geoid": "0643000", "wiki_title": "Long_Beach_Civic_Center.jpg",            "license": "public_domain"},
+        {"city": "City of Glendale",     "place_geoid": "0630000", "wiki_title": "Glendale,_City_Hall,_2015.12.20.jpg",     "license": "cc_by_sa_4.0"},
+        {"city": "City of Pomona",       "place_geoid": "0658072", "wiki_title": "Pomona_city_hall_(cropped).jpg",          "license": "cc_by_2.5"},
+        {"city": "City of Torrance",     "place_geoid": "0680000", "wiki_title": "Torrance_CA_City_Hall.jpg",              "license": "cc_by_sa_4.0"},
+        {"city": "City of Pasadena",     "place_geoid": "0656000", "wiki_title": "Pasadena_City_Hall_DSC_4681_ad.JPG",     "license": "cc_by_sa_3.0"},
+        {"city": "City of West Covina",  "place_geoid": "0684200", "wiki_title": "West_Covina_Civic_Center.jpg",           "license": "cc_by_sa_4.0"},
+        {"city": "City of Downey",       "place_geoid": "0619766", "wiki_title": "Downey_City_Hall_(cropped).jpg",         "license": "public_domain"},
+        {"city": "City of Burbank",      "place_geoid": "0608954", "wiki_title": "Burbank_City_Hall.JPG",                  "license": "cc_by_sa_4.0"},
+        {"city": "City of Carson",       "place_geoid": "0611530", "wiki_title": "Carson_city_hall.jpg",                   "license": "cc_by_sa_4.0"},
+        {"city": "City of Norwalk",      "place_geoid": "0652526", "wiki_title": "Norwalk_City_Hall,_Norwalk,_CA.jpg",     "license": "cc0"}
+      ],
       "cities": [
         {
           "id": "la_city",
