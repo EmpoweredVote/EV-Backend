@@ -1,0 +1,474 @@
+{
+  "default_region": "la_county",
+  "regions": {
+    "la_county": {
+      "state": "CA",
+      "county_name": "Los Angeles County",
+      "county_fips": "06037",
+      "sources": {
+        "supervisors": {
+          "url": "https://bos.lacounty.gov/board-of-supervisors/",
+          "district_type": "COUNTY",
+          "count": 5
+        },
+        "la_city_council": {
+          "url": "https://clerk.lacity.gov/city-council/city-council-members",
+          "district_type": "LOCAL",
+          "count": 15
+        }
+      },
+      "cities": [
+        {
+          "id": "la_city",
+          "name": "City of Los Angeles",
+          "place_geoid": "0644000"
+        },
+        {
+          "id": "agoura_hills_city_council",
+          "name": "City of Agoura Hills",
+          "place_geoid": "0600394"
+        },
+        {
+          "id": "alhambra_city_council",
+          "name": "City of Alhambra",
+          "place_geoid": "0600884"
+        },
+        {
+          "id": "arcadia_city_council",
+          "name": "City of Arcadia",
+          "place_geoid": "0602462"
+        },
+        {
+          "id": "artesia_city_council",
+          "name": "City of Artesia",
+          "place_geoid": "0602896"
+        },
+        {
+          "id": "avalon_city_council",
+          "name": "City of Avalon",
+          "place_geoid": "0603274"
+        },
+        {
+          "id": "azusa_city_council",
+          "name": "City of Azusa",
+          "place_geoid": "0603386"
+        },
+        {
+          "id": "baldwin_park_city_council",
+          "name": "City of Baldwin Park",
+          "place_geoid": "0603666"
+        },
+        {
+          "id": "bell_city_council",
+          "name": "City of Bell",
+          "place_geoid": "0604870"
+        },
+        {
+          "id": "bell_gardens_city_council",
+          "name": "City of Bell Gardens",
+          "place_geoid": "0604996"
+        },
+        {
+          "id": "bellflower_city_council",
+          "name": "City of Bellflower",
+          "place_geoid": "0604982"
+        },
+        {
+          "id": "beverly_hills_city_council",
+          "name": "City of Beverly Hills",
+          "place_geoid": "0606308"
+        },
+        {
+          "id": "bradbury_city_council",
+          "name": "City of Bradbury",
+          "place_geoid": "0607946"
+        },
+        {
+          "id": "burbank_city_council",
+          "name": "City of Burbank",
+          "place_geoid": "0608954"
+        },
+        {
+          "id": "calabasas_city_council",
+          "name": "City of Calabasas",
+          "place_geoid": "0609598"
+        },
+        {
+          "id": "carson_city_council",
+          "name": "City of Carson",
+          "place_geoid": "0611530"
+        },
+        {
+          "id": "cerritos_city_council",
+          "name": "City of Cerritos",
+          "place_geoid": "0612552"
+        },
+        {
+          "id": "claremont_city_council",
+          "name": "City of Claremont",
+          "place_geoid": "0613756"
+        },
+        {
+          "id": "commerce_city_council",
+          "name": "City of Commerce",
+          "place_geoid": "0614974"
+        },
+        {
+          "id": "compton_city_council",
+          "name": "City of Compton",
+          "place_geoid": "0615044"
+        },
+        {
+          "id": "covina_city_council",
+          "name": "City of Covina",
+          "place_geoid": "0616742"
+        },
+        {
+          "id": "cudahy_city_council",
+          "name": "City of Cudahy",
+          "place_geoid": "0617498"
+        },
+        {
+          "id": "culver_city_city_council",
+          "name": "City of Culver City",
+          "place_geoid": "0617568"
+        },
+        {
+          "id": "diamond_bar_city_council",
+          "name": "City of Diamond Bar",
+          "place_geoid": "0619192"
+        },
+        {
+          "id": "downey_city_council",
+          "name": "City of Downey",
+          "place_geoid": "0619766"
+        },
+        {
+          "id": "duarte_city_council",
+          "name": "City of Duarte",
+          "place_geoid": "0619990"
+        },
+        {
+          "id": "el_monte_city_council",
+          "name": "City of El Monte",
+          "place_geoid": "0622230"
+        },
+        {
+          "id": "el_segundo_city_council",
+          "name": "City of El Segundo",
+          "place_geoid": "0622412"
+        },
+        {
+          "id": "gardena_city_council",
+          "name": "City of Gardena",
+          "place_geoid": "0628168"
+        },
+        {
+          "id": "glendale_city_council",
+          "name": "City of Glendale",
+          "place_geoid": "0630000"
+        },
+        {
+          "id": "glendora_city_council",
+          "name": "City of Glendora",
+          "place_geoid": "0630014"
+        },
+        {
+          "id": "hawaiian_gardens_city_council",
+          "name": "City of Hawaiian Gardens",
+          "place_geoid": "0632506"
+        },
+        {
+          "id": "hawthorne_city_council",
+          "name": "City of Hawthorne",
+          "place_geoid": "0632548"
+        },
+        {
+          "id": "hermosa_beach_city_council",
+          "name": "City of Hermosa Beach",
+          "place_geoid": "0633364"
+        },
+        {
+          "id": "hidden_hills_city_council",
+          "name": "City of Hidden Hills",
+          "place_geoid": "0633518"
+        },
+        {
+          "id": "huntington_park_city_council",
+          "name": "City of Huntington Park",
+          "place_geoid": "0636056"
+        },
+        {
+          "id": "industry_city_council",
+          "name": "City of Industry",
+          "place_geoid": "0636490"
+        },
+        {
+          "id": "inglewood_city_council",
+          "name": "City of Inglewood",
+          "place_geoid": "0636546"
+        },
+        {
+          "id": "irwindale_city_council",
+          "name": "City of Irwindale",
+          "place_geoid": "0636826"
+        },
+        {
+          "id": "la_canada_flintridge_city_council",
+          "name": "City of La Canada Flintridge",
+          "place_geoid": "0639003"
+        },
+        {
+          "id": "la_habra_heights_city_council",
+          "name": "City of La Habra Heights",
+          "place_geoid": "0639304"
+        },
+        {
+          "id": "la_mirada_city_council",
+          "name": "City of La Mirada",
+          "place_geoid": "0640032"
+        },
+        {
+          "id": "la_palma_city_council",
+          "name": "City of La Palma",
+          "place_geoid": "0640256"
+        },
+        {
+          "id": "la_puente_city_council",
+          "name": "City of La Puente",
+          "place_geoid": "0640340"
+        },
+        {
+          "id": "la_verne_city_council",
+          "name": "City of La Verne",
+          "place_geoid": "0640830"
+        },
+        {
+          "id": "lakewood_city_council",
+          "name": "City of Lakewood",
+          "place_geoid": "0639892"
+        },
+        {
+          "id": "lancaster_city_council",
+          "name": "City of Lancaster",
+          "place_geoid": "0640130"
+        },
+        {
+          "id": "lawndale_city_council",
+          "name": "City of Lawndale",
+          "place_geoid": "0640886"
+        },
+        {
+          "id": "lomita_city_council",
+          "name": "City of Lomita",
+          "place_geoid": "0642468"
+        },
+        {
+          "id": "long_beach_city_council",
+          "name": "City of Long Beach",
+          "place_geoid": "0643000"
+        },
+        {
+          "id": "los_alamitos_city_council",
+          "name": "City of Los Alamitos",
+          "place_geoid": "0643224"
+        },
+        {
+          "id": "lynwood_city_council",
+          "name": "City of Lynwood",
+          "place_geoid": "0644574"
+        },
+        {
+          "id": "malibu_city_council",
+          "name": "City of Malibu",
+          "place_geoid": "0645246"
+        },
+        {
+          "id": "manhattan_beach_city_council",
+          "name": "City of Manhattan Beach",
+          "place_geoid": "0645400"
+        },
+        {
+          "id": "maywood_city_council",
+          "name": "City of Maywood",
+          "place_geoid": "0646492"
+        },
+        {
+          "id": "monrovia_city_council",
+          "name": "City of Monrovia",
+          "place_geoid": "0648648"
+        },
+        {
+          "id": "montebello_city_council",
+          "name": "City of Montebello",
+          "place_geoid": "0648816"
+        },
+        {
+          "id": "monterey_park_city_council",
+          "name": "City of Monterey Park",
+          "place_geoid": "0648914"
+        },
+        {
+          "id": "norwalk_city_council",
+          "name": "City of Norwalk",
+          "place_geoid": "0652526"
+        },
+        {
+          "id": "palmdale_city_council",
+          "name": "City of Palmdale",
+          "place_geoid": "0655156"
+        },
+        {
+          "id": "palos_verdes_estates_city_council",
+          "name": "City of Palos Verdes Estates",
+          "place_geoid": "0655380"
+        },
+        {
+          "id": "paramount_city_council",
+          "name": "City of Paramount",
+          "place_geoid": "0655618"
+        },
+        {
+          "id": "pasadena_city_council",
+          "name": "City of Pasadena",
+          "place_geoid": "0656000"
+        },
+        {
+          "id": "pico_rivera_city_council",
+          "name": "City of Pico Rivera",
+          "place_geoid": "0656924"
+        },
+        {
+          "id": "pomona_city_council",
+          "name": "City of Pomona",
+          "place_geoid": "0658072"
+        },
+        {
+          "id": "rancho_palos_verdes_city_council",
+          "name": "City of Rancho Palos Verdes",
+          "place_geoid": "0659514"
+        },
+        {
+          "id": "redondo_beach_city_council",
+          "name": "City of Redondo Beach",
+          "place_geoid": "0660018"
+        },
+        {
+          "id": "rolling_hills_city_council",
+          "name": "City of Rolling Hills",
+          "place_geoid": "0662602"
+        },
+        {
+          "id": "rolling_hills_estates_city_council",
+          "name": "City of Rolling Hills Estates",
+          "place_geoid": "0662644"
+        },
+        {
+          "id": "rosemead_city_council",
+          "name": "City of Rosemead",
+          "place_geoid": "0662896"
+        },
+        {
+          "id": "san_dimas_city_council",
+          "name": "City of San Dimas",
+          "place_geoid": "0666070"
+        },
+        {
+          "id": "san_fernando_city_council",
+          "name": "City of San Fernando",
+          "place_geoid": "0666140"
+        },
+        {
+          "id": "san_gabriel_city_council",
+          "name": "City of San Gabriel",
+          "place_geoid": "0667042"
+        },
+        {
+          "id": "san_marino_city_council",
+          "name": "City of San Marino",
+          "place_geoid": "0668224"
+        },
+        {
+          "id": "santa_clarita_city_council",
+          "name": "City of Santa Clarita",
+          "place_geoid": "0669088"
+        },
+        {
+          "id": "santa_fe_springs_city_council",
+          "name": "City of Santa Fe Springs",
+          "place_geoid": "0669154"
+        },
+        {
+          "id": "santa_monica_city_council",
+          "name": "City of Santa Monica",
+          "place_geoid": "0670000"
+        },
+        {
+          "id": "sierra_madre_city_council",
+          "name": "City of Sierra Madre",
+          "place_geoid": "0671806"
+        },
+        {
+          "id": "signal_hill_city_council",
+          "name": "City of Signal Hill",
+          "place_geoid": "0671876"
+        },
+        {
+          "id": "south_el_monte_city_council",
+          "name": "City of South El Monte",
+          "place_geoid": "0672996"
+        },
+        {
+          "id": "south_gate_city_council",
+          "name": "City of South Gate",
+          "place_geoid": "0673080"
+        },
+        {
+          "id": "south_pasadena_city_council",
+          "name": "City of South Pasadena",
+          "place_geoid": "0673220"
+        },
+        {
+          "id": "temple_city_city_council",
+          "name": "City of Temple City",
+          "place_geoid": "0678148"
+        },
+        {
+          "id": "torrance_city_council",
+          "name": "City of Torrance",
+          "place_geoid": "0680000"
+        },
+        {
+          "id": "vernon_city_council",
+          "name": "City of Vernon",
+          "place_geoid": "0682422"
+        },
+        {
+          "id": "walnut_city_council",
+          "name": "City of Walnut",
+          "place_geoid": "0683332"
+        },
+        {
+          "id": "west_covina_city_council",
+          "name": "City of West Covina",
+          "place_geoid": "0684200"
+        },
+        {
+          "id": "west_hollywood_city_council",
+          "name": "City of West Hollywood",
+          "place_geoid": "0684410"
+        },
+        {
+          "id": "westlake_village_city_council",
+          "name": "City of Westlake Village",
+          "place_geoid": "0684438"
+        },
+        {
+          "id": "whittier_city_council",
+          "name": "City of Whittier",
+          "place_geoid": "0685292"
+        }
+      ]
+    }
+  }
+}
