@@ -256,6 +256,18 @@ type PoliticianContact struct {
 	ContactType  string    `json:"contact_type"` // "district", "capitol", etc.
 }
 
+// PositionDescription provides reusable descriptions for positions by normalized name.
+// When an office has no description of its own (e.g., scraped data), the API falls back
+// to this table: first matching (normalized_position_name, district_type), then generic
+// (normalized_position_name, district_type = '').
+type PositionDescription struct {
+	ID                     uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	NormalizedPositionName string    `json:"normalized_position_name" gorm:"uniqueIndex:idx_pos_desc_lookup"`
+	DistrictType           string    `json:"district_type" gorm:"uniqueIndex:idx_pos_desc_lookup;default:''"` // empty = generic/all
+	Description            string    `json:"description"`
+	Source                 string    `json:"source"` // "ballotready", "manual"
+}
+
 func (Politician) TableName() string {
 	return "essentials.politicians"
 }
@@ -330,4 +342,8 @@ func (ElectionRecord) TableName() string {
 
 func (PoliticianContact) TableName() string {
 	return "essentials.politician_contacts"
+}
+
+func (PositionDescription) TableName() string {
+	return "essentials.position_descriptions"
 }

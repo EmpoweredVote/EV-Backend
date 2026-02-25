@@ -1127,7 +1127,7 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		  COALESCE(p.bioguide_id, '') AS bioguide_id,
 		  COALESCE(p.slug, '') AS slug,
 		  COALESCE(p.total_years_in_office, 0) AS total_years_in_office,
-		  COALESCE(o.description, '') AS office_description,
+		  COALESCE(NULLIF(o.description, ''), pd_specific.description, pd_generic.description, '') AS office_description,
 		  zp.is_contained,
 		  COALESCE(p.valid_from, '') AS valid_from,
 		  COALESCE(p.valid_to, '') AS valid_to
@@ -1136,6 +1136,12 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		JOIN essentials.districts d ON d.id = o.district_id
 		LEFT JOIN essentials.chambers c ON c.id = o.chamber_id
 		LEFT JOIN essentials.governments g ON g.id = c.government_id
+		LEFT JOIN essentials.position_descriptions pd_specific
+		  ON pd_specific.normalized_position_name = COALESCE(NULLIF(o.normalized_position_name, ''), o.title)
+		  AND pd_specific.district_type = d.district_type
+		LEFT JOIN essentials.position_descriptions pd_generic
+		  ON pd_generic.normalized_position_name = COALESCE(NULLIF(o.normalized_position_name, ''), o.title)
+		  AND pd_generic.district_type = ''
 		LEFT JOIN essentials.zip_politicians zp ON zp.politician_id = p.id AND zp.zip = ?
 		WHERE (
 		  -- Federal executive officials (President, VP, Cabinet) - nationwide
@@ -1408,8 +1414,8 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		  d.district_type, d.label AS district_label,
 		  COALESCE(d.district_id, '') AS district_id_text,
 		  d.mtfcc,
-		  c.name AS chamber_name, c.name_formal AS chamber_name_formal,
-		  g.name AS government_name,
+		  COALESCE(c.name, '') AS chamber_name, COALESCE(c.name_formal, '') AS chamber_name_formal,
+		  COALESCE(g.name, '') AS government_name,
 		  COALESCE(c.election_frequency, '') AS election_frequency,
 		  p.is_appointed, p.is_vacant, p.is_off_cycle, p.specificity,
 		  o.seats, o.normalized_position_name, o.partisan_type, o.salary,
@@ -1418,14 +1424,20 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		  COALESCE(p.bioguide_id, '') AS bioguide_id,
 		  COALESCE(p.slug, '') AS slug,
 		  COALESCE(p.total_years_in_office, 0) AS total_years_in_office,
-		  COALESCE(o.description, '') AS office_description,
+		  COALESCE(NULLIF(o.description, ''), pd_specific.description, pd_generic.description, '') AS office_description,
 		  COALESCE(p.valid_from, '') AS valid_from,
 		  COALESCE(p.valid_to, '') AS valid_to
 		FROM essentials.politicians p
 		JOIN essentials.offices o ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
-		JOIN essentials.chambers c ON c.id = o.chamber_id
-		JOIN essentials.governments g ON g.id = c.government_id
+		LEFT JOIN essentials.chambers c ON c.id = o.chamber_id
+		LEFT JOIN essentials.governments g ON g.id = c.government_id
+		LEFT JOIN essentials.position_descriptions pd_specific
+		  ON pd_specific.normalized_position_name = COALESCE(NULLIF(o.normalized_position_name, ''), o.title)
+		  AND pd_specific.district_type = d.district_type
+		LEFT JOIN essentials.position_descriptions pd_generic
+		  ON pd_generic.normalized_position_name = COALESCE(NULLIF(o.normalized_position_name, ''), o.title)
+		  AND pd_generic.district_type = ''
 		WHERE (
 		  d.district_type = 'NATIONAL_EXEC'
 		  OR (
@@ -1962,22 +1974,28 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 		  COALESCE(p.total_years_in_office, 0) AS total_years_in_office,
 		  p.is_appointed, p.is_vacant, p.is_off_cycle, p.specificity,
 		  o.title AS office_title, o.representing_state, o.representing_city,
-		  COALESCE(o.description, '') AS office_description,
+		  COALESCE(NULLIF(o.description, ''), pd_specific.description, pd_generic.description, '') AS office_description,
 		  o.seats, o.normalized_position_name, o.partisan_type, o.salary,
 		  d.district_type, d.label AS district_label,
 		  COALESCE(d.district_id, '') AS district_id_text,
 		  d.mtfcc,
 		  d.geo_id, d.is_judicial, d.ocd_id,
-		  c.name AS chamber_name, c.name_formal AS chamber_name_formal,
-		  g.name AS government_name,
+		  COALESCE(c.name, '') AS chamber_name, COALESCE(c.name_formal, '') AS chamber_name_formal,
+		  COALESCE(g.name, '') AS government_name,
 		  COALESCE(c.election_frequency, '') AS election_frequency,
 		  COALESCE(p.valid_from, '') AS valid_from,
 		  COALESCE(p.valid_to, '') AS valid_to
 		FROM essentials.politicians p
 		JOIN essentials.offices o ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
-		JOIN essentials.chambers c ON c.id = o.chamber_id
-		JOIN essentials.governments g ON g.id = c.government_id
+		LEFT JOIN essentials.chambers c ON c.id = o.chamber_id
+		LEFT JOIN essentials.governments g ON g.id = c.government_id
+		LEFT JOIN essentials.position_descriptions pd_specific
+		  ON pd_specific.normalized_position_name = COALESCE(NULLIF(o.normalized_position_name, ''), o.title)
+		  AND pd_specific.district_type = d.district_type
+		LEFT JOIN essentials.position_descriptions pd_generic
+		  ON pd_generic.normalized_position_name = COALESCE(NULLIF(o.normalized_position_name, ''), o.title)
+		  AND pd_generic.district_type = ''
 		WHERE p.id = ?
 	`, parsedID).Scan(&r0).Error; err != nil {
 		http.Error(w, "DB fetch error", http.StatusInternalServerError)
@@ -2556,4 +2574,71 @@ func GetCandidatesByZip(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, candidates)
+}
+
+// ──────────────────────────────────────────────────
+// Position Descriptions CRUD (admin)
+// ──────────────────────────────────────────────────
+
+func ListPositionDescriptions(w http.ResponseWriter, r *http.Request) {
+	var descs []PositionDescription
+	if err := db.DB.Order("normalized_position_name, district_type").Find(&descs).Error; err != nil {
+		http.Error(w, "DB error", http.StatusInternalServerError)
+		return
+	}
+	writeJSON(w, descs)
+}
+
+func UpsertPositionDescription(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		NormalizedPositionName string `json:"normalized_position_name"`
+		DistrictType           string `json:"district_type"` // empty string = generic
+		Description            string `json:"description"`
+		Source                 string `json:"source"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+	if input.NormalizedPositionName == "" || input.Description == "" {
+		http.Error(w, "normalized_position_name and description are required", http.StatusBadRequest)
+		return
+	}
+	if input.Source == "" {
+		input.Source = "manual"
+	}
+
+	desc := PositionDescription{
+		NormalizedPositionName: input.NormalizedPositionName,
+		DistrictType:           input.DistrictType,
+		Description:            input.Description,
+		Source:                 input.Source,
+	}
+
+	// Upsert on the unique (normalized_position_name, district_type) pair
+	if err := db.DB.Where(
+		"normalized_position_name = ? AND district_type = ?",
+		input.NormalizedPositionName, input.DistrictType,
+	).Assign(desc).FirstOrCreate(&desc).Error; err != nil {
+		http.Error(w, "DB error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	writeJSON(w, desc)
+}
+
+func DeletePositionDescription(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		http.Error(w, "Invalid id", http.StatusBadRequest)
+		return
+	}
+
+	if err := db.DB.Delete(&PositionDescription{}, parsedID).Error; err != nil {
+		http.Error(w, "DB error", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }

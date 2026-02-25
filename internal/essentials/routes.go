@@ -31,6 +31,11 @@ func SetupRoutes() http.Handler {
 		r.Post("/admin/import", StartBulkImport)
 		r.Get("/admin/import/{jobID}", GetImportStatus)
 		r.Get("/admin/import", ListImportJobs)
+
+		// Position descriptions
+		r.Get("/admin/position-descriptions", ListPositionDescriptions)
+		r.Post("/admin/position-descriptions", UpsertPositionDescription)
+		r.Delete("/admin/position-descriptions/{id}", DeletePositionDescription)
 	})
 
 	return r
