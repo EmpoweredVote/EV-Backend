@@ -55,6 +55,8 @@ func Init() {
 		&ElectionRecord{},
 		&PoliticianContact{},
 		&PositionDescription{},
+		// Phase 39: Building photos for city hall imagery
+		&BuildingPhoto{},
 		// &GeofenceBoundary{}, // Table already exists, managed manually to avoid GORM constraint issues
 	); err != nil {
 		log.Fatal("Failed to auto-migrate tables", err)
