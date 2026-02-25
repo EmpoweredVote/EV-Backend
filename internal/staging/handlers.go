@@ -21,6 +21,17 @@ import (
 
 const LockDuration = 10 * time.Minute
 
+// isAdmin checks whether the given user has the "admin" role.
+func isAdmin(userID string) bool {
+	var user struct {
+		Role string
+	}
+	if err := db.DB.Table("app_auth.users").Select("role").Where("user_id = ?", userID).Scan(&user).Error; err != nil {
+		return false
+	}
+	return user.Role == "admin"
+}
+
 // PoliticianOut is the unified shape the data-entry frontend expects.
 type PoliticianOut struct {
 	ID          string `json:"id"`
@@ -475,6 +486,8 @@ func ApproveStance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	admin := isAdmin(userID)
+
 	// Check that reviewer hasn't already approved
 	for _, reviewer := range stance.ReviewedBy {
 		if reviewer == userID {
@@ -484,8 +497,8 @@ func ApproveStance(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Can't review your own submission
-	if stance.AddedBy == userID {
+	// Can't review your own submission (admins may override)
+	if stance.AddedBy == userID && !admin {
 		tx.Rollback()
 		http.Error(w, "Cannot review your own submission", http.StatusForbidden)
 		return
@@ -498,10 +511,14 @@ func ApproveStance(w http.ResponseWriter, r *http.Request) {
 	stance.LastReviewedAt = &now
 
 	// Log the review action
+	action := "approved"
+	if admin {
+		action = "admin_approved"
+	}
 	reviewLog := ReviewLog{
 		StanceID:     stance.ID,
 		ReviewerName: userID,
-		Action:       "approved",
+		Action:       action,
 		CreatedAt:    now,
 	}
 	if err := tx.Create(&reviewLog).Error; err != nil {
@@ -510,8 +527,12 @@ func ApproveStance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// If 2 approvals, promote to production
-	if stance.ReviewCount >= 2 {
+	// Admins can approve in a single review; others require 2
+	threshold := 2
+	if admin {
+		threshold = 1
+	}
+	if stance.ReviewCount >= threshold {
 		stance.Status = "approved"
 		stance.ApprovedAt = &now
 
@@ -1311,6 +1332,8 @@ func ApprovePoliticianReview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	admin := isAdmin(userID)
+
 	for _, reviewer := range politician.ReviewedBy {
 		if reviewer == userID {
 			tx.Rollback()
@@ -1319,15 +1342,26 @@ func ApprovePoliticianReview(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Non-admins cannot approve their own submission
+	if politician.AddedBy == userID && !admin {
+		tx.Rollback()
+		http.Error(w, "Cannot review your own submission", http.StatusForbidden)
+		return
+	}
+
 	politician.ReviewCount++
 	politician.ReviewedBy = append(politician.ReviewedBy, userID)
 	now := time.Now()
 	politician.LastReviewedAt = &now
 
+	action := "approved"
+	if admin {
+		action = "admin_approved"
+	}
 	reviewLog := PoliticianReviewLog{
 		PoliticianID: politician.ID,
 		ReviewerName: userID,
-		Action:       "approved",
+		Action:       action,
 		CreatedAt:    now,
 	}
 	if err := tx.Create(&reviewLog).Error; err != nil {
