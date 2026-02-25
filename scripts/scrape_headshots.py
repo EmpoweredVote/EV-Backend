@@ -58,8 +58,17 @@ BROWSER_HEADERS = {
     "Referer": "https://bos.lacounty.gov/",
 }
 
+# Wikipedia requires a descriptive User-Agent per their API policy to avoid 429 rate limits.
+# See: https://meta.wikimedia.org/wiki/User-Agent_policy
+WIKIPEDIA_HEADERS = {
+    "User-Agent": "EmpoweredVote/1.0 (https://empowered.vote; headshot-scraper) python-requests/2.32",
+}
+
 # Rate limit: 1 second between requests to avoid overwhelming government servers
 DOWNLOAD_DELAY_SECONDS = 1.0
+
+# Longer delay for Wikipedia CDN to respect their rate limits (429 seen at 1s intervals)
+WIKIPEDIA_DELAY_SECONDS = 2.0
 
 
 # ============================================================
@@ -67,7 +76,11 @@ DOWNLOAD_DELAY_SECONDS = 1.0
 # ============================================================
 
 def download_image(url, timeout=15):
-    """Download image bytes from URL with browser User-Agent.
+    """Download image bytes from URL with appropriate headers per domain.
+
+    Uses Wikipedia-specific User-Agent for wikimedia.org URLs (required by
+    Wikipedia's User-Agent policy to avoid 429 rate limiting).
+    Uses browser User-Agent with Referer for government CDN URLs.
 
     Args:
         url: Direct image URL (.jpg, .png, .webp, etc.)
@@ -82,7 +95,13 @@ def download_image(url, timeout=15):
         requests.HTTPError: If server returns 4xx/5xx
         requests.RequestException: If connection fails or times out
     """
-    resp = requests.get(url, headers=BROWSER_HEADERS, timeout=timeout)
+    # Use Wikipedia-specific headers for wikimedia.org URLs
+    if "wikimedia.org" in url or "wikipedia.org" in url:
+        headers = WIKIPEDIA_HEADERS
+    else:
+        headers = BROWSER_HEADERS
+
+    resp = requests.get(url, headers=headers, timeout=timeout)
     resp.raise_for_status()
 
     # Derive content-type from response header, not URL extension
@@ -335,7 +354,9 @@ def main():
             supervisors = headshots_config.get("supervisors", [])
             for i, entry in enumerate(supervisors):
                 if i > 0:
-                    time.sleep(DOWNLOAD_DELAY_SECONDS)
+                    photo_url = entry.get("photo_url") or ""
+                    delay = WIKIPEDIA_DELAY_SECONDS if ("wikimedia.org" in photo_url or "wikipedia.org" in photo_url) else DOWNLOAD_DELAY_SECONDS
+                    time.sleep(delay)
                 try:
                     result = process_headshot(cur, entry, SUPERVISOR_STORAGE_PREFIX, dry_run=args.dry_run)
                     total["processed"] += 1
@@ -367,7 +388,9 @@ def main():
             council = headshots_config.get("la_city_council", [])
             for i, entry in enumerate(council):
                 if i > 0:
-                    time.sleep(DOWNLOAD_DELAY_SECONDS)
+                    photo_url = entry.get("photo_url") or ""
+                    delay = WIKIPEDIA_DELAY_SECONDS if ("wikimedia.org" in photo_url or "wikipedia.org" in photo_url) else DOWNLOAD_DELAY_SECONDS
+                    time.sleep(delay)
                 try:
                     result = process_headshot(cur, entry, COUNCIL_STORAGE_PREFIX, dry_run=args.dry_run)
                     total["processed"] += 1
