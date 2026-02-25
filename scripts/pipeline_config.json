@@ -17,6 +17,153 @@
           "count": 15
         }
       },
+      "headshots": {
+        "supervisors": [
+          {
+            "name": "Hilda L. Solis",
+            "district": 1,
+            "photo_url": "https://assets-us-01.kc-usercontent.com:443/0234f496-d2b7-00b6-17a4-b43e949b70a2/be5432b1-336e-43d4-8678-9392c9d72bae/Supervisor%20Hilda%20Solis%202026.jpg",
+            "photo_license": "scraped_no_license",
+            "storage_filename": "hilda-l-solis.jpg"
+          },
+          {
+            "name": "Holly J. Mitchell",
+            "district": 2,
+            "photo_url": "https://assets-us-01.kc-usercontent.com:443/0234f496-d2b7-00b6-17a4-b43e949b70a2/cd9042fe-bb94-4e37-a92a-152fb844226e/Supervisor%20Holly%20J%20Mitchell%202024%201.jpg",
+            "photo_license": "scraped_no_license",
+            "storage_filename": "holly-j-mitchell.jpg"
+          },
+          {
+            "name": "Lindsey P. Horvath",
+            "district": 3,
+            "photo_url": "https://assets-us-01.kc-usercontent.com:443/0234f496-d2b7-00b6-17a4-b43e949b70a2/9c9efa42-aec7-49aa-9659-0eb97db84081/Supervisor%20Lindsey%20Horvath.jpg",
+            "photo_license": "scraped_no_license",
+            "storage_filename": "lindsey-p-horvath.jpg"
+          },
+          {
+            "name": "Janice Hahn",
+            "district": 4,
+            "photo_url": "https://assets-us-01.kc-usercontent.com:443/0234f496-d2b7-00b6-17a4-b43e949b70a2/36c202cd-4e18-4e63-bd47-b3aca4f1c25a/Supervisor%20Janice%20Hahn.jpg",
+            "photo_license": "scraped_no_license",
+            "storage_filename": "janice-hahn.jpg"
+          },
+          {
+            "name": "Kathryn Barger",
+            "district": 5,
+            "photo_url": "https://assets-us-01.kc-usercontent.com:443/0234f496-d2b7-00b6-17a4-b43e949b70a2/b69f282e-2371-4783-937e-aca87240ef44/Supervisor%20Kathryn%20Barger%20official%20portrait%202020.jpg",
+            "photo_license": "scraped_no_license",
+            "storage_filename": "kathryn-barger.jpg"
+          }
+        ],
+        "la_city_council": [
+          {
+            "name": "Eunisses Hernandez",
+            "district": 1,
+            "photo_url": "https://cd1.lacity.gov/sites/g/files/wph2061/files/styles/portrait_medium_350x467_/public/2023-03/Eunisses_Hernandez_960x665.jpg",
+            "photo_license": "scraped_no_license",
+            "storage_filename": "eunisses-hernandez.jpg"
+          },
+          {
+            "name": "Adrin Nazarian",
+            "district": 2,
+            "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Adrin_Nazarian%2C_2018.jpg/250px-Adrin_Nazarian%2C_2018.jpg",
+            "photo_license": "cc_by_sa_4.0",
+            "storage_filename": "adrin-nazarian.jpg"
+          },
+          {
+            "name": "Bob Blumenfield",
+            "district": 3,
+            "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Bob_Blumenfield%2C_2018.jpg/250px-Bob_Blumenfield%2C_2018.jpg",
+            "photo_license": "cc_by_sa_4.0",
+            "storage_filename": "bob-blumenfield.jpg"
+          },
+          {
+            "name": "Nithya Raman",
+            "district": 4,
+            "photo_url": "https://cd4.lacity.gov/wp-content/uploads/2023/10/A6013-189.jpg",
+            "photo_license": "press_use",
+            "storage_filename": "nithya-raman.jpg"
+          },
+          {
+            "name": "Katy Young Yaroslavsky",
+            "district": 5,
+            "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Katy_Yaroslavsky%2C_2024.jpg/250px-Katy_Yaroslavsky%2C_2024.jpg",
+            "photo_license": "cc_by_sa_4.0",
+            "storage_filename": "katy-young-yaroslavsky.jpg"
+          },
+          {
+            "name": "Imelda Padilla",
+            "district": 6,
+            "photo_url": "https://cd6.lacity.gov/wp-content/uploads/2024/03/photo-imelda-portrait-02.jpg",
+            "photo_license": "scraped_no_license",
+            "storage_filename": "imelda-padilla.jpg"
+          },
+          {
+            "name": "Monica Rodriguez",
+            "district": 7,
+            "photo_url": null,
+            "photo_license": "scraped_no_license",
+            "storage_filename": "monica-rodriguez.jpg",
+            "note": "no_headshot_found — cd7.lacity.gov only has landscape action photos; no Wikipedia portrait available"
+          },
+          {
+            "name": "Marqueece Harris-Dawson",
+            "district": 8,
+            "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Marqueece_Harris-Dawson%2C_2024.jpg/250px-Marqueece_Harris-Dawson%2C_2024.jpg",
+            "photo_license": "cc_by_sa_4.0",
+            "storage_filename": "marqueece-harris-dawson.jpg"
+          },
+          {
+            "name": "Curren D. Price Jr.",
+            "district": 9,
+            "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Curren_Price%2C_2021_%28cropped%29.jpg/250px-Curren_Price%2C_2021_%28cropped%29.jpg",
+            "photo_license": "cc_by_sa_4.0",
+            "storage_filename": "curren-d-price-jr.jpg"
+          },
+          {
+            "name": "Heather Hutt",
+            "district": 10,
+            "photo_url": "https://cd10.lacity.gov/sites/g/files/wph1986/files/styles/default/public/2025-08/CW%20Hutt%20Headshot%202.jpg_0.jpeg",
+            "photo_license": "scraped_no_license",
+            "storage_filename": "heather-hutt.jpg"
+          },
+          {
+            "name": "Traci Park",
+            "district": 11,
+            "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Traci_Park%2C_2023.jpg/250px-Traci_Park%2C_2023.jpg",
+            "photo_license": "cc_by_sa_4.0",
+            "storage_filename": "traci-park.jpg"
+          },
+          {
+            "name": "John Lee",
+            "district": 12,
+            "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/John_Lee%2C_2019.jpg/250px-John_Lee%2C_2019.jpg",
+            "photo_license": "cc_by_sa_4.0",
+            "storage_filename": "john-lee.jpg"
+          },
+          {
+            "name": "Hugo Soto-Martinez",
+            "district": 13,
+            "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Hugo_Soto-Martinez%2C_2022.jpg/250px-Hugo_Soto-Martinez%2C_2022.jpg",
+            "photo_license": "cc_by_sa_4.0",
+            "storage_filename": "hugo-soto-martinez.jpg"
+          },
+          {
+            "name": "Ysabel J. Jurado",
+            "district": 14,
+            "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Ysabel_Jurado%2C_2025_%28cropped%29.jpg/250px-Ysabel_Jurado%2C_2025_%28cropped%29.jpg",
+            "photo_license": "cc_by_sa_4.0",
+            "storage_filename": "ysabel-j-jurado.jpg"
+          },
+          {
+            "name": "Tim McOsker",
+            "district": 15,
+            "photo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Tim_McOsker_full_portrait_%28cropped%29.jpg/250px-Tim_McOsker_full_portrait_%28cropped%29.jpg",
+            "photo_license": "cc_by_sa_4.0",
+            "storage_filename": "tim-mcosker.jpg"
+          }
+        ]
+      },
       "cities": [
         {
           "id": "la_city",
