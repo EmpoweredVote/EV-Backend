@@ -45,7 +45,11 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:50.778011"
+      "last_scraped": "2026-02-24T14:22:50.778011",
+      "headshot_failure_reason": "fetch_failed",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:16:38.606441",
+      "headshot_count": 0
     },
     {
       "id": "alhambra_city_council",
@@ -92,7 +96,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:51.475803"
+      "last_scraped": "2026-02-24T14:22:51.475803",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:14:54.392708",
+      "headshot_count": 0
     },
     {
       "id": "arcadia_city_council",
@@ -139,7 +146,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:52.168815"
+      "last_scraped": "2026-02-24T14:22:52.168815",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "artesia_city_council",
@@ -200,7 +209,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:53.142463"
+      "last_scraped": "2026-02-24T14:22:53.142463",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:15:51.176534",
+      "headshot_count": 0
     },
     {
       "id": "avalon_city_council",
@@ -247,7 +259,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:53.839474"
+      "last_scraped": "2026-02-24T14:22:53.839474",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:17:24.612572",
+      "headshot_count": 0
     },
     {
       "id": "azusa_city_council",
@@ -294,7 +309,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:54.537828"
+      "last_scraped": "2026-02-24T14:22:54.537828",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "baldwin_park_city_council",
@@ -341,7 +358,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:55.238826"
+      "last_scraped": "2026-02-24T14:22:55.238826",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:17:39.776251",
+      "headshot_count": 0
     },
     {
       "id": "bell_city_council",
@@ -388,7 +408,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:55.936046"
+      "last_scraped": "2026-02-24T14:22:55.936046",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:17:55.678100",
+      "headshot_count": 2
     },
     {
       "id": "bell_gardens_city_council",
@@ -442,7 +465,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:56.778429"
+      "last_scraped": "2026-02-24T14:22:56.778429",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:18:07.187153",
+      "headshot_count": 1
     },
     {
       "id": "bellflower_city_council",
@@ -489,7 +515,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:57.482344"
+      "last_scraped": "2026-02-24T14:22:57.482344",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "beverly_hills_city_council",
@@ -536,7 +564,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:58.186635"
+      "last_scraped": "2026-02-24T14:22:58.186635",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:18:57.050786",
+      "headshot_count": 1
     },
     {
       "id": "bradbury_city_council",
@@ -583,7 +614,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:58.887897"
+      "last_scraped": "2026-02-24T14:22:58.887897",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "burbank_city_council",
@@ -623,7 +656,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:22:59.443764"
+      "last_scraped": "2026-02-24T14:22:59.443764",
+      "headshot_status": "blocked",
+      "headshot_blocked_reason": "cloudflare"
     },
     {
       "id": "calabasas_city_council",
@@ -670,7 +705,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:00.138601"
+      "last_scraped": "2026-02-24T14:23:00.138601",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:19:11.410418",
+      "headshot_count": 0
     },
     {
       "id": "carson_city_council",
@@ -703,7 +741,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:00.560623"
+      "last_scraped": "2026-02-24T14:23:00.560623",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "cerritos_city_council",
@@ -750,7 +790,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:01.258319"
+      "last_scraped": "2026-02-24T14:23:01.258319",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:20:08.859985",
+      "headshot_count": 0
     },
     {
       "id": "claremont_city_council",
@@ -797,7 +840,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:01.958137"
+      "last_scraped": "2026-02-24T14:23:01.958137",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "duplicate_url_detected"
     },
     {
       "id": "commerce_city_council",
@@ -844,7 +889,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:02.656683"
+      "last_scraped": "2026-02-24T14:23:02.656683",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:20:24.432477",
+      "headshot_count": 0
     },
     {
       "id": "compton_city_council",
@@ -905,7 +953,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:03.500672"
+      "last_scraped": "2026-02-24T14:23:03.500672",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:20:42.553578",
+      "headshot_count": 1
     },
     {
       "id": "covina_city_council",
@@ -959,7 +1010,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:04.382840"
+      "last_scraped": "2026-02-24T14:23:04.382840",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:20:48.795258",
+      "headshot_count": 5
     },
     {
       "id": "cudahy_city_council",
@@ -1006,7 +1060,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:05.195821"
+      "last_scraped": "2026-02-24T14:23:05.195821",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:21:02.524667",
+      "headshot_count": 0
     },
     {
       "id": "culver_city_city_council",
@@ -1046,7 +1103,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:05.775235"
+      "last_scraped": "2026-02-24T14:23:05.775235",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:21:16.000075",
+      "headshot_count": 1
     },
     {
       "id": "diamond_bar_city_council",
@@ -1093,7 +1153,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:06.534794"
+      "last_scraped": "2026-02-24T14:23:06.534794",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:21:30.995119",
+      "headshot_count": 0
     },
     {
       "id": "downey_city_council",
@@ -1161,7 +1224,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:07.506880"
+      "last_scraped": "2026-02-24T14:23:07.506880",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:21:49.731233",
+      "headshot_count": 0
     },
     {
       "id": "duarte_city_council",
@@ -1187,7 +1253,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:07.750294"
+      "last_scraped": "2026-02-24T14:23:07.750294",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:21:53.725128",
+      "headshot_count": 0
     },
     {
       "id": "el_monte_city_council",
@@ -1248,7 +1317,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:08.731558"
+      "last_scraped": "2026-02-24T14:23:08.731558",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:22:12.265721",
+      "headshot_count": 0
     },
     {
       "id": "el_segundo_city_council",
@@ -1295,7 +1367,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:09.427638"
+      "last_scraped": "2026-02-24T14:23:09.427638",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:22:23.319684",
+      "headshot_count": 0
     },
     {
       "id": "gardena_city_council",
@@ -1342,7 +1417,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:10.126050"
+      "last_scraped": "2026-02-24T14:23:10.126050",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:22:41.145267",
+      "headshot_count": 0
     },
     {
       "id": "glendale_city_council",
@@ -1405,7 +1483,10 @@
       ],
       "ocd_id_template": "ocd-division/country:us/state:ca/place:glendale/council_district:{n}",
       "num_districts": 5,
-      "last_scraped": "2026-02-24T14:23:11.252713"
+      "last_scraped": "2026-02-24T14:23:11.252713",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:23:01.305095",
+      "headshot_count": 4
     },
     {
       "id": "glendora_city_council",
@@ -1466,7 +1547,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:12.208077"
+      "last_scraped": "2026-02-24T14:23:12.208077",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "hawaiian_gardens_city_council",
@@ -1513,7 +1596,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:12.913201"
+      "last_scraped": "2026-02-24T14:23:12.913201",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:23:14.010576",
+      "headshot_count": 0
     },
     {
       "id": "hawthorne_city_council",
@@ -1567,7 +1653,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:13.757373"
+      "last_scraped": "2026-02-24T14:23:13.757373",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:23:31.316913",
+      "headshot_count": 2
     },
     {
       "id": "hermosa_beach_city_council",
@@ -1628,7 +1717,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:14.733578"
+      "last_scraped": "2026-02-24T14:23:14.733578",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:23:48.292668",
+      "headshot_count": 1
     },
     {
       "id": "hidden_hills_city_council",
@@ -1668,7 +1760,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:15.304178"
+      "last_scraped": "2026-02-24T14:23:15.304178",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:24:02.859783",
+      "headshot_count": 0
     },
     {
       "id": "huntington_park_city_council",
@@ -1694,7 +1789,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:15.550761"
+      "last_scraped": "2026-02-24T14:23:15.550761",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:24:08.075080",
+      "headshot_count": 0
     },
     {
       "id": "industry_city_council",
@@ -1741,7 +1839,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:16.248692"
+      "last_scraped": "2026-02-24T14:23:16.248692",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:24:20.164601",
+      "headshot_count": 0
     },
     {
       "id": "inglewood_city_council",
@@ -1795,7 +1896,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:16.915207"
+      "last_scraped": "2026-02-24T14:23:16.915207",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:24:37.712872",
+      "headshot_count": 2
     },
     {
       "id": "irwindale_city_council",
@@ -1842,7 +1946,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:17.616455"
+      "last_scraped": "2026-02-24T14:23:17.616455",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "la_canada_flintridge_city_council",
@@ -1889,7 +1995,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:18.321068"
+      "last_scraped": "2026-02-24T14:23:18.321068",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:24:46.988241",
+      "headshot_count": 3
     },
     {
       "id": "la_habra_heights_city_council",
@@ -1936,7 +2045,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:19.021109"
+      "last_scraped": "2026-02-24T14:23:19.021109",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "la_mirada_city_council",
@@ -1976,7 +2087,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:19.581617"
+      "last_scraped": "2026-02-24T14:23:19.581617",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:24:58.115612",
+      "headshot_count": 1
     },
     {
       "id": "la_palma_city_council",
@@ -2023,7 +2137,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:20.284703"
+      "last_scraped": "2026-02-24T14:23:20.284703",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:25:10.851018",
+      "headshot_count": 0
     },
     {
       "id": "la_puente_city_council",
@@ -2070,7 +2187,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:20.989110"
+      "last_scraped": "2026-02-24T14:23:20.989110",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:25:22.710322",
+      "headshot_count": 1
     },
     {
       "id": "la_verne_city_council",
@@ -2117,7 +2237,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:21.692961"
+      "last_scraped": "2026-02-24T14:23:21.692961",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:25:35.015639",
+      "headshot_count": 0
     },
     {
       "id": "lakewood_city_council",
@@ -2164,7 +2287,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:22.394588"
+      "last_scraped": "2026-02-24T14:23:22.394588",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:25:41.740233",
+      "headshot_count": 0
     },
     {
       "id": "lancaster_city_council",
@@ -2211,7 +2337,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:23.089598"
+      "last_scraped": "2026-02-24T14:23:23.089598",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:25:53.708289",
+      "headshot_count": 1
     },
     {
       "id": "lawndale_city_council",
@@ -2258,7 +2387,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:23.789196"
+      "last_scraped": "2026-02-24T14:23:23.789196",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:26:08.704223",
+      "headshot_count": 0
     },
     {
       "id": "lomita_city_council",
@@ -2305,7 +2437,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:24.491686"
+      "last_scraped": "2026-02-24T14:23:24.491686",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:26:20.792163",
+      "headshot_count": 0
     },
     {
       "id": "long_beach_city_council",
@@ -2380,7 +2515,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:25.475017"
+      "last_scraped": "2026-02-24T14:23:25.475017",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:26:33.633958",
+      "headshot_count": 8
     },
     {
       "id": "los_alamitos_city_council",
@@ -2427,7 +2565,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:26.170691"
+      "last_scraped": "2026-02-24T14:23:26.170691",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:26:46.902373",
+      "headshot_count": 0
     },
     {
       "id": "lynwood_city_council",
@@ -2488,7 +2629,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:27.150217"
+      "last_scraped": "2026-02-24T14:23:27.150217",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:27:02.879377",
+      "headshot_count": 0
     },
     {
       "id": "malibu_city_council",
@@ -2535,7 +2679,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:27.850969"
+      "last_scraped": "2026-02-24T14:23:27.850969",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:27:15.678501",
+      "headshot_count": 0
     },
     {
       "id": "manhattan_beach_city_council",
@@ -2582,7 +2729,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:28.550230"
+      "last_scraped": "2026-02-24T14:23:28.550230",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:27:27.897217",
+      "headshot_count": 1
     },
     {
       "id": "maywood_city_council",
@@ -2629,7 +2779,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:29.249417"
+      "last_scraped": "2026-02-24T14:23:29.249417",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:27:39.907690",
+      "headshot_count": 0
     },
     {
       "id": "monrovia_city_council",
@@ -2676,7 +2829,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:29.946212"
+      "last_scraped": "2026-02-24T14:23:29.946212",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:27:51.109323",
+      "headshot_count": 0
     },
     {
       "id": "montebello_city_council",
@@ -2737,7 +2893,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:30.925041"
+      "last_scraped": "2026-02-24T14:23:30.925041",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "monterey_park_city_council",
@@ -2784,7 +2942,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:31.625027"
+      "last_scraped": "2026-02-24T14:23:31.625027",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:28:06.266083",
+      "headshot_count": 0
     },
     {
       "id": "norwalk_city_council",
@@ -2831,7 +2992,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:32.328002"
+      "last_scraped": "2026-02-24T14:23:32.328002",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:28:21.043483",
+      "headshot_count": 1
     },
     {
       "id": "palmdale_city_council",
@@ -2878,7 +3042,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:33.027529"
+      "last_scraped": "2026-02-24T14:23:33.027529",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:28:32.277613",
+      "headshot_count": 1
     },
     {
       "id": "palos_verdes_estates_city_council",
@@ -2932,7 +3099,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:33.868035"
+      "last_scraped": "2026-02-24T14:23:33.868035",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:28:45.485378",
+      "headshot_count": 0
     },
     {
       "id": "paramount_city_council",
@@ -2979,7 +3149,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:34.577234"
+      "last_scraped": "2026-02-24T14:23:34.577234",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "pasadena_city_council",
@@ -3040,7 +3212,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:35.355880"
+      "last_scraped": "2026-02-24T14:23:35.355880",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:29:52.585469",
+      "headshot_count": 2
     },
     {
       "id": "pico_rivera_city_council",
@@ -3087,7 +3262,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:36.056824"
+      "last_scraped": "2026-02-24T14:23:36.056824",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:29:59.199076",
+      "headshot_count": 4
     },
     {
       "id": "pomona_city_council",
@@ -3148,7 +3326,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:37.039736"
+      "last_scraped": "2026-02-24T14:23:37.039736",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "rancho_palos_verdes_city_council",
@@ -3195,7 +3375,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:37.742139"
+      "last_scraped": "2026-02-24T14:23:37.742139",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:30:13.882719",
+      "headshot_count": 0
     },
     {
       "id": "redondo_beach_city_council",
@@ -3256,7 +3439,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:38.730400"
+      "last_scraped": "2026-02-24T14:23:38.730400",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "rolling_hills_city_council",
@@ -3303,7 +3488,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:39.429395"
+      "last_scraped": "2026-02-24T14:23:39.429395",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:30:40.072637",
+      "headshot_count": 0
     },
     {
       "id": "rolling_hills_estates_city_council",
@@ -3350,7 +3538,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:40.127689"
+      "last_scraped": "2026-02-24T14:23:40.127689",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "rosemead_city_council",
@@ -3397,7 +3587,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:40.823861"
+      "last_scraped": "2026-02-24T14:23:40.823861",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "duplicate_url_detected"
     },
     {
       "id": "san_dimas_city_council",
@@ -3444,7 +3636,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:41.520443"
+      "last_scraped": "2026-02-24T14:23:41.520443",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:31:08.348140",
+      "headshot_count": 2
     },
     {
       "id": "san_fernando_city_council",
@@ -3491,7 +3686,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:42.226131"
+      "last_scraped": "2026-02-24T14:23:42.226131",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:31:22.948561",
+      "headshot_count": 1
     },
     {
       "id": "san_gabriel_city_council",
@@ -3538,7 +3736,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:42.924377"
+      "last_scraped": "2026-02-24T14:23:42.924377",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:31:37.619276",
+      "headshot_count": 1
     },
     {
       "id": "san_marino_city_council",
@@ -3585,7 +3786,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:43.623830"
+      "last_scraped": "2026-02-24T14:23:43.623830",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "santa_clarita_city_council",
@@ -3632,7 +3835,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:44.322126"
+      "last_scraped": "2026-02-24T14:23:44.322126",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:32:18.065164",
+      "headshot_count": 4
     },
     {
       "id": "santa_fe_springs_city_council",
@@ -3679,7 +3885,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:45.026432"
+      "last_scraped": "2026-02-24T14:23:45.026432",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:32:30.053673",
+      "headshot_count": 0
     },
     {
       "id": "santa_monica_city_council",
@@ -3747,7 +3956,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:46.150087"
+      "last_scraped": "2026-02-24T14:23:46.150087",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:32:51.000594",
+      "headshot_count": 0
     },
     {
       "id": "sierra_madre_city_council",
@@ -3794,7 +4006,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:46.856183"
+      "last_scraped": "2026-02-24T14:23:46.856183",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "signal_hill_city_council",
@@ -3841,7 +4055,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:47.555621"
+      "last_scraped": "2026-02-24T14:23:47.555621",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:33:04.773515",
+      "headshot_count": 0
     },
     {
       "id": "south_el_monte_city_council",
@@ -3888,7 +4105,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:48.260422"
+      "last_scraped": "2026-02-24T14:23:48.260422",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "south_gate_city_council",
@@ -3935,7 +4154,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:48.958582"
+      "last_scraped": "2026-02-24T14:23:48.958582",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:34:03.445976",
+      "headshot_count": 0
     },
     {
       "id": "south_pasadena_city_council",
@@ -3975,7 +4197,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:49.518342"
+      "last_scraped": "2026-02-24T14:23:49.518342",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:34:13.177587",
+      "headshot_count": 0
     },
     {
       "id": "temple_city_city_council",
@@ -4022,7 +4247,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:50.218921"
+      "last_scraped": "2026-02-24T14:23:50.218921",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:34:25.848034",
+      "headshot_count": 0
     },
     {
       "id": "torrance_city_council",
@@ -4083,7 +4311,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:50.995478"
+      "last_scraped": "2026-02-24T14:23:50.995478",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:34:43.203550",
+      "headshot_count": 1
     },
     {
       "id": "vernon_city_council",
@@ -4130,7 +4361,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:51.695969"
+      "last_scraped": "2026-02-24T14:23:51.695969",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:34:54.747254",
+      "headshot_count": 0
     },
     {
       "id": "walnut_city_council",
@@ -4177,7 +4411,9 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:52.395030"
+      "last_scraped": "2026-02-24T14:23:52.395030",
+      "headshot_status": "failed",
+      "headshot_failure_reason": "fetch_failed"
     },
     {
       "id": "west_covina_city_council",
@@ -4224,7 +4460,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:52.959304"
+      "last_scraped": "2026-02-24T14:23:52.959304",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:44:42.881510",
+      "headshot_count": 1
     },
     {
       "id": "west_hollywood_city_council",
@@ -4271,7 +4510,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:53.663422"
+      "last_scraped": "2026-02-24T14:23:53.663422",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:35:39.905792",
+      "headshot_count": 0
     },
     {
       "id": "westlake_village_city_council",
@@ -4318,7 +4560,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:54.373409"
+      "last_scraped": "2026-02-24T14:23:54.373409",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:35:55.157949",
+      "headshot_count": 1
     },
     {
       "id": "whittier_city_council",
@@ -4365,7 +4610,10 @@
           "data_source": "https://admin.cdn.sos.ca.gov/ca-roster/2025/cities-towns.pdf"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:55.072490"
+      "last_scraped": "2026-02-24T14:23:55.072490",
+      "headshot_status": "scraped",
+      "headshot_scraped_at": "2026-02-25T13:36:07.552717",
+      "headshot_count": 1
     }
   ]
 }
