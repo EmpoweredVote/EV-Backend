@@ -23,13 +23,11 @@ const LockDuration = 10 * time.Minute
 
 // isAdmin checks whether the given user has the "admin" role.
 func isAdmin(userID string) bool {
-	var user struct {
-		Role string
-	}
-	if err := db.DB.Table("app_auth.users").Select("role").Where("user_id = ?", userID).Scan(&user).Error; err != nil {
+	var role string
+	if err := db.DB.Raw("SELECT role FROM app_auth.users WHERE user_id = ?", userID).Scan(&role).Error; err != nil {
 		return false
 	}
-	return user.Role == "admin"
+	return role == "admin"
 }
 
 // PoliticianOut is the unified shape the data-entry frontend expects.
