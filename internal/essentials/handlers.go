@@ -150,6 +150,7 @@ type OfficialOut struct {
 	IsContained          *bool           `json:"is_contained,omitempty"` // For ZIP queries: true=position fully contains ZIP, false=partial overlap
 	TermStart            string          `json:"term_start,omitempty"`
 	TermEnd              string          `json:"term_end,omitempty"`
+	TermDatePrecision    string          `json:"term_date_precision,omitempty"` // "year", "month", or "day"
 }
 
 func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
@@ -1101,6 +1102,7 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		IsContained          *bool
 		ValidFrom            string
 		ValidTo              string
+		TermDatePrecision    string
 	}
 
 	var rows []row
@@ -1130,7 +1132,8 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		  COALESCE(NULLIF(o.description, ''), pd_specific.description, pd_generic.description, '') AS office_description,
 		  zp.is_contained,
 		  COALESCE(p.valid_from, '') AS valid_from,
-		  COALESCE(p.valid_to, '') AS valid_to
+		  COALESCE(p.valid_to, '') AS valid_to,
+		  COALESCE(p.term_date_precision, '') AS term_date_precision
 		FROM essentials.politicians p
 		JOIN essentials.offices o ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
@@ -1332,6 +1335,7 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 			IsContained:          r.IsContained,
 			TermStart:            r.ValidFrom,
 			TermEnd:              r.ValidTo,
+			TermDatePrecision:    r.TermDatePrecision,
 		})
 	}
 
@@ -1400,6 +1404,7 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		OfficeDescription    string
 		ValidFrom            string
 		ValidTo              string
+		TermDatePrecision    string
 	}
 
 	var rows []row
@@ -1426,7 +1431,8 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		  COALESCE(p.total_years_in_office, 0) AS total_years_in_office,
 		  COALESCE(NULLIF(o.description, ''), pd_specific.description, pd_generic.description, '') AS office_description,
 		  COALESCE(p.valid_from, '') AS valid_from,
-		  COALESCE(p.valid_to, '') AS valid_to
+		  COALESCE(p.valid_to, '') AS valid_to,
+		  COALESCE(p.term_date_precision, '') AS term_date_precision
 		FROM essentials.politicians p
 		JOIN essentials.offices o ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
@@ -1605,6 +1611,7 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 			Experiences:          experiencesByPol[r.ID],
 			TermStart:            r.ValidFrom,
 			TermEnd:              r.ValidTo,
+			TermDatePrecision:    r.TermDatePrecision,
 		})
 	}
 
@@ -1958,6 +1965,7 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 		OfficeDescription    string
 		ValidFrom            string
 		ValidTo              string
+		TermDatePrecision    string
 	}
 
 	var r0 row
@@ -1984,7 +1992,8 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 		  COALESCE(g.name, '') AS government_name,
 		  COALESCE(c.election_frequency, '') AS election_frequency,
 		  COALESCE(p.valid_from, '') AS valid_from,
-		  COALESCE(p.valid_to, '') AS valid_to
+		  COALESCE(p.valid_to, '') AS valid_to,
+		  COALESCE(p.term_date_precision, '') AS term_date_precision
 		FROM essentials.politicians p
 		JOIN essentials.offices o ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
@@ -2111,6 +2120,7 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 			Experiences:          experiences,
 			TermStart:            r0.ValidFrom,
 			TermEnd:              r0.ValidTo,
+			TermDatePrecision:    r0.TermDatePrecision,
 		},
 		Addresses:   addresses,
 		Identifiers: identifiers,
