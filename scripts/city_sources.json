@@ -3364,8 +3364,8 @@
       ],
       "last_scraped": "2026-02-24T14:23:37.039736",
       "headshot_status": "scraped",
-      "headshot_scraped_at": "2026-02-25T17:30:16.951434",
-      "headshot_count": 0
+      "headshot_count": 0,
+      "headshot_scraped_at": "2026-02-25T18:23:04.692356"
     },
     {
       "id": "rancho_palos_verdes_city_council",
@@ -4002,10 +4002,10 @@
           "headshot_url": "https://www.santamonica.gov/sites/default/files/Council/zwick-jesse-600x600.jpg"
         }
       ],
-      "last_scraped": "2026-02-24T14:23:46.150087",
+      "last_scraped": "2026-02-24T14:23:46.150067",
       "headshot_status": "scraped",
-      "headshot_scraped_at": "2026-02-25T17:31:12.722310",
-      "headshot_count": 0
+      "headshot_count": 0,
+      "headshot_scraped_at": "2026-02-25T18:25:43.840442"
     },
     {
       "id": "sierra_madre_city_council",
