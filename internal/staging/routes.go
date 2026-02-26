@@ -56,6 +56,23 @@ func SetupRoutes() http.Handler {
 			r.Post("/politicians/{id}/approve", ApprovePolitician)
 			r.Post("/politicians/{id}/reject", RejectPolitician)
 		})
+
+		// Building photo management
+		r.Get("/building-photos/gaps", GetBuildingPhotoGaps)
+		r.Get("/building-photos/review-queue", GetBuildingPhotoReviewQueue)
+		r.Get("/building-photos", ListBuildingPhotos)
+		r.Post("/building-photos", CreateBuildingPhoto)
+		r.Get("/building-photos/{id}", GetBuildingPhotoByID)
+		r.Put("/building-photos/{id}", UpdateBuildingPhoto)
+		r.Post("/building-photos/{id}/submit", SubmitBuildingPhotoForReview)
+		r.Post("/building-photos/{id}/review-approve", ApproveBuildingPhotoReview)
+		r.Post("/building-photos/{id}/review-reject", RejectBuildingPhotoReview)
+
+		// Admin-only building photo approval (skip peer review)
+		r.Group(func(r chi.Router) {
+			r.Use(middleware.AdminMiddleware(sessionFetcher))
+			r.Post("/building-photos/{id}/approve", AdminApproveBuildingPhoto)
+		})
 	})
 
 	return r

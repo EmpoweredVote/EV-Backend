@@ -206,3 +206,46 @@ type PoliticianReviewLog struct {
 func (PoliticianReviewLog) TableName() string {
 	return "staging.politician_review_logs"
 }
+
+// StagingBuildingPhoto holds volunteer-submitted building photos before approval
+type StagingBuildingPhoto struct {
+	ID          uuid.UUID      `gorm:"type:uuid;primaryKey;default:uuid_generate_v4()" json:"id"`
+	PlaceGeoid  string         `gorm:"not null;index" json:"place_geoid"`  // Census GEOID
+	PlaceName   string         `gorm:"not null" json:"place_name"`         // e.g., "City of Los Angeles"
+	State       string         `json:"state"`
+	URL         string         `gorm:"not null" json:"url"`                // Supabase CDN URL
+	SourceURL   string         `json:"source_url,omitempty"`               // Original source if known
+	License     string         `gorm:"not null" json:"license"`            // e.g., "cc_by_sa", "public_domain"
+	Attribution string         `gorm:"not null" json:"attribution"`        // Author credit
+
+	// Workflow
+	Status  string `gorm:"default:'draft';index" json:"status"` // draft, needs_review, approved, rejected
+	AddedBy string `gorm:"not null" json:"added_by"`
+
+	// Review tracking
+	ReviewCount    int            `gorm:"default:0" json:"review_count"`
+	ReviewedBy     pq.StringArray `gorm:"type:text[]" json:"reviewed_by"`
+	LastReviewedAt *time.Time     `json:"last_reviewed_at,omitempty"`
+	ApprovedAt     *time.Time     `json:"approved_at,omitempty"`
+
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (StagingBuildingPhoto) TableName() string {
+	return "staging.building_photos"
+}
+
+// BuildingPhotoReviewLog tracks review actions on building photos
+type BuildingPhotoReviewLog struct {
+	ID              uuid.UUID `gorm:"type:uuid;primaryKey;default:uuid_generate_v4()" json:"id"`
+	BuildingPhotoID uuid.UUID `gorm:"type:uuid;not null;index" json:"building_photo_id"`
+	ReviewerName    string    `gorm:"not null" json:"reviewer_name"`
+	Action          string    `gorm:"not null" json:"action"` // approved, rejected, admin_approved
+	Comment         string    `json:"comment,omitempty"`
+	CreatedAt       time.Time `json:"created_at"`
+}
+
+func (BuildingPhotoReviewLog) TableName() string {
+	return "staging.building_photo_review_logs"
+}
