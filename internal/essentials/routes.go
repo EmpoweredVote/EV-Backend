@@ -23,6 +23,9 @@ func SetupRoutes() http.Handler {
 	r.Get("/politician/{id}/stances", GetPoliticianStances)
 	r.Get("/politician/{id}/elections", GetPoliticianElections)
 
+	// Building photos
+	r.Get("/cities/{geo_id}/building-photo", GetBuildingPhoto)
+
 	// Admin routes - require authentication
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.SessionMiddleware(sessionFetcher))

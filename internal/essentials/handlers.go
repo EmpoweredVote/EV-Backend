@@ -65,6 +65,16 @@ type ExperienceOut struct {
 	End          string `json:"end"`
 }
 
+type ContactOut struct {
+	ContactType string `json:"contact_type"`
+	Source      string `json:"source"`
+	Phone       string `json:"phone,omitempty"`
+	Email       string `json:"email,omitempty"`
+	Fax         string `json:"fax,omitempty"`
+	WebsiteURL  string `json:"website_url,omitempty"`
+	SyncedAt    string `json:"synced_at,omitempty"`
+}
+
 // Phase B: Candidacy data DTOs
 
 type EndorsementOut struct {
@@ -1903,6 +1913,7 @@ type PoliticianProfileOut struct {
 	Addresses   []Address    `json:"addresses"`
 	Identifiers []Identifier `json:"identifiers"`
 	Notes       []string     `json:"notes"`
+	Contacts    []ContactOut `json:"contacts"`
 }
 
 func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
@@ -2081,6 +2092,29 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	// 7b. Fetch contacts
+	var contactRows []PoliticianContact
+	db.DB.Where("politician_id = ?", parsedID).Find(&contactRows)
+	contacts := make([]ContactOut, 0, len(contactRows))
+	for _, c := range contactRows {
+		if c.Phone == "" && c.Email == "" && c.Fax == "" && c.WebsiteURL == "" {
+			continue
+		}
+		syncedAt := ""
+		if c.ContactSyncedAt != nil && !c.ContactSyncedAt.IsZero() {
+			syncedAt = c.ContactSyncedAt.Format(time.RFC3339)
+		}
+		contacts = append(contacts, ContactOut{
+			ContactType: c.ContactType,
+			Source:      c.Source,
+			Phone:       c.Phone,
+			Email:       c.Email,
+			Fax:         c.Fax,
+			WebsiteURL:  c.WebsiteURL,
+			SyncedAt:    syncedAt,
+		})
+	}
+
 	// 8. Assemble profile response
 	profile := PoliticianProfileOut{
 		OfficialOut: OfficialOut{
@@ -2125,9 +2159,39 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 		Addresses:   addresses,
 		Identifiers: identifiers,
 		Notes:       []string(r0.Notes),
+		Contacts:    contacts,
 	}
 
 	writeJSON(w, profile)
+}
+
+// GetBuildingPhoto returns the building photo for a city by Census GEOID.
+func GetBuildingPhoto(w http.ResponseWriter, r *http.Request) {
+	geoID := chi.URLParam(r, "geo_id")
+	if geoID == "" {
+		http.Error(w, "Missing geo_id parameter", http.StatusBadRequest)
+		return
+	}
+
+	var photo BuildingPhoto
+	result := db.DB.Where("place_geoid = ?", geoID).First(&photo)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			http.NotFound(w, r)
+			return
+		}
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	writeJSON(w, map[string]interface{}{
+		"place_geoid": photo.PlaceGeoid,
+		"url":         photo.URL,
+		"license":     photo.License,
+		"attribution": photo.Attribution,
+		"source_url":  photo.SourceURL,
+		"fetched_at":  photo.FetchedAt.Format(time.RFC3339),
+	})
 }
 
 // GetPoliticianEndorsements returns all endorsements for a politician.
