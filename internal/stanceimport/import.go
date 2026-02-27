@@ -3,13 +3,26 @@ package stanceimport
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
+	"unicode"
 
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 	"gorm.io/gorm"
 )
+
+// normalizeName strips diacritics and lowercases for accent-insensitive matching.
+// e.g. "Tony Cárdenas" → "tony cardenas", "Linda Sánchez" → "linda sanchez"
+func normalizeName(name string) string {
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	result, _, _ := transform.String(t, name)
+	return strings.ToLower(strings.TrimSpace(result))
+}
 
 // Config controls how the stance import runs.
 type Config struct {
@@ -38,6 +51,8 @@ func (importTopic) TableName() string { return "compass.topics" }
 type importPolitician struct {
 	ID         uuid.UUID `gorm:"column:id"`
 	FullName   string    `gorm:"column:full_name"`
+	FirstName  string    `gorm:"column:first_name"`
+	LastName   string    `gorm:"column:last_name"`
 	ExternalID int       `gorm:"column:external_id"`
 }
 
@@ -95,9 +110,11 @@ func Run(cfg Config) (*ImportResult, error) {
 		return nil, fmt.Errorf("load politicians: %w", err)
 	}
 
+	// Build lookup maps using normalized names (accent-insensitive).
+	// Also build last-name index for fallback matching.
 	nameCount := make(map[string]int, len(politicians))
 	for _, p := range politicians {
-		nameCount[p.FullName]++
+		nameCount[normalizeName(p.FullName)]++
 	}
 
 	ambiguousNames := make(map[string]bool)
@@ -109,10 +126,21 @@ func Run(cfg Config) (*ImportResult, error) {
 
 	byName := make(map[string]uuid.UUID, len(politicians))
 	byExternalID := make(map[int]uuid.UUID, len(politicians))
+	// Last-name index: normalized last_name → list of (fullName, id) for fallback
+	type polEntry struct {
+		FullName  string
+		FirstName string
+		ID        uuid.UUID
+	}
+	byLastName := make(map[string][]polEntry)
 	for _, p := range politicians {
-		byName[p.FullName] = p.ID // last-write wins; ambiguous set is the safety net
+		byName[normalizeName(p.FullName)] = p.ID
 		if p.ExternalID != 0 {
 			byExternalID[p.ExternalID] = p.ID
+		}
+		normLast := normalizeName(p.LastName)
+		if normLast != "" {
+			byLastName[normLast] = append(byLastName[normLast], polEntry{p.FullName, normalizeName(p.FirstName), p.ID})
 		}
 	}
 
@@ -148,21 +176,79 @@ func Run(cfg Config) (*ImportResult, error) {
 			continue
 		}
 
-		// c. Check for ambiguous politician name
-		if ambiguousNames[row.FullName] {
-			msg := fmt.Sprintf("row %d: ambiguous politician name '%s' — multiple matches in database", lineNum, row.FullName)
-			result.Errors = append(result.Errors, msg)
-			result.Skipped++
-			continue
-		}
+		// c. Resolve politician (normalized name with external_id fallback)
+		csvNorm := normalizeName(row.FullName)
+		var politicianID uuid.UUID
+		var nameOK bool
 
-		// d. Resolve politician
-		politicianID, nameOK := byName[row.FullName]
-		if !nameOK {
+		if ambiguousNames[csvNorm] {
+			// Ambiguous name — try external_id to disambiguate
 			if row.ExternalID != "" {
 				extID, parseErr := strconv.Atoi(row.ExternalID)
 				if parseErr == nil {
 					politicianID, nameOK = byExternalID[extID]
+				}
+			}
+			if !nameOK {
+				// List matching records for diagnostic purposes
+				parts := strings.Fields(csvNorm)
+				csvLast := parts[len(parts)-1]
+				candidates := byLastName[csvLast]
+				names := make([]string, len(candidates))
+				for i, c := range candidates {
+					names[i] = c.FullName
+				}
+				msg := fmt.Sprintf("row %d: ambiguous politician name '%s' — multiple matches in database: %s (provide external_id to disambiguate)", lineNum, row.FullName, strings.Join(names, ", "))
+				result.Errors = append(result.Errors, msg)
+				result.Skipped++
+				continue
+			}
+		} else {
+			// d. Normal lookup: normalized full name → external_id → last-name fallback
+			politicianID, nameOK = byName[csvNorm]
+			if !nameOK {
+				// Try external_id
+				if row.ExternalID != "" {
+					extID, parseErr := strconv.Atoi(row.ExternalID)
+					if parseErr == nil {
+						politicianID, nameOK = byExternalID[extID]
+					}
+				}
+			}
+			if !nameOK {
+				// Try last-name fallback: extract last word from CSV name, find single match
+				parts := strings.Fields(csvNorm)
+				if len(parts) > 0 {
+					csvLast := parts[len(parts)-1]
+					candidates := byLastName[csvLast]
+					if len(candidates) == 1 {
+						politicianID = candidates[0].ID
+						nameOK = true
+						fmt.Printf("INFO: row %d: matched '%s' to DB name '%s' via last-name fallback\n", lineNum, row.FullName, candidates[0].FullName)
+					} else if len(candidates) > 1 {
+						// Try first-name disambiguation
+						csvFirst := parts[0]
+						var firstMatch []polEntry
+						for _, c := range candidates {
+							if c.FirstName == csvFirst || strings.HasPrefix(c.FirstName, csvFirst) || strings.HasPrefix(csvFirst, c.FirstName) {
+								firstMatch = append(firstMatch, c)
+							}
+						}
+						if len(firstMatch) == 1 {
+							politicianID = firstMatch[0].ID
+							nameOK = true
+							fmt.Printf("INFO: row %d: matched '%s' to DB name '%s' via first+last-name fallback\n", lineNum, row.FullName, firstMatch[0].FullName)
+						} else {
+							names := make([]string, len(candidates))
+							for i, c := range candidates {
+								names[i] = c.FullName
+							}
+							msg := fmt.Sprintf("row %d: politician '%s' not found (DB has multiple last-name matches: %s)", lineNum, row.FullName, strings.Join(names, ", "))
+							result.Errors = append(result.Errors, msg)
+							result.Skipped++
+							continue
+						}
+					}
 				}
 			}
 			if !nameOK {
