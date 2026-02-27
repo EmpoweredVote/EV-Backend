@@ -54,6 +54,7 @@ func Init() {
 		&PoliticianStance{},
 		&ElectionRecord{},
 		&PoliticianContact{},
+		&Quote{},
 		&PositionDescription{},
 		// Phase 39: Building photos for city hall imagery
 		&BuildingPhoto{},

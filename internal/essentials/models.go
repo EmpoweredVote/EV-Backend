@@ -367,3 +367,21 @@ func (PositionDescription) TableName() string {
 func (BuildingPhoto) TableName() string {
 	return "essentials.building_photos"
 }
+
+// Quote stores a curated politician quote for the Read & Rank feature.
+// Deduplication is handled at import time by matching on (politician_id, topic_key, source_url).
+// The same politician can have multiple quotes per topic (e.g., different quotes on the same issue).
+type Quote struct {
+	ID           uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	PoliticianID uuid.UUID `json:"politician_id" gorm:"type:uuid;not null;index:idx_quotes_politician"`
+	TopicKey     string    `json:"topic_key" gorm:"not null;index:idx_quotes_topic_key"`
+	QuoteText    string    `json:"quote_text" gorm:"type:text;not null"`
+	SourceURL    string    `json:"source_url"`
+	SourceName   string    `json:"source_name"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+func (Quote) TableName() string {
+	return "essentials.quotes"
+}
