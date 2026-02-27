@@ -10,7 +10,9 @@ import (
 	"github.com/EmpoweredVote/EV-Backend/internal/compass"
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/EmpoweredVote/EV-Backend/internal/essentials"
+	"github.com/EmpoweredVote/EV-Backend/internal/meetings"
 	"github.com/EmpoweredVote/EV-Backend/internal/middleware"
+	"github.com/EmpoweredVote/EV-Backend/internal/stanceimport"
 	"github.com/EmpoweredVote/EV-Backend/internal/staging"
 	"github.com/EmpoweredVote/EV-Backend/internal/treasury"
 	"github.com/EmpoweredVote/EV-Backend/internal/webhooks"
@@ -38,6 +40,39 @@ func main() {
 	essentials.Init()
 	treasury.Init()
 	staging.Init()
+	meetings.Init()
+
+	// CLI subcommand dispatch — must come after all Init() calls so tables
+	// are migrated and the global db.DB connection is ready.
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "import-stances":
+			csvPath := "data/stance_research.csv"
+			dryRun := false
+			if len(os.Args) > 2 {
+				// First positional arg after the subcommand is the CSV path
+				// unless it starts with "--"
+				if os.Args[2][0] != '-' {
+					csvPath = os.Args[2]
+				}
+			}
+			for _, arg := range os.Args[2:] {
+				if arg == "--dry-run" {
+					dryRun = true
+				}
+			}
+			result, err := stanceimport.Run(stanceimport.Config{
+				CSVPath: csvPath,
+				DryRun:  dryRun,
+			})
+			if err != nil {
+				log.Fatal("import-stances failed: ", err)
+			}
+			fmt.Printf("Import complete: %d processed, %d inserted, %d updated, %d skipped\n",
+				result.Processed, result.Inserted, result.Updated, result.Skipped)
+			os.Exit(0)
+		}
+	}
 
 	r := chi.NewRouter()
 	r.Use(middleware.CORSMiddleware)
@@ -48,6 +83,7 @@ func main() {
 	r.Mount("/essentials", essentials.SetupRoutes())
 	r.Mount("/treasury", treasury.SetupRoutes())
 	r.Mount("/staging", staging.SetupRoutes())
+	r.Mount("/meetings", meetings.SetupRoutes())
 	r.Mount("/webhooks", webhooks.SetupRoutes())
 
 	fmt.Printf("Server listening on :%s...\n", port)
