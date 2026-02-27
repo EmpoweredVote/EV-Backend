@@ -273,8 +273,8 @@ func Run(cfg Config) (*ImportResult, error) {
 			continue
 		}
 
-		// g. Upsert compass.contexts (source URLs)
-		if err := upsertContext(db.DB, politicianID, topicID, row.SourceURLs); err != nil {
+		// g. Upsert compass.contexts (reasoning + source URLs)
+		if err := upsertContext(db.DB, politicianID, topicID, row.Reasoning, row.SourceURLs); err != nil {
 			msg := fmt.Sprintf("row %d: upsert context: %v", lineNum, err)
 			result.Errors = append(result.Errors, msg)
 			// Don't skip the whole row — answer was already written
@@ -334,19 +334,18 @@ func upsertAnswer(gormDB *gorm.DB, politicianID, topicID uuid.UUID, value float6
 }
 
 // upsertContext creates or updates a compass.contexts row.
-func upsertContext(gormDB *gorm.DB, politicianID, topicID uuid.UUID, sourceURLs []string) error {
+func upsertContext(gormDB *gorm.DB, politicianID, topicID uuid.UUID, reasoning string, sourceURLs []string) error {
 	var existing importContext
 	err := gormDB.
 		Where("politician_id = ? AND topic_id = ?", politicianID, topicID).
 		First(&existing).Error
 
 	if err == gorm.ErrRecordNotFound {
-		// Insert
 		row := importContext{
 			ID:           uuid.NewString(),
 			PoliticianID: politicianID,
 			TopicID:      topicID,
-			Reasoning:    "",
+			Reasoning:    reasoning,
 			Sources:      pq.StringArray(sourceURLs),
 		}
 		return gormDB.Create(&row).Error
@@ -355,6 +354,11 @@ func upsertContext(gormDB *gorm.DB, politicianID, topicID uuid.UUID, sourceURLs 
 		return err
 	}
 
-	// Update sources
-	return gormDB.Model(&existing).Update("sources", pq.StringArray(sourceURLs)).Error
+	updates := map[string]interface{}{
+		"sources": pq.StringArray(sourceURLs),
+	}
+	if reasoning != "" {
+		updates["reasoning"] = reasoning
+	}
+	return gormDB.Model(&existing).Updates(updates).Error
 }

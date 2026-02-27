@@ -117,6 +117,17 @@ func main() {
 			}
 			fmt.Printf("Added politician: %s (%s)\n", fullName, party)
 			os.Exit(0)
+		case "run-sql":
+			if len(os.Args) < 3 {
+				log.Fatal("usage: ./server run-sql <sql>")
+			}
+			sql := os.Args[2]
+			result := db.DB.Exec(sql)
+			if result.Error != nil {
+				log.Fatal("SQL error: ", result.Error)
+			}
+			fmt.Printf("OK — %d rows affected\n", result.RowsAffected)
+			os.Exit(0)
 		case "import-quotes":
 			csvPath := "data/quote_collection.csv"
 			dryRun := false

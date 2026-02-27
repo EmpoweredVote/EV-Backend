@@ -14,6 +14,7 @@ type StanceRow struct {
 	ExternalID string // may be empty
 	TopicKey   string
 	Value      int
+	Reasoning  string   // optional explanation for the stance value
 	SourceURLs []string // up to 3 non-empty URLs
 }
 
@@ -94,6 +95,7 @@ func ParseCSV(path string) ([]StanceRow, error) {
 			ExternalID: get(rec, "external_id"),
 			TopicKey:   get(rec, "topic_key"),
 			Value:      val,
+			Reasoning:  get(rec, "reasoning"),
 			SourceURLs: sources,
 		})
 	}
