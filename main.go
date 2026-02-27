@@ -12,6 +12,7 @@ import (
 	"github.com/EmpoweredVote/EV-Backend/internal/essentials"
 	"github.com/EmpoweredVote/EV-Backend/internal/meetings"
 	"github.com/EmpoweredVote/EV-Backend/internal/middleware"
+	"github.com/EmpoweredVote/EV-Backend/internal/quoteimport"
 	"github.com/EmpoweredVote/EV-Backend/internal/stanceimport"
 	"github.com/EmpoweredVote/EV-Backend/internal/staging"
 	"github.com/EmpoweredVote/EV-Backend/internal/treasury"
@@ -67,6 +68,27 @@ func main() {
 			})
 			if err != nil {
 				log.Fatal("import-stances failed: ", err)
+			}
+			fmt.Printf("Import complete: %d processed, %d inserted, %d updated, %d skipped\n",
+				result.Processed, result.Inserted, result.Updated, result.Skipped)
+			os.Exit(0)
+		case "import-quotes":
+			csvPath := "data/quote_collection.csv"
+			dryRun := false
+			if len(os.Args) > 2 {
+				csvPath = os.Args[2]
+			}
+			for _, arg := range os.Args[2:] {
+				if arg == "--dry-run" {
+					dryRun = true
+				}
+			}
+			result, err := quoteimport.Run(quoteimport.Config{
+				CSVPath: csvPath,
+				DryRun:  dryRun,
+			})
+			if err != nil {
+				log.Fatal("import-quotes failed: ", err)
 			}
 			fmt.Printf("Import complete: %d processed, %d inserted, %d updated, %d skipped\n",
 				result.Processed, result.Inserted, result.Updated, result.Skipped)
