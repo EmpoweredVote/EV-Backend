@@ -23,6 +23,9 @@ func SetupRoutes() http.Handler {
 	r.Get("/politician/{id}/stances", GetPoliticianStances)
 	r.Get("/politician/{id}/elections", GetPoliticianElections)
 
+	// Read & Rank quotes endpoint
+	r.Get("/quotes", GetQuotes)
+
 	// Building photos
 	r.Get("/cities/{geo_id}/building-photo", GetBuildingPhoto)
 

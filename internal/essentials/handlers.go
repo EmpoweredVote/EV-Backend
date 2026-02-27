@@ -2651,6 +2651,188 @@ func GetCandidatesByZip(w http.ResponseWriter, r *http.Request) {
 }
 
 // ──────────────────────────────────────────────────
+// GetQuotes: serves Read & Rank data
+// ──────────────────────────────────────────────────
+
+// QuoteOut matches the Read & Rank Quote interface: { id, text, candidateId, issue, sourceUrl, sourceName }
+type QuoteOut struct {
+	ID          string `json:"id"`
+	Text        string `json:"text"`
+	CandidateID string `json:"candidateId,omitempty"`
+	Issue       string `json:"issue"`
+	SourceURL   string `json:"sourceUrl,omitempty"`
+	SourceName  string `json:"sourceName,omitempty"`
+}
+
+// CandidateReadRankOut matches the Read & Rank Candidate interface.
+type CandidateReadRankOut struct {
+	ID               string `json:"id"`
+	Name             string `json:"name"`
+	Party            string `json:"party"`
+	Office           string `json:"office"`
+	Photo            string `json:"photo"`
+	AlignmentPercent int    `json:"alignmentPercent"`
+	IssuesAligned    int    `json:"issuesAligned"`
+	TotalIssues      int    `json:"totalIssues"`
+}
+
+// IssueOut matches the Read & Rank IssueData interface: { id, title, question }
+type IssueOut struct {
+	ID       string `json:"id"`
+	Title    string `json:"title"`
+	Question string `json:"question"`
+}
+
+// GetQuotes returns quotes, candidates, and issues for the Read & Rank feature.
+// All three arrays are derived from the essentials.quotes table, joined with
+// essentials.politicians, essentials.offices, and compass.topics.
+func GetQuotes(w http.ResponseWriter, r *http.Request) {
+	type quoteRow struct {
+		ID          string
+		QuoteText   string
+		PoliticianID string
+		TopicKey    string
+		SourceURL   string
+		SourceName  string
+		FullName    string
+		Party       string
+		Photo       string
+		OfficeTitle string
+	}
+
+	var rows []quoteRow
+	if err := db.DB.Raw(`
+		SELECT
+		  q.id::text,
+		  q.quote_text,
+		  q.politician_id::text,
+		  q.topic_key,
+		  COALESCE(q.source_url, '') AS source_url,
+		  COALESCE(q.source_name, '') AS source_name,
+		  p.full_name,
+		  COALESCE(p.party, '') AS party,
+		  COALESCE(p.photo_custom_url, p.photo_origin_url, '') AS photo,
+		  COALESCE(o.title, '') AS office_title
+		FROM essentials.quotes q
+		JOIN essentials.politicians p ON p.id = q.politician_id
+		LEFT JOIN LATERAL (
+		  SELECT title FROM essentials.offices
+		  WHERE politician_id = p.id
+		  ORDER BY id DESC
+		  LIMIT 1
+		) o ON true
+		ORDER BY p.full_name, q.topic_key
+	`).Scan(&rows).Error; err != nil {
+		log.Printf("[GetQuotes] DB error: %v", err)
+		http.Error(w, "DB fetch error", http.StatusInternalServerError)
+		return
+	}
+
+	// Build quotes array and collect unique politician IDs and topic keys
+	quotes := make([]QuoteOut, 0, len(rows))
+	candidateMap := make(map[string]*CandidateReadRankOut)
+	topicKeySet := make(map[string]struct{})
+
+	for _, row := range rows {
+		quotes = append(quotes, QuoteOut{
+			ID:          row.ID,
+			Text:        row.QuoteText,
+			CandidateID: row.PoliticianID,
+			Issue:       row.TopicKey,
+			SourceURL:   row.SourceURL,
+			SourceName:  row.SourceName,
+		})
+
+		topicKeySet[row.TopicKey] = struct{}{}
+
+		if _, seen := candidateMap[row.PoliticianID]; !seen {
+			candidateMap[row.PoliticianID] = &CandidateReadRankOut{
+				ID:               row.PoliticianID,
+				Name:             row.FullName,
+				Party:            row.Party,
+				Office:           row.OfficeTitle,
+				Photo:            row.Photo,
+				AlignmentPercent: 0,
+				IssuesAligned:    0,
+				TotalIssues:      0,
+			}
+		}
+		candidateMap[row.PoliticianID].TotalIssues++
+	}
+
+	// TotalIssues should be distinct topics per candidate, not total quote count
+	// Recount using topic_key per politician_id
+	type topicCount struct {
+		PoliticianID string
+		TopicKey     string
+	}
+	var topicCounts []topicCount
+	if err := db.DB.Raw(`
+		SELECT DISTINCT politician_id::text, topic_key
+		FROM essentials.quotes
+	`).Scan(&topicCounts).Error; err != nil {
+		log.Printf("[GetQuotes] topic count error: %v", err)
+		// Continue with whatever TotalIssues we have
+	} else {
+		// Reset and recount
+		for _, c := range candidateMap {
+			c.TotalIssues = 0
+		}
+		for _, tc := range topicCounts {
+			if c, ok := candidateMap[tc.PoliticianID]; ok {
+				c.TotalIssues++
+			}
+		}
+	}
+
+	// Build candidates array (ordered by name for stability)
+	candidates := make([]CandidateReadRankOut, 0, len(candidateMap))
+	for _, c := range candidateMap {
+		candidates = append(candidates, *c)
+	}
+
+	// Collect topic keys for querying compass.topics
+	topicKeys := make([]string, 0, len(topicKeySet))
+	for k := range topicKeySet {
+		topicKeys = append(topicKeys, k)
+	}
+
+	// Query compass.topics for matching topic_keys
+	type topicRow struct {
+		TopicKey     string
+		Title        string
+		QuestionText string
+	}
+	var topicRows []topicRow
+	if len(topicKeys) > 0 {
+		if err := db.DB.Raw(`
+			SELECT topic_key, title, COALESCE(question_text, '') AS question_text
+			FROM compass.topics
+			WHERE topic_key = ANY(?)
+			ORDER BY title
+		`, pq.Array(topicKeys)).Scan(&topicRows).Error; err != nil {
+			log.Printf("[GetQuotes] topics query error: %v", err)
+			// Non-fatal: return empty issues array
+		}
+	}
+
+	issues := make([]IssueOut, 0, len(topicRows))
+	for _, t := range topicRows {
+		issues = append(issues, IssueOut{
+			ID:       t.TopicKey,
+			Title:    t.Title,
+			Question: t.QuestionText,
+		})
+	}
+
+	writeJSON(w, map[string]any{
+		"quotes":     quotes,
+		"candidates": candidates,
+		"issues":     issues,
+	})
+}
+
+// ──────────────────────────────────────────────────
 // Position Descriptions CRUD (admin)
 // ──────────────────────────────────────────────────
 
