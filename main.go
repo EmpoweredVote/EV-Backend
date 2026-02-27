@@ -72,6 +72,51 @@ func main() {
 			fmt.Printf("Import complete: %d processed, %d inserted, %d updated, %d skipped\n",
 				result.Processed, result.Inserted, result.Updated, result.Skipped)
 			os.Exit(0)
+		case "search-politician":
+			if len(os.Args) < 3 {
+				log.Fatal("usage: ./server search-politician <name>")
+			}
+			searchName := os.Args[2]
+			type polResult struct {
+				ID         string `gorm:"column:id"`
+				FullName   string `gorm:"column:full_name"`
+				FirstName  string `gorm:"column:first_name"`
+				LastName   string `gorm:"column:last_name"`
+				ExternalID int    `gorm:"column:external_id"`
+				Party      string `gorm:"column:party"`
+			}
+			var results []polResult
+			db.DB.Raw(`SELECT id, full_name, first_name, last_name, external_id, party
+				FROM essentials.politicians
+				WHERE LOWER(full_name) LIKE LOWER(?) OR LOWER(last_name) LIKE LOWER(?)`,
+				"%"+searchName+"%", "%"+searchName+"%").Scan(&results)
+			if len(results) == 0 {
+				fmt.Printf("No politicians found matching '%s'\n", searchName)
+			} else {
+				fmt.Printf("Found %d matches for '%s':\n", len(results), searchName)
+				for _, r := range results {
+					fmt.Printf("  ID: %s  external_id: %d  name: %s  party: %s\n", r.ID, r.ExternalID, r.FullName, r.Party)
+				}
+			}
+			os.Exit(0)
+		case "add-politician":
+			if len(os.Args) < 6 {
+				log.Fatal("usage: ./server add-politician <full_name> <first_name> <last_name> <party>")
+			}
+			fullName, firstName, lastName, party := os.Args[2], os.Args[3], os.Args[4], os.Args[5]
+			var count int64
+			db.DB.Table("essentials.politicians").Where("LOWER(full_name) = LOWER(?)", fullName).Count(&count)
+			if count > 0 {
+				fmt.Printf("Politician '%s' already exists (%d records)\n", fullName, count)
+				os.Exit(1)
+			}
+			err := db.DB.Exec(`INSERT INTO essentials.politicians (id, full_name, first_name, last_name, party)
+				VALUES (uuid_generate_v4(), ?, ?, ?, ?)`, fullName, firstName, lastName, party).Error
+			if err != nil {
+				log.Fatal("insert failed: ", err)
+			}
+			fmt.Printf("Added politician: %s (%s)\n", fullName, party)
+			os.Exit(0)
 		case "import-quotes":
 			csvPath := "data/quote_collection.csv"
 			dryRun := false

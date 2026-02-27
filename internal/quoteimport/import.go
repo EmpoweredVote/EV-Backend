@@ -162,10 +162,45 @@ func Run(cfg Config) (*ImportResult, error) {
 		var nameOK bool
 
 		if ambiguousNames[csvNorm] {
-			msg := fmt.Sprintf("row %d: ambiguous politician name '%s' — multiple matches in database", lineNum, row.FullName)
-			result.Errors = append(result.Errors, msg)
-			result.Skipped++
-			continue
+			// For ambiguous names, try to disambiguate by checking which one
+			// already has compass.answers (from the stance import)
+			parts := strings.Fields(csvNorm)
+			csvLast := parts[len(parts)-1]
+			csvFirst := parts[0]
+			candidates := byLastName[csvLast]
+			// Filter to matching first names
+			var firstMatch []polEntry
+			for _, c := range candidates {
+				if c.FirstName == csvFirst || strings.HasPrefix(c.FirstName, csvFirst) || strings.HasPrefix(csvFirst, c.FirstName) {
+					firstMatch = append(firstMatch, c)
+				}
+			}
+			if len(firstMatch) == 0 {
+				firstMatch = candidates
+			}
+			// Among matches, find the one with compass answers
+			var withAnswers []polEntry
+			for _, c := range firstMatch {
+				var answerCount int64
+				db.DB.Table("compass.answers").Where("politician_id = ? AND value != 0", c.ID).Count(&answerCount)
+				if answerCount > 0 {
+					withAnswers = append(withAnswers, c)
+				}
+			}
+			if len(withAnswers) == 1 {
+				politicianID = withAnswers[0].ID
+				nameOK = true
+				fmt.Printf("INFO: row %d: disambiguated '%s' to DB name '%s' via compass.answers check\n", lineNum, row.FullName, withAnswers[0].FullName)
+			} else {
+				names := make([]string, len(firstMatch))
+				for i, c := range firstMatch {
+					names[i] = c.FullName
+				}
+				msg := fmt.Sprintf("row %d: ambiguous politician name '%s' — multiple matches: %s", lineNum, row.FullName, strings.Join(names, ", "))
+				result.Errors = append(result.Errors, msg)
+				result.Skipped++
+				continue
+			}
 		}
 
 		politicianID, nameOK = byName[csvNorm]
