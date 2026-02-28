@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
+	"github.com/EmpoweredVote/EV-Backend/internal/essentials/geocoding"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
@@ -268,4 +269,105 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 	}
 
 	return officials, nil
+}
+
+// FindGeoIDsByAreaIntersection finds all geofence boundaries (districts) that
+// spatially intersect the boundary of a queried area (city, ZIP, county).
+// The area is identified by looking up its boundary from geofence_boundaries
+// using the provided geo_id and MTFCC, then finding all other boundaries that
+// ST_Intersects with it.
+//
+// If the area boundary is not found in the database, returns nil, nil (no error)
+// to allow fallback to point-in-polygon.
+func FindGeoIDsByAreaIntersection(ctx context.Context, areaGeoID, areaMTFCC string) ([]GeoMatch, error) {
+	query := `
+		SELECT DISTINCT gb2.geo_id, COALESCE(gb2.mtfcc, '') as mtfcc
+		FROM essentials.geofence_boundaries gb1
+		JOIN essentials.geofence_boundaries gb2
+		  ON ST_Intersects(gb1.geometry, gb2.geometry)
+		WHERE gb1.geo_id = $1
+		  AND gb1.mtfcc = $2
+		  AND gb2.geo_id != gb1.geo_id
+	`
+
+	rows, err := db.DB.WithContext(ctx).Raw(query, areaGeoID, areaMTFCC).Rows()
+	if err != nil {
+		return nil, fmt.Errorf("area intersection query failed: %w", err)
+	}
+	defer rows.Close()
+
+	var matches []GeoMatch
+	for rows.Next() {
+		var m GeoMatch
+		if err := rows.Scan(&m.GeoID, &m.MTFCC); err != nil {
+			return nil, fmt.Errorf("scan area geo match: %w", err)
+		}
+		matches = append(matches, m)
+	}
+
+	return matches, nil
+}
+
+// ResolveAreaBoundary determines the geo_id and MTFCC for an area boundary
+// based on geocoding results. Uses the area's geofence_boundaries record.
+//
+// Resolution priority:
+// 1. ZIP: geo_id is the 5-digit ZIP code, MTFCC is looked up from the boundary table
+// 2. City: look up by MTFCC G4110 (incorporated place) or G4120 (consolidated city)
+//    matching on state + name
+// 3. County: look up by MTFCC G4020 matching on state + name
+//
+// Returns geo_id, mtfcc, found. If not found, returns "", "", false.
+func ResolveAreaBoundary(ctx context.Context, geoResult *geocoding.Result) (string, string, bool) {
+	// Try ZIP first (simplest — ZIP geo_id is the ZIP code itself)
+	if geoResult.Zip != "" {
+		var count int64
+		db.DB.WithContext(ctx).Raw(
+			"SELECT COUNT(*) FROM essentials.geofence_boundaries WHERE geo_id = ?",
+			geoResult.Zip,
+		).Scan(&count)
+		if count > 0 {
+			// ZIP boundaries may have empty MTFCC or a ZCTA code
+			var mtfcc string
+			db.DB.WithContext(ctx).Raw(
+				"SELECT COALESCE(mtfcc, '') FROM essentials.geofence_boundaries WHERE geo_id = ? LIMIT 1",
+				geoResult.Zip,
+			).Scan(&mtfcc)
+			return geoResult.Zip, mtfcc, true
+		}
+	}
+
+	// Try city boundary (G4110 = Incorporated Place, G4120 = Consolidated City)
+	if geoResult.City != "" && geoResult.State != "" {
+		var geoID, mtfcc string
+		err := db.DB.WithContext(ctx).Raw(`
+			SELECT geo_id, mtfcc
+			FROM essentials.geofence_boundaries
+			WHERE state = ? AND mtfcc IN ('G4110', 'G4120')
+			  AND LOWER(name) = LOWER(?)
+			LIMIT 1
+		`, geoResult.State, geoResult.City).Row().Scan(&geoID, &mtfcc)
+		if err == nil && geoID != "" {
+			return geoID, mtfcc, true
+		}
+	}
+
+	// Try county boundary (G4020)
+	if geoResult.County != "" && geoResult.State != "" {
+		// Match on county name prefix (handles "Monroe County" in DB vs "Monroe County" from geocoder)
+		countyName := geoResult.County
+		var geoID string
+		err := db.DB.WithContext(ctx).Raw(`
+			SELECT geo_id
+			FROM essentials.geofence_boundaries
+			WHERE state = ? AND mtfcc = 'G4020'
+			  AND LOWER(name) LIKE LOWER(?)
+			LIMIT 1
+		`, geoResult.State, countyName+"%").Row().Scan(&geoID)
+		if err == nil && geoID != "" {
+			return geoID, "G4020", true
+		}
+	}
+
+	return "", "", false
 }

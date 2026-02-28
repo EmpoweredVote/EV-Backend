@@ -12,13 +12,34 @@ import (
 
 // Result holds structured data from a Google Maps geocoding response.
 type Result struct {
-	Zip       string  `json:"zip"`
-	State     string  `json:"state"`      // 2-letter state abbreviation
-	County    string  `json:"county"`
-	City      string  `json:"city"`
-	Formatted string  `json:"formatted"`  // Full formatted address
-	Lat       float64 `json:"lat"`
-	Lng       float64 `json:"lng"`
+	Zip         string   `json:"zip"`
+	State       string   `json:"state"`        // 2-letter state abbreviation
+	County      string   `json:"county"`
+	City        string   `json:"city"`
+	Formatted   string   `json:"formatted"`    // Full formatted address
+	Lat         float64  `json:"lat"`
+	Lng         float64  `json:"lng"`
+	ResultTypes []string `json:"result_types"` // Top-level types from Google (e.g. "locality", "postal_code", "street_address")
+}
+
+// IsAreaQuery returns true if the geocoding result represents an area (city, ZIP, county, etc.)
+// rather than a specific street address or building.
+// Area types trigger ST_Intersects boundary overlap; point types use ST_Covers point-in-polygon.
+func (r *Result) IsAreaQuery() bool {
+	pointTypes := map[string]bool{
+		"street_address": true,
+		"premise":        true,
+		"subpremise":     true,
+		"route":          true,
+	}
+	for _, t := range r.ResultTypes {
+		if pointTypes[t] {
+			return false
+		}
+	}
+	// If no point-type found, treat as area (locality, postal_code, admin_area, etc.)
+	// Also returns true when ResultTypes is empty (conservative: area treatment)
+	return true
 }
 
 // Client wraps the Google Maps Geocoding API.
@@ -51,6 +72,7 @@ type geocodeResult struct {
 	AddressComponents []addressComponent `json:"address_components"`
 	FormattedAddress  string             `json:"formatted_address"`
 	Geometry          geometry           `json:"geometry"`
+	Types             []string           `json:"types"` // e.g. ["locality", "political"]
 }
 
 type addressComponent struct {
@@ -106,9 +128,10 @@ func (c *Client) Geocode(ctx context.Context, address string) (*Result, error) {
 
 	result := geoResp.Results[0]
 	out := &Result{
-		Formatted: result.FormattedAddress,
-		Lat:       result.Geometry.Location.Lat,
-		Lng:       result.Geometry.Location.Lng,
+		Formatted:   result.FormattedAddress,
+		Lat:         result.Geometry.Location.Lat,
+		Lng:         result.Geometry.Location.Lng,
+		ResultTypes: result.Types,
 	}
 
 	for _, comp := range result.AddressComponents {
