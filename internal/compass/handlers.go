@@ -1170,7 +1170,14 @@ func PoliticiansWithAnswersHandler(w http.ResponseWriter, r *http.Request) {
 	err := db.DB.Raw(`
 		SELECT DISTINCT ON (p.id)
 		  p.id, p.first_name, p.last_name, p.preferred_name, p.full_name,
-		  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
+		  COALESCE(
+		    NULLIF(p.photo_custom_url, ''),
+		    NULLIF(p.photo_origin_url, ''),
+		    (SELECT url FROM essentials.politician_images
+		     WHERE politician_id = p.id AND type = 'default' LIMIT 1),
+		    (SELECT url FROM essentials.politician_images
+		     WHERE politician_id = p.id LIMIT 1)
+		  ) AS photo_origin_url,
 		  o.title AS office_title
 		FROM compass.answers a
 		JOIN essentials.politicians p ON p.id::text = a.politician_id
