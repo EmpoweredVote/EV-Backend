@@ -1157,13 +1157,17 @@ func UpsertPoliticianAnswers(w http.ResponseWriter, r *http.Request) {
 // PoliticiansWithAnswersHandler returns politicians that have at least one compass answer.
 func PoliticiansWithAnswersHandler(w http.ResponseWriter, r *http.Request) {
 	type polRow struct {
-		ID             uuid.UUID `json:"id"`
-		FirstName      string    `json:"first_name"`
-		LastName       string    `json:"last_name"`
-		PreferredName  string    `json:"preferred_name,omitempty"`
-		FullName       string    `json:"full_name,omitempty"`
-		PhotoOriginURL string    `json:"photo_origin_url,omitempty"`
-		OfficeTitle    string    `json:"office_title,omitempty"`
+		ID               uuid.UUID `json:"id"`
+		FirstName        string    `json:"first_name"`
+		LastName         string    `json:"last_name"`
+		PreferredName    string    `json:"preferred_name,omitempty"`
+		FullName         string    `json:"full_name,omitempty"`
+		PhotoOriginURL   string    `json:"photo_origin_url,omitempty"`
+		OfficeTitle      string    `json:"office_title,omitempty"`
+		RepresentingState string   `json:"representing_state,omitempty"`
+		RepresentingCity  string   `json:"representing_city,omitempty"`
+		DistrictLabel    string    `json:"district_label,omitempty"`
+		DistrictType     string    `json:"district_type,omitempty"`
 	}
 
 	var results []polRow
@@ -1178,10 +1182,15 @@ func PoliticiansWithAnswersHandler(w http.ResponseWriter, r *http.Request) {
 		    (SELECT url FROM essentials.politician_images
 		     WHERE politician_id = p.id LIMIT 1)
 		  ) AS photo_origin_url,
-		  o.title AS office_title
+		  o.title AS office_title,
+		  o.representing_state,
+		  o.representing_city,
+		  d.label AS district_label,
+		  d.district_type
 		FROM compass.answers a
 		JOIN essentials.politicians p ON p.id::text = a.politician_id
 		LEFT JOIN essentials.offices o ON o.politician_id = p.id
+		LEFT JOIN essentials.districts d ON d.id = o.district_id
 		WHERE a.politician_id != '00000000-0000-0000-0000-000000000000'
 		  AND a.value != 0
 		ORDER BY p.id
