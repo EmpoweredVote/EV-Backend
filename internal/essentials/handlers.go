@@ -1782,9 +1782,10 @@ func normalizedToOfficialOut(off provider.NormalizedOfficial) OfficialOut {
 }
 
 // SearchPoliticians handles POST /politicians/search.
-// Accepts {"query": "..."} and detects ZIP vs address.
-// ZIP queries delegate to the existing warm/cache flow.
-// Address queries call BallotReady directly for precise results.
+// Accepts {"query": "..."} and geocodes the query to detect area vs point queries.
+// Area queries (city, ZIP, county) use ST_Intersects boundary overlap to find all overlapping districts.
+// Point queries (street addresses) use ST_Covers point-in-polygon (unchanged behavior).
+// ZIP codes route through this geocode → area-intersection path instead of the old zip_politicians warming flow.
 func SearchPoliticians(w http.ResponseWriter, r *http.Request) {
 	var body struct {
 		Query string `json:"query"`
@@ -1799,19 +1800,17 @@ func SearchPoliticians(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// If the query is a 5-digit ZIP, delegate to existing ZIP flow
-	if isZip5(query) {
-		handleZipLookup(w, r, query)
-		return
-	}
+	// All queries (including ZIP codes) go through geocode → area/point detection.
+	// ZIP codes will return result type "postal_code" which triggers area intersection.
+	// This replaces the old ZIP-specific warm/cache delegation.
 
-	// Address search requires geocoding — no BallotReady fallback.
+	// Search requires geocoding — no fallback without API key.
 	if GeoClient == nil {
 		http.Error(w, "Address search requires geocoding service configuration", http.StatusServiceUnavailable)
 		return
 	}
 
-	// Geocode the address to coordinates + state.
+	// Geocode the query to coordinates + structured location data.
 	geoResult, geoErr := GeoClient.Geocode(r.Context(), query)
 	if geoErr != nil {
 		log.Printf("[SearchPoliticians] Google geocoding failed for %q: %v", query, geoErr)
@@ -1822,69 +1821,112 @@ func SearchPoliticians(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Could not resolve address", http.StatusBadRequest)
 		return
 	}
-	log.Printf("[SearchPoliticians] Google geocoded %q → (%.6f, %.6f) %s", query, geoResult.Lat, geoResult.Lng, geoResult.Formatted)
+	log.Printf("[SearchPoliticians] Google geocoded %q → (%.6f, %.6f) types=%v %s",
+		query, geoResult.Lat, geoResult.Lng, geoResult.ResultTypes, geoResult.Formatted)
 
-	// Find all geofences (districts) that contain this point.
-	geoMatches, err := FindGeoIDsByPoint(r.Context(), geoResult.Lat, geoResult.Lng)
-	if err != nil {
-		log.Printf("[SearchPoliticians] geofence lookup error: %v", err)
+	var officials []OfficialOut
+	var geoMatchCount int
+
+	if geoResult.IsAreaQuery() {
+		// AREA QUERY: city, ZIP, county — use boundary intersection to find all overlapping districts.
+		log.Printf("[SearchPoliticians] area query detected (types=%v) — using boundary intersection", geoResult.ResultTypes)
+
+		areaGeoID, areaMTFCC, found := ResolveAreaBoundary(r.Context(), geoResult)
+		if found {
+			log.Printf("[SearchPoliticians] resolved area boundary: geo_id=%s mtfcc=%s", areaGeoID, areaMTFCC)
+
+			areaMatches, err := FindGeoIDsByAreaIntersection(r.Context(), areaGeoID, areaMTFCC)
+			if err != nil {
+				log.Printf("[SearchPoliticians] area intersection error: %v", err)
+			} else {
+				geoMatchCount = len(areaMatches)
+				log.Printf("[SearchPoliticians] area intersection found %d overlapping districts", geoMatchCount)
+
+				if geoMatchCount > 0 {
+					officials, err = FindPoliticiansByGeoMatches(r.Context(), areaMatches)
+					if err != nil {
+						log.Printf("[SearchPoliticians] politician lookup from area matches error: %v", err)
+						officials = nil
+					}
+				}
+			}
+		} else {
+			log.Printf("[SearchPoliticians] no area boundary found in DB — falling back to point-in-polygon")
+		}
+
+		// Fallback: if area resolution failed or no boundary exists, try point-in-polygon.
+		if len(officials) == 0 {
+			pointMatches, err := FindGeoIDsByPoint(r.Context(), geoResult.Lat, geoResult.Lng)
+			if err != nil {
+				log.Printf("[SearchPoliticians] point-in-polygon fallback error: %v", err)
+			} else if len(pointMatches) > 0 {
+				geoMatchCount = len(pointMatches)
+				officials, err = FindPoliticiansByGeoMatches(r.Context(), pointMatches)
+				if err != nil {
+					log.Printf("[SearchPoliticians] politician lookup from point fallback error: %v", err)
+					officials = nil
+				}
+			}
+		}
+	} else {
+		// POINT QUERY: specific street address — use existing point-in-polygon (unchanged behavior).
+		log.Printf("[SearchPoliticians] point query detected (types=%v) — using point-in-polygon", geoResult.ResultTypes)
+
+		pointMatches, err := FindGeoIDsByPoint(r.Context(), geoResult.Lat, geoResult.Lng)
+		if err != nil {
+			log.Printf("[SearchPoliticians] geofence lookup error: %v", err)
+		} else {
+			geoMatchCount = len(pointMatches)
+			if geoMatchCount > 0 {
+				officials, err = FindPoliticiansByGeoMatches(r.Context(), pointMatches)
+				if err != nil {
+					log.Printf("[SearchPoliticians] politician lookup error: %v", err)
+					officials = nil
+				}
+			}
+		}
 	}
 
-	if len(geoMatches) > 0 {
-		geoIDs := make([]string, len(geoMatches))
-		for i, m := range geoMatches {
-			geoIDs[i] = m.GeoID + "(" + m.MTFCC + ")"
+	if len(officials) > 0 {
+		// Supplement with federal + state officials, deduplicating by external_id.
+		geoState := strings.ToUpper(geoResult.State)
+		if geoState == "" {
+			for _, o := range officials {
+				if o.RepresentingState != "" {
+					geoState = strings.ToUpper(o.RepresentingState)
+					break
+				}
+			}
 		}
-		log.Printf("[SearchPoliticians] found %d geofences for point: %v", len(geoMatches), geoIDs)
 
-		// Look up politicians by geo matches (with MTFCC disambiguation).
-		officials, err := FindPoliticiansByGeoMatches(r.Context(), geoMatches)
-		if err != nil {
-			log.Printf("[SearchPoliticians] politician lookup error: %v", err)
-		} else if len(officials) > 0 {
-			// Supplement geofence results with federal + state officials from DB cache.
-			geoState := strings.ToUpper(geoResult.State)
-			if geoState == "" {
-				// Fall back to state from geofence-matched officials.
-				for _, o := range officials {
-					if o.RepresentingState != "" {
-						geoState = strings.ToUpper(o.RepresentingState)
-						break
-					}
+		if geoState != "" {
+			seenExtIDs := make(map[int]bool, len(officials))
+			for _, o := range officials {
+				if o.ExternalID != 0 {
+					seenExtIDs[o.ExternalID] = true
 				}
 			}
 
-			if geoState != "" {
-				seenExtIDs := make(map[int]bool, len(officials))
-				for _, o := range officials {
-					if o.ExternalID != 0 {
-						seenExtIDs[o.ExternalID] = true
+			supplemental, supErr := fetchStatewideFromDB(geoState)
+			if supErr == nil {
+				for _, s := range supplemental {
+					if !seenExtIDs[s.ExternalID] {
+						officials = append(officials, s)
+						seenExtIDs[s.ExternalID] = true
 					}
 				}
-
-				supplemental, supErr := fetchStatewideFromDB(geoState)
-				if supErr == nil {
-					for _, s := range supplemental {
-						if !seenExtIDs[s.ExternalID] {
-							officials = append(officials, s)
-							seenExtIDs[s.ExternalID] = true
-						}
-					}
-				} else {
-					log.Printf("[SearchPoliticians] geofence supplemental fetch error: %v", supErr)
-				}
+			} else {
+				log.Printf("[SearchPoliticians] supplemental fetch error: %v", supErr)
 			}
-
-			log.Printf("[SearchPoliticians] ✓ Served %d officials (%d geofence + supplemental) for state=%s", len(officials), len(geoMatches), geoState)
-			w.Header().Set("X-Data-Status", "fresh-local")
-			w.Header().Set("X-Geofence-Count", fmt.Sprintf("%d", len(geoMatches)))
-			w.Header().Set("X-Formatted-Address", geoResult.Formatted)
-			writeJSON(w, officials)
-			return
 		}
-		log.Printf("[SearchPoliticians] no politicians found for geo-IDs (area not pre-populated)")
-	} else {
-		log.Printf("[SearchPoliticians] no geofences found at (%.6f, %.6f) — area not imported yet", geoResult.Lat, geoResult.Lng)
+
+		log.Printf("[SearchPoliticians] served %d officials (%d geo matches) for state=%s query=%q",
+			len(officials), geoMatchCount, strings.ToUpper(geoResult.State), query)
+		w.Header().Set("X-Data-Status", "fresh")
+		w.Header().Set("X-Geofence-Count", fmt.Sprintf("%d", geoMatchCount))
+		w.Header().Set("X-Formatted-Address", geoResult.Formatted)
+		writeJSON(w, officials)
+		return
 	}
 
 	// No local geofence data — return federal + state officials from cache.
@@ -1894,17 +1936,17 @@ func SearchPoliticians(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	officials, err := fetchFederalAndStateFromDB(geoState)
+	federalState, err := fetchFederalAndStateFromDB(geoState)
 	if err != nil {
-		log.Printf("[SearchPoliticians] no-geofence DB fetch error for state=%s: %v", geoState, err)
+		log.Printf("[SearchPoliticians] fallback DB fetch error for state=%s: %v", geoState, err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	log.Printf("[SearchPoliticians] no-geofence fallback: returned %d federal+state officials for state=%s", len(officials), geoState)
+	log.Printf("[SearchPoliticians] no-geofence fallback: returned %d federal+state officials for state=%s", len(federalState), geoState)
 	w.Header().Set("X-Data-Status", "no-geofence-data")
 	w.Header().Set("X-Formatted-Address", geoResult.Formatted)
-	writeJSON(w, officials)
+	writeJSON(w, federalState)
 }
 
 // PoliticianProfileOut is the enriched response for a single politician profile.
