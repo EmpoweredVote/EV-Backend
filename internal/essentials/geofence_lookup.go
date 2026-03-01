@@ -121,7 +121,7 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 	query := fmt.Sprintf(`
 		SELECT DISTINCT ON (p.id)
 			p.id,
-			p.external_id,
+			COALESCE(p.external_id, 0) AS external_id,
 			COALESCE(p.first_name, '') AS first_name,
 			COALESCE(p.middle_initial, '') AS middle_initial,
 			COALESCE(p.last_name, '') AS last_name,
@@ -277,17 +277,22 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 // using the provided geo_id and MTFCC, then finding all other boundaries that
 // ST_Intersects with it.
 //
-// If the area boundary is not found in the database, returns nil, nil (no error)
-// to allow fallback to point-in-polygon.
+// FindGeoIDsByAreaIntersection finds districts related to a queried area using
+// bidirectional point-on-surface matching:
+//   - Sub-districts whose representative point falls within the area (council wards, school districts)
+//   - Larger districts that contain the area's representative point (county, congressional, state leg)
+//
+// This avoids the ST_Intersects problem where neighboring cities that merely
+// share a boundary edge are included in results.
 func FindGeoIDsByAreaIntersection(ctx context.Context, areaGeoID, areaMTFCC string) ([]GeoMatch, error) {
 	query := `
 		SELECT DISTINCT gb2.geo_id, COALESCE(gb2.mtfcc, '') as mtfcc
 		FROM essentials.geofence_boundaries gb1
 		JOIN essentials.geofence_boundaries gb2
-		  ON ST_Intersects(gb1.geometry, gb2.geometry)
+		  ON ST_Contains(gb1.geometry, ST_PointOnSurface(gb2.geometry))
+		   OR ST_Contains(gb2.geometry, ST_PointOnSurface(gb1.geometry))
 		WHERE gb1.geo_id = $1
 		  AND gb1.mtfcc = $2
-		  AND gb2.geo_id != gb1.geo_id
 	`
 
 	rows, err := db.DB.WithContext(ctx).Raw(query, areaGeoID, areaMTFCC).Rows()
@@ -365,15 +370,22 @@ func ResolveAreaBoundary(ctx context.Context, geoResult *geocoding.Result) (stri
 	}
 
 	// Try city boundary (G4110 = Incorporated Place, G4120 = Consolidated City)
+	// Census TIGER names may have suffixes like " city", " town", " village"
+	// (e.g. "Los Angeles city", "Indianapolis city (balance)")
+	// so match on exact name OR name with common suffixes.
 	if geoResult.City != "" && stateFIPS != "" {
 		var geoID, mtfcc string
 		err := db.DB.WithContext(ctx).Raw(`
 			SELECT geo_id, mtfcc
 			FROM essentials.geofence_boundaries
 			WHERE state = ? AND mtfcc IN ('G4110', 'G4120')
-			  AND LOWER(name) = LOWER(?)
+			  AND (LOWER(name) = LOWER(?)
+			    OR LOWER(name) = LOWER(? || ' city')
+			    OR LOWER(name) = LOWER(? || ' town')
+			    OR LOWER(name) = LOWER(? || ' village')
+			    OR LOWER(name) LIKE LOWER(? || ' city (%'))
 			LIMIT 1
-		`, stateFIPS, geoResult.City).Row().Scan(&geoID, &mtfcc)
+		`, stateFIPS, geoResult.City, geoResult.City, geoResult.City, geoResult.City, geoResult.City).Row().Scan(&geoID, &mtfcc)
 		if err == nil && geoID != "" {
 			return geoID, mtfcc, true
 		}
