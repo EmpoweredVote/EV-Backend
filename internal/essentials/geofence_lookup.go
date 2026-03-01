@@ -308,17 +308,44 @@ func FindGeoIDsByAreaIntersection(ctx context.Context, areaGeoID, areaMTFCC stri
 	return matches, nil
 }
 
+// stateAbbrevToFIPS maps 2-letter state abbreviations to Census FIPS codes.
+// The geofence_boundaries table stores state as FIPS (e.g. "06" for CA),
+// but Google Geocoding returns 2-letter abbreviations (e.g. "CA").
+var stateAbbrevToFIPS = map[string]string{
+	"AL": "01", "AK": "02", "AZ": "04", "AR": "05", "CA": "06",
+	"CO": "08", "CT": "09", "DE": "10", "DC": "11", "FL": "12",
+	"GA": "13", "HI": "15", "ID": "16", "IL": "17", "IN": "18",
+	"IA": "19", "KS": "20", "KY": "21", "LA": "22", "ME": "23",
+	"MD": "24", "MA": "25", "MI": "26", "MN": "27", "MS": "28",
+	"MO": "29", "MT": "30", "NE": "31", "NV": "32", "NH": "33",
+	"NJ": "34", "NM": "35", "NY": "36", "NC": "37", "ND": "38",
+	"OH": "39", "OK": "40", "OR": "41", "PA": "42", "PR": "72",
+	"RI": "44", "SC": "45", "SD": "46", "TN": "47", "TX": "48",
+	"UT": "49", "VT": "50", "VA": "51", "WA": "53", "WV": "54",
+	"WI": "55", "WY": "56", "VI": "78", "GU": "66", "AS": "60",
+	"MP": "69",
+}
+
 // ResolveAreaBoundary determines the geo_id and MTFCC for an area boundary
 // based on geocoding results. Uses the area's geofence_boundaries record.
 //
 // Resolution priority:
 // 1. ZIP: geo_id is the 5-digit ZIP code, MTFCC is looked up from the boundary table
 // 2. City: look up by MTFCC G4110 (incorporated place) or G4120 (consolidated city)
-//    matching on state + name
-// 3. County: look up by MTFCC G4020 matching on state + name
+//    matching on state FIPS + name
+// 3. County: look up by MTFCC G4020 matching on state FIPS + name (strips " County" suffix)
 //
 // Returns geo_id, mtfcc, found. If not found, returns "", "", false.
 func ResolveAreaBoundary(ctx context.Context, geoResult *geocoding.Result) (string, string, bool) {
+	// Convert state abbreviation to FIPS code for DB lookups
+	stateFIPS := stateAbbrevToFIPS[strings.ToUpper(geoResult.State)]
+	if stateFIPS == "" {
+		// If state is already a FIPS code (2 digits), use as-is
+		if len(geoResult.State) == 2 && geoResult.State[0] >= '0' && geoResult.State[0] <= '9' {
+			stateFIPS = geoResult.State
+		}
+	}
+
 	// Try ZIP first (simplest — ZIP geo_id is the ZIP code itself)
 	if geoResult.Zip != "" {
 		var count int64
@@ -338,7 +365,7 @@ func ResolveAreaBoundary(ctx context.Context, geoResult *geocoding.Result) (stri
 	}
 
 	// Try city boundary (G4110 = Incorporated Place, G4120 = Consolidated City)
-	if geoResult.City != "" && geoResult.State != "" {
+	if geoResult.City != "" && stateFIPS != "" {
 		var geoID, mtfcc string
 		err := db.DB.WithContext(ctx).Raw(`
 			SELECT geo_id, mtfcc
@@ -346,24 +373,25 @@ func ResolveAreaBoundary(ctx context.Context, geoResult *geocoding.Result) (stri
 			WHERE state = ? AND mtfcc IN ('G4110', 'G4120')
 			  AND LOWER(name) = LOWER(?)
 			LIMIT 1
-		`, geoResult.State, geoResult.City).Row().Scan(&geoID, &mtfcc)
+		`, stateFIPS, geoResult.City).Row().Scan(&geoID, &mtfcc)
 		if err == nil && geoID != "" {
 			return geoID, mtfcc, true
 		}
 	}
 
 	// Try county boundary (G4020)
-	if geoResult.County != "" && geoResult.State != "" {
-		// Match on county name prefix (handles "Monroe County" in DB vs "Monroe County" from geocoder)
-		countyName := geoResult.County
+	if geoResult.County != "" && stateFIPS != "" {
+		// Strip " County" suffix — Google returns "Los Angeles County" but DB stores "Los Angeles"
+		countyName := strings.TrimSuffix(geoResult.County, " County")
+		countyName = strings.TrimSuffix(countyName, " Parish") // Louisiana
 		var geoID string
 		err := db.DB.WithContext(ctx).Raw(`
 			SELECT geo_id
 			FROM essentials.geofence_boundaries
 			WHERE state = ? AND mtfcc = 'G4020'
-			  AND LOWER(name) LIKE LOWER(?)
+			  AND LOWER(name) = LOWER(?)
 			LIMIT 1
-		`, geoResult.State, countyName+"%").Row().Scan(&geoID)
+		`, stateFIPS, countyName).Row().Scan(&geoID)
 		if err == nil && geoID != "" {
 			return geoID, "G4020", true
 		}
