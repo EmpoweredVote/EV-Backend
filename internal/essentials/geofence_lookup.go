@@ -292,6 +292,9 @@ func FindGeoIDsByAreaIntersection(ctx context.Context, areaGeoID, areaMTFCC stri
 		JOIN essentials.geofence_boundaries gb2
 		  ON ST_Contains(gb1.geometry, ST_PointOnSurface(gb2.geometry))
 		   OR ST_Contains(gb2.geometry, ST_PointOnSurface(gb1.geometry))
+		   OR (gb2.mtfcc IN ('G4110', 'G4120')
+		       AND ST_Intersects(gb1.geometry, gb2.geometry)
+		       AND NOT ST_Touches(gb1.geometry, gb2.geometry))
 		WHERE gb1.geo_id = $1
 		  AND gb1.mtfcc = $2
 	`
