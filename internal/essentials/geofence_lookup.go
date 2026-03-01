@@ -32,6 +32,7 @@ var mtfccToDistrictTypes = map[string][]string{
 	"G5410": {"SCHOOL"},                      // Secondary School District
 	"G5420": {"SCHOOL"},                      // Unified School District
 	"X0001": {"LOCAL"},                       // City council sub-districts (BallotReady custom MTFCC)
+	"G6350": {},                              // ZCTA (ZIP Code Tabulation Area) — area boundary only, not a district type
 }
 
 // FindGeoIDsByPoint performs a PostGIS point-in-polygon query to find all
