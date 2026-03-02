@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/EmpoweredVote/EV-Backend/internal/auth"
 	"github.com/EmpoweredVote/EV-Backend/internal/compass"
@@ -164,6 +166,62 @@ func main() {
 			}
 			fmt.Printf("Backfill complete: %d matched, %d inserted, %d skipped\n",
 				result.Matched, result.Inserted, result.Skipped)
+			if len(result.Errors) > 0 {
+				fmt.Printf("Errors (%d):\n", len(result.Errors))
+				for _, e := range result.Errors {
+					fmt.Printf("  - %s\n", e)
+				}
+			}
+			os.Exit(0)
+		case "import-committees":
+			dryRun := false
+			congressNumber := 119
+			for _, arg := range os.Args[2:] {
+				if arg == "--dry-run" {
+					dryRun = true
+				}
+				if strings.HasPrefix(arg, "--congress=") {
+					n, err := strconv.Atoi(strings.TrimPrefix(arg, "--congress="))
+					if err != nil {
+						log.Fatal("invalid --congress value: ", arg)
+					}
+					congressNumber = n
+				}
+			}
+			result, err := essentials.ImportCommittees(essentials.ImportCommitteesConfig{
+				DryRun:         dryRun,
+				CongressNumber: congressNumber,
+			})
+			if err != nil {
+				log.Fatal("import-committees failed: ", err)
+			}
+			fmt.Printf("Import complete: %d committees, %d subcommittees, %d memberships upserted, %d skipped\n",
+				result.CommitteesUpserted, result.SubcommitteesUpserted, result.MembershipsUpserted, result.Skipped)
+			if result.SessionCreated {
+				fmt.Printf("Created new legislative session for %dth Congress\n", congressNumber)
+			}
+			if len(result.Errors) > 0 {
+				fmt.Printf("Errors (%d):\n", len(result.Errors))
+				for _, e := range result.Errors {
+					fmt.Printf("  - %s\n", e)
+				}
+			}
+			os.Exit(0)
+		case "import-leadership":
+			dryRun := false
+			for _, arg := range os.Args[2:] {
+				if arg == "--dry-run" {
+					dryRun = true
+				}
+			}
+			result, err := essentials.ImportLeadership(essentials.ImportLeadershipConfig{
+				DryRun: dryRun,
+			})
+			if err != nil {
+				log.Fatal("import-leadership failed: ", err)
+			}
+			fmt.Printf("Import complete: %d leadership roles upserted, %d skipped\n",
+				result.RolesUpserted, result.Skipped)
 			if len(result.Errors) > 0 {
 				fmt.Printf("Errors (%d):\n", len(result.Errors))
 				for _, e := range result.Errors {
