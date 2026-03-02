@@ -149,6 +149,28 @@ func main() {
 			fmt.Printf("Import complete: %d processed, %d inserted, %d updated, %d skipped\n",
 				result.Processed, result.Inserted, result.Updated, result.Skipped)
 			os.Exit(0)
+		case "backfill-legislative-ids":
+			dryRun := false
+			for _, arg := range os.Args[2:] {
+				if arg == "--dry-run" {
+					dryRun = true
+				}
+			}
+			result, err := essentials.BackfillLegislativeIDs(essentials.BackfillConfig{
+				DryRun: dryRun,
+			})
+			if err != nil {
+				log.Fatal("backfill-legislative-ids failed: ", err)
+			}
+			fmt.Printf("Backfill complete: %d matched, %d inserted, %d skipped\n",
+				result.Matched, result.Inserted, result.Skipped)
+			if len(result.Errors) > 0 {
+				fmt.Printf("Errors (%d):\n", len(result.Errors))
+				for _, e := range result.Errors {
+					fmt.Printf("  - %s\n", e)
+				}
+			}
+			os.Exit(0)
 		}
 	}
 
