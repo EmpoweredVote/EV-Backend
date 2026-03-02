@@ -1,0 +1,12 @@
+# EV-Backend/scripts/requirements-state.txt
+#
+# Dependencies for the state legislative data import script (import_state_legislative.py).
+# Requires Python >=3.10
+#
+# Install:
+#   pip install -r requirements-state.txt
+#   (or: source .venv/bin/activate && pip install -r requirements-state.txt)
+#
+psycopg2-binary>=2.9
+requests>=2.31
+python-dotenv>=1.0
