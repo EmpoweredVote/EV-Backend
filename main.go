@@ -229,6 +229,54 @@ func main() {
 				}
 			}
 			os.Exit(0)
+		case "import-federal-bills":
+			dryRun := false
+			skipSummaries := false
+			congresses := []int{119, 118}
+			maxErrors := 50
+			for _, arg := range os.Args[2:] {
+				switch {
+				case arg == "--dry-run":
+					dryRun = true
+				case arg == "--skip-summaries":
+					skipSummaries = true
+				case strings.HasPrefix(arg, "--congress="):
+					n, err := strconv.Atoi(strings.TrimPrefix(arg, "--congress="))
+					if err != nil {
+						log.Fatal("invalid --congress value: ", arg)
+					}
+					congresses = []int{n}
+				case strings.HasPrefix(arg, "--max-errors="):
+					n, err := strconv.Atoi(strings.TrimPrefix(arg, "--max-errors="))
+					if err != nil {
+						log.Fatal("invalid --max-errors value: ", arg)
+					}
+					maxErrors = n
+				}
+			}
+			congressAPIKey := os.Getenv("CONGRESS_API_KEY")
+			if congressAPIKey == "" {
+				log.Fatal("CONGRESS_API_KEY environment variable is required")
+			}
+			result, err := essentials.ImportFederalBills(essentials.ImportFederalBillsConfig{
+				DryRun:          dryRun,
+				CongressNumbers: congresses,
+				SkipSummaries:   skipSummaries,
+				CongressAPIKey:  congressAPIKey,
+				MaxErrors:       maxErrors,
+			})
+			if err != nil {
+				log.Fatal("import-federal-bills failed: ", err)
+			}
+			fmt.Printf("Import complete: %d bills, %d cosponsors, %d summaries, %d skipped\n",
+				result.BillsUpserted, result.CosponsorsUpserted, result.SummariesFetched, result.Skipped)
+			if len(result.Errors) > 0 {
+				fmt.Printf("Errors (%d):\n", len(result.Errors))
+				for _, e := range result.Errors {
+					fmt.Printf("  - %s\n", e)
+				}
+			}
+			os.Exit(0)
 		}
 	}
 
