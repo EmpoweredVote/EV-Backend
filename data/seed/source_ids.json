@@ -1,0 +1,258 @@
+[
+  {
+    "essentials_politician_id": "00000001-0000-0000-0000-000000000000",
+    "politician_name": "Erin Houchin",
+    "source_system": "fec_house",
+    "external_id": "H6IN09143",
+    "research_status": "needs_research",
+    "notes": "FEC API match (status=C, activeThru=2026, cycles=2016,2022,2024,2026) — verify at https://www.fec.gov/data/candidates/H6IN09143/"
+  },
+  {
+    "essentials_politician_id": "00000002-0000-0000-0000-000000000000",
+    "politician_name": "Todd Young",
+    "source_system": "fec_senate",
+    "external_id": "S6IN00191",
+    "research_status": "needs_research",
+    "notes": "FEC API match (status=C, activeThru=2028, cycles=2016,2018,2020,2022,2024,2026) — verify at https://www.fec.gov/data/candidates/S6IN00191/"
+  },
+  {
+    "essentials_politician_id": "00000003-0000-0000-0000-000000000000",
+    "politician_name": "Jim Banks",
+    "source_system": "fec_house",
+    "external_id": "H2IN03102",
+    "research_status": "needs_research",
+    "notes": "Jim Banks served in House (IN-03) before Senate — verify House ID at https://www.fec.gov/data/candidates/H2IN03102/ and add Senate ID separately once known"
+  },
+  {
+    "essentials_politician_id": "00000003-0000-0000-0000-000000000000",
+    "politician_name": "Jim Banks",
+    "source_system": "fec_senate",
+    "external_id": "",
+    "research_status": "needs_research",
+    "notes": "Jim Banks won Senate seat (IN) in 2024 — FEC Senate candidate ID not returned by API; look up at https://www.fec.gov/data/candidates/?name=banks&state=IN&office=S"
+  },
+  {
+    "essentials_politician_id": "00000007-0000-0000-0000-000000000000",
+    "politician_name": "Alex Padilla",
+    "source_system": "fec_senate",
+    "external_id": "S2CA00955",
+    "research_status": "needs_research",
+    "notes": "FEC API match (status=C, activeThru=2028, cycles=2020,2022,2024,2026) — verify at https://www.fec.gov/data/candidates/S2CA00955/"
+  },
+  {
+    "essentials_politician_id": "00000008-0000-0000-0000-000000000000",
+    "politician_name": "Adam Schiff",
+    "source_system": "fec_senate",
+    "external_id": "S4CA00555",
+    "research_status": "needs_research",
+    "notes": "FEC API match (status=C, activeThru=2030, cycles=2024,2026) — verify at https://www.fec.gov/data/candidates/S4CA00555/"
+  },
+  {
+    "essentials_politician_id": "00000008-0000-0000-0000-000000000000",
+    "politician_name": "Adam Schiff",
+    "source_system": "fec_house",
+    "external_id": "H0CA27048",
+    "research_status": "needs_research",
+    "notes": "Adam Schiff also has prior House candidate ID (CA-28/CA-30 era) — verify at https://www.fec.gov/data/candidates/H0CA27048/"
+  },
+  {
+    "essentials_politician_id": "00000009-0000-0000-0000-000000000000",
+    "politician_name": "Judy Chu",
+    "source_system": "fec_house",
+    "external_id": "H0CA32101",
+    "research_status": "needs_research",
+    "notes": "FEC API match (status=C, activeThru=2026, cycles=2008-2026) — verify at https://www.fec.gov/data/candidates/H0CA32101/"
+  },
+  {
+    "essentials_politician_id": "0000000a-0000-0000-0000-000000000000",
+    "politician_name": "Ted Lieu",
+    "source_system": "fec_house",
+    "external_id": "H4CA33017",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H4CA33017/"
+  },
+  {
+    "essentials_politician_id": "0000000b-0000-0000-0000-000000000000",
+    "politician_name": "Sydney Kamlager-Dove",
+    "source_system": "fec_house",
+    "external_id": "H2CA37304",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H2CA37304/"
+  },
+  {
+    "essentials_politician_id": "0000000c-0000-0000-0000-000000000000",
+    "politician_name": "Maxine Waters",
+    "source_system": "fec_house",
+    "external_id": "H0CA29095",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H0CA29095/"
+  },
+  {
+    "essentials_politician_id": "0000000d-0000-0000-0000-000000000000",
+    "politician_name": "Nanette Diaz Baragán",
+    "source_system": "fec_house",
+    "external_id": "H6CA44038",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H6CA44038/"
+  },
+  {
+    "essentials_politician_id": "0000000e-0000-0000-0000-000000000000",
+    "politician_name": "Jimmy Gomez",
+    "source_system": "fec_house",
+    "external_id": "H6CA34060",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H6CA34060/"
+  },
+  {
+    "essentials_politician_id": "0000000f-0000-0000-0000-000000000000",
+    "politician_name": "Robert Garcia",
+    "source_system": "fec_house",
+    "external_id": "H2CA42059",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H2CA42059/"
+  },
+  {
+    "essentials_politician_id": "00000010-0000-0000-0000-000000000000",
+    "politician_name": "Brad Sherman",
+    "source_system": "fec_house",
+    "external_id": "H6CA24060",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H6CA24060/"
+  },
+  {
+    "essentials_politician_id": "00000011-0000-0000-0000-000000000000",
+    "politician_name": "Linda Sanchez",
+    "source_system": "fec_house",
+    "external_id": "H2CA39096",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H2CA39096/"
+  },
+  {
+    "essentials_politician_id": "00000012-0000-0000-0000-000000000000",
+    "politician_name": "Norma Torres",
+    "source_system": "fec_house",
+    "external_id": "H4CA35077",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H4CA35077/"
+  },
+  {
+    "essentials_politician_id": "00000013-0000-0000-0000-000000000000",
+    "politician_name": "Julia Brownley",
+    "source_system": "fec_house",
+    "external_id": "H2CA26020",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H2CA26020/"
+  },
+  {
+    "essentials_politician_id": "00000014-0000-0000-0000-000000000000",
+    "politician_name": "Jay Obernolte",
+    "source_system": "fec_house",
+    "external_id": "H0CA42136",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H0CA42136/"
+  },
+  {
+    "essentials_politician_id": "00000015-0000-0000-0000-000000000000",
+    "politician_name": "Gilbert Cisneros",
+    "source_system": "fec_house",
+    "external_id": "H8CA39142",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H8CA39142/"
+  },
+  {
+    "essentials_politician_id": "00000016-0000-0000-0000-000000000000",
+    "politician_name": "Derek Tran",
+    "source_system": "fec_house",
+    "external_id": "H4CA45130",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H4CA45130/"
+  },
+  {
+    "essentials_politician_id": "00000017-0000-0000-0000-000000000000",
+    "politician_name": "George Whitesides",
+    "source_system": "fec_house",
+    "external_id": "H4CA27197",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H4CA27197/"
+  },
+  {
+    "essentials_politician_id": "00000018-0000-0000-0000-000000000000",
+    "politician_name": "Luz Rivas",
+    "source_system": "fec_house",
+    "external_id": "",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — FEC ID not yet confirmed; look up at https://www.fec.gov/data/candidates/?name=rivas&state=CA&office=H"
+  },
+  {
+    "essentials_politician_id": "00000019-0000-0000-0000-000000000000",
+    "politician_name": "Tony Cardenas",
+    "source_system": "fec_house",
+    "external_id": "H2CA29088",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H2CA29088/"
+  },
+  {
+    "essentials_politician_id": "0000001a-0000-0000-0000-000000000000",
+    "politician_name": "Laura Friedman",
+    "source_system": "fec_house",
+    "external_id": "H4CA30094",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H4CA30094/"
+  },
+  {
+    "essentials_politician_id": "0000001d-0000-0000-0000-000000000000",
+    "politician_name": "Pete Aguilar",
+    "source_system": "fec_house",
+    "external_id": "H2CA31052",
+    "research_status": "needs_research",
+    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H2CA31052/"
+  },
+  {
+    "essentials_politician_id": "00000004-0000-0000-0000-000000000000",
+    "politician_name": "Micah Beckwith",
+    "source_system": "indiana",
+    "external_id": "",
+    "research_status": "needs_research",
+    "notes": "Indiana Lieutenant Governor — look up OrgId at https://campaignfinance.in.gov/PublicSite/Search.aspx (search 'Beckwith')"
+  },
+  {
+    "essentials_politician_id": "00000005-0000-0000-0000-000000000000",
+    "politician_name": "Kerry Thomson",
+    "source_system": "indiana",
+    "external_id": "",
+    "research_status": "needs_research",
+    "notes": "Bloomington Mayor — look up OrgId at https://campaignfinance.in.gov/PublicSite/Search.aspx (search 'Thomson')"
+  },
+  {
+    "essentials_politician_id": "00000006-0000-0000-0000-000000000000",
+    "politician_name": "Karen Bass",
+    "source_system": "cal_access",
+    "external_id": "",
+    "research_status": "needs_research",
+    "notes": "LA Mayor — look up Cal-Access FILER_ID in FILERS_CD.TSV (search 'Bass') or at https://cal-access.sos.ca.gov/"
+  },
+  {
+    "essentials_politician_id": "00000006-0000-0000-0000-000000000000",
+    "politician_name": "Karen Bass",
+    "source_system": "la_socrata",
+    "external_id": "",
+    "research_status": "needs_research",
+    "notes": "LA Mayor — Socrata entity ID field name not yet confirmed (see RESEARCH.md); look up at https://data.lacity.org"
+  },
+  {
+    "essentials_politician_id": "0000001b-0000-0000-0000-000000000000",
+    "politician_name": "Gavin Newsom",
+    "source_system": "cal_access",
+    "external_id": "",
+    "research_status": "needs_research",
+    "notes": "CA Governor — look up Cal-Access FILER_ID in FILERS_CD.TSV (search 'Newsom')"
+  },
+  {
+    "essentials_politician_id": "0000001c-0000-0000-0000-000000000000",
+    "politician_name": "Eleni Kounalakis",
+    "source_system": "cal_access",
+    "external_id": "",
+    "research_status": "needs_research",
+    "notes": "CA Lieutenant Governor — look up Cal-Access FILER_ID in FILERS_CD.TSV (search 'Kounalakis')"
+  }
+]
