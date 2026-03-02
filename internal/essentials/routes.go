@@ -23,6 +23,10 @@ func SetupRoutes() http.Handler {
 	r.Get("/politician/{id}/stances", GetPoliticianStances)
 	r.Get("/politician/{id}/elections", GetPoliticianElections)
 
+	// Phase 55: Legislative data endpoints
+	r.Get("/politician/{id}/committees", GetPoliticianCommittees)
+	r.Get("/politician/{id}/leadership", GetPoliticianLeadership)
+
 	// Read & Rank quotes endpoint
 	r.Get("/quotes", GetQuotes)
 
