@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/EmpoweredVote/EV-Backend/internal/auth"
+	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance"
 	"github.com/EmpoweredVote/EV-Backend/internal/compass"
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/EmpoweredVote/EV-Backend/internal/essentials"
@@ -42,6 +43,7 @@ func main() {
 	treasury.Init()
 	staging.Init()
 	meetings.Init()
+	campaign_finance.Init()
 
 	// CLI subcommand dispatch — must come after all Init() calls so tables
 	// are migrated and the global db.DB connection is ready.
@@ -163,6 +165,7 @@ func main() {
 	r.Mount("/staging", staging.SetupRoutes())
 	r.Mount("/meetings", meetings.SetupRoutes())
 	r.Mount("/webhooks", webhooks.SetupRoutes())
+	campaign_finance.Routes(r)
 
 	fmt.Printf("Server listening on :%s...\n", port)
 
