@@ -110,6 +110,26 @@ type ElectionRecordOut struct {
 	IsUnexpiredTerm bool   `json:"is_unexpired_term"`
 }
 
+// Legislative data DTOs (Phase 55)
+
+type LegislativeCommitteeAssignmentOut struct {
+	CommitteeName  string `json:"committee_name"`
+	Role           string `json:"role"`            // "member", "chair", "vice_chair", "ranking_member", "ex_officio"
+	Chamber        string `json:"chamber"`
+	CongressNumber int    `json:"congress_number"`
+	IsCurrent      bool   `json:"is_current"`
+	ParentName     string `json:"parent_name,omitempty"` // populated for subcommittees
+	CommitteeType  string `json:"committee_type"`        // "committee", "subcommittee", "joint"
+}
+
+type LegislativeLeadershipRoleOut struct {
+	Title     string `json:"title"`
+	Chamber   string `json:"chamber"`
+	IsCurrent bool   `json:"is_current"`
+	StartDate string `json:"start_date,omitempty"`
+	EndDate   string `json:"end_date,omitempty"`
+}
+
 type OfficialOut struct {
 	ID                   uuid.UUID       `json:"id"`
 	ExternalID           int             `json:"external_id"`
@@ -2939,4 +2959,121 @@ func DeletePositionDescription(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// Phase 55: Legislative data handlers
+
+// GetPoliticianCommittees returns committee assignments for a politician.
+// Joins committee_memberships with committees and optionally the parent committee
+// for subcommittee name resolution.
+func GetPoliticianCommittees(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		http.Error(w, "Missing id parameter", http.StatusBadRequest)
+		return
+	}
+
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		http.Error(w, "Invalid id format", http.StatusBadRequest)
+		return
+	}
+
+	type row struct {
+		CommitteeName  string
+		Role           string
+		Chamber        string
+		CongressNumber int
+		IsCurrent      bool
+		ParentName     string
+		CommitteeType  string
+	}
+
+	var rows []row
+	if err := db.DB.Raw(`
+SELECT
+    c.name AS committee_name,
+    m.role,
+    c.chamber,
+    m.congress_number,
+    m.is_current,
+    COALESCE(p.name, '') AS parent_name,
+    c.type AS committee_type
+FROM essentials.legislative_committee_memberships m
+JOIN essentials.legislative_committees c ON c.id = m.committee_id
+LEFT JOIN essentials.legislative_committees p ON p.id = c.parent_id
+WHERE m.politician_id = ?
+ORDER BY m.is_current DESC, c.chamber, c.type, c.name
+`, parsedID).Scan(&rows).Error; err != nil {
+		http.Error(w, "DB fetch error", http.StatusInternalServerError)
+		return
+	}
+
+	result := make([]LegislativeCommitteeAssignmentOut, 0, len(rows))
+	for _, r := range rows {
+		result = append(result, LegislativeCommitteeAssignmentOut{
+			CommitteeName:  r.CommitteeName,
+			Role:           r.Role,
+			Chamber:        r.Chamber,
+			CongressNumber: r.CongressNumber,
+			IsCurrent:      r.IsCurrent,
+			ParentName:     r.ParentName,
+			CommitteeType:  r.CommitteeType,
+		})
+	}
+
+	writeJSON(w, result)
+}
+
+// GetPoliticianLeadership returns legislative leadership roles for a politician.
+// Sorts current roles first, then by start_date descending.
+func GetPoliticianLeadership(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		http.Error(w, "Missing id parameter", http.StatusBadRequest)
+		return
+	}
+
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		http.Error(w, "Invalid id format", http.StatusBadRequest)
+		return
+	}
+
+	type row struct {
+		Title     string
+		Chamber   string
+		IsCurrent bool
+		StartDate *time.Time
+		EndDate   *time.Time
+	}
+
+	var rows []row
+	if err := db.DB.Raw(`
+SELECT title, chamber, is_current, start_date, end_date
+FROM essentials.legislative_leadership_roles
+WHERE politician_id = ?
+ORDER BY is_current DESC, start_date DESC
+`, parsedID).Scan(&rows).Error; err != nil {
+		http.Error(w, "DB fetch error", http.StatusInternalServerError)
+		return
+	}
+
+	result := make([]LegislativeLeadershipRoleOut, 0, len(rows))
+	for _, r := range rows {
+		out := LegislativeLeadershipRoleOut{
+			Title:     r.Title,
+			Chamber:   r.Chamber,
+			IsCurrent: r.IsCurrent,
+		}
+		if r.StartDate != nil {
+			out.StartDate = r.StartDate.Format("2006-01-02")
+		}
+		if r.EndDate != nil {
+			out.EndDate = r.EndDate.Format("2006-01-02")
+		}
+		result = append(result, out)
+	}
+
+	writeJSON(w, result)
 }
