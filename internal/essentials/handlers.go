@@ -130,6 +130,34 @@ type LegislativeLeadershipRoleOut struct {
 	EndDate   string `json:"end_date,omitempty"`
 }
 
+type LegislativeBillOut struct {
+	ExternalID   string `json:"external_id"`
+	Number       string `json:"number"`
+	Title        string `json:"title"`
+	Summary      string `json:"summary,omitempty"`
+	StatusLabel  string `json:"status_label"`
+	IntroducedAt string `json:"introduced_at,omitempty"`
+	IsSponsor    bool   `json:"is_sponsor"`
+	URL          string `json:"url,omitempty"`
+	Source       string `json:"source"`
+}
+
+type LegislativeVoteOut struct {
+	VoteQuestion string `json:"vote_question"`
+	Position     string `json:"position"`
+	VoteDate     string `json:"vote_date"`
+	Result       string `json:"result"`
+	BillTitle    string `json:"bill_title,omitempty"`
+	BillNumber   string `json:"bill_number,omitempty"`
+	BillURL      string `json:"bill_url,omitempty"`
+	Source       string `json:"source"`
+}
+
+type LegislativeSummaryOut struct {
+	RecentBills []LegislativeBillOut `json:"recent_bills"`
+	RecentVotes []LegislativeVoteOut `json:"recent_votes"`
+}
+
 type OfficialOut struct {
 	ID                   uuid.UUID       `json:"id"`
 	ExternalID           int             `json:"external_id"`
@@ -3076,4 +3104,287 @@ ORDER BY is_current DESC, start_date DESC
 	}
 
 	writeJSON(w, result)
+}
+
+// Phase 56: Bills, votes, and legislative summary handlers
+
+// GetPoliticianBills returns sponsored and cosponsored legislation for a politician.
+// Query params:
+//   - all=true: include bills with "Introduced" status (default: filter them out)
+//   - limit=N: max results (default 50, max 250)
+func GetPoliticianBills(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		http.Error(w, "Missing id parameter", http.StatusBadRequest)
+		return
+	}
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		http.Error(w, "Invalid id format", http.StatusBadRequest)
+		return
+	}
+
+	// Parse query params
+	includeAll := r.URL.Query().Get("all") == "true"
+	pageLimit := 50
+	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
+		if n, err := strconv.Atoi(limitStr); err == nil && n > 0 {
+			pageLimit = n
+			if pageLimit > 250 {
+				pageLimit = 250
+			}
+		}
+	}
+
+	type row struct {
+		ExternalID   string
+		Number       string
+		Title        string
+		Summary      string
+		StatusLabel  string
+		IntroducedAt *time.Time
+		IsSponsor    bool
+		URL          string
+		Source       string
+	}
+
+	// Build status filter: exclude "Introduced" unless ?all=true
+	statusFilter := ""
+	if !includeAll {
+		statusFilter = "AND b.status_label != 'Introduced'"
+	}
+
+	query := fmt.Sprintf(`
+SELECT
+    b.external_id,
+    b.number,
+    b.title,
+    b.summary,
+    b.status_label,
+    b.introduced_at,
+    CASE WHEN b.sponsor_id = ? THEN true ELSE false END AS is_sponsor,
+    b.url,
+    b.source
+FROM essentials.legislative_bills b
+WHERE (b.sponsor_id = ?
+       OR b.id IN (SELECT bill_id FROM essentials.legislative_bill_cosponsors WHERE politician_id = ?))
+%s
+ORDER BY b.introduced_at DESC NULLS LAST
+LIMIT ?
+`, statusFilter)
+
+	var rows []row
+	if err := db.DB.Raw(query, parsedID, parsedID, parsedID, pageLimit).Scan(&rows).Error; err != nil {
+		http.Error(w, "DB fetch error", http.StatusInternalServerError)
+		return
+	}
+
+	result := make([]LegislativeBillOut, 0, len(rows))
+	for _, r := range rows {
+		out := LegislativeBillOut{
+			ExternalID:  r.ExternalID,
+			Number:      r.Number,
+			Title:       r.Title,
+			Summary:     r.Summary,
+			StatusLabel: r.StatusLabel,
+			IsSponsor:   r.IsSponsor,
+			URL:         r.URL,
+			Source:      r.Source,
+		}
+		if r.IntroducedAt != nil {
+			out.IntroducedAt = r.IntroducedAt.Format("2006-01-02")
+		}
+		result = append(result, out)
+	}
+
+	writeJSON(w, result)
+}
+
+// GetPoliticianVotes returns voting record for a politician.
+// Query params:
+//   - limit=N: max results (default 50, max 250)
+func GetPoliticianVotes(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		http.Error(w, "Missing id parameter", http.StatusBadRequest)
+		return
+	}
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		http.Error(w, "Invalid id format", http.StatusBadRequest)
+		return
+	}
+
+	pageLimit := 50
+	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
+		if n, err := strconv.Atoi(limitStr); err == nil && n > 0 {
+			pageLimit = n
+			if pageLimit > 250 {
+				pageLimit = 250
+			}
+		}
+	}
+
+	type row struct {
+		VoteQuestion string
+		Position     string
+		VoteDate     time.Time
+		Result       string
+		BillTitle    string
+		BillNumber   string
+		BillURL      string
+		Source       string
+	}
+
+	var rows []row
+	if err := db.DB.Raw(`
+SELECT
+    v.vote_question,
+    v.position,
+    v.vote_date,
+    v.result,
+    COALESCE(b.title, '') AS bill_title,
+    COALESCE(b.number, '') AS bill_number,
+    COALESCE(b.url, '') AS bill_url,
+    v.source
+FROM essentials.legislative_votes v
+LEFT JOIN essentials.legislative_bills b ON b.id = v.bill_id
+WHERE v.politician_id = ?
+ORDER BY v.vote_date DESC
+LIMIT ?
+`, parsedID, pageLimit).Scan(&rows).Error; err != nil {
+		http.Error(w, "DB fetch error", http.StatusInternalServerError)
+		return
+	}
+
+	result := make([]LegislativeVoteOut, 0, len(rows))
+	for _, r := range rows {
+		result = append(result, LegislativeVoteOut{
+			VoteQuestion: r.VoteQuestion,
+			Position:     r.Position,
+			VoteDate:     r.VoteDate.Format("2006-01-02"),
+			Result:       r.Result,
+			BillTitle:    r.BillTitle,
+			BillNumber:   r.BillNumber,
+			BillURL:      r.BillURL,
+			Source:       r.Source,
+		})
+	}
+
+	writeJSON(w, result)
+}
+
+// GetPoliticianLegislativeSummary returns a bounded overview for initial profile render.
+// Returns 5 recent bills (advanced only) + 10 recent votes in a single response.
+func GetPoliticianLegislativeSummary(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		http.Error(w, "Missing id parameter", http.StatusBadRequest)
+		return
+	}
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		http.Error(w, "Invalid id format", http.StatusBadRequest)
+		return
+	}
+
+	// Fetch 5 recent bills (advanced only — exclude "Introduced")
+	type billRow struct {
+		ExternalID   string
+		Number       string
+		Title        string
+		Summary      string
+		StatusLabel  string
+		IntroducedAt *time.Time
+		IsSponsor    bool
+		URL          string
+		Source       string
+	}
+
+	var billRows []billRow
+	db.DB.Raw(`
+SELECT
+    b.external_id,
+    b.number,
+    b.title,
+    b.summary,
+    b.status_label,
+    b.introduced_at,
+    CASE WHEN b.sponsor_id = ? THEN true ELSE false END AS is_sponsor,
+    b.url,
+    b.source
+FROM essentials.legislative_bills b
+WHERE (b.sponsor_id = ?
+       OR b.id IN (SELECT bill_id FROM essentials.legislative_bill_cosponsors WHERE politician_id = ?))
+AND b.status_label != 'Introduced'
+ORDER BY b.introduced_at DESC NULLS LAST
+LIMIT 5
+`, parsedID, parsedID, parsedID).Scan(&billRows)
+
+	bills := make([]LegislativeBillOut, 0, len(billRows))
+	for _, r := range billRows {
+		out := LegislativeBillOut{
+			ExternalID:  r.ExternalID,
+			Number:      r.Number,
+			Title:       r.Title,
+			Summary:     r.Summary,
+			StatusLabel: r.StatusLabel,
+			IsSponsor:   r.IsSponsor,
+			URL:         r.URL,
+			Source:      r.Source,
+		}
+		if r.IntroducedAt != nil {
+			out.IntroducedAt = r.IntroducedAt.Format("2006-01-02")
+		}
+		bills = append(bills, out)
+	}
+
+	// Fetch 10 recent votes
+	type voteRow struct {
+		VoteQuestion string
+		Position     string
+		VoteDate     time.Time
+		Result       string
+		BillTitle    string
+		BillNumber   string
+		BillURL      string
+		Source       string
+	}
+
+	var voteRows []voteRow
+	db.DB.Raw(`
+SELECT
+    v.vote_question,
+    v.position,
+    v.vote_date,
+    v.result,
+    COALESCE(b.title, '') AS bill_title,
+    COALESCE(b.number, '') AS bill_number,
+    COALESCE(b.url, '') AS bill_url,
+    v.source
+FROM essentials.legislative_votes v
+LEFT JOIN essentials.legislative_bills b ON b.id = v.bill_id
+WHERE v.politician_id = ?
+ORDER BY v.vote_date DESC
+LIMIT 10
+`, parsedID).Scan(&voteRows)
+
+	votes := make([]LegislativeVoteOut, 0, len(voteRows))
+	for _, r := range voteRows {
+		votes = append(votes, LegislativeVoteOut{
+			VoteQuestion: r.VoteQuestion,
+			Position:     r.Position,
+			VoteDate:     r.VoteDate.Format("2006-01-02"),
+			Result:       r.Result,
+			BillTitle:    r.BillTitle,
+			BillNumber:   r.BillNumber,
+			BillURL:      r.BillURL,
+			Source:       r.Source,
+		})
+	}
+
+	writeJSON(w, LegislativeSummaryOut{
+		RecentBills: bills,
+		RecentVotes: votes,
+	})
 }
