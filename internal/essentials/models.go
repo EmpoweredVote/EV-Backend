@@ -53,6 +53,9 @@ type Politician struct {
 	IsActive         bool      `json:"is_active" gorm:"default:true"` // true = currently serving in their primary seat
 	DataSource       string    `json:"data_source,omitempty"`         // e.g. "ballotready", "scraped", "manual"
 	TermDatePrecision string   `json:"term_date_precision,omitempty"` // "year", "month", "day"
+
+	// Legislative data fetching
+	LegDataFetchedAt *time.Time `json:"leg_data_fetched_at,omitempty" gorm:"index"`
 }
 
 type Office struct {
@@ -384,4 +387,133 @@ type Quote struct {
 
 func (Quote) TableName() string {
 	return "essentials.quotes"
+}
+
+// ===== Phase 54: Legislative Data Foundation =====
+
+// LegislativeSession represents a congressional or legislative session
+type LegislativeSession struct {
+	ID           uuid.UUID  `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	Jurisdiction string     `json:"jurisdiction"` // "federal", "indiana", "california", "bloomington-in", "la-county-ca"
+	Name         string     `json:"name"`         // "119th Congress", "2025 IN Regular Session"
+	StartDate    *time.Time `json:"start_date"`
+	EndDate      *time.Time `json:"end_date"`
+	IsCurrent    bool       `json:"is_current"`
+	ExternalID   string     `json:"external_id"` // congress number, LegiScan session ID
+	Source       string     `json:"source"`       // "congress-legislators", "legiscan", "manual"
+}
+
+func (LegislativeSession) TableName() string { return "essentials.legislative_sessions" }
+
+// LegislativeCommittee represents a committee or subcommittee
+type LegislativeCommittee struct {
+	ID           uuid.UUID  `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	SessionID    *uuid.UUID `json:"session_id,omitempty" gorm:"type:uuid"`
+	ParentID     *uuid.UUID `json:"parent_id,omitempty" gorm:"type:uuid"` // self-referential for subcommittees
+	ExternalID   string     `json:"external_id" gorm:"uniqueIndex:idx_committee_ext"`
+	Jurisdiction string     `json:"jurisdiction" gorm:"uniqueIndex:idx_committee_ext"`
+	Name         string     `json:"name"`
+	Type         string     `json:"type"`    // "committee", "subcommittee", "joint"
+	Chamber      string     `json:"chamber"` // "house", "senate", "joint", "local"
+	IsCurrent    bool       `json:"is_current"`
+	Source       string     `json:"source"` // "congress-legislators", "legiscan", "manual"
+}
+
+func (LegislativeCommittee) TableName() string { return "essentials.legislative_committees" }
+
+// LegislativeCommitteeMembership links a politician to a committee with role
+type LegislativeCommitteeMembership struct {
+	ID             uuid.UUID  `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	CommitteeID    uuid.UUID  `json:"committee_id" gorm:"type:uuid;uniqueIndex:idx_cmember"`
+	PoliticianID   uuid.UUID  `json:"politician_id" gorm:"type:uuid;uniqueIndex:idx_cmember"`
+	CongressNumber int        `json:"congress_number" gorm:"uniqueIndex:idx_cmember"` // 119 for 119th Congress; 0 for non-federal
+	Role           string     `json:"role"`      // "member", "chair", "vice_chair", "ranking_member", "ex_officio"
+	IsCurrent      bool       `json:"is_current"`
+	SessionID      *uuid.UUID `json:"session_id,omitempty" gorm:"type:uuid"`
+}
+
+func (LegislativeCommitteeMembership) TableName() string {
+	return "essentials.legislative_committee_memberships"
+}
+
+// LegislativeLeadershipRole represents leadership positions (Speaker, Majority Leader, etc.)
+type LegislativeLeadershipRole struct {
+	ID           uuid.UUID  `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	PoliticianID uuid.UUID  `json:"politician_id" gorm:"type:uuid;uniqueIndex:idx_leadership"`
+	SessionID    *uuid.UUID `json:"session_id,omitempty" gorm:"type:uuid;uniqueIndex:idx_leadership"`
+	Chamber      string     `json:"chamber" gorm:"uniqueIndex:idx_leadership"` // "house", "senate", "local"
+	Title        string     `json:"title"` // "Speaker", "Majority Leader", "President Pro Tempore"
+	StartDate    *time.Time `json:"start_date"`
+	EndDate      *time.Time `json:"end_date"`
+	IsCurrent    bool       `json:"is_current"`
+	Source       string     `json:"source"`
+}
+
+func (LegislativeLeadershipRole) TableName() string {
+	return "essentials.legislative_leadership_roles"
+}
+
+// LegislativeBill represents a bill, resolution, ordinance, or motion
+type LegislativeBill struct {
+	ID           uuid.UUID      `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	SessionID    uuid.UUID      `json:"session_id" gorm:"type:uuid"`
+	ExternalID   string         `json:"external_id" gorm:"uniqueIndex:idx_bill_ext"`
+	Jurisdiction string         `json:"jurisdiction" gorm:"uniqueIndex:idx_bill_ext"`
+	Number       string         `json:"number"`      // "HB 1044", "SB 123"
+	Title        string         `json:"title"`
+	Summary      string         `json:"summary" gorm:"type:text"` // CRS plain-language summary (federal) or empty
+	RawStatus    string         `json:"raw_status"`
+	StatusLabel  string         `json:"status_label"` // Normalized: "In Committee", "Passed", "Signed"
+	SponsorID    *uuid.UUID     `json:"sponsor_id,omitempty" gorm:"type:uuid"`
+	IntroducedAt *time.Time     `json:"introduced_at"`
+	PassedAt     *time.Time     `json:"passed_at"`
+	SignedAt      *time.Time     `json:"signed_at"`
+	TopicTags    pq.StringArray `json:"topic_tags" gorm:"type:text[]"`
+	URL          string         `json:"url"`
+	Source       string         `json:"source"` // "congress", "legiscan", "manual"
+}
+
+func (LegislativeBill) TableName() string { return "essentials.legislative_bills" }
+
+// LegislativeBillCosponsor links a politician to a bill as cosponsor
+type LegislativeBillCosponsor struct {
+	ID           uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	BillID       uuid.UUID `json:"bill_id" gorm:"type:uuid;uniqueIndex:idx_cosponsor"`
+	PoliticianID uuid.UUID `json:"politician_id" gorm:"type:uuid;uniqueIndex:idx_cosponsor"`
+}
+
+func (LegislativeBillCosponsor) TableName() string {
+	return "essentials.legislative_bill_cosponsors"
+}
+
+// LegislativeVote represents an individual member vote on a roll call
+type LegislativeVote struct {
+	ID             uuid.UUID  `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	PoliticianID   uuid.UUID  `json:"politician_id" gorm:"type:uuid;uniqueIndex:idx_leg_vote;index"`
+	BillID         *uuid.UUID `json:"bill_id,omitempty" gorm:"type:uuid;uniqueIndex:idx_leg_vote"`
+	SessionID      uuid.UUID  `json:"session_id" gorm:"type:uuid;uniqueIndex:idx_leg_vote"`
+	ExternalVoteID string     `json:"external_vote_id" gorm:"uniqueIndex:idx_leg_vote"`
+	VoteQuestion   string     `json:"vote_question"` // "Passage", "Amendment #3", "Cloture"
+	Position       string     `json:"position"`      // "yea", "nay", "abstain", "absent", "not_voting", "present"
+	VoteDate       time.Time  `json:"vote_date"`
+	Result         string     `json:"result"` // "passed", "failed", "tabled"
+	YeaCount       int        `json:"yea_count"`
+	NayCount       int        `json:"nay_count"`
+	Source         string     `json:"source"` // "congress", "legiscan", "manual"
+}
+
+func (LegislativeVote) TableName() string { return "essentials.legislative_votes" }
+
+// LegislativePoliticianIDMap is the cross-source identity bridge table
+type LegislativePoliticianIDMap struct {
+	ID           uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	PoliticianID uuid.UUID `json:"politician_id" gorm:"type:uuid;not null;uniqueIndex:idx_leg_id_map"`
+	IDType       string    `json:"id_type" gorm:"uniqueIndex:idx_leg_id_map"`  // "bioguide", "ocd_person", "legiscan", "legistar", "openstates"
+	IDValue      string    `json:"id_value" gorm:"uniqueIndex:idx_leg_id_map"`
+	VerifiedAt   time.Time `json:"verified_at"`
+	Source       string    `json:"source"` // "congress-legislators-yaml", "manual", "legiscan-lookup"
+}
+
+func (LegislativePoliticianIDMap) TableName() string {
+	return "essentials.legislative_politician_id_map"
 }
