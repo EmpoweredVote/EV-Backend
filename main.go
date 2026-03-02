@@ -277,6 +277,63 @@ func main() {
 				}
 			}
 			os.Exit(0)
+		case "import-federal-votes":
+			dryRun := false
+			houseOnly := false
+			senateOnly := false
+			congresses := []int{119, 118}
+			maxErrors := 50
+			for _, arg := range os.Args[2:] {
+				switch {
+				case arg == "--dry-run":
+					dryRun = true
+				case arg == "--house-only":
+					houseOnly = true
+				case arg == "--senate-only":
+					senateOnly = true
+				case strings.HasPrefix(arg, "--congress="):
+					n, err := strconv.Atoi(strings.TrimPrefix(arg, "--congress="))
+					if err != nil {
+						log.Fatal("invalid --congress value: ", arg)
+					}
+					congresses = []int{n}
+				case strings.HasPrefix(arg, "--max-errors="):
+					n, err := strconv.Atoi(strings.TrimPrefix(arg, "--max-errors="))
+					if err != nil {
+						log.Fatal("invalid --max-errors value: ", arg)
+					}
+					maxErrors = n
+				}
+			}
+			congressAPIKey := os.Getenv("CONGRESS_API_KEY")
+			legiScanAPIKey := os.Getenv("LEGISCAN_API_KEY")
+			if !senateOnly && congressAPIKey == "" {
+				log.Fatal("CONGRESS_API_KEY environment variable is required for House votes")
+			}
+			if !houseOnly && legiScanAPIKey == "" {
+				log.Fatal("LEGISCAN_API_KEY environment variable is required for Senate votes")
+			}
+			voteResult, err := essentials.ImportFederalVotes(essentials.ImportFederalVotesConfig{
+				DryRun:          dryRun,
+				CongressNumbers: congresses,
+				CongressAPIKey:  congressAPIKey,
+				LegiScanAPIKey:  legiScanAPIKey,
+				HouseOnly:       houseOnly,
+				SenateOnly:      senateOnly,
+				MaxErrors:       maxErrors,
+			})
+			if err != nil {
+				log.Fatal("import-federal-votes failed: ", err)
+			}
+			fmt.Printf("Import complete: %d House votes, %d Senate votes, %d LegiScan bridge rows, %d skipped\n",
+				voteResult.HouseVotesUpserted, voteResult.SenateVotesUpserted, voteResult.LegiScanBridgeRows, voteResult.Skipped)
+			if len(voteResult.Errors) > 0 {
+				fmt.Printf("Errors (%d):\n", len(voteResult.Errors))
+				for _, e := range voteResult.Errors {
+					fmt.Printf("  - %s\n", e)
+				}
+			}
+			os.Exit(0)
 		}
 	}
 
