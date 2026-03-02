@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Politician Sources Admin</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+    h1 { color: #2c3e50; }
+    .flash { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 10px 16px; border-radius: 4px; margin-bottom: 16px; }
+    .flash.error { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+    fieldset { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin-bottom: 24px; }
+    legend { font-weight: bold; color: #2c3e50; }
+    label { display: block; margin-top: 10px; font-size: 0.9em; color: #555; }
+    input[type=text], select, textarea { width: 100%; box-sizing: border-box; padding: 6px 8px; border: 1px solid #ccc; border-radius: 3px; font-size: 0.95em; }
+    textarea { height: 80px; resize: vertical; }
+    .btn { margin-top: 12px; padding: 8px 20px; border: none; border-radius: 3px; cursor: pointer; font-size: 0.95em; }
+    .btn-primary { background: #3498db; color: #fff; }
+    .btn-primary:hover { background: #2980b9; }
+    .btn-danger { background: #e74c3c; color: #fff; font-size: 0.85em; padding: 4px 10px; }
+    .btn-danger:hover { background: #c0392b; }
+    .btn-edit { background: #27ae60; color: #fff; font-size: 0.85em; padding: 4px 10px; text-decoration: none; border-radius: 3px; }
+    .btn-edit:hover { background: #219a52; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    th { background: #2c3e50; color: #fff; padding: 10px 12px; text-align: left; font-size: 0.9em; }
+    td { padding: 8px 12px; font-size: 0.88em; border-bottom: 1px solid #eee; vertical-align: middle; }
+    tr:nth-child(even) td { background: #f9f9f9; }
+    tr:hover td { background: #eaf4fb; }
+    .filter-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px; }
+    .filter-row label { margin-top: 0; }
+    .filter-group { display: flex; flex-direction: column; }
+    .monospace { font-family: monospace; font-size: 0.85em; color: #666; }
+    .status-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; font-weight: bold; }
+    .status-needs_research { background: #fff3cd; color: #856404; }
+    .status-confirmed { background: #d4edda; color: #155724; }
+    .status-not_applicable { background: #e2e3e5; color: #495057; }
+    .status-disputed { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <h1>Politician Sources Admin</h1>
+
+  {{if .Flash}}
+  <div class="flash">{{.Flash}}</div>
+  {{end}}
+
+  <!-- Filters -->
+  <fieldset>
+    <legend>Filter Sources</legend>
+    <form method="GET" action="">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="source_system">Source System</label>
+          <select id="source_system" name="source_system">
+            <option value="">All</option>
+            <option value="fec_house">fec_house</option>
+            <option value="fec_senate">fec_senate</option>
+            <option value="cal_access">cal_access</option>
+            <option value="indiana">indiana</option>
+            <option value="la_socrata">la_socrata</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="research_status">Research Status</label>
+          <select id="research_status" name="research_status">
+            <option value="">All</option>
+            <option value="needs_research">needs_research</option>
+            <option value="confirmed">confirmed</option>
+            <option value="not_applicable">not_applicable</option>
+            <option value="disputed">disputed</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Filter</button>
+      </div>
+    </form>
+  </fieldset>
+
+  <!-- Add / Edit Form -->
+  <fieldset>
+    <legend>{{if .EditRecord}}Edit Source{{else}}Add New Source{{end}}</legend>
+    <form method="POST" action="/campaign-finance/admin/sources/form">
+      {{if .EditRecord}}
+      <input type="hidden" name="id" value="{{.EditRecord.ID}}">
+      {{else}}
+      <input type="hidden" name="id" value="">
+      {{end}}
+
+      <label for="essentials_politician_id">Essentials Politician ID (UUID) *</label>
+      <input type="text" id="essentials_politician_id" name="essentials_politician_id"
+             value="{{if .EditRecord}}{{.EditRecord.EssentialsPoliticianID}}{{end}}"
+             placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000" required>
+
+      <label for="source_system">Source System *</label>
+      <select id="source_system_form" name="source_system" required>
+        <option value="">-- select --</option>
+        {{$edit := .EditRecord}}
+        <option value="fec_house"{{if and $edit (eq $edit.SourceSystem "fec_house")}} selected{{end}}>fec_house</option>
+        <option value="fec_senate"{{if and $edit (eq $edit.SourceSystem "fec_senate")}} selected{{end}}>fec_senate</option>
+        <option value="cal_access"{{if and $edit (eq $edit.SourceSystem "cal_access")}} selected{{end}}>cal_access</option>
+        <option value="indiana"{{if and $edit (eq $edit.SourceSystem "indiana")}} selected{{end}}>indiana</option>
+        <option value="la_socrata"{{if and $edit (eq $edit.SourceSystem "la_socrata")}} selected{{end}}>la_socrata</option>
+      </select>
+
+      <label for="external_id">External ID</label>
+      <input type="text" id="external_id" name="external_id"
+             value="{{if .EditRecord}}{{.EditRecord.ExternalID}}{{end}}"
+             placeholder="e.g. H8IN09043 or C00401224">
+
+      <label for="research_status_form">Research Status</label>
+      <select id="research_status_form" name="research_status">
+        {{$edit := .EditRecord}}
+        <option value="needs_research"{{if or (not $edit) (eq $edit.ResearchStatus "needs_research")}} selected{{end}}>needs_research</option>
+        <option value="confirmed"{{if and $edit (eq $edit.ResearchStatus "confirmed")}} selected{{end}}>confirmed</option>
+        <option value="not_applicable"{{if and $edit (eq $edit.ResearchStatus "not_applicable")}} selected{{end}}>not_applicable</option>
+        <option value="disputed"{{if and $edit (eq $edit.ResearchStatus "disputed")}} selected{{end}}>disputed</option>
+      </select>
+
+      <label for="notes">Notes</label>
+      <textarea id="notes" name="notes" placeholder="Optional notes about this source mapping">{{if .EditRecord}}{{.EditRecord.Notes}}{{end}}</textarea>
+
+      <button type="submit" class="btn btn-primary">{{if .EditRecord}}Update Source{{else}}Add Source{{end}}</button>
+      {{if .EditRecord}}
+      <a href="/campaign-finance/admin/sources/form" style="margin-left:10px; color:#e74c3c;">Cancel</a>
+      {{end}}
+    </form>
+  </fieldset>
+
+  <!-- Sources Table -->
+  <h2>Existing Sources ({{len .Sources}} records)</h2>
+  {{if .Sources}}
+  <table>
+    <thead>
+      <tr>
+        <th>Politician ID</th>
+        <th>Source System</th>
+        <th>External ID</th>
+        <th>Research Status</th>
+        <th>Notes</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Sources}}
+      <tr>
+        <td class="monospace">{{printf "%.8s" .EssentialsPoliticianID.String}}...</td>
+        <td>{{.SourceSystem}}</td>
+        <td class="monospace">{{.ExternalID}}</td>
+        <td>
+          <span class="status-badge status-{{.ResearchStatus}}">{{.ResearchStatus}}</span>
+        </td>
+        <td>{{.Notes}}</td>
+        <td style="white-space:nowrap">
+          <a class="btn-edit" href="/campaign-finance/admin/sources/form?edit={{.ID}}">Edit</a>
+          &nbsp;
+          <form method="POST" action="/campaign-finance/admin/sources/form/delete" style="display:inline"
+                onsubmit="return confirm('Delete this source record? This cannot be undone.')">
+            <input type="hidden" name="id" value="{{.ID}}">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p style="color:#888">No sources found. Add one above.</p>
+  {{end}}
+</body>
+</html>
