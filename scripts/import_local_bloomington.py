@@ -46,6 +46,32 @@ REQUEST_TIMEOUT = 30
 REQUEST_DELAY = 2.0  # seconds between OnBoard requests (be respectful)
 FUZZY_THRESHOLD = 80
 
+# Nickname expansions — try both original and expanded forms during matching
+NICKNAME_MAP = {
+    "dave": "david", "david": "dave",
+    "bill": "william", "william": "bill",
+    "bob": "robert", "robert": "bob",
+    "mike": "michael", "michael": "mike",
+    "jim": "james", "james": "jim",
+    "joe": "joseph", "joseph": "joe",
+    "tom": "thomas", "thomas": "tom",
+    "dan": "daniel", "daniel": "dan",
+    "steve": "steven", "steven": "steve",
+    "chris": "christopher", "christopher": "chris",
+    "matt": "matthew", "matthew": "matt",
+    "rick": "richard", "richard": "rick",
+    "dick": "richard",
+    "ted": "theodore", "theodore": "ted",
+    "ed": "edward", "edward": "ed",
+    "sam": "samuel", "samuel": "sam",
+    "tony": "anthony", "anthony": "tony",
+    "pat": "patrick", "patrick": "pat",
+    "jen": "jennifer", "jennifer": "jen",
+    "kate": "katherine", "katherine": "kate",
+    "beth": "elizabeth", "elizabeth": "beth",
+    "sue": "susan", "susan": "sue",
+}
+
 # Committee IDs for Bloomington Common Council
 # Key = OnBoard committee_id, Value = (display_name, is_subcommittee)
 COMMITTEE_DEFS = {
@@ -239,12 +265,23 @@ def build_politician_bridge(members: list, conn, dry_run: bool = False, verbose:
         name = member["name"]
         onboard_id = member.get("onboard_id")
 
-        # Find best fuzzy match
+        # Build name variants (original + nickname-expanded)
+        name_variants = [name.lower()]
+        parts = name.lower().split()
+        if parts and parts[0] in NICKNAME_MAP:
+            alt_parts = [NICKNAME_MAP[parts[0]]] + parts[1:]
+            name_variants.append(" ".join(alt_parts))
+
+        # Find best fuzzy match across all name variants
         candidates = []
         for pol in all_politicians:
-            score = fuzz.token_sort_ratio(name.lower(), pol["full_name"].lower())
-            if score >= FUZZY_THRESHOLD:
-                candidates.append((score, pol))
+            pol_lower = pol["full_name"].lower()
+            best_score = max(
+                fuzz.token_sort_ratio(variant, pol_lower)
+                for variant in name_variants
+            )
+            if best_score >= FUZZY_THRESHOLD:
+                candidates.append((best_score, pol))
 
         if len(candidates) == 0:
             log.warning(f"  NO MATCH for {name!r} (onboard_id={onboard_id})")
@@ -697,14 +734,23 @@ def import_legislation(bridge_map: dict, name_to_uuid: dict, session_id: str, co
         if uuid:
             return uuid
 
-        # Fuzzy match against all politicians
-        best_score = 0
-        best_uuid = None
+        # Build name variants (original + nickname-expanded)
+        name_variants = [name.lower()]
+        parts = name.lower().split()
+        if parts and parts[0] in NICKNAME_MAP:
+            alt_parts = [NICKNAME_MAP[parts[0]]] + parts[1:]
+            name_variants.append(" ".join(alt_parts))
+
+        # Fuzzy match against all politicians with nickname expansion
         candidates_above_threshold = []
         for pol_uuid, pol_name in pol_name_list:
-            score = fuzz.token_sort_ratio(name.lower(), pol_name.lower())
-            if score >= FUZZY_THRESHOLD:
-                candidates_above_threshold.append((score, pol_uuid, pol_name))
+            pol_lower = pol_name.lower()
+            best_score = max(
+                fuzz.token_sort_ratio(variant, pol_lower)
+                for variant in name_variants
+            )
+            if best_score >= FUZZY_THRESHOLD:
+                candidates_above_threshold.append((best_score, pol_uuid, pol_name))
 
         if not candidates_above_threshold:
             return None

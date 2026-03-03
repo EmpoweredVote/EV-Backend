@@ -80,6 +80,32 @@ LEGISTAR_WEB_BASE = "https://lacounty.legistar.com/LegislationDetail.aspx"
 BRIDGE_FUZZY_THRESHOLD = 80   # for building supervisor bridge from DB names
 ATTRIBUTION_FUZZY_THRESHOLD = 75  # for matching MoverName/Requester in matters
 
+# Nickname expansions — try both original and expanded forms during matching
+NICKNAME_MAP = {
+    "dave": "david", "david": "dave",
+    "bill": "william", "william": "bill",
+    "bob": "robert", "robert": "bob",
+    "mike": "michael", "michael": "mike",
+    "jim": "james", "james": "jim",
+    "joe": "joseph", "joseph": "joe",
+    "tom": "thomas", "thomas": "tom",
+    "dan": "daniel", "daniel": "dan",
+    "steve": "steven", "steven": "steve",
+    "chris": "christopher", "christopher": "chris",
+    "matt": "matthew", "matthew": "matt",
+    "rick": "richard", "richard": "rick",
+    "dick": "richard",
+    "ted": "theodore", "theodore": "ted",
+    "ed": "edward", "edward": "ed",
+    "sam": "samuel", "samuel": "sam",
+    "tony": "anthony", "anthony": "tony",
+    "pat": "patrick", "patrick": "pat",
+    "jen": "jennifer", "jennifer": "jen",
+    "kate": "katherine", "katherine": "kate",
+    "beth": "elizabeth", "elizabeth": "beth",
+    "sue": "susan", "susan": "sue",
+}
+
 # Status label normalization map (MatterStatusName -> standard label)
 STATUS_LABEL_MAP = {
     "adopted": "Passed",
@@ -209,10 +235,20 @@ def build_supervisor_bridge(conn, dry_run: bool = False, verbose: bool = False) 
 
     for person_id, legistar_name in SUPERVISOR_PERSON_IDS.items():
         # Find all candidates scoring above threshold
+        # Build name variants (original + nickname-expanded)
+        name_lower = legistar_name.lower()
+        name_variants = [name_lower]
+        parts = name_lower.split()
+        if parts and parts[0] in NICKNAME_MAP:
+            alt_parts = [NICKNAME_MAP[parts[0]]] + parts[1:]
+            name_variants.append(" ".join(alt_parts))
+
         candidates = []
         for row in all_politicians:
-            score = fuzz.token_sort_ratio(
-                legistar_name.lower(), row["full_name"].lower()
+            pol_lower = row["full_name"].lower()
+            score = max(
+                fuzz.token_sort_ratio(variant, pol_lower)
+                for variant in name_variants
             )
             if score >= BRIDGE_FUZZY_THRESHOLD:
                 candidates.append((score, row["id"], row["full_name"]))
@@ -599,9 +635,21 @@ def extract_matter_attribution(
         if not name_text or not name_text.strip():
             return []
 
+        # Build name variants (original + nickname-expanded)
+        text_lower = name_text.lower()
+        name_variants = [text_lower]
+        parts = text_lower.split()
+        if parts and parts[0] in NICKNAME_MAP:
+            alt_parts = [NICKNAME_MAP[parts[0]]] + parts[1:]
+            name_variants.append(" ".join(alt_parts))
+
         matched_ids = []
         for db_id, sup_name in supervisor_names.items():
-            score = fuzz.token_sort_ratio(name_text.lower(), sup_name.lower())
+            sup_lower = sup_name.lower()
+            score = max(
+                fuzz.token_sort_ratio(variant, sup_lower)
+                for variant in name_variants
+            )
             if score >= ATTRIBUTION_FUZZY_THRESHOLD:
                 matched_ids.append(db_id)
                 if verbose:
