@@ -213,14 +213,32 @@ def scrape_council_members(committee_id: int = 1, verbose: bool = False) -> list
 
 
 def _parse_role(seat_text: str, name: str) -> str:
-    """Derive role string from seat_text. Returns 'president', 'chair', 'vice_chair', or 'member'."""
-    combined = f"{seat_text} {name}".lower()
+    """Derive role string from seat_text. Returns 'president', 'vice_president', 'chair', 'vice_chair', or 'member'.
+
+    The role label appears at the start of seat_text (before 'Seat:'), e.g.:
+      'Vice President Seat: C-6 ...' -> 'vice_president'
+      'Chair Seat: C-1 ...' -> 'chair'
+      'Seat: C-4 ...' -> 'member'
+    We must NOT match 'President' in 'Appointed By: Council President'.
+    """
+    # Extract the prefix before 'Seat:' — that's where the role label lives
+    lower = seat_text.lower()
+    seat_idx = lower.find("seat:")
+    role_prefix = lower[:seat_idx].strip() if seat_idx >= 0 else lower
+
+    # Also check name text for role embedded in name field (rare)
+    combined = f"{role_prefix} {name}".lower()
+
+    if "vice president" in combined or "vice-president" in combined:
+        return "vice_president"
     if "president" in combined:
         return "president"
     if "vice chair" in combined or "vice-chair" in combined:
         return "vice_chair"
     if "chair" in combined:
         return "chair"
+    if "parlimentarian" in combined or "parliamentarian" in combined:
+        return "parliamentarian"
     return "member"
 
 
