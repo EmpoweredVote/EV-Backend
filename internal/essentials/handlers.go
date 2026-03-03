@@ -1228,6 +1228,7 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		    SELECT politician_id FROM essentials.zip_politicians WHERE zip = ?
 		  )
 		)
+		AND p.is_active = true
 		ORDER BY d.district_type, o.title, p.last_name, p.first_name
 	`
 	// Prepend zip for LEFT JOIN, then append for WHERE clause

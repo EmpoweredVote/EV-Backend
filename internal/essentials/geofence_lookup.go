@@ -166,6 +166,7 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 		LEFT JOIN essentials.chambers ch ON o.chamber_id = ch.id
 		LEFT JOIN essentials.governments g ON ch.government_id = g.id
 		WHERE (%s)
+		AND p.is_active = true
 		ORDER BY p.id, d.district_type
 	`, whereClause)
 
