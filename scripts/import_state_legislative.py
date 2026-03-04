@@ -1249,6 +1249,11 @@ def main():
     budget_used = read_budget()
     remaining = BUDGET_LIMIT - budget_used
     logging.info(f"LegiScan budget: {budget_used}/{BUDGET_LIMIT} used, {remaining} remaining")
+    if remaining < 5000 and args.state == "CA":
+        logging.warning(
+            f"Budget low ({remaining} remaining). Consider running --state IN only "
+            "and waiting for monthly reset before CA import."
+        )
     if remaining < 100:
         logging.error(
             f"Budget nearly exhausted ({remaining} remaining). "
