@@ -3,9 +3,10 @@
 Generate a research manifest CSV of all LA County city council politicians
 who are still missing headshots, grouped by city with council page URLs.
 
-This script supports the manual headshot curation sprint (Plan 06).
+This script supports the manual headshot curation sprint (Phase 63).
 It converts the abstract "N politicians missing headshots" gap into a
-concrete, city-by-city research checklist.
+concrete, city-by-city research checklist with database IDs for direct
+Phase 64 upload and research tracking columns to record progress.
 
 Usage:
     cd EV-Backend/scripts
@@ -25,6 +26,11 @@ Columns in CSV:
     role               — Mayor or Council Member
     has_existing_override — True if city_sources.json already has a headshot_url
     headshot_status    — city's current headshot_status (scraped/blocked/failed/null)
+    politician_id      — essentials.politicians primary key (integer) for Phase 64 upload
+    found_url          — direct image URL (.jpg/.png); filled in during research sprint
+    source_page_url    — page where the image was found (for attribution and re-verification)
+    research_status    — one of: pending, found, not_found, blocked; default "pending"
+    research_date      — ISO date when this row was researched; empty until researched
 
 Requirements:
     - DATABASE_URL in EV-Backend/.env.local
@@ -225,11 +231,17 @@ def generate_manifest(include_blocked=False, output_path="headshot_research_mani
     conn.close()
     print(f"  Found {len(missing)} LOCAL/LOCAL_EXEC CA politicians without Supabase headshots")
 
-    # Step 3: Match politicians to cities
+    # Step 3: Match politicians to cities (deduplicated by politician_id)
     matched = []
     unmatched = []
+    seen_ids = set()
 
     for pol in missing:
+        # Deduplicate: skip if we've already added this politician
+        if pol["id"] in seen_ids:
+            continue
+        seen_ids.add(pol["id"])
+
         name_key = pol["full_name"].lower()
         city_info = name_to_city.get(name_key)
 
@@ -259,6 +271,11 @@ def generate_manifest(include_blocked=False, output_path="headshot_research_mani
                 "role": city_info["role"],
                 "has_existing_override": city_info["has_existing_override"],
                 "headshot_status": headshot_status or "pending",
+                "politician_id": pol["id"],
+                "found_url": "",
+                "source_page_url": "",
+                "research_status": "pending",
+                "research_date": "",
             })
         else:
             unmatched.append(pol["full_name"])
@@ -292,6 +309,11 @@ def generate_manifest(include_blocked=False, output_path="headshot_research_mani
         "role",
         "has_existing_override",
         "headshot_status",
+        "politician_id",
+        "found_url",
+        "source_page_url",
+        "research_status",
+        "research_date",
     ]
 
     output_file = Path(__file__).parent / output_path
@@ -395,6 +417,11 @@ Output CSV columns:
   role               Mayor or Council Member
   has_existing_override  True if headshot_url already set in roster
   headshot_status    City scrape status (scraped/blocked/failed/pending)
+  politician_id      Database primary key for Phase 64 upload (no fuzzy matching needed)
+  found_url          Direct image URL (.jpg/.png) found during research
+  source_page_url    Page where image was found (for attribution)
+  research_status    pending / found / not_found / blocked
+  research_date      ISO date when this row was researched
         """,
     )
     parser.add_argument(
