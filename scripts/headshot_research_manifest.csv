@@ -1,301 +1,305 @@
-city_name,city_id,council_url,member_name,role,has_existing_override,headshot_status
-City of Santa Monica,santa_monica_city_council,https://www.santamonica.gov/city-council,Lana Negrete,Mayor,True,scraped
-City of Santa Monica,santa_monica_city_council,https://www.santamonica.gov/city-council,Lana Negrete,Mayor,True,scraped
-City of Santa Monica,santa_monica_city_council,https://www.santamonica.gov/city-council,Caroline Torosis,Council Member,True,scraped
-City of Santa Monica,santa_monica_city_council,https://www.santamonica.gov/city-council,Christine Parra,Council Member,True,scraped
-City of Santa Monica,santa_monica_city_council,https://www.santamonica.gov/city-council,Jesse Zwick,Council Member,True,scraped
-City of Santa Monica,santa_monica_city_council,https://www.santamonica.gov/city-council,Oscar de la Torre,Council Member,True,scraped
-City of Santa Monica,santa_monica_city_council,https://www.santamonica.gov/city-council,Phil Brock,Council Member,True,scraped
-City of Pomona,pomona_city_council,https://www.pomonaca.gov/government/city-council,Tim Sandoval,Mayor,True,scraped
-City of Pomona,pomona_city_council,https://www.pomonaca.gov/government/city-council,Debra Martin,Council Member,True,scraped
-City of Pomona,pomona_city_council,https://www.pomonaca.gov/government/city-council,Lorraine Canales,Council Member,True,scraped
-City of Pomona,pomona_city_council,https://www.pomonaca.gov/government/city-council,Nora Garcia,Council Member,True,scraped
-City of Pomona,pomona_city_council,https://www.pomonaca.gov/government/city-council,Steve Lustro,Council Member,False,scraped
-City of Pomona,pomona_city_council,https://www.pomonaca.gov/government/city-council,Victor Preciado,Council Member,True,scraped
-City of Lynwood,lynwood_city_council,https://www.lynwood.ca.us/government/city-council,Rita Soto,Mayor,False,scraped
-City of Lynwood,lynwood_city_council,https://www.lynwood.ca.us/government/city-council,Rita Soto,Mayor,False,scraped
-City of Lynwood,lynwood_city_council,https://www.lynwood.ca.us/government/city-council,Gabriela Camacho,Council Member,False,scraped
-City of Lynwood,lynwood_city_council,https://www.lynwood.ca.us/government/city-council,Juan Muñoz-Guevara,Council Member,False,scraped
-City of Lynwood,lynwood_city_council,https://www.lynwood.ca.us/government/city-council,Lorraine Avila Moore,Council Member,False,scraped
-City of Lynwood,lynwood_city_council,https://www.lynwood.ca.us/government/city-council,Luis Gerardo Cuellar,Council Member,False,scraped
-City of Artesia,artesia_city_council,https://www.cityofartesia.us/government/city-council,Ali Taj,Mayor,False,scraped
-City of Artesia,artesia_city_council,https://www.cityofartesia.us/government/city-council,Ali Taj,Mayor,False,scraped
-City of Artesia,artesia_city_council,https://www.cityofartesia.us/government/city-council,Melissa Ramoso,Council Member,False,scraped
-City of Artesia,artesia_city_council,https://www.cityofartesia.us/government/city-council,Monica Manalo,Council Member,False,scraped
-City of Artesia,artesia_city_council,https://www.cityofartesia.us/government/city-council,Rene Trevino,Council Member,False,scraped
-City of Artesia,artesia_city_council,https://www.cityofartesia.us/government/city-council,Zeel Ahir,Council Member,False,scraped
-City of Redondo Beach,redondo_beach_city_council,https://www.redondo.org/government/elected-officials/city-council,James A Light,Mayor,False,failed
-City of Redondo Beach,redondo_beach_city_council,https://www.redondo.org/government/elected-officials/city-council,Brad Waller,Council Member,False,failed
-City of Redondo Beach,redondo_beach_city_council,https://www.redondo.org/government/elected-officials/city-council,Chadwick Castle,Council Member,False,failed
-City of Redondo Beach,redondo_beach_city_council,https://www.redondo.org/government/elected-officials/city-council,Paige Kaluderovic,Council Member,False,failed
-City of Redondo Beach,redondo_beach_city_council,https://www.redondo.org/government/elected-officials/city-council,Scott Behrendt,Council Member,False,failed
-City of Redondo Beach,redondo_beach_city_council,https://www.redondo.org/government/elected-officials/city-council,Zein Obagi,Council Member,False,failed
-City of El Monte,el_monte_city_council,https://www.ci.el-monte.ca.us/government/city-council,Jessica Ancona,Mayor,False,scraped
-City of El Monte,el_monte_city_council,https://www.ci.el-monte.ca.us/government/city-council,Cindy Galvan,Council Member,False,scraped
-City of El Monte,el_monte_city_council,https://www.ci.el-monte.ca.us/government/city-council,Dr. Julia Ruedas,Council Member,False,scraped
-City of El Monte,el_monte_city_council,https://www.ci.el-monte.ca.us/government/city-council,Martin Herrera,Council Member,False,scraped
-City of El Monte,el_monte_city_council,https://www.ci.el-monte.ca.us/government/city-council,Sheila Crippen-Thomas,Council Member,False,scraped
-City of El Monte,el_monte_city_council,https://www.ci.el-monte.ca.us/government/city-council,Viviana Longoria,Council Member,False,scraped
-City of Glendora,glendora_city_council,https://www.cityofglendora.org/government/city-council,David Fredendall,Mayor,False,scraped
-City of Glendora,glendora_city_council,https://www.cityofglendora.org/government/city-council,Karen Davis,Council Member,False,scraped
-City of Glendora,glendora_city_council,https://www.cityofglendora.org/government/city-council,Mendell Thompson,Council Member,False,scraped
-City of Glendora,glendora_city_council,https://www.cityofglendora.org/government/city-council,Michael Allawos,Council Member,False,scraped
-City of Glendora,glendora_city_council,https://www.cityofglendora.org/government/city-council,Shaunna Elias,Council Member,False,scraped
-City of Palos Verdes Estates,palos_verdes_estates_city_council,https://www.pvestates.org/government/city-council,Jim Roos,Mayor,False,scraped
-City of Palos Verdes Estates,palos_verdes_estates_city_council,https://www.pvestates.org/government/city-council,Jim Roos,Mayor,False,scraped
-City of Palos Verdes Estates,palos_verdes_estates_city_council,https://www.pvestates.org/government/city-council,David McGowan,Council Member,False,scraped
-City of Palos Verdes Estates,palos_verdes_estates_city_council,https://www.pvestates.org/government/city-council,Dawn Murdock,Council Member,False,scraped
-City of Palos Verdes Estates,palos_verdes_estates_city_council,https://www.pvestates.org/government/city-council,Michael Kemps,Council Member,False,scraped
-City of Torrance,torrance_city_council,https://www.torranceca.gov/government/city-council,Asam Sheikh,Council Member,False,scraped
-City of Torrance,torrance_city_council,https://www.torranceca.gov/government/city-council,Aurelio Mattucci,Council Member,False,scraped
-City of Torrance,torrance_city_council,https://www.torranceca.gov/government/city-council,Brigitte Lewis,Council Member,False,scraped
-City of Torrance,torrance_city_council,https://www.torranceca.gov/government/city-council,Jeremy Gerson,Council Member,False,scraped
-City of Torrance,torrance_city_council,https://www.torranceca.gov/government/city-council,Jon Kaji,Council Member,False,scraped
-City of Hermosa Beach,hermosa_beach_city_council,https://www.hermosabeach.gov/government/city-council,Dean Francois,Mayor,False,scraped
-City of Hermosa Beach,hermosa_beach_city_council,https://www.hermosabeach.gov/government/city-council,Dean Francois,Mayor,False,scraped
-City of Hermosa Beach,hermosa_beach_city_council,https://www.hermosabeach.gov/government/city-council,Michael Detoy,Council Member,False,scraped
-City of Hermosa Beach,hermosa_beach_city_council,https://www.hermosabeach.gov/government/city-council,Raymond Jackson,Council Member,False,scraped
-City of Hermosa Beach,hermosa_beach_city_council,https://www.hermosabeach.gov/government/city-council,Rob Saemann,Council Member,False,scraped
-City of Santa Fe Springs,santa_fe_springs_city_council,https://www.santafesprings.org/government/city-council,William K. Rounds,Mayor,False,scraped
-City of Santa Fe Springs,santa_fe_springs_city_council,https://www.santafesprings.org/government/city-council,Annette Rodriguez,Council Member,False,scraped
-City of Santa Fe Springs,santa_fe_springs_city_council,https://www.santafesprings.org/government/city-council,John M. Mora,Council Member,False,scraped
-City of Santa Fe Springs,santa_fe_springs_city_council,https://www.santafesprings.org/government/city-council,Juanita Martin,Council Member,False,scraped
-City of Santa Fe Springs,santa_fe_springs_city_council,https://www.santafesprings.org/government/city-council,Monica Rodriguez,Council Member,False,scraped
-City of Maywood,maywood_city_council,https://www.cityofmaywood.com/government/city-council,Mayra Aguiluz,Mayor,False,scraped
-City of Maywood,maywood_city_council,https://www.cityofmaywood.com/government/city-council,Eddie De La,Council Member,False,scraped
-City of Maywood,maywood_city_council,https://www.cityofmaywood.com/government/city-council,Frank Garcia,Council Member,False,scraped
-City of Maywood,maywood_city_council,https://www.cityofmaywood.com/government/city-council,Jaime Flores,Council Member,False,scraped
-City of Hawthorne,hawthorne_city_council,https://www.cityofhawthorne.org/government/city-council,Alex Vargas,Mayor,False,scraped
-City of Hawthorne,hawthorne_city_council,https://www.cityofhawthorne.org/government/city-council,Angie Reyes English,Council Member,False,scraped
-City of Hawthorne,hawthorne_city_council,https://www.cityofhawthorne.org/government/city-council,David Patterson,Council Member,False,scraped
-City of Hawthorne,hawthorne_city_council,https://www.cityofhawthorne.org/government/city-council,Haidar Awad,Council Member,False,scraped
-City of West Hollywood,west_hollywood_city_council,https://www.weho.org/government/city-council,Chelsea Lee Byers,Mayor,False,scraped
-City of West Hollywood,west_hollywood_city_council,https://www.weho.org/government/city-council,Danny Hang,Council Member,False,scraped
-City of West Hollywood,west_hollywood_city_council,https://www.weho.org/government/city-council,John M. Erickson,Council Member,False,scraped
-City of West Hollywood,west_hollywood_city_council,https://www.weho.org/government/city-council,Lauren Meister,Council Member,False,scraped
-City of Rolling Hills Estates,rolling_hills_estates_city_council,https://www.rolling-hills-estates.org/government/city-council,Debby Stegura,Mayor,False,failed
-City of Rolling Hills Estates,rolling_hills_estates_city_council,https://www.rolling-hills-estates.org/government/city-council,Britt Huff,Council Member,False,failed
-City of Rolling Hills Estates,rolling_hills_estates_city_council,https://www.rolling-hills-estates.org/government/city-council,Pam Brown Schachter,Council Member,False,failed
-City of Rolling Hills Estates,rolling_hills_estates_city_council,https://www.rolling-hills-estates.org/government/city-council,Velveth Schmitz,Council Member,False,failed
-City of Avalon,avalon_city_council,https://www.cityofavalon.gov/government/city-council,Ann Marshall,Mayor,False,scraped
-City of Avalon,avalon_city_council,https://www.cityofavalon.gov/government/city-council,Mary Schickling,Council Member,False,scraped
-City of Avalon,avalon_city_council,https://www.cityofavalon.gov/government/city-council,Michael Ponce,Council Member,False,scraped
-City of Avalon,avalon_city_council,https://www.cityofavalon.gov/government/city-council,Yesenia De La,Council Member,False,scraped
-City of Rolling Hills,rolling_hills_city_council,https://www.rolling-hills.org/government/city_council/index.php,Jeff Pieper,Mayor,False,scraped
-City of Rolling Hills,rolling_hills_city_council,https://www.rolling-hills.org/government/city_council/index.php,James Black M.D,Council Member,False,scraped
-City of Rolling Hills,rolling_hills_city_council,https://www.rolling-hills.org/government/city_council/index.php,Leah Mirsch,Council Member,False,scraped
-City of Rolling Hills,rolling_hills_city_council,https://www.rolling-hills.org/government/city_council/index.php,Pat Wilson,Council Member,False,scraped
-City of Lakewood,lakewood_city_council,https://www.lakewoodcity.org/government/city-council,Todd Rogers,Mayor,False,scraped
-City of Lakewood,lakewood_city_council,https://www.lakewoodcity.org/government/city-council,David Arellano,Council Member,False,scraped
-City of Lakewood,lakewood_city_council,https://www.lakewoodcity.org/government/city-council,Jeff Wood,Council Member,False,scraped
-City of Lakewood,lakewood_city_council,https://www.lakewoodcity.org/government/city-council,Steve Croft,Council Member,False,scraped
-City of Commerce,commerce_city_council,https://www.ci.commerce.ca.us/government/city-council,Ivan Altamirano,Mayor,False,scraped
-City of Commerce,commerce_city_council,https://www.ci.commerce.ca.us/government/city-council,Hugo Argumedo,Council Member,False,scraped
-City of Commerce,commerce_city_council,https://www.ci.commerce.ca.us/government/city-council,Mireya Garcia,Council Member,False,scraped
-City of Commerce,commerce_city_council,https://www.ci.commerce.ca.us/government/city-council,Oralia Rebollo,Council Member,False,scraped
-City of Pasadena,pasadena_city_council,https://www.cityofpasadena.net/council,Victor M. Gordo,Mayor,False,scraped
-City of Pasadena,pasadena_city_council,https://www.cityofpasadena.net/council,Justin Jones,Council Member,False,scraped
-City of Pasadena,pasadena_city_council,https://www.cityofpasadena.net/council,Steve Madison,Council Member,False,scraped
-City of Pasadena,pasadena_city_council,https://www.cityofpasadena.net/council,Tyron Hampton,Council Member,False,scraped
-City of San Marino,san_marino_city_council,https://sanmarinoca.gov/government/elected-officials/city-council,Gretchen Shepherd Romey,Mayor,False,failed
-City of San Marino,san_marino_city_council,https://sanmarinoca.gov/government/elected-officials/city-council,Calvin Lo,Council Member,False,failed
-City of San Marino,san_marino_city_council,https://sanmarinoca.gov/government/elected-officials/city-council,Hunter Chang,Council Member,False,failed
-City of San Marino,san_marino_city_council,https://sanmarinoca.gov/government/elected-officials/city-council,John Chou,Council Member,False,failed
-City of La Palma,la_palma_city_council,https://www.lapalmaca.gov/194/City-Council,Mark I. Waldman,Mayor,False,scraped
-City of La Palma,la_palma_city_council,https://www.lapalmaca.gov/194/City-Council,Debbie S. Baker,Council Member,False,scraped
-City of La Palma,la_palma_city_council,https://www.lapalmaca.gov/194/City-Council,Janet Keo Conklin,Council Member,False,scraped
-City of La Palma,la_palma_city_council,https://www.lapalmaca.gov/194/City-Council,Vikesh P. Patel,Council Member,False,scraped
-City of Calabasas,calabasas_city_council,https://www.cityofcalabasas.com/government/city-council,James R. Bozajian,Mayor,False,scraped
-City of Calabasas,calabasas_city_council,https://www.cityofcalabasas.com/government/city-council,Alicia Weintraub,Council Member,False,scraped
-City of Calabasas,calabasas_city_council,https://www.cityofcalabasas.com/government/city-council,David J. Shapiro,Council Member,False,scraped
-City of Calabasas,calabasas_city_council,https://www.cityofcalabasas.com/government/city-council,Peter Kraut,Council Member,False,scraped
-City of Rancho Palos Verdes,rancho_palos_verdes_city_council,https://www.rpvca.gov/government/city-council,David L. Bradley,Mayor,False,scraped
-City of Rancho Palos Verdes,rancho_palos_verdes_city_council,https://www.rpvca.gov/government/city-council,Barbara Ferraro,Council Member,False,scraped
-City of Rancho Palos Verdes,rancho_palos_verdes_city_council,https://www.rpvca.gov/government/city-council,George Lewis,Council Member,False,scraped
-City of Rancho Palos Verdes,rancho_palos_verdes_city_council,https://www.rpvca.gov/government/city-council,Stephen Perestam,Council Member,False,scraped
-City of Industry,industry_city_council,https://www.cityofindustry.org/government/city-council,Cory Moss,Mayor,False,scraped
-City of Industry,industry_city_council,https://www.cityofindustry.org/government/city-council,Mark Radecki,Council Member,False,scraped
-City of Industry,industry_city_council,https://www.cityofindustry.org/government/city-council,Newell Ruggles,Council Member,False,scraped
-City of Industry,industry_city_council,https://www.cityofindustry.org/government/city-council,Steve Marcucci,Council Member,False,scraped
-City of South Gate,south_gate_city_council,https://www.cityofsouthgate.org/government/city-council,Maria Davila,Mayor,False,scraped
-City of South Gate,south_gate_city_council,https://www.cityofsouthgate.org/government/city-council,Al Rios,Council Member,False,scraped
-City of South Gate,south_gate_city_council,https://www.cityofsouthgate.org/government/city-council,Gil Hurtado,Council Member,False,scraped
-City of South Gate,south_gate_city_council,https://www.cityofsouthgate.org/government/city-council,Maria del Pilar Avalos,Council Member,False,scraped
-City of Malibu,malibu_city_council,https://www.malibucity.org/government/elected-officials/city-council,Doug Stewart,Mayor,False,scraped
-City of Malibu,malibu_city_council,https://www.malibucity.org/government/elected-officials/city-council,Bruce Silverstein,Council Member,False,scraped
-City of Malibu,malibu_city_council,https://www.malibucity.org/government/elected-officials/city-council,Haylynn Conrad,Council Member,False,scraped
-City of Malibu,malibu_city_council,https://www.malibucity.org/government/elected-officials/city-council,Steve Uhring,Council Member,False,scraped
-City of Alhambra,alhambra_city_council,https://www.cityofalhambra.org/government/city-council,Katherine Lee,Mayor,False,scraped
-City of Alhambra,alhambra_city_council,https://www.cityofalhambra.org/government/city-council,Adele Andrade-Stadler,Council Member,False,scraped
-City of Alhambra,alhambra_city_council,https://www.cityofalhambra.org/government/city-council,Noya Wang,Council Member,False,scraped
-City of Alhambra,alhambra_city_council,https://www.cityofalhambra.org/government/city-council,Ross J. Maza,Council Member,False,scraped
-City of Irwindale,irwindale_city_council,https://www.irwindaleca.gov/government/city-council,Larry G. Burrola,Mayor,False,scraped
-City of Irwindale,irwindale_city_council,https://www.irwindaleca.gov/government/city-council,Albert F. Ambriz,Council Member,False,scraped
-City of Irwindale,irwindale_city_council,https://www.irwindaleca.gov/government/city-council,Manuel R. Garcia,Council Member,False,scraped
-City of Irwindale,irwindale_city_council,https://www.irwindaleca.gov/government/city-council,Mark A. Breceda,Council Member,False,scraped
-City of Vernon,vernon_city_council,https://www.cityofvernon.org/government/city-council,Leticia Lopez,Mayor,False,scraped
-City of Vernon,vernon_city_council,https://www.cityofvernon.org/government/city-council,Crystal Larios,Council Member,False,scraped
-City of Vernon,vernon_city_council,https://www.cityofvernon.org/government/city-council,Jesus Rivera,Council Member,False,scraped
-City of Vernon,vernon_city_council,https://www.cityofvernon.org/government/city-council,Judith Merlo,Council Member,False,scraped
-City of La Verne,la_verne_city_council,https://www.laverneca.gov/government/city_council/index.php,Timothy Hepburn,Mayor,False,scraped
-City of La Verne,la_verne_city_council,https://www.laverneca.gov/government/city_council/index.php,"Meshal ""Kash"" Kashifalghita",Council Member,False,scraped
-City of La Verne,la_verne_city_council,https://www.laverneca.gov/government/city_council/index.php,Rick Crosby,Council Member,False,scraped
-City of La Verne,la_verne_city_council,https://www.laverneca.gov/government/city_council/index.php,Wendy Lau,Council Member,False,scraped
-City of Temple City,temple_city_city_council,https://www.templecity.us/government/city-council,Cynthia Sternquist,Mayor,False,scraped
-City of Temple City,temple_city_city_council,https://www.templecity.us/government/city-council,Ed Chen,Council Member,False,scraped
-City of Temple City,temple_city_city_council,https://www.templecity.us/government/city-council,Tom Chavez,Council Member,False,scraped
-City of Temple City,temple_city_city_council,https://www.templecity.us/government/city-council,Vincent Yu,Council Member,False,scraped
-City of El Segundo,el_segundo_city_council,https://www.elsegundo.org/government/city-council,Chris Pimentel,Mayor,False,scraped
-City of El Segundo,el_segundo_city_council,https://www.elsegundo.org/government/city-council,Drew Boyles,Council Member,False,scraped
-City of El Segundo,el_segundo_city_council,https://www.elsegundo.org/government/city-council,Lance Giroux,Council Member,False,scraped
-City of El Segundo,el_segundo_city_council,https://www.elsegundo.org/government/city-council,Michelle Keldorf,Council Member,False,scraped
-City of Lawndale,lawndale_city_council,https://www.lawndalecity.org/government/city-council,Robert Pullen-Miles,Mayor,False,scraped
-City of Lawndale,lawndale_city_council,https://www.lawndalecity.org/government/city-council,Bernadette Suarez,Council Member,False,scraped
-City of Lawndale,lawndale_city_council,https://www.lawndalecity.org/government/city-council,Frank Talavera,Council Member,False,scraped
-City of Lawndale,lawndale_city_council,https://www.lawndalecity.org/government/city-council,Sirley Cuevas,Council Member,False,scraped
-City of Baldwin Park,baldwin_park_city_council,https://www.baldwinpark.com/government/city-council,Alejandra Avila,Mayor,False,scraped
-City of Baldwin Park,baldwin_park_city_council,https://www.baldwinpark.com/government/city-council,Emmanuel J. Estrada,Council Member,False,scraped
-City of Baldwin Park,baldwin_park_city_council,https://www.baldwinpark.com/government/city-council,Jean M. Ayala,Council Member,False,scraped
-City of Baldwin Park,baldwin_park_city_council,https://www.baldwinpark.com/government/city-council,Manuel Lozano,Council Member,False,scraped
-City of Monrovia,monrovia_city_council,https://www.cityofmonrovia.org/government/city-council,Becky A. Shevlin,Mayor,False,scraped
-City of Monrovia,monrovia_city_council,https://www.cityofmonrovia.org/government/city-council,Edward Belden,Council Member,False,scraped
-City of Monrovia,monrovia_city_council,https://www.cityofmonrovia.org/government/city-council,Larry J. Spicer,Council Member,False,scraped
-City of Monrovia,monrovia_city_council,https://www.cityofmonrovia.org/government/city-council,Sergio Jimenez,Council Member,False,scraped
-City of Claremont,claremont_city_council,https://www.ci.claremont.ca.us/government/city-council,Corey Calaycay,Mayor,False,failed
-City of Claremont,claremont_city_council,https://www.ci.claremont.ca.us/government/city-council,Ed Reece,Council Member,False,failed
-City of Claremont,claremont_city_council,https://www.ci.claremont.ca.us/government/city-council,Jed Leano,Council Member,False,failed
-City of Claremont,claremont_city_council,https://www.ci.claremont.ca.us/government/city-council,Sal Medina,Council Member,False,failed
-City of Cerritos,cerritos_city_council,https://www.cerritos.us/government/city-council,Frank Aurelio Yokoyama,Mayor,False,scraped
-City of Cerritos,cerritos_city_council,https://www.cerritos.us/government/city-council,Jennifer Hong,Council Member,False,scraped
-City of Cerritos,cerritos_city_council,https://www.cerritos.us/government/city-council,Mark E. Pulido,Council Member,False,scraped
-City of Cerritos,cerritos_city_council,https://www.cerritos.us/government/city-council,Sophia M. Tse,Council Member,False,scraped
-City of Cudahy,cudahy_city_council,https://www.cityofcudahyca.gov/173/City-Council,Elizabeth Alcantar Loza,Mayor,False,scraped
-City of Cudahy,cudahy_city_council,https://www.cityofcudahyca.gov/173/City-Council,Amanda Gomez,Council Member,False,scraped
-City of Cudahy,cudahy_city_council,https://www.cityofcudahyca.gov/173/City-Council,Daisy Lomelí,Council Member,False,scraped
-City of Cudahy,cudahy_city_council,https://www.cityofcudahyca.gov/173/City-Council,Martin U. Fuentes,Council Member,False,scraped
-City of Walnut,walnut_city_council,https://www.walnut-ca.gov/government/city-council,Linda Freedman,Mayor,False,failed
-City of Walnut,walnut_city_council,https://www.walnut-ca.gov/government/city-council,Allen Wu,Council Member,False,failed
-City of Walnut,walnut_city_council,https://www.walnut-ca.gov/government/city-council,Kaylee May Law,Council Member,False,failed
-City of Walnut,walnut_city_council,https://www.walnut-ca.gov/government/city-council,Nancy Tragarz,Council Member,False,failed
-City of Azusa,azusa_city_council,https://www.azusaca.gov/government/city-council,Robert Gonzales,Mayor,False,scraped
-City of Azusa,azusa_city_council,https://www.azusaca.gov/government/city-council,Andrew N. Mendez,Council Member,False,scraped
-City of Azusa,azusa_city_council,https://www.azusaca.gov/government/city-council,Jesse Avila Jr,Council Member,False,scraped
-City of Azusa,azusa_city_council,https://www.azusaca.gov/government/city-council,Sabrina Bow,Council Member,False,scraped
-City of Paramount,paramount_city_council,https://www.paramountcity.com/government/city-council,Peggy Lemons,Mayor,False,failed
-City of Paramount,paramount_city_council,https://www.paramountcity.com/government/city-council,Annette C. Delgadillo,Council Member,False,failed
-City of Paramount,paramount_city_council,https://www.paramountcity.com/government/city-council,Isabel Aguayo,Council Member,False,failed
-City of Paramount,paramount_city_council,https://www.paramountcity.com/government/city-council,Vilma Cuellar Stallings,Council Member,False,failed
-City of Gardena,gardena_city_council,https://cityofgardena.org/government/city_council/index.php,Tasha Cerda,Mayor,False,scraped
-City of Gardena,gardena_city_council,https://cityofgardena.org/government/city_council/index.php,Mark Henderson,Council Member,False,scraped
-City of Gardena,gardena_city_council,https://cityofgardena.org/government/city_council/index.php,Paulette Francis,Council Member,False,scraped
-City of Gardena,gardena_city_council,https://cityofgardena.org/government/city_council/index.php,Wanda Love,Council Member,False,scraped
-City of South El Monte,south_el_monte_city_council,https://www.soelmonte.org/city-government/city-council,Gloria Olmos,Mayor,False,failed
-City of South El Monte,south_el_monte_city_council,https://www.soelmonte.org/city-government/city-council,Larry Rodriguez,Council Member,False,failed
-City of South El Monte,south_el_monte_city_council,https://www.soelmonte.org/city-government/city-council,Manuel Acosta,Council Member,False,failed
-City of South El Monte,south_el_monte_city_council,https://www.soelmonte.org/city-government/city-council,Rudy Bojorquez,Council Member,False,failed
-City of Signal Hill,signal_hill_city_council,https://www.cityofsignalhill.org/government/city_council/index.php,Keir Jones,Mayor,False,scraped
-City of Signal Hill,signal_hill_city_council,https://www.cityofsignalhill.org/government/city_council/index.php,Charlie Honeycutt,Council Member,False,scraped
-City of Signal Hill,signal_hill_city_council,https://www.cityofsignalhill.org/government/city_council/index.php,Lori Woods,Council Member,False,scraped
-City of Signal Hill,signal_hill_city_council,https://www.cityofsignalhill.org/government/city_council/index.php,Robert Copeland,Council Member,False,scraped
-City of Diamond Bar,diamond_bar_city_council,https://www.diamondbarca.gov/government/city-council,Chia Yu Teng,Mayor,False,scraped
-City of Diamond Bar,diamond_bar_city_council,https://www.diamondbarca.gov/government/city-council,Andrew Chou,Council Member,False,scraped
-City of Diamond Bar,diamond_bar_city_council,https://www.diamondbarca.gov/government/city-council,Ruth M. Low,Council Member,False,scraped
-City of Diamond Bar,diamond_bar_city_council,https://www.diamondbarca.gov/government/city-council,Stan Liu,Council Member,False,scraped
-City of Bell Gardens,bell_gardens_city_council,https://www.cityofbellgardens.org/government/city-council,Miguel De La Rosa,Mayor,False,scraped
-City of Bell Gardens,bell_gardens_city_council,https://www.cityofbellgardens.org/government/city-council,Jorgel Chavez,Council Member,False,scraped
-City of Bell Gardens,bell_gardens_city_council,https://www.cityofbellgardens.org/government/city-council,Leon Sanchez,Council Member,False,scraped
-City of Bell Gardens,bell_gardens_city_council,https://www.cityofbellgardens.org/government/city-council,Marco Barcena,Council Member,False,scraped
-City of Bradbury,bradbury_city_council,https://www.cityofbradbury.org/government/city_council/index.php,Richard T. Hale,Mayor,False,scraped
-City of Bradbury,bradbury_city_council,https://www.cityofbradbury.org/government/city_council/index.php,Bruce Lathrop,Council Member,False,scraped
-City of Bradbury,bradbury_city_council,https://www.cityofbradbury.org/government/city_council/index.php,Melodie Szymkowski,Council Member,False,scraped
-City of Bradbury,bradbury_city_council,https://www.cityofbradbury.org/government/city_council/index.php,Richard G. Barakat,Council Member,False,scraped
-City of Sierra Madre,sierra_madre_city_council,https://www.cityofsmca.com/government/city-council,Robert Parkhurst,Mayor,False,failed
-City of Sierra Madre,sierra_madre_city_council,https://www.cityofsmca.com/government/city-council,Edward T. Garcia,Council Member,False,failed
-City of Sierra Madre,sierra_madre_city_council,https://www.cityofsmca.com/government/city-council,Gene Goss,Council Member,False,failed
-City of Sierra Madre,sierra_madre_city_council,https://www.cityofsmca.com/government/city-council,Kelly Kriebs,Council Member,False,failed
-City of Westlake Village,westlake_village_city_council,https://www.wlv.org/government/city-council,Kelly Honig,Mayor,False,scraped
-City of Westlake Village,westlake_village_city_council,https://www.wlv.org/government/city-council,Brad Halpern,Council Member,False,scraped
-City of Westlake Village,westlake_village_city_council,https://www.wlv.org/government/city-council,Ned E Davis,Council Member,False,scraped
-City of Westlake Village,westlake_village_city_council,https://www.wlv.org/government/city-council,Ray Pearl,Council Member,False,scraped
-City of Los Alamitos,los_alamitos_city_council,https://www.cityoflosalamitos.org/government/city-council,Shelley Hasselbrink,Mayor,False,scraped
-City of Los Alamitos,los_alamitos_city_council,https://www.cityoflosalamitos.org/government/city-council,Emily Hibard,Council Member,False,scraped
-City of Los Alamitos,los_alamitos_city_council,https://www.cityoflosalamitos.org/government/city-council,Gary Loe,Council Member,False,scraped
-City of Los Alamitos,los_alamitos_city_council,https://www.cityoflosalamitos.org/government/city-council,Jordan Nefulda,Council Member,False,scraped
-City of Whittier,whittier_city_council,https://www.cityofwhittier.org/government/city-council,Joe Vinatieri,Mayor,False,scraped
-City of Whittier,whittier_city_council,https://www.cityofwhittier.org/government/city-council,Fernando Dutra,Council Member,False,scraped
-City of Whittier,whittier_city_council,https://www.cityofwhittier.org/government/city-council,Mary Ann Pacheco,Council Member,False,scraped
-City of Whittier,whittier_city_council,https://www.cityofwhittier.org/government/city-council,Octavio Martinez,Council Member,False,scraped
-City of Rosemead,rosemead_city_council,https://rosemeadca.gov/government/elected-officials/city-council,Margaret Clark,Mayor,False,failed
-City of Rosemead,rosemead_city_council,https://rosemeadca.gov/government/elected-officials/city-council,Polly Low,Council Member,False,failed
-City of Rosemead,rosemead_city_council,https://rosemeadca.gov/government/elected-officials/city-council,Sean Dang,Council Member,False,failed
-City of Rosemead,rosemead_city_council,https://rosemeadca.gov/government/elected-officials/city-council,Steven Ly,Council Member,False,failed
-City of Hawaiian Gardens,hawaiian_gardens_city_council,https://www.hgcity.org/government/city-council,Dandy De Paula,Mayor,False,scraped
-City of Hawaiian Gardens,hawaiian_gardens_city_council,https://www.hgcity.org/government/city-council,Ernie Vargas,Council Member,False,scraped
-City of Hawaiian Gardens,hawaiian_gardens_city_council,https://www.hgcity.org/government/city-council,Luis Roa,Council Member,False,scraped
-City of Hawaiian Gardens,hawaiian_gardens_city_council,https://www.hgcity.org/government/city-council,Victor Farfan,Council Member,False,scraped
-City of La Habra Heights,la_habra_heights_city_council,https://www.lahabraheights.com/government/city-council,John Pespisa,Mayor,False,failed
-City of La Habra Heights,la_habra_heights_city_council,https://www.lahabraheights.com/government/city-council,Brian Bergman,Council Member,False,failed
-City of La Habra Heights,la_habra_heights_city_council,https://www.lahabraheights.com/government/city-council,Greg Stefflre,Council Member,False,failed
-City of La Habra Heights,la_habra_heights_city_council,https://www.lahabraheights.com/government/city-council,Norm Zezula,Council Member,False,failed
-City of Agoura Hills,agoura_hills_city_council,https://www.agourahillscity.gov/government/city_council/index.php,Penny Sylvester,Mayor,False,failed
-City of Agoura Hills,agoura_hills_city_council,https://www.agourahillscity.gov/government/city_council/index.php,Chris Anstead,Council Member,False,failed
-City of Agoura Hills,agoura_hills_city_council,https://www.agourahillscity.gov/government/city_council/index.php,Deborah Klein Lopez,Council Member,False,failed
-City of Agoura Hills,agoura_hills_city_council,https://www.agourahillscity.gov/government/city_council/index.php,Kate Anderson,Council Member,False,failed
-City of Lancaster,lancaster_city_council,https://www.cityoflancasterca.org/government/city-council,Ken Mann,Council Member,False,scraped
-City of Lancaster,lancaster_city_council,https://www.cityoflancasterca.org/government/city-council,Lauren Hughes-Leslie,Council Member,False,scraped
-City of Lancaster,lancaster_city_council,https://www.cityoflancasterca.org/government/city-council,Raj Malhi,Council Member,False,scraped
-City of South Pasadena,south_pasadena_city_council,https://www.southpasadenaca.gov/government/city-council,Janet Braun (District 5),Mayor,False,scraped
-City of South Pasadena,south_pasadena_city_council,https://www.southpasadenaca.gov/government/city-council,Michael A. Cacciotti,Council Member,False,scraped
-City of South Pasadena,south_pasadena_city_council,https://www.southpasadenaca.gov/government/city-council,Omari Ferguson,Council Member,False,scraped
-City of West Covina,west_covina_city_council,https://www.westcovina.org/government/city-council,Tony Wu,Mayor,False,scraped
-City of West Covina,west_covina_city_council,https://www.westcovina.org/government/city-council,Ollie Cantos,Council Member,False,scraped
-City of West Covina,west_covina_city_council,https://www.westcovina.org/government/city-council,Rosario Diaz,Council Member,False,scraped
-City of Beverly Hills,beverly_hills_city_council,https://www.beverlyhills.org/government/city-council,Lester Friedman,Mayor,False,scraped
-City of Beverly Hills,beverly_hills_city_council,https://www.beverlyhills.org/government/city-council,Craig A. Corman,Council Member,False,scraped
-City of Beverly Hills,beverly_hills_city_council,https://www.beverlyhills.org/government/city-council,Mary N. Wells,Council Member,False,scraped
-City of La Puente,la_puente_city_council,https://www.lapuente.net/government/city-council,Valerie Munoz,Mayor,False,scraped
-City of La Puente,la_puente_city_council,https://www.lapuente.net/government/city-council,Gabriel Quinones,Council Member,False,scraped
-City of La Puente,la_puente_city_council,https://www.lapuente.net/government/city-council,Nadia Mendoza,Council Member,False,scraped
-City of San Fernando,san_fernando_city_council,https://www.ci.san-fernando.ca.us/government/city-council,Mary Mendoza,Mayor,False,scraped
-City of San Fernando,san_fernando_city_council,https://www.ci.san-fernando.ca.us/government/city-council,Joel Fajardo,Council Member,False,scraped
-City of San Fernando,san_fernando_city_council,https://www.ci.san-fernando.ca.us/government/city-council,Victoria Garcia,Council Member,False,scraped
-City of Inglewood,inglewood_city_council,https://www.cityofinglewood.org/government/city-council,Dionne Faulk,Council Member,False,scraped
-City of Inglewood,inglewood_city_council,https://www.cityofinglewood.org/government/city-council,Eloy Morales Jr.,Council Member,False,scraped
-City of Inglewood,inglewood_city_council,https://www.cityofinglewood.org/government/city-council,George Dotson,Council Member,False,scraped
-City of Palmdale,palmdale_city_council,https://www.cityofpalmdale.org/government/city-council,Andrea Alarcon,Council Member,False,scraped
-City of Palmdale,palmdale_city_council,https://www.cityofpalmdale.org/government/city-council,Austin Bishop,Council Member,False,scraped
-City of Palmdale,palmdale_city_council,https://www.cityofpalmdale.org/government/city-council,Eric Ohlsen,Council Member,False,scraped
-City of Manhattan Beach,manhattan_beach_city_council,https://www.citymb.info/government/city-council,Amy Thomas Howorth,Mayor,False,scraped
-City of Manhattan Beach,manhattan_beach_city_council,https://www.citymb.info/government/city-council,Nina Trieu Tarnay,Council Member,False,scraped
-City of Manhattan Beach,manhattan_beach_city_council,https://www.citymb.info/government/city-council,Steve S. Charelian,Council Member,False,scraped
-City of Monterey Park,monterey_park_city_council,https://www.montereypark.ca.gov/191/City-Council,Vinh Ngo,Mayor,False,scraped
-City of Monterey Park,monterey_park_city_council,https://www.montereypark.ca.gov/191/City-Council,Jose Sanchez,Council Member,False,scraped
-City of Monterey Park,monterey_park_city_council,https://www.montereypark.ca.gov/191/City-Council,Thomas Wong,Council Member,False,scraped
-City of San Gabriel,san_gabriel_city_council,https://www.sangabrielcity.com/government/city-council,Denise Menchaca,Mayor,False,scraped
-City of San Gabriel,san_gabriel_city_council,https://www.sangabrielcity.com/government/city-council,Jorge Herrera Avila,Council Member,False,scraped
-City of San Gabriel,san_gabriel_city_council,https://www.sangabrielcity.com/government/city-council,Tony Ding,Council Member,False,scraped
-City of Norwalk,norwalk_city_council,https://www.norwalkca.gov/government/city-council,Ana Valencia,Council Member,False,scraped
-City of Norwalk,norwalk_city_council,https://www.norwalkca.gov/government/city-council,Margarita L. Rios,Council Member,False,scraped
-City of Norwalk,norwalk_city_council,https://www.norwalkca.gov/government/city-council,Rick Ramirez,Council Member,False,scraped
-City of Downey,downey_city_council,https://www.downeyca.org/government/city-council,Hector Sosa,Mayor,False,scraped
-City of Downey,downey_city_council,https://www.downeyca.org/government/city-council,Mario Trujillo -,Council Member,False,scraped
-City of Bell,bell_city_council,https://www.cityofbell.org/government/city-council,Ana Maria Quintana,Council Member,False,scraped
-City of Bell,bell_city_council,https://www.cityofbell.org/government/city-council,Francis Flores,Council Member,False,scraped
-City of Carson,carson_city_council,https://www.carson.ca.us/government/city-council,Lula Davis Holmes,Mayor,True,failed
-City of Carson,carson_city_council,https://www.carson.ca.us/government/city-council,Mayor Lula Davis Holmes,Council Member,False,failed
-City of San Dimas,san_dimas_city_council,https://www.cityofsandimas.com/government/city-council,Emmett G. Badar,Mayor,False,scraped
-City of San Dimas,san_dimas_city_council,https://www.cityofsandimas.com/government/city-council,Rachel Bratakos,Council Member,False,scraped
-City of La Mirada,la_mirada_city_council,https://www.cityoflamirada.org/government/city-council,Michelle Velasquez Bean,Council Member,False,scraped
-City of La Mirada,la_mirada_city_council,https://www.cityoflamirada.org/government/city-council,Steve De Ruse,Council Member,False,scraped
-City of Montebello,montebello_city_council,https://www.montebelloca.gov/cms/one.aspx?pageId=61463,Scarlet Peralta,Mayor,True,scraped
-City of Montebello,montebello_city_council,https://www.montebelloca.gov/cms/one.aspx?pageId=61463,David Torres,Council Member,False,scraped
-City of Culver City,culver_city_city_council,https://www.culvercity.org/government/city-council,"Bryan ""Bubba"" Fish",Council Member,False,scraped
-City of Culver City,culver_city_city_council,https://www.culvercity.org/government/city-council,Yasmine-Imani McMorrin,Council Member,False,scraped
-City of Long Beach,long_beach_city_council,https://www.longbeach.gov/council,Megan Kerr,Council Member,False,scraped
-City of Long Beach,long_beach_city_council,https://www.longbeach.gov/council,Roberto Uranga,Council Member,False,scraped
-City of La Canada Flintridge,la_canada_flintridge_city_council,https://lcf.ca.gov/government/city-council,Stephanie Fossan,Council Member,False,scraped
-City of Duarte,duarte_city_council,https://www.accessduarte.com/government/city-council,Cesar A. Garcia,Mayor,False,scraped
-City of Covina,covina_city_council,https://www.covinaca.gov/government/city-council,Patricia Cortez,Mayor,False,scraped
-City of Huntington Park,huntington_park_city_council,https://www.hpca.gov/government/city-council,Arturo Flores,Mayor,False,scraped
-City of Glendale,glendale_city_council,https://www.glendaleca.gov/government/city-council,Vartan Gharpetian,Council Member,True,scraped
-City of Compton,compton_city_council,https://www.comptoncity.org/government/city-council,Lillie Darden -,Council Member,False,scraped
+city_name,city_id,council_url,member_name,role,has_existing_override,headshot_status,politician_id,found_url,source_page_url,research_status,research_date
+City of Santa Monica,santa_monica_city_council,https://www.santamonica.gov/city-council,Lana Negrete,Mayor,True,scraped,5604c5ae-d10d-4ca3-920d-dd3592278777,,,pending,
+City of Santa Monica,santa_monica_city_council,https://www.santamonica.gov/city-council,Lana Negrete,Mayor,True,scraped,fe7a151c-c769-4db6-9e96-68cf9cd3821d,,,pending,
+City of Santa Monica,santa_monica_city_council,https://www.santamonica.gov/city-council,Caroline Torosis,Council Member,True,scraped,0314141a-3444-4382-a9ae-84394bbd486f,,,pending,
+City of Santa Monica,santa_monica_city_council,https://www.santamonica.gov/city-council,Christine Parra,Council Member,True,scraped,2d47a965-81a2-4508-865c-06d45bf6ff42,,,pending,
+City of Santa Monica,santa_monica_city_council,https://www.santamonica.gov/city-council,Jesse Zwick,Council Member,True,scraped,d970169d-cecc-4cb0-979b-785fecc47ed6,,,pending,
+City of Santa Monica,santa_monica_city_council,https://www.santamonica.gov/city-council,Oscar de la Torre,Council Member,True,scraped,86e513e7-d0a7-4419-8edd-6113629d7998,,,pending,
+City of Santa Monica,santa_monica_city_council,https://www.santamonica.gov/city-council,Phil Brock,Council Member,True,scraped,7714b7c6-9283-4ab8-802e-cbcfba5ddc96,,,pending,
+City of Pomona,pomona_city_council,https://www.pomonaca.gov/government/city-council,Tim Sandoval,Mayor,True,scraped,48f36a82-cb26-4701-ba08-5566533982cb,,,pending,
+City of Pomona,pomona_city_council,https://www.pomonaca.gov/government/city-council,Debra Martin,Council Member,True,scraped,58fc2569-0b15-46cc-89aa-71f4e59dc3ac,,,pending,
+City of Pomona,pomona_city_council,https://www.pomonaca.gov/government/city-council,Lorraine Canales,Council Member,True,scraped,3109bbdb-0283-4236-8ceb-e7ef1cc6bbae,,,pending,
+City of Pomona,pomona_city_council,https://www.pomonaca.gov/government/city-council,Nora Garcia,Council Member,True,scraped,6fa28860-c3d6-45bf-8aad-eac353dc4559,,,pending,
+City of Pomona,pomona_city_council,https://www.pomonaca.gov/government/city-council,Steve Lustro,Council Member,False,scraped,07e0311b-5013-49ac-849e-7aeaa3402ea2,,,pending,
+City of Pomona,pomona_city_council,https://www.pomonaca.gov/government/city-council,Victor Preciado,Council Member,True,scraped,dbe72b14-2486-4bfa-ada2-d435c5c9edfc,,,pending,
+City of Lynwood,lynwood_city_council,https://www.lynwood.ca.us/government/city-council,Rita Soto,Mayor,False,scraped,08bf0f81-2f3f-4fd1-98d1-d3c4ae77c5c7,,,pending,
+City of Lynwood,lynwood_city_council,https://www.lynwood.ca.us/government/city-council,Rita Soto,Mayor,False,scraped,285e93b4-1148-42a6-80e8-9db7458904a6,,,pending,
+City of Lynwood,lynwood_city_council,https://www.lynwood.ca.us/government/city-council,Gabriela Camacho,Council Member,False,scraped,90b0fc60-30ca-4388-92b0-ff5dd2b443cb,,,pending,
+City of Lynwood,lynwood_city_council,https://www.lynwood.ca.us/government/city-council,Juan Muñoz-Guevara,Council Member,False,scraped,de2ca46a-652a-4620-bfc7-8ff1006b26d3,,,pending,
+City of Lynwood,lynwood_city_council,https://www.lynwood.ca.us/government/city-council,Lorraine Avila Moore,Council Member,False,scraped,1992761e-cbf6-45b5-8e65-6e643fcea3d4,,,pending,
+City of Lynwood,lynwood_city_council,https://www.lynwood.ca.us/government/city-council,Luis Gerardo Cuellar,Council Member,False,scraped,4110139f-8a59-40fb-a10a-cad9a224bb80,,,pending,
+City of Artesia,artesia_city_council,https://www.cityofartesia.us/government/city-council,Ali Taj,Mayor,False,scraped,2382e3c5-f6ff-4aeb-88c6-8538df3ea05d,,,pending,
+City of Artesia,artesia_city_council,https://www.cityofartesia.us/government/city-council,Ali Taj,Mayor,False,scraped,459d6c54-8a5f-4d0a-b9ae-bd9d0aca30c9,,,pending,
+City of Artesia,artesia_city_council,https://www.cityofartesia.us/government/city-council,Melissa Ramoso,Council Member,False,scraped,0d4b6036-0898-444f-a01a-91847f33855d,,,pending,
+City of Artesia,artesia_city_council,https://www.cityofartesia.us/government/city-council,Monica Manalo,Council Member,False,scraped,44b51856-a56e-45e4-9701-52df87a760f1,,,pending,
+City of Artesia,artesia_city_council,https://www.cityofartesia.us/government/city-council,Rene Trevino,Council Member,False,scraped,21ad587e-dfcd-405e-8bfb-f03c299e542f,,,pending,
+City of Artesia,artesia_city_council,https://www.cityofartesia.us/government/city-council,Zeel Ahir,Council Member,False,scraped,1037b127-09a5-444a-9c66-b7ddb8dd5db6,,,pending,
+City of Redondo Beach,redondo_beach_city_council,https://www.redondo.org/government/elected-officials/city-council,James A Light,Mayor,False,failed,f7e7461a-6416-4fda-965b-6dfd10dd1f12,,,pending,
+City of Redondo Beach,redondo_beach_city_council,https://www.redondo.org/government/elected-officials/city-council,Brad Waller,Council Member,False,failed,c41b4ff0-48a9-4507-be26-7733d67dc741,,,pending,
+City of Redondo Beach,redondo_beach_city_council,https://www.redondo.org/government/elected-officials/city-council,Chadwick Castle,Council Member,False,failed,709e3ae5-821a-4181-853e-6e59ed62390a,,,pending,
+City of Redondo Beach,redondo_beach_city_council,https://www.redondo.org/government/elected-officials/city-council,Paige Kaluderovic,Council Member,False,failed,5537914b-18c8-44c7-957d-e0a1c1e1d59a,,,pending,
+City of Redondo Beach,redondo_beach_city_council,https://www.redondo.org/government/elected-officials/city-council,Scott Behrendt,Council Member,False,failed,2806719d-6e25-4d2d-bb6e-95d97c35ed0e,,,pending,
+City of Redondo Beach,redondo_beach_city_council,https://www.redondo.org/government/elected-officials/city-council,Zein Obagi,Council Member,False,failed,226f5ab3-9611-4eb4-9f0a-3730877004a3,,,pending,
+City of El Monte,el_monte_city_council,https://www.ci.el-monte.ca.us/government/city-council,Jessica Ancona,Mayor,False,scraped,c7f76380-249c-436b-824c-ba44ff496c40,,,pending,
+City of El Monte,el_monte_city_council,https://www.ci.el-monte.ca.us/government/city-council,Cindy Galvan,Council Member,False,scraped,f034f7ef-2aef-43fa-8d06-1f6902705dc4,,,pending,
+City of El Monte,el_monte_city_council,https://www.ci.el-monte.ca.us/government/city-council,Dr. Julia Ruedas,Council Member,False,scraped,e47a9ca8-6e94-4467-b16e-722ebe36d0d2,,,pending,
+City of El Monte,el_monte_city_council,https://www.ci.el-monte.ca.us/government/city-council,Martin Herrera,Council Member,False,scraped,e39b0a67-2447-4d25-b207-6a6c20307d94,,,pending,
+City of El Monte,el_monte_city_council,https://www.ci.el-monte.ca.us/government/city-council,Sheila Crippen-Thomas,Council Member,False,scraped,bb21e688-3264-4237-beda-e748db65384a,,,pending,
+City of El Monte,el_monte_city_council,https://www.ci.el-monte.ca.us/government/city-council,Viviana Longoria,Council Member,False,scraped,d38a5e38-71a3-4f8d-86c6-e4cd943d65f6,,,pending,
+City of Glendora,glendora_city_council,https://www.cityofglendora.org/government/city-council,David Fredendall,Mayor,False,scraped,acc990ea-5264-4d2f-9e44-940a85105481,,,pending,
+City of Glendora,glendora_city_council,https://www.cityofglendora.org/government/city-council,Karen Davis,Council Member,False,scraped,b9149eb5-4dc6-400e-b685-92ad0fa05b18,,,pending,
+City of Glendora,glendora_city_council,https://www.cityofglendora.org/government/city-council,Mendell Thompson,Council Member,False,scraped,7ec1b8a2-d0e6-45cc-9af1-17c578f22540,,,pending,
+City of Glendora,glendora_city_council,https://www.cityofglendora.org/government/city-council,Michael Allawos,Council Member,False,scraped,97fe17c8-83b4-4ce6-b5a7-5265eb6ac5e7,,,pending,
+City of Glendora,glendora_city_council,https://www.cityofglendora.org/government/city-council,Shaunna Elias,Council Member,False,scraped,09b98050-abe0-4c49-8f15-c22e54f5cb78,,,pending,
+City of Palos Verdes Estates,palos_verdes_estates_city_council,https://www.pvestates.org/government/city-council,Jim Roos,Mayor,False,scraped,31409962-7388-40da-bb5c-07146fb353bd,,,pending,
+City of Palos Verdes Estates,palos_verdes_estates_city_council,https://www.pvestates.org/government/city-council,Jim Roos,Mayor,False,scraped,5579cbee-6b3c-4335-99bb-d91229af104b,,,pending,
+City of Palos Verdes Estates,palos_verdes_estates_city_council,https://www.pvestates.org/government/city-council,David McGowan,Council Member,False,scraped,27bf2707-875b-45c0-93fd-76b93c21f9b4,,,pending,
+City of Palos Verdes Estates,palos_verdes_estates_city_council,https://www.pvestates.org/government/city-council,Dawn Murdock,Council Member,False,scraped,bde02cb9-cace-4daa-b239-89c83af2b851,,,pending,
+City of Palos Verdes Estates,palos_verdes_estates_city_council,https://www.pvestates.org/government/city-council,Michael Kemps,Council Member,False,scraped,2213867b-8542-45df-bf57-37463cbe548d,,,pending,
+City of Torrance,torrance_city_council,https://www.torranceca.gov/government/city-council,Asam Sheikh,Council Member,False,scraped,9ac3ac10-0177-40fd-8887-72d90ed396ed,,,pending,
+City of Torrance,torrance_city_council,https://www.torranceca.gov/government/city-council,Aurelio Mattucci,Council Member,False,scraped,2b4b35a8-1498-46ad-aa9b-04650b454262,,,pending,
+City of Torrance,torrance_city_council,https://www.torranceca.gov/government/city-council,Brigitte Lewis,Council Member,False,scraped,7f74014f-1a20-4f11-a00d-28b12135d18d,,,pending,
+City of Torrance,torrance_city_council,https://www.torranceca.gov/government/city-council,Jeremy Gerson,Council Member,False,scraped,dfdc89ac-1663-4a84-975e-354fddd9dd61,,,pending,
+City of Torrance,torrance_city_council,https://www.torranceca.gov/government/city-council,Jon Kaji,Council Member,False,scraped,b7df591a-7d77-4656-8045-4c6cc8ead27b,,,pending,
+City of Hermosa Beach,hermosa_beach_city_council,https://www.hermosabeach.gov/government/city-council,Dean Francois,Mayor,False,scraped,376e56bf-5114-444f-8850-e96e4d0f7f67,,,pending,
+City of Hermosa Beach,hermosa_beach_city_council,https://www.hermosabeach.gov/government/city-council,Dean Francois,Mayor,False,scraped,ac52d4ce-486c-45e3-9f44-73465122c8a6,,,pending,
+City of Hermosa Beach,hermosa_beach_city_council,https://www.hermosabeach.gov/government/city-council,Michael Detoy,Council Member,False,scraped,956adbd6-02dd-42ec-92d5-b7680e2727cb,,,pending,
+City of Hermosa Beach,hermosa_beach_city_council,https://www.hermosabeach.gov/government/city-council,Raymond Jackson,Council Member,False,scraped,f0ac4372-89cd-48ab-9e71-fa8364323a0c,,,pending,
+City of Hermosa Beach,hermosa_beach_city_council,https://www.hermosabeach.gov/government/city-council,Rob Saemann,Council Member,False,scraped,4da817bf-9c82-44c0-9ebe-c36b29113244,,,pending,
+City of Santa Fe Springs,santa_fe_springs_city_council,https://www.santafesprings.org/government/city-council,William K. Rounds,Mayor,False,scraped,d3550d8d-754a-4966-b1b0-4b8036e75da2,,,pending,
+City of Santa Fe Springs,santa_fe_springs_city_council,https://www.santafesprings.org/government/city-council,Annette Rodriguez,Council Member,False,scraped,751a4678-0c36-443b-8ccb-30a52c94c494,,,pending,
+City of Santa Fe Springs,santa_fe_springs_city_council,https://www.santafesprings.org/government/city-council,John M. Mora,Council Member,False,scraped,67fdd0d7-b467-4cad-b62d-6b1fe1628aff,,,pending,
+City of Santa Fe Springs,santa_fe_springs_city_council,https://www.santafesprings.org/government/city-council,Juanita Martin,Council Member,False,scraped,d4e58a72-03c0-47f6-9b9d-0ff3db70d3d0,,,pending,
+City of Santa Fe Springs,santa_fe_springs_city_council,https://www.santafesprings.org/government/city-council,Monica Rodriguez,Council Member,False,scraped,7c0d3bdd-a363-4d97-93a9-67034c6a0ead,,,pending,
+City of Maywood,maywood_city_council,https://www.cityofmaywood.com/government/city-council,Mayra Aguiluz,Mayor,False,scraped,80d61182-1d3a-4b9e-891a-ac6851875b16,,,pending,
+City of Maywood,maywood_city_council,https://www.cityofmaywood.com/government/city-council,Eddie De La,Council Member,False,scraped,0e1d1f05-8cef-4e33-9847-d27100ddb2d4,,,pending,
+City of Maywood,maywood_city_council,https://www.cityofmaywood.com/government/city-council,Frank Garcia,Council Member,False,scraped,03575512-bf5d-4611-84dd-a8624c903164,,,pending,
+City of Maywood,maywood_city_council,https://www.cityofmaywood.com/government/city-council,Jaime Flores,Council Member,False,scraped,6cee21a3-2470-4d0d-a8bf-d4ae14dd4035,,,pending,
+City of Hawthorne,hawthorne_city_council,https://www.cityofhawthorne.org/government/city-council,Alex Vargas,Mayor,False,scraped,0426259e-74c5-4266-a766-3aa73e4ab801,,,pending,
+City of Hawthorne,hawthorne_city_council,https://www.cityofhawthorne.org/government/city-council,Angie Reyes English,Council Member,False,scraped,97f376e1-a21b-48eb-ac4b-b58cff2911d5,,,pending,
+City of Hawthorne,hawthorne_city_council,https://www.cityofhawthorne.org/government/city-council,David Patterson,Council Member,False,scraped,903b537b-a806-4fa0-8427-1f72e9e85e3b,,,pending,
+City of Hawthorne,hawthorne_city_council,https://www.cityofhawthorne.org/government/city-council,Haidar Awad,Council Member,False,scraped,156a8cc8-2e5a-4d1f-8a10-e8b3614f7c98,,,pending,
+City of West Hollywood,west_hollywood_city_council,https://www.weho.org/government/city-council,Chelsea Lee Byers,Mayor,False,scraped,201cc4fa-483e-418b-935b-4f7ad852c9b6,,,pending,
+City of West Hollywood,west_hollywood_city_council,https://www.weho.org/government/city-council,Danny Hang,Council Member,False,scraped,049cd806-22bf-4ca5-92cd-328f9f338d8c,,,pending,
+City of West Hollywood,west_hollywood_city_council,https://www.weho.org/government/city-council,John M. Erickson,Council Member,False,scraped,af66146f-560a-4e54-94c1-0bacee36b621,,,pending,
+City of West Hollywood,west_hollywood_city_council,https://www.weho.org/government/city-council,Lauren Meister,Council Member,False,scraped,55233c22-4e02-44fd-bd4e-8028ac44d76c,,,pending,
+City of Rolling Hills Estates,rolling_hills_estates_city_council,https://www.rolling-hills-estates.org/government/city-council,Debby Stegura,Mayor,False,failed,2fcf82ab-e952-47b2-9e9a-a833016b6216,,,pending,
+City of Rolling Hills Estates,rolling_hills_estates_city_council,https://www.rolling-hills-estates.org/government/city-council,Britt Huff,Council Member,False,failed,5368e8cf-ca20-40b3-9709-094be3a2f5e4,,,pending,
+City of Rolling Hills Estates,rolling_hills_estates_city_council,https://www.rolling-hills-estates.org/government/city-council,Pam Brown Schachter,Council Member,False,failed,73928e53-9fd2-40ca-b340-7c545f87be3d,,,pending,
+City of Rolling Hills Estates,rolling_hills_estates_city_council,https://www.rolling-hills-estates.org/government/city-council,Velveth Schmitz,Council Member,False,failed,058007b1-7493-4a2f-a37a-93174fea961e,,,pending,
+City of Avalon,avalon_city_council,https://www.cityofavalon.gov/government/city-council,Ann Marshall,Mayor,False,scraped,06ba1b93-6bc5-4360-9f98-a006c60d2863,,,pending,
+City of Avalon,avalon_city_council,https://www.cityofavalon.gov/government/city-council,Mary Schickling,Council Member,False,scraped,a12c2ac8-8b80-42cb-9299-daf06c039d16,,,pending,
+City of Avalon,avalon_city_council,https://www.cityofavalon.gov/government/city-council,Michael Ponce,Council Member,False,scraped,b487822a-9f5a-4d20-8bf1-16c83ecf9076,,,pending,
+City of Avalon,avalon_city_council,https://www.cityofavalon.gov/government/city-council,Yesenia De La,Council Member,False,scraped,eeb8aa35-04e4-4b7a-862b-b3f3f7f9895f,,,pending,
+City of Rolling Hills,rolling_hills_city_council,https://www.rolling-hills.org/government/city_council/index.php,Jeff Pieper,Mayor,False,scraped,7baa0534-f5f0-4003-bb77-797ef2b51950,,,pending,
+City of Rolling Hills,rolling_hills_city_council,https://www.rolling-hills.org/government/city_council/index.php,James Black M.D,Council Member,False,scraped,3f6742b8-3fb8-43b9-b0e2-79114c5cce7d,,,pending,
+City of Rolling Hills,rolling_hills_city_council,https://www.rolling-hills.org/government/city_council/index.php,Leah Mirsch,Council Member,False,scraped,090a9148-f355-47a3-b87d-ff56c5b6ec1c,,,pending,
+City of Rolling Hills,rolling_hills_city_council,https://www.rolling-hills.org/government/city_council/index.php,Pat Wilson,Council Member,False,scraped,527baa04-a1ec-47e0-9fa9-f5ca47c540c7,,,pending,
+City of Lakewood,lakewood_city_council,https://www.lakewoodcity.org/government/city-council,Todd Rogers,Mayor,False,scraped,e509b170-f6dc-461e-9946-8eb471968a81,,,pending,
+City of Lakewood,lakewood_city_council,https://www.lakewoodcity.org/government/city-council,David Arellano,Council Member,False,scraped,09429ad7-cf23-4b5c-af0b-59cb393d5efd,,,pending,
+City of Lakewood,lakewood_city_council,https://www.lakewoodcity.org/government/city-council,Jeff Wood,Council Member,False,scraped,939b40cf-dce4-4c7d-a6bf-8ca6fac6f194,,,pending,
+City of Lakewood,lakewood_city_council,https://www.lakewoodcity.org/government/city-council,Steve Croft,Council Member,False,scraped,97f04f03-ea0b-4289-9ad7-04e3845fae09,,,pending,
+City of Commerce,commerce_city_council,https://www.ci.commerce.ca.us/government/city-council,Ivan Altamirano,Mayor,False,scraped,fa591cc1-9072-447f-a913-dc14524a85dc,,,pending,
+City of Commerce,commerce_city_council,https://www.ci.commerce.ca.us/government/city-council,Hugo Argumedo,Council Member,False,scraped,0e00453c-c95f-4d44-a7af-cf1307850a00,,,pending,
+City of Commerce,commerce_city_council,https://www.ci.commerce.ca.us/government/city-council,Mireya Garcia,Council Member,False,scraped,09da90d6-7ab7-494a-a4b6-9665a30aed16,,,pending,
+City of Commerce,commerce_city_council,https://www.ci.commerce.ca.us/government/city-council,Oralia Rebollo,Council Member,False,scraped,e5f53196-d413-48fa-8dff-0962c5c1c566,,,pending,
+City of Pasadena,pasadena_city_council,https://www.cityofpasadena.net/council,Victor M. Gordo,Mayor,False,scraped,447ef220-cb9e-4ade-aba8-9dea87ed9931,,,pending,
+City of Pasadena,pasadena_city_council,https://www.cityofpasadena.net/council,Justin Jones,Council Member,False,scraped,9490751e-a5b3-4be7-8c45-45f6f708dcb6,,,pending,
+City of Pasadena,pasadena_city_council,https://www.cityofpasadena.net/council,Steve Madison,Council Member,False,scraped,0a6378bd-65ea-4cf8-a1f6-6b97bbfc2359,,,pending,
+City of Pasadena,pasadena_city_council,https://www.cityofpasadena.net/council,Tyron Hampton,Council Member,False,scraped,f7826942-64bb-41bf-9588-407a2bc11e31,,,pending,
+City of San Marino,san_marino_city_council,https://sanmarinoca.gov/government/elected-officials/city-council,Gretchen Shepherd Romey,Mayor,False,failed,ba4cf33d-ddc6-429c-9cdc-ca98815fc9a7,,,pending,
+City of San Marino,san_marino_city_council,https://sanmarinoca.gov/government/elected-officials/city-council,Calvin Lo,Council Member,False,failed,1d1839db-1906-4498-af2f-8ba0a255f2a3,,,pending,
+City of San Marino,san_marino_city_council,https://sanmarinoca.gov/government/elected-officials/city-council,Hunter Chang,Council Member,False,failed,ab1dbed5-c17a-4f05-8021-8abaa5732aaf,,,pending,
+City of San Marino,san_marino_city_council,https://sanmarinoca.gov/government/elected-officials/city-council,John Chou,Council Member,False,failed,0aef6a35-2e2a-4ca9-90ea-f01225b6a033,,,pending,
+City of La Palma,la_palma_city_council,https://www.lapalmaca.gov/194/City-Council,Mark I. Waldman,Mayor,False,scraped,113c6970-ff3f-4608-94e8-200615f72523,,,pending,
+City of La Palma,la_palma_city_council,https://www.lapalmaca.gov/194/City-Council,Debbie S. Baker,Council Member,False,scraped,83d57d34-d294-4d5e-9793-d26dd8fa6d17,,,pending,
+City of La Palma,la_palma_city_council,https://www.lapalmaca.gov/194/City-Council,Janet Keo Conklin,Council Member,False,scraped,eba94628-3dc2-49d8-b6c5-3a95ceab0616,,,pending,
+City of La Palma,la_palma_city_council,https://www.lapalmaca.gov/194/City-Council,Vikesh P. Patel,Council Member,False,scraped,bc8c4739-bde4-45aa-83c8-76d7aa4568aa,,,pending,
+City of Calabasas,calabasas_city_council,https://www.cityofcalabasas.com/government/city-council,James R. Bozajian,Mayor,False,scraped,b9a1a62b-f63a-4a53-85fb-fd6ac911c0cd,,,pending,
+City of Calabasas,calabasas_city_council,https://www.cityofcalabasas.com/government/city-council,Alicia Weintraub,Council Member,False,scraped,218c0fc3-5992-464d-b78c-c4f11668f0be,,,pending,
+City of Calabasas,calabasas_city_council,https://www.cityofcalabasas.com/government/city-council,David J. Shapiro,Council Member,False,scraped,570c385b-469f-4951-af6c-d6f6960d1279,,,pending,
+City of Calabasas,calabasas_city_council,https://www.cityofcalabasas.com/government/city-council,Peter Kraut,Council Member,False,scraped,14f4f8c5-307b-47ce-8f44-fa6383cd7799,,,pending,
+City of Rancho Palos Verdes,rancho_palos_verdes_city_council,https://www.rpvca.gov/government/city-council,David L. Bradley,Mayor,False,scraped,f29e5d90-c09a-4cb9-a3c4-8cdbe2fe41c5,,,pending,
+City of Rancho Palos Verdes,rancho_palos_verdes_city_council,https://www.rpvca.gov/government/city-council,Barbara Ferraro,Council Member,False,scraped,61f64014-03c2-4b7c-86a2-d97db91dd2d7,,,pending,
+City of Rancho Palos Verdes,rancho_palos_verdes_city_council,https://www.rpvca.gov/government/city-council,George Lewis,Council Member,False,scraped,b3f78ef5-9ddf-4ba6-a1f2-d2fb009ff42d,,,pending,
+City of Rancho Palos Verdes,rancho_palos_verdes_city_council,https://www.rpvca.gov/government/city-council,Stephen Perestam,Council Member,False,scraped,152bf23d-d428-4a73-a620-8d8dbd8393bf,,,pending,
+City of Industry,industry_city_council,https://www.cityofindustry.org/government/city-council,Cory Moss,Mayor,False,scraped,e5db06dc-1ea5-4247-8820-04d09817b1e2,,,pending,
+City of Industry,industry_city_council,https://www.cityofindustry.org/government/city-council,Mark Radecki,Council Member,False,scraped,1a228795-a2b3-4995-8fc1-bd3d141dc8c8,,,pending,
+City of Industry,industry_city_council,https://www.cityofindustry.org/government/city-council,Newell Ruggles,Council Member,False,scraped,21df8452-8fcb-4d3e-aac4-09aeec996e16,,,pending,
+City of Industry,industry_city_council,https://www.cityofindustry.org/government/city-council,Steve Marcucci,Council Member,False,scraped,b8f74a96-140b-4710-b4f8-f075093a2f6c,,,pending,
+City of South Gate,south_gate_city_council,https://www.cityofsouthgate.org/government/city-council,Maria Davila,Mayor,False,scraped,4931b7d2-9b28-4d8d-9290-9e477a844e99,,,pending,
+City of South Gate,south_gate_city_council,https://www.cityofsouthgate.org/government/city-council,Al Rios,Council Member,False,scraped,53069c70-94e5-4de0-81b8-6ebc8e35988b,,,pending,
+City of South Gate,south_gate_city_council,https://www.cityofsouthgate.org/government/city-council,Gil Hurtado,Council Member,False,scraped,1a6190c0-039a-410c-8340-a47a49daa3d2,,,pending,
+City of South Gate,south_gate_city_council,https://www.cityofsouthgate.org/government/city-council,Maria del Pilar Avalos,Council Member,False,scraped,2094104e-9a8f-4ed9-8e60-8c799d477c5e,,,pending,
+City of Malibu,malibu_city_council,https://www.malibucity.org/government/elected-officials/city-council,Doug Stewart,Mayor,False,scraped,28413e59-5cf6-416f-89c2-85a13ffdccc5,,,pending,
+City of Malibu,malibu_city_council,https://www.malibucity.org/government/elected-officials/city-council,Bruce Silverstein,Council Member,False,scraped,7922b910-9586-4ced-8f71-3daa9f2595c3,,,pending,
+City of Malibu,malibu_city_council,https://www.malibucity.org/government/elected-officials/city-council,Haylynn Conrad,Council Member,False,scraped,4d8f32df-98d0-4942-acd6-66fb266e9086,,,pending,
+City of Malibu,malibu_city_council,https://www.malibucity.org/government/elected-officials/city-council,Steve Uhring,Council Member,False,scraped,1c1a6f49-b41b-4507-aa15-2eaf79d8240a,,,pending,
+City of Alhambra,alhambra_city_council,https://www.cityofalhambra.org/government/city-council,Katherine Lee,Mayor,False,scraped,22466ac0-0239-4dcb-80f2-26c5ff0e5f18,,,pending,
+City of Alhambra,alhambra_city_council,https://www.cityofalhambra.org/government/city-council,Adele Andrade-Stadler,Council Member,False,scraped,ef403014-5982-4fcf-87bc-8a732dbeb908,,,pending,
+City of Alhambra,alhambra_city_council,https://www.cityofalhambra.org/government/city-council,Noya Wang,Council Member,False,scraped,f9877088-2efa-4db3-9055-1f3750318d40,,,pending,
+City of Alhambra,alhambra_city_council,https://www.cityofalhambra.org/government/city-council,Ross J. Maza,Council Member,False,scraped,6302513b-ac24-4e8e-a5fd-0c0a2b98546f,,,pending,
+City of Irwindale,irwindale_city_council,https://www.irwindaleca.gov/government/city-council,Larry G. Burrola,Mayor,False,scraped,23d612b9-b6cd-4387-93c1-59c67d3c9679,,,pending,
+City of Irwindale,irwindale_city_council,https://www.irwindaleca.gov/government/city-council,Albert F. Ambriz,Council Member,False,scraped,7bad257e-66a9-46a7-a9fd-d8c80bf454c3,,,pending,
+City of Irwindale,irwindale_city_council,https://www.irwindaleca.gov/government/city-council,Manuel R. Garcia,Council Member,False,scraped,a2c92310-496f-4c38-894c-0fef00663a2b,,,pending,
+City of Irwindale,irwindale_city_council,https://www.irwindaleca.gov/government/city-council,Mark A. Breceda,Council Member,False,scraped,b095ef0c-5662-4176-b7db-9af888cdd927,,,pending,
+City of Vernon,vernon_city_council,https://www.cityofvernon.org/government/city-council,Leticia Lopez,Mayor,False,scraped,fe1a0166-233b-4776-8824-1b6e07567ece,,,pending,
+City of Vernon,vernon_city_council,https://www.cityofvernon.org/government/city-council,Crystal Larios,Council Member,False,scraped,24455c8e-228c-47d9-ab63-dc64f750c010,,,pending,
+City of Vernon,vernon_city_council,https://www.cityofvernon.org/government/city-council,Jesus Rivera,Council Member,False,scraped,24866433-c285-4f4b-8cce-60bf4cce13d3,,,pending,
+City of Vernon,vernon_city_council,https://www.cityofvernon.org/government/city-council,Judith Merlo,Council Member,False,scraped,b96046ed-6a07-4264-b4bb-9398d0281b1e,,,pending,
+City of La Verne,la_verne_city_council,https://www.laverneca.gov/government/city_council/index.php,Timothy Hepburn,Mayor,False,scraped,e562016e-d672-4e8a-a870-c0de2cbff0f5,,,pending,
+City of La Verne,la_verne_city_council,https://www.laverneca.gov/government/city_council/index.php,"Meshal ""Kash"" Kashifalghita",Council Member,False,scraped,d9e807c6-7266-4fdc-94d8-617a6c74586a,,,pending,
+City of La Verne,la_verne_city_council,https://www.laverneca.gov/government/city_council/index.php,Rick Crosby,Council Member,False,scraped,64d469a4-1f9b-48cd-930d-0947f33cae90,,,pending,
+City of La Verne,la_verne_city_council,https://www.laverneca.gov/government/city_council/index.php,Wendy Lau,Council Member,False,scraped,2c036cbd-691d-4e4e-adf4-5e0718e17439,,,pending,
+City of Inglewood,inglewood_city_council,https://www.cityofinglewood.org/government/city-council,Alex Padilla,Council Member,False,scraped,2d31eaf5-bf46-439e-9ca5-f73cc3127916,,,pending,
+City of Inglewood,inglewood_city_council,https://www.cityofinglewood.org/government/city-council,Dionne Faulk,Council Member,False,scraped,a53f391e-3d98-4033-bc77-1bec70da1fb8,,,pending,
+City of Inglewood,inglewood_city_council,https://www.cityofinglewood.org/government/city-council,Eloy Morales Jr.,Council Member,False,scraped,ff97a6bb-0c1c-465a-9300-817385a8fceb,,,pending,
+City of Inglewood,inglewood_city_council,https://www.cityofinglewood.org/government/city-council,George Dotson,Council Member,False,scraped,3e73448b-bd10-4e6b-bf2a-c9368cf64af9,,,pending,
+City of Temple City,temple_city_city_council,https://www.templecity.us/government/city-council,Cynthia Sternquist,Mayor,False,scraped,2d5e46ab-9fd7-4545-9545-b46c7780a070,,,pending,
+City of Temple City,temple_city_city_council,https://www.templecity.us/government/city-council,Ed Chen,Council Member,False,scraped,b1f92486-f493-49da-8b9e-5b0c9d896929,,,pending,
+City of Temple City,temple_city_city_council,https://www.templecity.us/government/city-council,Tom Chavez,Council Member,False,scraped,a89f2105-4692-4010-8264-2cf45a14545d,,,pending,
+City of Temple City,temple_city_city_council,https://www.templecity.us/government/city-council,Vincent Yu,Council Member,False,scraped,4bc0840f-a922-4d10-88ee-ef0f6c883af5,,,pending,
+City of El Segundo,el_segundo_city_council,https://www.elsegundo.org/government/city-council,Chris Pimentel,Mayor,False,scraped,2fdc11f7-438d-418a-9ec9-2cbbb0ad49b7,,,pending,
+City of El Segundo,el_segundo_city_council,https://www.elsegundo.org/government/city-council,Drew Boyles,Council Member,False,scraped,39d282fe-303e-4768-bcf7-4b50d3c244b0,,,pending,
+City of El Segundo,el_segundo_city_council,https://www.elsegundo.org/government/city-council,Lance Giroux,Council Member,False,scraped,889f0d4e-841d-41c6-be75-c5c064d64dbf,,,pending,
+City of El Segundo,el_segundo_city_council,https://www.elsegundo.org/government/city-council,Michelle Keldorf,Council Member,False,scraped,6310e53f-5749-41d3-b20e-2fa516573105,,,pending,
+City of Lawndale,lawndale_city_council,https://www.lawndalecity.org/government/city-council,Robert Pullen-Miles,Mayor,False,scraped,92ad78e2-845b-4fbf-9a58-01347b8c81db,,,pending,
+City of Lawndale,lawndale_city_council,https://www.lawndalecity.org/government/city-council,Bernadette Suarez,Council Member,False,scraped,3377a5d0-7e65-4e38-b5a1-d359c0a7f2ab,,,pending,
+City of Lawndale,lawndale_city_council,https://www.lawndalecity.org/government/city-council,Frank Talavera,Council Member,False,scraped,c5384731-1bde-469b-b40a-4057f7ea4ae7,,,pending,
+City of Lawndale,lawndale_city_council,https://www.lawndalecity.org/government/city-council,Sirley Cuevas,Council Member,False,scraped,c2431cc7-d700-4327-918b-867854b170ae,,,pending,
+City of Baldwin Park,baldwin_park_city_council,https://www.baldwinpark.com/government/city-council,Alejandra Avila,Mayor,False,scraped,5cf487ec-b383-466f-a5db-b01b607acd9c,,,pending,
+City of Baldwin Park,baldwin_park_city_council,https://www.baldwinpark.com/government/city-council,Emmanuel J. Estrada,Council Member,False,scraped,384ab890-1f4f-4ec9-bf5e-cc689ed092b5,,,pending,
+City of Baldwin Park,baldwin_park_city_council,https://www.baldwinpark.com/government/city-council,Jean M. Ayala,Council Member,False,scraped,493de696-aa12-4234-82db-8ec90619afa2,,,pending,
+City of Baldwin Park,baldwin_park_city_council,https://www.baldwinpark.com/government/city-council,Manuel Lozano,Council Member,False,scraped,cdab13e8-29d3-4e2a-a766-f441d0478830,,,pending,
+City of Monrovia,monrovia_city_council,https://www.cityofmonrovia.org/government/city-council,Becky A. Shevlin,Mayor,False,scraped,d90648b6-f36e-4111-a361-ea34b34dd67d,,,pending,
+City of Monrovia,monrovia_city_council,https://www.cityofmonrovia.org/government/city-council,Edward Belden,Council Member,False,scraped,3a24f871-eea7-4485-8324-925c46b7049b,,,pending,
+City of Monrovia,monrovia_city_council,https://www.cityofmonrovia.org/government/city-council,Larry J. Spicer,Council Member,False,scraped,fda02d25-60dd-44b6-9e9b-67108ec03e9e,,,pending,
+City of Monrovia,monrovia_city_council,https://www.cityofmonrovia.org/government/city-council,Sergio Jimenez,Council Member,False,scraped,f299af69-895e-4729-8bf3-439b4036acbd,,,pending,
+City of Claremont,claremont_city_council,https://www.ci.claremont.ca.us/government/city-council,Corey Calaycay,Mayor,False,failed,556e4303-9d45-4540-8bba-617da6641bfe,,,pending,
+City of Claremont,claremont_city_council,https://www.ci.claremont.ca.us/government/city-council,Ed Reece,Council Member,False,failed,a5e2f51c-b87e-4f0b-bd45-01493876591f,,,pending,
+City of Claremont,claremont_city_council,https://www.ci.claremont.ca.us/government/city-council,Jed Leano,Council Member,False,failed,da8e58bc-7a02-41ed-a8c6-7d7ad087c7b3,,,pending,
+City of Claremont,claremont_city_council,https://www.ci.claremont.ca.us/government/city-council,Sal Medina,Council Member,False,failed,3aedc075-d219-40f9-932b-c92d000c5d9a,,,pending,
+City of Cerritos,cerritos_city_council,https://www.cerritos.us/government/city-council,Frank Aurelio Yokoyama,Mayor,False,scraped,3bdeb92d-284e-4672-b006-d6cd68070e64,,,pending,
+City of Cerritos,cerritos_city_council,https://www.cerritos.us/government/city-council,Jennifer Hong,Council Member,False,scraped,6b7c665d-4930-4dfc-ab31-53ceeb84ee60,,,pending,
+City of Cerritos,cerritos_city_council,https://www.cerritos.us/government/city-council,Mark E. Pulido,Council Member,False,scraped,8d5cb94a-4110-4e86-9f06-2c4f89bb7c71,,,pending,
+City of Cerritos,cerritos_city_council,https://www.cerritos.us/government/city-council,Sophia M. Tse,Council Member,False,scraped,849095db-2563-40e3-9f96-26b9b0affda7,,,pending,
+City of Cudahy,cudahy_city_council,https://www.cityofcudahyca.gov/173/City-Council,Elizabeth Alcantar Loza,Mayor,False,scraped,664278ef-fe95-42e5-9294-e0f2006ed2d0,,,pending,
+City of Cudahy,cudahy_city_council,https://www.cityofcudahyca.gov/173/City-Council,Amanda Gomez,Council Member,False,scraped,46b11d60-167a-4c2d-bf40-4b1df8df1dd4,,,pending,
+City of Cudahy,cudahy_city_council,https://www.cityofcudahyca.gov/173/City-Council,Daisy Lomelí,Council Member,False,scraped,3e7cf8cb-c295-4db2-b0c7-c7abdf77a988,,,pending,
+City of Cudahy,cudahy_city_council,https://www.cityofcudahyca.gov/173/City-Council,Martin U. Fuentes,Council Member,False,scraped,433cc087-78b2-4d09-b2d8-c15b5f202008,,,pending,
+City of Walnut,walnut_city_council,https://www.walnut-ca.gov/government/city-council,Linda Freedman,Mayor,False,failed,85169d37-0da8-44c6-9fb2-24e9ebf03bdf,,,pending,
+City of Walnut,walnut_city_council,https://www.walnut-ca.gov/government/city-council,Allen Wu,Council Member,False,failed,3f238e45-43ca-4691-bc74-0c2496823a00,,,pending,
+City of Walnut,walnut_city_council,https://www.walnut-ca.gov/government/city-council,Kaylee May Law,Council Member,False,failed,eb23af50-1ab2-4681-92a2-bc6c2ad633d4,,,pending,
+City of Walnut,walnut_city_council,https://www.walnut-ca.gov/government/city-council,Nancy Tragarz,Council Member,False,failed,805427db-0028-42f3-8ccd-11886c74938d,,,pending,
+City of Azusa,azusa_city_council,https://www.azusaca.gov/government/city-council,Robert Gonzales,Mayor,False,scraped,f7a3197c-c73a-4170-9a2d-174f6434c142,,,pending,
+City of Azusa,azusa_city_council,https://www.azusaca.gov/government/city-council,Andrew N. Mendez,Council Member,False,scraped,55cc57ed-a9c0-4303-80ff-35309b9b968a,,,pending,
+City of Azusa,azusa_city_council,https://www.azusaca.gov/government/city-council,Jesse Avila Jr,Council Member,False,scraped,8f1b8a6c-a248-41a1-baa1-f7462c874bb5,,,pending,
+City of Azusa,azusa_city_council,https://www.azusaca.gov/government/city-council,Sabrina Bow,Council Member,False,scraped,4244252f-7230-4a45-90b5-1a76754b8d60,,,pending,
+City of Paramount,paramount_city_council,https://www.paramountcity.com/government/city-council,Peggy Lemons,Mayor,False,failed,c8ca15a6-8944-40b6-8175-15614c30ee77,,,pending,
+City of Paramount,paramount_city_council,https://www.paramountcity.com/government/city-council,Annette C. Delgadillo,Council Member,False,failed,59ef70e5-6123-4c46-bc5b-66a4114ce2d2,,,pending,
+City of Paramount,paramount_city_council,https://www.paramountcity.com/government/city-council,Isabel Aguayo,Council Member,False,failed,491acdc5-5b4b-4230-a959-762faba6cd88,,,pending,
+City of Paramount,paramount_city_council,https://www.paramountcity.com/government/city-council,Vilma Cuellar Stallings,Council Member,False,failed,4c9d644a-d849-41c0-bd44-171d0d1c7b41,,,pending,
+City of Gardena,gardena_city_council,https://cityofgardena.org/government/city_council/index.php,Tasha Cerda,Mayor,False,scraped,7e189f77-9074-420e-807a-5cc79a1e9957,,,pending,
+City of Gardena,gardena_city_council,https://cityofgardena.org/government/city_council/index.php,Mark Henderson,Council Member,False,scraped,4b1c1830-491c-4c9c-a9f7-d52881bd19e8,,,pending,
+City of Gardena,gardena_city_council,https://cityofgardena.org/government/city_council/index.php,Paulette Francis,Council Member,False,scraped,7e7834d9-9649-4ea3-9727-c46c80a390ac,,,pending,
+City of Gardena,gardena_city_council,https://cityofgardena.org/government/city_council/index.php,Wanda Love,Council Member,False,scraped,bda16858-2d8b-489d-ac63-b00c42315d89,,,pending,
+City of South El Monte,south_el_monte_city_council,https://www.soelmonte.org/city-government/city-council,Gloria Olmos,Mayor,False,failed,4c098a3b-d1b4-4751-8ace-2100f43f20b5,,,pending,
+City of South El Monte,south_el_monte_city_council,https://www.soelmonte.org/city-government/city-council,Larry Rodriguez,Council Member,False,failed,623ef841-c9e5-4865-aa61-d82544c9bea4,,,pending,
+City of South El Monte,south_el_monte_city_council,https://www.soelmonte.org/city-government/city-council,Manuel Acosta,Council Member,False,failed,52a27f1b-ec40-42d4-a0c3-d5c370fef60e,,,pending,
+City of South El Monte,south_el_monte_city_council,https://www.soelmonte.org/city-government/city-council,Rudy Bojorquez,Council Member,False,failed,8d4396fa-1637-4502-844d-1b7e5dbe8e0f,,,pending,
+City of Signal Hill,signal_hill_city_council,https://www.cityofsignalhill.org/government/city_council/index.php,Keir Jones,Mayor,False,scraped,7b9efd89-3f51-4efa-9574-df78fe6e9473,,,pending,
+City of Signal Hill,signal_hill_city_council,https://www.cityofsignalhill.org/government/city_council/index.php,Charlie Honeycutt,Council Member,False,scraped,c6118014-119c-419d-b996-12c563438482,,,pending,
+City of Signal Hill,signal_hill_city_council,https://www.cityofsignalhill.org/government/city_council/index.php,Lori Woods,Council Member,False,scraped,d5d51559-14e8-466e-85de-0d24de421905,,,pending,
+City of Signal Hill,signal_hill_city_council,https://www.cityofsignalhill.org/government/city_council/index.php,Robert Copeland,Council Member,False,scraped,4c6c35f0-0c85-4dca-b2df-388400fb4f07,,,pending,
+City of Diamond Bar,diamond_bar_city_council,https://www.diamondbarca.gov/government/city-council,Chia Yu Teng,Mayor,False,scraped,4cdfe715-5128-49cd-a88c-9b4f35f63653,,,pending,
+City of Diamond Bar,diamond_bar_city_council,https://www.diamondbarca.gov/government/city-council,Andrew Chou,Council Member,False,scraped,f34cded6-da16-4ce7-aed9-e5ef2b905108,,,pending,
+City of Diamond Bar,diamond_bar_city_council,https://www.diamondbarca.gov/government/city-council,Ruth M. Low,Council Member,False,scraped,7e77b904-6fb5-41ec-b82f-e4de16bf3807,,,pending,
+City of Diamond Bar,diamond_bar_city_council,https://www.diamondbarca.gov/government/city-council,Stan Liu,Council Member,False,scraped,71acf86b-dbef-4ff9-85a9-310f05c5c896,,,pending,
+City of Bell Gardens,bell_gardens_city_council,https://www.cityofbellgardens.org/government/city-council,Miguel De La Rosa,Mayor,False,scraped,f3a0a939-0bd3-4cc5-b613-7ef379372694,,,pending,
+City of Bell Gardens,bell_gardens_city_council,https://www.cityofbellgardens.org/government/city-council,Jorgel Chavez,Council Member,False,scraped,b58259bf-8703-4ddd-b487-668074a9b8ee,,,pending,
+City of Bell Gardens,bell_gardens_city_council,https://www.cityofbellgardens.org/government/city-council,Leon Sanchez,Council Member,False,scraped,f56a4c3b-82a1-4879-8a99-6ff6b5fdf5bf,,,pending,
+City of Bell Gardens,bell_gardens_city_council,https://www.cityofbellgardens.org/government/city-council,Marco Barcena,Council Member,False,scraped,50f4b2ea-42b6-42ea-8e0f-d7e749cb9b50,,,pending,
+City of Bradbury,bradbury_city_council,https://www.cityofbradbury.org/government/city_council/index.php,Richard T. Hale,Mayor,False,scraped,f66aed7d-8313-4ed0-aba6-810b73e277cf,,,pending,
+City of Bradbury,bradbury_city_council,https://www.cityofbradbury.org/government/city_council/index.php,Bruce Lathrop,Council Member,False,scraped,ffaa618a-f72d-44e1-8fc9-7f889fab58ee,,,pending,
+City of Bradbury,bradbury_city_council,https://www.cityofbradbury.org/government/city_council/index.php,Melodie Szymkowski,Council Member,False,scraped,56f1b5c2-8330-413f-b220-2816048b72bc,,,pending,
+City of Bradbury,bradbury_city_council,https://www.cityofbradbury.org/government/city_council/index.php,Richard G. Barakat,Council Member,False,scraped,d8973879-336a-48c7-b87c-4a3749af803b,,,pending,
+City of Sierra Madre,sierra_madre_city_council,https://www.cityofsmca.com/government/city-council,Robert Parkhurst,Mayor,False,failed,79b73f21-14b0-44d0-a57e-5b022cbfb21d,,,pending,
+City of Sierra Madre,sierra_madre_city_council,https://www.cityofsmca.com/government/city-council,Edward T. Garcia,Council Member,False,failed,6786edfc-849f-4560-9f09-78ccd1657517,,,pending,
+City of Sierra Madre,sierra_madre_city_council,https://www.cityofsmca.com/government/city-council,Gene Goss,Council Member,False,failed,931cccf5-caee-4356-b71c-184d8f011c59,,,pending,
+City of Sierra Madre,sierra_madre_city_council,https://www.cityofsmca.com/government/city-council,Kelly Kriebs,Council Member,False,failed,f34994d5-7b6d-4f4a-b197-e31fa8214a53,,,pending,
+City of Westlake Village,westlake_village_city_council,https://www.wlv.org/government/city-council,Kelly Honig,Mayor,False,scraped,6e259d04-b1a3-49bc-b6f2-0a25246912a8,,,pending,
+City of Westlake Village,westlake_village_city_council,https://www.wlv.org/government/city-council,Brad Halpern,Council Member,False,scraped,b9dba9c1-ce70-4dd6-8665-13e5a6b177b4,,,pending,
+City of Westlake Village,westlake_village_city_council,https://www.wlv.org/government/city-council,Ned E Davis,Council Member,False,scraped,ca4fefaf-f175-4d58-823d-0bf39e530a29,,,pending,
+City of Westlake Village,westlake_village_city_council,https://www.wlv.org/government/city-council,Ray Pearl,Council Member,False,scraped,89132b96-8e37-4db9-a69a-92c8791fd8ac,,,pending,
+City of Los Alamitos,los_alamitos_city_council,https://www.cityoflosalamitos.org/government/city-council,Shelley Hasselbrink,Mayor,False,scraped,cadc340d-eac3-4ebc-b402-42fdca5487f0,,,pending,
+City of Los Alamitos,los_alamitos_city_council,https://www.cityoflosalamitos.org/government/city-council,Emily Hibard,Council Member,False,scraped,d4b76944-76ed-4e7b-9c9f-40ebc29e2d9e,,,pending,
+City of Los Alamitos,los_alamitos_city_council,https://www.cityoflosalamitos.org/government/city-council,Gary Loe,Council Member,False,scraped,71f9120b-9376-4970-a04f-96ba991e0c15,,,pending,
+City of Los Alamitos,los_alamitos_city_council,https://www.cityoflosalamitos.org/government/city-council,Jordan Nefulda,Council Member,False,scraped,9ca53692-35ab-4445-80b0-241e3f6f2e2c,,,pending,
+City of Whittier,whittier_city_council,https://www.cityofwhittier.org/government/city-council,Joe Vinatieri,Mayor,False,scraped,75000f91-3c0f-4f6e-8962-86b289cd8541,,,pending,
+City of Whittier,whittier_city_council,https://www.cityofwhittier.org/government/city-council,Fernando Dutra,Council Member,False,scraped,bf91e362-ae5b-4229-9217-75ffc6b752ae,,,pending,
+City of Whittier,whittier_city_council,https://www.cityofwhittier.org/government/city-council,Mary Ann Pacheco,Council Member,False,scraped,9f706912-b364-43c5-a649-13f5f025ac76,,,pending,
+City of Whittier,whittier_city_council,https://www.cityofwhittier.org/government/city-council,Octavio Martinez,Council Member,False,scraped,b8eeb27c-5863-4267-ab85-89094aefed32,,,pending,
+City of Rosemead,rosemead_city_council,https://rosemeadca.gov/government/elected-officials/city-council,Margaret Clark,Mayor,False,failed,cd3d1dde-aa80-4a9f-aa2b-8a5f94876208,,,pending,
+City of Rosemead,rosemead_city_council,https://rosemeadca.gov/government/elected-officials/city-council,Polly Low,Council Member,False,failed,f18b8f0f-b788-4d58-96cb-cb5391d221ca,,,pending,
+City of Rosemead,rosemead_city_council,https://rosemeadca.gov/government/elected-officials/city-council,Sean Dang,Council Member,False,failed,7a309179-6ed3-4cc0-80ad-f73e6ed49759,,,pending,
+City of Rosemead,rosemead_city_council,https://rosemeadca.gov/government/elected-officials/city-council,Steven Ly,Council Member,False,failed,7fe63cdf-13a0-4150-a378-7ec6d4e0def1,,,pending,
+City of Hawaiian Gardens,hawaiian_gardens_city_council,https://www.hgcity.org/government/city-council,Dandy De Paula,Mayor,False,scraped,8bfc4fb1-527a-4cb8-b0c4-439a3a015857,,,pending,
+City of Hawaiian Gardens,hawaiian_gardens_city_council,https://www.hgcity.org/government/city-council,Ernie Vargas,Council Member,False,scraped,ae324e22-d2b7-44bb-82ce-21bca77319fa,,,pending,
+City of Hawaiian Gardens,hawaiian_gardens_city_council,https://www.hgcity.org/government/city-council,Luis Roa,Council Member,False,scraped,b10c4a24-a504-403b-820f-e0115578715a,,,pending,
+City of Hawaiian Gardens,hawaiian_gardens_city_council,https://www.hgcity.org/government/city-council,Victor Farfan,Council Member,False,scraped,99ed7665-9220-454a-9a1d-73f74fe7bf4f,,,pending,
+City of La Habra Heights,la_habra_heights_city_council,https://www.lahabraheights.com/government/city-council,John Pespisa,Mayor,False,failed,e1e05ece-6241-4fd2-9d44-796e908cf4bd,,,pending,
+City of La Habra Heights,la_habra_heights_city_council,https://www.lahabraheights.com/government/city-council,Brian Bergman,Council Member,False,failed,c80e1343-70e4-4371-ade4-40f276dd3e25,,,pending,
+City of La Habra Heights,la_habra_heights_city_council,https://www.lahabraheights.com/government/city-council,Greg Stefflre,Council Member,False,failed,aa4fea2e-80a3-42e9-b94f-e9fc5e0b966f,,,pending,
+City of La Habra Heights,la_habra_heights_city_council,https://www.lahabraheights.com/government/city-council,Norm Zezula,Council Member,False,failed,8d820dc7-0935-44ee-a14d-fb4e3502eba1,,,pending,
+City of Agoura Hills,agoura_hills_city_council,https://www.agourahillscity.gov/government/city_council/index.php,Penny Sylvester,Mayor,False,failed,8f5bfaa6-09c6-40b1-99d5-f12953fda21d,,,pending,
+City of Agoura Hills,agoura_hills_city_council,https://www.agourahillscity.gov/government/city_council/index.php,Chris Anstead,Council Member,False,failed,f4d09579-b7bd-480b-8b8f-3b6c08acaab3,,,pending,
+City of Agoura Hills,agoura_hills_city_council,https://www.agourahillscity.gov/government/city_council/index.php,Deborah Klein Lopez,Council Member,False,failed,f1f9d53e-2972-406d-9979-90119d893508,,,pending,
+City of Agoura Hills,agoura_hills_city_council,https://www.agourahillscity.gov/government/city_council/index.php,Kate Anderson,Council Member,False,failed,9eb372e2-13c6-4b85-af5b-1aa95eb49b38,,,pending,
+City of Lancaster,lancaster_city_council,https://www.cityoflancasterca.org/government/city-council,Ken Mann,Council Member,False,scraped,7a600b15-32ff-4c13-90e5-d4ee5f627bb5,,,pending,
+City of Lancaster,lancaster_city_council,https://www.cityoflancasterca.org/government/city-council,Lauren Hughes-Leslie,Council Member,False,scraped,007074c6-6fbe-429f-9e06-8d7251198d8a,,,pending,
+City of Lancaster,lancaster_city_council,https://www.cityoflancasterca.org/government/city-council,Raj Malhi,Council Member,False,scraped,57ffdbb3-a8bb-4337-9812-3216dd325f74,,,pending,
+City of South Pasadena,south_pasadena_city_council,https://www.southpasadenaca.gov/government/city-council,Janet Braun (District 5),Mayor,False,scraped,a3f864ad-c303-4549-8471-fd1a7519184c,,,pending,
+City of South Pasadena,south_pasadena_city_council,https://www.southpasadenaca.gov/government/city-council,Michael A. Cacciotti,Council Member,False,scraped,7e14a7c0-50dc-43ee-81b6-b86ae1ed10dc,,,pending,
+City of South Pasadena,south_pasadena_city_council,https://www.southpasadenaca.gov/government/city-council,Omari Ferguson,Council Member,False,scraped,01317eb5-e154-4d54-b7f4-fc87c8be935d,,,pending,
+City of Burbank,burbank_city_council,https://www.burbankca.gov/government/city-council,Nikki Perez,Mayor,False,blocked,08e96da1-1ed6-4286-83c8-13eef77ecdfe,,,pending,
+City of Burbank,burbank_city_council,https://www.burbankca.gov/government/city-council,Konstantine Anthony,Council Member,False,blocked,6c4c7919-3e7f-41fa-8b1b-1c8b421fe4a7,,,pending,
+City of Burbank,burbank_city_council,https://www.burbankca.gov/government/city-council,Zizette Mullins,Council Member,False,blocked,f933bd87-d397-4ef1-873b-57559b629000,,,pending,
+City of West Covina,west_covina_city_council,https://www.westcovina.org/government/city-council,Tony Wu,Mayor,False,scraped,0cb2cba8-d20d-4f5d-bae6-57b6a8604d83,,,pending,
+City of West Covina,west_covina_city_council,https://www.westcovina.org/government/city-council,Ollie Cantos,Council Member,False,scraped,6ffa3328-b874-40b6-8703-29cd5f93d7d8,,,pending,
+City of West Covina,west_covina_city_council,https://www.westcovina.org/government/city-council,Rosario Diaz,Council Member,False,scraped,f5bf4ec4-7d1b-460e-b4e2-539826c59596,,,pending,
+City of Beverly Hills,beverly_hills_city_council,https://www.beverlyhills.org/government/city-council,Lester Friedman,Mayor,False,scraped,4f69ba91-d6f4-400e-aa46-10f1706d2f3c,,,pending,
+City of Beverly Hills,beverly_hills_city_council,https://www.beverlyhills.org/government/city-council,Craig A. Corman,Council Member,False,scraped,1221c215-2b80-46f7-b980-c04f25c5866f,,,pending,
+City of Beverly Hills,beverly_hills_city_council,https://www.beverlyhills.org/government/city-council,Mary N. Wells,Council Member,False,scraped,b4f9688b-add0-44d6-bab8-e923d17d105e,,,pending,
+City of La Puente,la_puente_city_council,https://www.lapuente.net/government/city-council,Valerie Munoz,Mayor,False,scraped,dc7f4747-abc2-4a1a-8d65-c1d4d5b609d2,,,pending,
+City of La Puente,la_puente_city_council,https://www.lapuente.net/government/city-council,Gabriel Quinones,Council Member,False,scraped,280bf705-d019-4a3f-97e6-88921486faf2,,,pending,
+City of La Puente,la_puente_city_council,https://www.lapuente.net/government/city-council,Nadia Mendoza,Council Member,False,scraped,52de992a-feb1-4162-bbf2-378affd2d375,,,pending,
+City of San Fernando,san_fernando_city_council,https://www.ci.san-fernando.ca.us/government/city-council,Mary Mendoza,Mayor,False,scraped,334f0762-24ed-49bb-b305-90edd8b4b38b,,,pending,
+City of San Fernando,san_fernando_city_council,https://www.ci.san-fernando.ca.us/government/city-council,Joel Fajardo,Council Member,False,scraped,616e3059-af18-49ca-a07d-2825d201086d,,,pending,
+City of San Fernando,san_fernando_city_council,https://www.ci.san-fernando.ca.us/government/city-council,Victoria Garcia,Council Member,False,scraped,6454b303-add3-4ab6-8ca8-42e60109bdb3,,,pending,
+City of Palmdale,palmdale_city_council,https://www.cityofpalmdale.org/government/city-council,Andrea Alarcon,Council Member,False,scraped,f545d5bd-fde8-4409-9e7e-3bce79f10c9e,,,pending,
+City of Palmdale,palmdale_city_council,https://www.cityofpalmdale.org/government/city-council,Austin Bishop,Council Member,False,scraped,475b846d-bce8-43e0-bac8-bd65d58d9c46,,,pending,
+City of Palmdale,palmdale_city_council,https://www.cityofpalmdale.org/government/city-council,Eric Ohlsen,Council Member,False,scraped,68188694-feb7-4028-8127-ccb4b2f7531e,,,pending,
+City of Manhattan Beach,manhattan_beach_city_council,https://www.citymb.info/government/city-council,Amy Thomas Howorth,Mayor,False,scraped,5b0b0edf-c2f2-4359-92d5-d245f8826111,,,pending,
+City of Manhattan Beach,manhattan_beach_city_council,https://www.citymb.info/government/city-council,Nina Trieu Tarnay,Council Member,False,scraped,f4f83935-f240-40f5-bd1d-2accbcff1af6,,,pending,
+City of Manhattan Beach,manhattan_beach_city_council,https://www.citymb.info/government/city-council,Steve S. Charelian,Council Member,False,scraped,9c899dc8-9bd5-4583-aa05-c4ddf20dbeec,,,pending,
+City of Monterey Park,monterey_park_city_council,https://www.montereypark.ca.gov/191/City-Council,Vinh Ngo,Mayor,False,scraped,fda02aec-c1f3-4297-a84a-ac37fb204fb1,,,pending,
+City of Monterey Park,monterey_park_city_council,https://www.montereypark.ca.gov/191/City-Council,Jose Sanchez,Council Member,False,scraped,5e294235-7f08-49e6-b2e1-9f9d752e6bc3,,,pending,
+City of Monterey Park,monterey_park_city_council,https://www.montereypark.ca.gov/191/City-Council,Thomas Wong,Council Member,False,scraped,63dae673-c615-47b5-9ae1-6dab5a0cc6d0,,,pending,
+City of San Gabriel,san_gabriel_city_council,https://www.sangabrielcity.com/government/city-council,Denise Menchaca,Mayor,False,scraped,bfa60e39-6a47-4d12-a26b-4742f6b139ab,,,pending,
+City of San Gabriel,san_gabriel_city_council,https://www.sangabrielcity.com/government/city-council,Jorge Herrera Avila,Council Member,False,scraped,b7787103-e3f0-4f55-9c22-8ec049c0880b,,,pending,
+City of San Gabriel,san_gabriel_city_council,https://www.sangabrielcity.com/government/city-council,Tony Ding,Council Member,False,scraped,8410b55a-8281-4e01-b16f-ca5f6823aa27,,,pending,
+City of Norwalk,norwalk_city_council,https://www.norwalkca.gov/government/city-council,Ana Valencia,Council Member,False,scraped,ba647863-25fb-4ccf-9cb0-5a1c912d1b27,,,pending,
+City of Norwalk,norwalk_city_council,https://www.norwalkca.gov/government/city-council,Margarita L. Rios,Council Member,False,scraped,bd64253b-0bd1-4b9f-85b1-76180c760d07,,,pending,
+City of Norwalk,norwalk_city_council,https://www.norwalkca.gov/government/city-council,Rick Ramirez,Council Member,False,scraped,e3b9af1b-3704-4bc5-a6ef-ab1f814bd29d,,,pending,
+City of Downey,downey_city_council,https://www.downeyca.org/government/city-council,Hector Sosa,Mayor,False,scraped,b633a814-00d7-4601-bcff-ffc0ce344724,,,pending,
+City of Downey,downey_city_council,https://www.downeyca.org/government/city-council,Mario Trujillo -,Council Member,False,scraped,06b1dae6-5fcf-4a1f-ba89-d06cbae5c19d,,,pending,
+City of Bell,bell_city_council,https://www.cityofbell.org/government/city-council,Ana Maria Quintana,Council Member,False,scraped,1ac8efa3-10c7-404e-8ed6-a73804881819,,,pending,
+City of Bell,bell_city_council,https://www.cityofbell.org/government/city-council,Francis Flores,Council Member,False,scraped,e460a32a-6a47-49d2-8c0f-9c145d8ae5c0,,,pending,
+City of Carson,carson_city_council,https://www.carson.ca.us/government/city-council,Lula Davis Holmes,Mayor,True,failed,e27fa9bb-cd4a-4e1b-a8ee-330dcfd3d4ae,,,pending,
+City of Carson,carson_city_council,https://www.carson.ca.us/government/city-council,Mayor Lula Davis Holmes,Council Member,False,failed,36b686ca-f225-4b8b-8430-a5dd8996d38a,,,pending,
+City of San Dimas,san_dimas_city_council,https://www.cityofsandimas.com/government/city-council,Emmett G. Badar,Mayor,False,scraped,b98ba8b8-dd19-4f20-bbd9-d27d495cb4a8,,,pending,
+City of San Dimas,san_dimas_city_council,https://www.cityofsandimas.com/government/city-council,Rachel Bratakos,Council Member,False,scraped,466b49a0-2122-439f-831f-325dd2d1828c,,,pending,
+City of La Mirada,la_mirada_city_council,https://www.cityoflamirada.org/government/city-council,Michelle Velasquez Bean,Council Member,False,scraped,cf6a072a-026b-4b95-9eb4-180be6480a95,,,pending,
+City of La Mirada,la_mirada_city_council,https://www.cityoflamirada.org/government/city-council,Steve De Ruse,Council Member,False,scraped,5bc8e8fb-8784-4d4b-b4d6-e2416a593100,,,pending,
+City of Montebello,montebello_city_council,https://www.montebelloca.gov/cms/one.aspx?pageId=61463,Scarlet Peralta,Mayor,True,scraped,60ba761c-1695-46af-b56f-7881a5b8df4a,,,pending,
+City of Montebello,montebello_city_council,https://www.montebelloca.gov/cms/one.aspx?pageId=61463,David Torres,Council Member,False,scraped,664b5518-3e28-4f8f-a42f-12fb6d627567,,,pending,
+City of Culver City,culver_city_city_council,https://www.culvercity.org/government/city-council,"Bryan ""Bubba"" Fish",Council Member,False,scraped,837613f5-2022-4844-95d7-df0848ca6fef,,,pending,
+City of Culver City,culver_city_city_council,https://www.culvercity.org/government/city-council,Yasmine-Imani McMorrin,Council Member,False,scraped,f5f6cfde-f4ee-4bdf-8b01-7f797c53ed39,,,pending,
+City of Long Beach,long_beach_city_council,https://www.longbeach.gov/council,Megan Kerr,Council Member,False,scraped,dcb90142-6b0b-41eb-9506-dad032376ad8,,,pending,
+City of Long Beach,long_beach_city_council,https://www.longbeach.gov/council,Roberto Uranga,Council Member,False,scraped,a9906d6d-c1dd-4be3-b1b0-99de4555d66b,,,pending,
+City of La Canada Flintridge,la_canada_flintridge_city_council,https://lcf.ca.gov/government/city-council,Stephanie Fossan,Council Member,False,scraped,0fbe4554-7b46-4773-9601-6d32b865e1e3,,,pending,
+City of Duarte,duarte_city_council,https://www.accessduarte.com/government/city-council,Cesar A. Garcia,Mayor,False,scraped,32a054c8-990a-4cad-a7d4-86964b42b402,,,pending,
+City of Covina,covina_city_council,https://www.covinaca.gov/government/city-council,Patricia Cortez,Mayor,False,scraped,736fc53b-1778-4751-8002-5b42c2671ef1,,,pending,
+City of Huntington Park,huntington_park_city_council,https://www.hpca.gov/government/city-council,Arturo Flores,Mayor,False,scraped,be9174eb-727c-4433-938d-81273f62425e,,,pending,
+City of Glendale,glendale_city_council,https://www.glendaleca.gov/government/city-council,Vartan Gharpetian,Council Member,True,scraped,bf071504-bf82-4cbe-8826-04fa05a060e7,,,pending,
+City of Compton,compton_city_council,https://www.comptoncity.org/government/city-council,Lillie Darden -,Council Member,False,scraped,c47e19eb-53cc-4de3-a0f2-d2c6882addea,,,pending,
