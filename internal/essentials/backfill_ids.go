@@ -19,6 +19,7 @@ const legislatorsCurrentURL = "https://raw.githubusercontent.com/unitedstates/co
 type legislatorYAML struct {
 	ID struct {
 		Bioguide string `yaml:"bioguide"`
+		LIS      string `yaml:"lis"` // Senate LIS member ID (e.g., "S316")
 	} `yaml:"id"`
 	Name struct {
 		First    string `yaml:"first"`
@@ -213,9 +214,81 @@ func BackfillLegislativeIDs(cfg BackfillConfig) (BackfillResult, error) {
 		}
 	}
 
+	// ── Step 7: Insert LIS bridge rows for senators ─────────────────────
+	lisInserted := 0
+	for _, pol := range federalPols {
+		if pol.BioguideID == "" {
+			continue
+		}
+		leg, ok := bioguideMap[pol.BioguideID]
+		if !ok || leg.ID.LIS == "" {
+			continue
+		}
+		// Only insert LIS bridge for senators (check latest term type)
+		if len(leg.Terms) > 0 {
+			latestTerm := leg.Terms[len(leg.Terms)-1]
+			if latestTerm.Type != "sen" {
+				continue
+			}
+		}
+
+		if cfg.DryRun {
+			log.Printf("[backfill] DRY RUN — would insert LIS bridge row for %s lis=%s", pol.FullName, leg.ID.LIS)
+			lisInserted++
+			continue
+		}
+
+		// Check if LIS bridge row already exists
+		var existing LegislativePoliticianIDMap
+		checkResult := db.DB.Where(
+			"politician_id = ? AND id_type = ? AND id_value = ?",
+			pol.ID, "lis", leg.ID.LIS,
+		).First(&existing)
+		if checkResult.Error == nil {
+			continue // already exists
+		}
+
+		bridge := LegislativePoliticianIDMap{
+			PoliticianID: pol.ID,
+			IDType:       "lis",
+			IDValue:      leg.ID.LIS,
+			VerifiedAt:   time.Now(),
+			Source:       "congress-legislators-yaml",
+		}
+		if insertErr := db.DB.Create(&bridge).Error; insertErr != nil {
+			log.Printf("[backfill] ERROR inserting LIS bridge row for %s: %v", pol.FullName, insertErr)
+			result.Errors = append(result.Errors, fmt.Sprintf("LIS insert failed for %s: %v", pol.FullName, insertErr))
+			continue
+		}
+		lisInserted++
+		log.Printf("[backfill] Inserted LIS bridge: %s → lis=%s", pol.FullName, leg.ID.LIS)
+	}
+	log.Printf("[backfill] LIS bridge rows inserted: %d", lisInserted)
+
 	// ── Step 8: Log summary ────────────────────────────────────────────────
-	log.Printf("[backfill] Backfill complete: %d matched, %d inserted, %d skipped, %d errors",
-		result.Matched, result.Inserted, result.Skipped, len(result.Errors))
+	log.Printf("[backfill] Backfill complete: %d matched, %d inserted (bioguide), %d inserted (lis), %d skipped, %d errors",
+		result.Matched, result.Inserted, lisInserted, result.Skipped, len(result.Errors))
 
 	return result, nil
+}
+
+// loadLISMap loads all LIS bridge entries from the ID map table.
+// Returns map[lisID]politicianUUID (e.g., "S316" -> uuid).
+func loadLISMap() (map[string]uuid.UUID, error) {
+	type bridgeRow struct {
+		IDValue      string    `gorm:"column:id_value"`
+		PoliticianID uuid.UUID `gorm:"column:politician_id"`
+	}
+	var bridges []bridgeRow
+	if err := db.DB.Table("essentials.legislative_politician_id_map").
+		Select("id_value, politician_id").
+		Where("id_type = ?", "lis").
+		Find(&bridges).Error; err != nil {
+		return nil, err
+	}
+	m := make(map[string]uuid.UUID, len(bridges))
+	for _, b := range bridges {
+		m[b.IDValue] = b.PoliticianID
+	}
+	return m, nil
 }

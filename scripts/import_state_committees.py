@@ -2,18 +2,25 @@
 """
 import_state_committees.py
 
-Imports state legislative committee memberships from the Open States API v3.
+Imports state legislative committee memberships from multiple sources:
+  - Indiana (--state IN): IGA API (iga.in.gov) — fast, no auth, no rate limits
+  - California (--state CA): Open States API v3 — requires OPENSTATES_API_KEY
+
 Supplements the LegiScan-based import_state_legislative.py — LegiScan's
-getSessionPeople returns committee_id=0 for all state legislators, so Open
-States is used as the source for committee membership data.
+getSessionPeople returns committee_id=0 for all state legislators, so these
+APIs are used as the source for committee membership data.
 
 Usage:
     python import_state_committees.py --state IN [--dry-run] [--verbose]
     python import_state_committees.py --state CA [--dry-run] [--verbose]
 
 Requirements:
-    - OPENSTATES_API_KEY in environment or EV-Backend/.env.local
     - DATABASE_URL in environment or EV-Backend/.env.local
+    - OPENSTATES_API_KEY required only for --state CA
+
+IGA API (Indiana):
+    Base: https://iga.in.gov/api
+    Auth: None (requires browser-like User-Agent header)
 
 Open States API v3:
     Base: https://v3.openstates.org
@@ -46,6 +53,28 @@ load_dotenv(ENV_PATH)
 OPENSTATES_BASE_URL = "https://v3.openstates.org"
 RATE_LIMIT_DELAY = 6  # seconds between requests (10/min free tier)
 
+# ---------------------------------------------------------------------------
+# IGA API (Indiana General Assembly) constants
+# ---------------------------------------------------------------------------
+IGA_BASE_URL = "https://iga.in.gov/api"
+IGA_USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/145.0.0.0 Safari/537.36"
+)
+IGA_ROLE_NORMALIZATION = {
+    "type_chair": "chair",
+    "type_vicechair": "vice_chair",
+    "type_rm": "ranking_member",
+    "type_rmm": "ranking_member",
+    "type_majority_normalmember": "member",
+    "type_minority_normalmember": "member",
+}
+IGA_CHAMBER_MAP = {
+    "senate": "upper",
+    "house": "lower",
+}
+
 STATE_CONFIG = {
     "IN": {
         "jurisdiction": "indiana",
@@ -59,21 +88,116 @@ STATE_CONFIG = {
     },
 }
 
-# Normalize Open States role strings to DB-friendly values
+# Normalize role strings to DB-friendly values (covers both Open States and IGA)
 ROLE_NORMALIZATION = {
+    # Open States role strings
     "chair": "chair",
     "vice-chair": "vice_chair",
     "vice chair": "vice_chair",
     "ranking member": "ranking_member",
     "co-chair": "chair",
+    # IGA normalized values (identity mappings so they pass through)
+    "vice_chair": "vice_chair",
+    "ranking_member": "ranking_member",
+    "member": "member",
 }
+
+
+# ---------------------------------------------------------------------------
+# IGA API client (Indiana)
+# ---------------------------------------------------------------------------
+def fetch_iga_committees(session_lpid: str) -> list:
+    """Fetch all committees from IGA API for the given session."""
+    url = f"{IGA_BASE_URL}/getCommittees"
+    headers = {"User-Agent": IGA_USER_AGENT}
+    params = {"session_lpid": session_lpid}
+
+    response = requests.get(url, headers=headers, params=params, timeout=30)
+    response.raise_for_status()
+    data = response.json()
+    return data.get("committees", [])
+
+
+def fetch_iga_members(committee_id: str, session_lpid: str) -> list:
+    """Fetch members for a single IGA committee."""
+    url = f"{IGA_BASE_URL}/getMembers"
+    headers = {"User-Agent": IGA_USER_AGENT}
+    params = {"committee_id": committee_id, "session_lpid": session_lpid}
+
+    response = requests.get(url, headers=headers, params=params, timeout=30)
+    response.raise_for_status()
+    data = response.json()
+    return data.get("members", [])
+
+
+def fetch_all_iga_data(session_year: int = 2026) -> list:
+    """
+    Fetch all standing committees + members from IGA API.
+    Returns a list of committee dicts in the same shape the
+    import_committees() function expects (matching Open States format).
+    """
+    session_lpid = f"session_{session_year}"
+    logging.info(f"Fetching committees from IGA API (session={session_lpid})...")
+
+    raw_committees = fetch_iga_committees(session_lpid)
+    logging.info(f"  IGA returned {len(raw_committees)} total committees")
+
+    # Filter to standing committees only (conference committees are bill-specific)
+    standing = [c for c in raw_committees if c.get("type") == "standing"]
+    logging.info(f"  Filtered to {len(standing)} standing committees")
+
+    result = []
+    for committee in standing:
+        cid = committee["id"]
+        name = committee.get("name", "")
+        chamber_lpid = committee.get("chamber_lpid", "")
+
+        # Fetch members
+        raw_members = fetch_iga_members(cid, session_lpid)
+        logging.debug(f"  {name}: {len(raw_members)} members")
+
+        # Derive org_classification from chamber_lpid
+        org_class = IGA_CHAMBER_MAP.get(chamber_lpid, "legislature")
+
+        # Transform members to match Open States membership shape
+        memberships = []
+        for m in raw_members:
+            person_name = f"{m.get('first_name', '')} {m.get('last_name', '')}".strip()
+            position_lpid = m.get("position_lpid", "")
+            role = IGA_ROLE_NORMALIZATION.get(position_lpid, "member")
+
+            memberships.append({
+                "person_name": person_name,
+                "role": role,
+                "person": {
+                    "id": None,  # IGA doesn't use OCD IDs
+                    "current_role": {"org_classification": org_class},
+                },
+            })
+
+        result.append({
+            "id": cid,  # IGA UUID used as external_id
+            "name": name,
+            "classification": "committee",
+            "memberships": memberships,
+        })
+
+    logging.info(
+        f"Fetched {len(result)} standing committees with memberships from IGA"
+    )
+    return result
 
 
 # ---------------------------------------------------------------------------
 # Open States API client
 # ---------------------------------------------------------------------------
-def fetch_committees(api_key: str, jurisdiction: str, page: int = 1, per_page: int = 50) -> dict:
-    """Fetch one page of committees with memberships for a jurisdiction."""
+MAX_RETRIES = 3
+RETRY_BACKOFF = 10  # seconds between retries
+
+
+def fetch_committees_page(api_key: str, jurisdiction: str, page: int = 1, per_page: int = 20) -> Optional[dict]:
+    """Fetch one page of committees with memberships. Retries on server/rate errors.
+    Returns None if all retries exhausted."""
     url = f"{OPENSTATES_BASE_URL}/committees"
     params = {
         "jurisdiction": jurisdiction,
@@ -82,43 +206,114 @@ def fetch_committees(api_key: str, jurisdiction: str, page: int = 1, per_page: i
         "page": page,
         "apikey": api_key,
     }
-    response = requests.get(url, params=params, timeout=30)
-    response.raise_for_status()
-    return response.json()
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            response = requests.get(url, params=params, timeout=30)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.HTTPError as e:
+            status = e.response.status_code if e.response is not None else 0
+            if status == 429:
+                retry_after = int(e.response.headers.get("Retry-After", 60))
+                logging.warning(
+                    f"  Rate limited on page {page} (attempt {attempt}/{MAX_RETRIES}), "
+                    f"waiting {retry_after}s..."
+                )
+                time.sleep(retry_after)
+                continue
+            if status in (500, 502, 503, 504) and attempt < MAX_RETRIES:
+                logging.warning(
+                    f"  Server error {status} on page {page} "
+                    f"(attempt {attempt}/{MAX_RETRIES}), retrying in {RETRY_BACKOFF}s..."
+                )
+                time.sleep(RETRY_BACKOFF)
+                continue
+            logging.error(f"  Failed on page {page}: HTTP {status} after {attempt} attempts")
+            return None
+    logging.error(f"  All {MAX_RETRIES} retries exhausted for page {page}")
+    return None
+
+
+def get_cache_path(jurisdiction: str) -> str:
+    """Return path for the committee cache file."""
+    return os.path.join(SCRIPT_DIR, f".openstates_cache_{jurisdiction}.json")
 
 
 def fetch_all_committees(api_key: str, jurisdiction: str) -> list:
-    """Fetch all committees (all pages) for a jurisdiction, with rate limiting."""
-    all_committees = []
-    page = 1
+    """Fetch all committees with memberships via paginated listing.
+    Caches progress to disk so interrupted runs can resume.
+    Filters to only return committees that have at least one membership."""
+    import json
 
-    logging.info(f"Fetching committees for jurisdiction '{jurisdiction}' from Open States...")
+    cache_path = get_cache_path(jurisdiction)
+
+    # Resume from cache if exists
+    cached_committees = []
+    resume_page = 1
+    if os.path.exists(cache_path):
+        with open(cache_path, "r") as f:
+            cache_data = json.load(f)
+        cached_committees = cache_data.get("committees", [])
+        resume_page = cache_data.get("next_page", 1)
+        max_page_cached = cache_data.get("max_page", 0)
+        logging.info(
+            f"Resuming from cache: {len(cached_committees)} committees, "
+            f"starting at page {resume_page}/{max_page_cached}"
+        )
+
+    committees_with_members = cached_committees
+    page = resume_page
+
+    logging.info(f"Fetching committees for '{jurisdiction}' from Open States...")
 
     while True:
         logging.debug(f"  Fetching page {page}...")
-        data = fetch_committees(api_key, jurisdiction, page=page)
+        data = fetch_committees_page(api_key, jurisdiction, page=page)
+
+        if data is None:
+            logging.error(f"  Failed to fetch page {page} after retries, saving progress...")
+            break
 
         results = data.get("results", [])
-        all_committees.extend(results)
-
         pagination = data.get("pagination", {})
         max_page = pagination.get("max_page", 1)
-        total_items = pagination.get("total_items", len(all_committees))
+        total_items = pagination.get("total_items", 0)
+
+        # Filter to committees with memberships
+        for committee in results:
+            if committee.get("memberships"):
+                committees_with_members.append(committee)
 
         logging.debug(
-            f"  Page {page}/{max_page}: {len(results)} committees "
-            f"(total so far: {len(all_committees)}/{total_items})"
+            f"  Page {page}/{max_page}: {len(results)} committees, "
+            f"{sum(1 for c in results if c.get('memberships'))} with members "
+            f"(total kept: {len(committees_with_members)})"
         )
+
+        # Save progress after each page
+        with open(cache_path, "w") as f:
+            json.dump({
+                "committees": committees_with_members,
+                "next_page": page + 1,
+                "max_page": max_page,
+            }, f)
 
         if page >= max_page:
             break
 
         page += 1
-        logging.debug(f"  Rate limiting: sleeping {RATE_LIMIT_DELAY}s...")
         time.sleep(RATE_LIMIT_DELAY)
 
-    logging.info(f"Fetched {len(all_committees)} committees from Open States")
-    return all_committees
+    logging.info(
+        f"Fetched {len(committees_with_members)} committees with memberships"
+    )
+
+    # Clean up cache on success
+    if os.path.exists(cache_path) and page >= max_page:
+        os.remove(cache_path)
+        logging.debug("  Cache file removed (fetch complete)")
+
+    return committees_with_members
 
 
 # ---------------------------------------------------------------------------
@@ -162,7 +357,7 @@ def get_current_session_id(conn, jurisdiction: str) -> Optional[str]:
             """
             SELECT id FROM essentials.legislative_sessions
             WHERE jurisdiction = %s AND is_current = true
-            ORDER BY start_year DESC
+            ORDER BY start_date DESC
             LIMIT 1
             """,
             (jurisdiction,),
@@ -215,9 +410,10 @@ def upsert_committee(
     chamber: str,
     session_id: Optional[str],
     dry_run: bool,
+    source: str = "openstates",
 ) -> Optional[str]:
     """
-    Insert a new committee row for an Open States committee not in DB.
+    Insert a new committee row not in DB.
     Returns the new UUID (or a placeholder in dry-run mode).
     """
     new_id = str(uuid.uuid4())
@@ -226,7 +422,7 @@ def upsert_committee(
         logging.info(
             f"  [DRY RUN] Would INSERT committee: name='{name}', "
             f"jurisdiction='{jurisdiction}', chamber='{chamber}', type='{committee_type}', "
-            f"external_id='{ocd_id}', source='openstates'"
+            f"external_id='{ocd_id}', source='{source}'"
         )
         return new_id
 
@@ -235,11 +431,11 @@ def upsert_committee(
             """
             INSERT INTO essentials.legislative_committees
                 (id, external_id, jurisdiction, name, type, chamber, source, is_current, session_id)
-            VALUES (%s, %s, %s, %s, %s, %s, 'openstates', true, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, true, %s)
             ON CONFLICT DO NOTHING
             RETURNING id
             """,
-            (new_id, ocd_id, jurisdiction, name, committee_type, chamber, session_id),
+            (new_id, ocd_id, jurisdiction, name, committee_type, chamber, source, session_id),
         )
         row = cur.fetchone()
         if row:
@@ -387,18 +583,17 @@ def normalize_role(raw_role: str) -> str:
 # Main import logic
 # ---------------------------------------------------------------------------
 def import_committees(
-    api_key: str,
     conn,
     state: str,
     dry_run: bool,
     verbose: bool,
+    api_key: Optional[str] = None,
 ) -> dict:
     """
     Main import function. Returns stats dict.
     """
     config = STATE_CONFIG[state]
     jurisdiction = config["jurisdiction"]
-    openstates_jurisdiction = config["openstates_jurisdiction"]
     state_abbr = config["state_abbr"]
 
     stats = {
@@ -424,8 +619,11 @@ def import_committees(
     # 2. Load existing committees from DB (for name matching)
     existing_by_name, existing_by_ext_id = load_existing_committees(conn, jurisdiction)
 
-    # 3. Fetch all committees from Open States API
-    os_committees = fetch_all_committees(api_key, openstates_jurisdiction)
+    # 3. Fetch committees with memberships
+    if state == "IN":
+        os_committees = fetch_all_iga_data()
+    else:
+        os_committees = fetch_all_committees(api_key, config["openstates_jurisdiction"])
     stats["committees_fetched"] = len(os_committees)
 
     # 4. Process each committee
@@ -461,6 +659,7 @@ def import_committees(
         else:
             # Pass 2: Create new committee
             chamber = derive_chamber(name, classification, memberships)
+            source = "iga" if state == "IN" else "openstates"
             committee_db_id = upsert_committee(
                 conn,
                 ocd_id=ocd_id,
@@ -470,6 +669,7 @@ def import_committees(
                 chamber=chamber,
                 session_id=session_id,
                 dry_run=dry_run,
+                source=source,
             )
             stats["committees_created"] += 1
             logging.info(
@@ -578,7 +778,7 @@ def report_final_counts(conn, jurisdiction: str) -> None:
 # ---------------------------------------------------------------------------
 def main():
     parser = argparse.ArgumentParser(
-        description="Import state legislative committee memberships from Open States API v3"
+        description="Import state legislative committee memberships (IN=IGA API, CA=Open States)"
     )
     parser.add_argument(
         "--state",
@@ -612,11 +812,12 @@ def main():
     api_key = os.getenv("OPENSTATES_API_KEY")
     db_url = os.getenv("DATABASE_URL")
 
-    if not api_key:
+    if args.state != "IN" and not api_key:
         logging.error(
-            "OPENSTATES_API_KEY environment variable required. "
+            "OPENSTATES_API_KEY environment variable required for --state %s. "
             "Register at https://openstates.org/accounts/signup/ "
-            "and add to EV-Backend/.env.local"
+            "and add to EV-Backend/.env.local",
+            args.state,
         )
         sys.exit(1)
     if not db_url:
@@ -631,11 +832,11 @@ def main():
     conn = psycopg2.connect(db_url)
     try:
         stats = import_committees(
-            api_key=api_key,
             conn=conn,
             state=args.state,
             dry_run=args.dry_run,
             verbose=args.verbose,
+            api_key=api_key,
         )
 
         logging.info(f"\n{'=' * 60}")

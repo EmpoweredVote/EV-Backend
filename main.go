@@ -232,6 +232,11 @@ func main() {
 		case "import-federal-bills":
 			dryRun := false
 			skipSummaries := false
+			downloadOnly := false
+			parseOnly := false
+			source := "bulk"
+			dataDir := ""
+			concurrency := 5
 			congresses := []int{119, 118}
 			maxErrors := 50
 			for _, arg := range os.Args[2:] {
@@ -240,6 +245,20 @@ func main() {
 					dryRun = true
 				case arg == "--skip-summaries":
 					skipSummaries = true
+				case arg == "--download-only":
+					downloadOnly = true
+				case arg == "--parse-only":
+					parseOnly = true
+				case strings.HasPrefix(arg, "--source="):
+					source = strings.TrimPrefix(arg, "--source=")
+				case strings.HasPrefix(arg, "--data-dir="):
+					dataDir = strings.TrimPrefix(arg, "--data-dir=")
+				case strings.HasPrefix(arg, "--concurrency="):
+					n, err := strconv.Atoi(strings.TrimPrefix(arg, "--concurrency="))
+					if err != nil {
+						log.Fatal("invalid --concurrency value: ", arg)
+					}
+					concurrency = n
 				case strings.HasPrefix(arg, "--congress="):
 					n, err := strconv.Atoi(strings.TrimPrefix(arg, "--congress="))
 					if err != nil {
@@ -254,33 +273,65 @@ func main() {
 					maxErrors = n
 				}
 			}
-			congressAPIKey := os.Getenv("CONGRESS_API_KEY")
-			if congressAPIKey == "" {
-				log.Fatal("CONGRESS_API_KEY environment variable is required")
-			}
-			result, err := essentials.ImportFederalBills(essentials.ImportFederalBillsConfig{
-				DryRun:          dryRun,
-				CongressNumbers: congresses,
-				SkipSummaries:   skipSummaries,
-				CongressAPIKey:  congressAPIKey,
-				MaxErrors:       maxErrors,
-			})
-			if err != nil {
-				log.Fatal("import-federal-bills failed: ", err)
-			}
-			fmt.Printf("Import complete: %d bills, %d cosponsors, %d summaries, %d skipped\n",
-				result.BillsUpserted, result.CosponsorsUpserted, result.SummariesFetched, result.Skipped)
-			if len(result.Errors) > 0 {
-				fmt.Printf("Errors (%d):\n", len(result.Errors))
-				for _, e := range result.Errors {
-					fmt.Printf("  - %s\n", e)
+
+			if source == "api" {
+				// Legacy API mode: requires CONGRESS_API_KEY
+				congressAPIKey := os.Getenv("CONGRESS_API_KEY")
+				if congressAPIKey == "" {
+					log.Fatal("CONGRESS_API_KEY environment variable is required for --source=api")
+				}
+				result, err := essentials.ImportFederalBills(essentials.ImportFederalBillsConfig{
+					DryRun:          dryRun,
+					CongressNumbers: congresses,
+					SkipSummaries:   skipSummaries,
+					CongressAPIKey:  congressAPIKey,
+					MaxErrors:       maxErrors,
+				})
+				if err != nil {
+					log.Fatal("import-federal-bills (api) failed: ", err)
+				}
+				fmt.Printf("Import complete (api): %d bills, %d cosponsors, %d summaries, %d skipped\n",
+					result.BillsUpserted, result.CosponsorsUpserted, result.SummariesFetched, result.Skipped)
+				if len(result.Errors) > 0 {
+					fmt.Printf("Errors (%d):\n", len(result.Errors))
+					for _, e := range result.Errors {
+						fmt.Printf("  - %s\n", e)
+					}
+				}
+			} else {
+				// Bulk mode (default): no API keys required
+				result, err := essentials.ImportFederalBillsBulk(essentials.ImportFederalBillsBulkConfig{
+					DryRun:          dryRun,
+					DownloadOnly:    downloadOnly,
+					ParseOnly:       parseOnly,
+					DataDir:         dataDir,
+					Concurrency:     concurrency,
+					CongressNumbers: congresses,
+				})
+				if err != nil {
+					log.Fatal("import-federal-bills (bulk) failed: ", err)
+				}
+				fmt.Printf("Import complete (bulk): %d bills, %d cosponsors, %d summaries, %d files, %d skipped\n",
+					result.BillsUpserted, result.CosponsorsUpserted, result.SummariesStored, result.FilesProcessed, result.Skipped)
+				if len(result.Errors) > 0 {
+					fmt.Printf("Errors (%d):\n", len(result.Errors))
+					for _, e := range result.Errors {
+						fmt.Printf("  - %s\n", e)
+					}
 				}
 			}
+			_ = skipSummaries // only used in api mode
+			_ = maxErrors     // only used in api mode
 			os.Exit(0)
 		case "import-federal-votes":
 			dryRun := false
 			houseOnly := false
 			senateOnly := false
+			downloadOnly := false
+			parseOnly := false
+			source := "bulk"
+			dataDir := ""
+			concurrency := 5
 			congresses := []int{119, 118}
 			maxErrors := 50
 			for _, arg := range os.Args[2:] {
@@ -291,6 +342,20 @@ func main() {
 					houseOnly = true
 				case arg == "--senate-only":
 					senateOnly = true
+				case arg == "--download-only":
+					downloadOnly = true
+				case arg == "--parse-only":
+					parseOnly = true
+				case strings.HasPrefix(arg, "--source="):
+					source = strings.TrimPrefix(arg, "--source=")
+				case strings.HasPrefix(arg, "--data-dir="):
+					dataDir = strings.TrimPrefix(arg, "--data-dir=")
+				case strings.HasPrefix(arg, "--concurrency="):
+					n, err := strconv.Atoi(strings.TrimPrefix(arg, "--concurrency="))
+					if err != nil {
+						log.Fatal("invalid --concurrency value: ", arg)
+					}
+					concurrency = n
 				case strings.HasPrefix(arg, "--congress="):
 					n, err := strconv.Atoi(strings.TrimPrefix(arg, "--congress="))
 					if err != nil {
@@ -305,34 +370,64 @@ func main() {
 					maxErrors = n
 				}
 			}
-			congressAPIKey := os.Getenv("CONGRESS_API_KEY")
-			legiScanAPIKey := os.Getenv("LEGISCAN_API_KEY")
-			if !senateOnly && congressAPIKey == "" {
-				log.Fatal("CONGRESS_API_KEY environment variable is required for House votes")
-			}
-			if !houseOnly && legiScanAPIKey == "" {
-				log.Fatal("LEGISCAN_API_KEY environment variable is required for Senate votes")
-			}
-			voteResult, err := essentials.ImportFederalVotes(essentials.ImportFederalVotesConfig{
-				DryRun:          dryRun,
-				CongressNumbers: congresses,
-				CongressAPIKey:  congressAPIKey,
-				LegiScanAPIKey:  legiScanAPIKey,
-				HouseOnly:       houseOnly,
-				SenateOnly:      senateOnly,
-				MaxErrors:       maxErrors,
-			})
-			if err != nil {
-				log.Fatal("import-federal-votes failed: ", err)
-			}
-			fmt.Printf("Import complete: %d House votes, %d Senate votes, %d LegiScan bridge rows, %d skipped\n",
-				voteResult.HouseVotesUpserted, voteResult.SenateVotesUpserted, voteResult.LegiScanBridgeRows, voteResult.Skipped)
-			if len(voteResult.Errors) > 0 {
-				fmt.Printf("Errors (%d):\n", len(voteResult.Errors))
-				for _, e := range voteResult.Errors {
-					fmt.Printf("  - %s\n", e)
+
+			if source == "api" {
+				// Legacy API mode: requires API keys
+				congressAPIKey := os.Getenv("CONGRESS_API_KEY")
+				legiScanAPIKey := os.Getenv("LEGISCAN_API_KEY")
+				if !senateOnly && congressAPIKey == "" {
+					log.Fatal("CONGRESS_API_KEY environment variable is required for House votes (--source=api)")
+				}
+				if !houseOnly && legiScanAPIKey == "" {
+					log.Fatal("LEGISCAN_API_KEY environment variable is required for Senate votes (--source=api)")
+				}
+				voteResult, err := essentials.ImportFederalVotes(essentials.ImportFederalVotesConfig{
+					DryRun:          dryRun,
+					CongressNumbers: congresses,
+					CongressAPIKey:  congressAPIKey,
+					LegiScanAPIKey:  legiScanAPIKey,
+					HouseOnly:       houseOnly,
+					SenateOnly:      senateOnly,
+					MaxErrors:       maxErrors,
+				})
+				if err != nil {
+					log.Fatal("import-federal-votes (api) failed: ", err)
+				}
+				fmt.Printf("Import complete (api): %d House votes, %d Senate votes, %d LegiScan bridge rows, %d skipped\n",
+					voteResult.HouseVotesUpserted, voteResult.SenateVotesUpserted, voteResult.LegiScanBridgeRows, voteResult.Skipped)
+				if len(voteResult.Errors) > 0 {
+					fmt.Printf("Errors (%d):\n", len(voteResult.Errors))
+					for _, e := range voteResult.Errors {
+						fmt.Printf("  - %s\n", e)
+					}
+				}
+			} else {
+				// Bulk mode (default): no API keys required
+				voteResult, err := essentials.ImportFederalVotesBulk(essentials.ImportFederalVotesBulkConfig{
+					DryRun:          dryRun,
+					DownloadOnly:    downloadOnly,
+					ParseOnly:       parseOnly,
+					DataDir:         dataDir,
+					Concurrency:     concurrency,
+					CongressNumbers: congresses,
+					HouseOnly:       houseOnly,
+					SenateOnly:      senateOnly,
+				})
+				if err != nil {
+					log.Fatal("import-federal-votes (bulk) failed: ", err)
+				}
+				fmt.Printf("Import complete (bulk): %d House votes (%d roll calls), %d Senate votes (%d roll calls), %d files, %d skipped\n",
+					voteResult.HouseVotesUpserted, voteResult.HouseRollCalls,
+					voteResult.SenateVotesUpserted, voteResult.SenateRollCalls,
+					voteResult.FilesProcessed, voteResult.Skipped)
+				if len(voteResult.Errors) > 0 {
+					fmt.Printf("Errors (%d):\n", len(voteResult.Errors))
+					for _, e := range voteResult.Errors {
+						fmt.Printf("  - %s\n", e)
+					}
 				}
 			}
+			_ = maxErrors // only used in api mode
 			os.Exit(0)
 		}
 	}
