@@ -241,18 +241,29 @@ def get_politician_name(conn, politician_id: str) -> str:
         return f"(unknown: {politician_id[:8]})"
 
 
-def get_session_ids(conn, jurisdiction: str, year_start: int) -> list:
-    """Get session IDs matching jurisdiction and year_start."""
+def get_session_ids(conn, jurisdiction: str, current_only: bool = True) -> list:
+    """Get session IDs for a jurisdiction. By default returns only current sessions."""
     with conn.cursor() as cur:
-        cur.execute(
-            """
-            SELECT id FROM essentials.legislative_sessions
-            WHERE jurisdiction = %s
-              AND year_start = %s
-            """,
-            (jurisdiction, year_start),
-        )
-        return [str(row[0]) for row in cur.fetchall()]
+        if current_only:
+            cur.execute(
+                """
+                SELECT id, name FROM essentials.legislative_sessions
+                WHERE jurisdiction = %s
+                  AND is_current = true
+                """,
+                (jurisdiction,),
+            )
+        else:
+            cur.execute(
+                """
+                SELECT id, name FROM essentials.legislative_sessions
+                WHERE jurisdiction = %s
+                ORDER BY start_date DESC NULLS FIRST
+                """,
+                (jurisdiction,),
+            )
+        rows = cur.fetchall()
+        return [(str(row[0]), row[1]) for row in rows]
 
 
 # ---------------------------------------------------------------------------
@@ -270,19 +281,17 @@ def check_db_counts(conn, jurisdiction: str, session_ids: list, state_abbr: str)
             "legislators_with_votes": 0,
         }
 
-    id_placeholders = ",".join(["%s"] * len(session_ids))
-
     with conn.cursor() as cur:
         # Count bills in these sessions
         cur.execute(
-            f"SELECT COUNT(*) FROM essentials.bills WHERE session_id = ANY(%s::uuid[])",
+            "SELECT COUNT(*) FROM essentials.legislative_bills WHERE session_id = ANY(%s::uuid[])",
             (session_ids,),
         )
         bill_count = cur.fetchone()[0]
 
         # Count vote records in these sessions
         cur.execute(
-            f"SELECT COUNT(*) FROM essentials.votes WHERE session_id = ANY(%s::uuid[])",
+            "SELECT COUNT(*) FROM essentials.legislative_votes WHERE session_id = ANY(%s::uuid[])",
             (session_ids,),
         )
         vote_count = cur.fetchone()[0]
@@ -292,13 +301,13 @@ def check_db_counts(conn, jurisdiction: str, session_ids: list, state_abbr: str)
             """
             SELECT COUNT(DISTINCT politician_id) FROM (
                 SELECT sponsor_id AS politician_id
-                FROM essentials.bills
+                FROM essentials.legislative_bills
                 WHERE session_id = ANY(%s::uuid[])
                   AND sponsor_id IS NOT NULL
                 UNION
                 SELECT politician_id
-                FROM essentials.bill_cosponsors bc
-                JOIN essentials.bills b ON b.id = bc.bill_id
+                FROM essentials.legislative_bill_cosponsors bc
+                JOIN essentials.legislative_bills b ON b.id = bc.bill_id
                 WHERE b.session_id = ANY(%s::uuid[])
             ) sponsors
             """,
@@ -310,7 +319,7 @@ def check_db_counts(conn, jurisdiction: str, session_ids: list, state_abbr: str)
         cur.execute(
             """
             SELECT COUNT(DISTINCT politician_id)
-            FROM essentials.votes
+            FROM essentials.legislative_votes
             WHERE session_id = ANY(%s::uuid[])
               AND politician_id IS NOT NULL
             """,
@@ -332,16 +341,23 @@ def check_db_counts(conn, jurisdiction: str, session_ids: list, state_abbr: str)
 # ---------------------------------------------------------------------------
 
 def check_legiscan_totals(api_key: str, state_abbr: str, year_start: int, db_bill_count: int) -> dict:
-    """Compare DB bill count against LegiScan getDatasetList bill_count."""
+    """Compare DB bill count against LegiScan getDatasetList bill_count.
+
+    year_start is used as a hint to find the most recent matching session.
+    """
     data = legiscan_query(api_key, "getDatasetList", {"state": state_abbr})
     datasets = data.get("datasetlist", [])
 
-    # Find dataset matching the current session year_start
+    # Find dataset matching the session year_start, or the most recent if not found
     matched = None
     for ds in datasets:
         if ds.get("year_start") == year_start:
             matched = ds
             break
+
+    # Fallback: pick the dataset with the highest year_start
+    if not matched and datasets:
+        matched = max(datasets, key=lambda d: d.get("year_start", 0))
 
     if not matched:
         return {
@@ -349,7 +365,7 @@ def check_legiscan_totals(api_key: str, state_abbr: str, year_start: int, db_bil
             "legiscan_bill_count": None,
             "match_pct": None,
             "passed": False,
-            "error": f"No dataset found for year_start={year_start}",
+            "error": "No datasets returned by LegiScan getDatasetList",
         }
 
     legiscan_count = matched.get("bill_count", 0)
@@ -444,19 +460,23 @@ def check_bridge_records(conn, state_abbr: str) -> dict:
 # ---------------------------------------------------------------------------
 
 def check_zero_activity(conn, state_abbr: str, session_ids: list) -> dict:
-    """Identify legislators with no bills or votes, classify new vs established."""
+    """Identify legislators with no bills or votes, classify new vs established.
+
+    Since offices.start_date is not available, all zero-activity legislators
+    are classified as 'established' (requiring investigation). This is the
+    conservative approach — no false negatives.
+    """
     with conn.cursor() as cur:
-        # Get all state legislators with their office start dates
+        # Get all state legislators
         cur.execute(
             """
-            SELECT DISTINCT p.id, p.first_name, p.last_name,
-                   MIN(o.start_date) AS earliest_office_start
+            SELECT DISTINCT p.id, p.first_name, p.last_name
             FROM essentials.politicians p
             JOIN essentials.offices o ON o.politician_id = p.id
             JOIN essentials.districts d ON o.district_id = d.id
             WHERE d.district_type IN ('STATE_UPPER', 'STATE_LOWER')
               AND d.state = %s
-            GROUP BY p.id, p.first_name, p.last_name
+            ORDER BY p.last_name, p.first_name
             """,
             (state_abbr,),
         )
@@ -469,23 +489,24 @@ def check_zero_activity(conn, state_abbr: str, session_ids: list) -> dict:
                 "new_zero_activity": [],
                 "established_zero_activity": [],
                 "active": 0,
+                "established_zero_pct": 0.0,
                 "passed": True,
             }
 
         pol_ids = [str(row[0]) for row in legislators]
 
-        # Get legislators with any sponsorship activity
+        # Get legislators with any sponsorship activity in current sessions
         cur.execute(
             """
             SELECT DISTINCT politician_id FROM (
                 SELECT sponsor_id AS politician_id
-                FROM essentials.bills
+                FROM essentials.legislative_bills
                 WHERE session_id = ANY(%s::uuid[])
                   AND sponsor_id = ANY(%s::uuid[])
                 UNION
                 SELECT bc.politician_id
-                FROM essentials.bill_cosponsors bc
-                JOIN essentials.bills b ON b.id = bc.bill_id
+                FROM essentials.legislative_bill_cosponsors bc
+                JOIN essentials.legislative_bills b ON b.id = bc.bill_id
                 WHERE b.session_id = ANY(%s::uuid[])
                   AND bc.politician_id = ANY(%s::uuid[])
             ) active_sponsors
@@ -498,7 +519,7 @@ def check_zero_activity(conn, state_abbr: str, session_ids: list) -> dict:
         cur.execute(
             """
             SELECT DISTINCT politician_id
-            FROM essentials.votes
+            FROM essentials.legislative_votes
             WHERE session_id = ANY(%s::uuid[])
               AND politician_id = ANY(%s::uuid[])
             """,
@@ -506,24 +527,11 @@ def check_zero_activity(conn, state_abbr: str, session_ids: list) -> dict:
         )
         active_ids.update(str(row[0]) for row in cur.fetchall())
 
-    # Legislators with zero activity
+    # Legislators with zero activity — all classified as established (conservative)
+    # since offices has no start_date column to distinguish new members
     zero_activity = [row for row in legislators if str(row[0]) not in active_ids]
-
-    # Classify: "new" vs "established" based on office start date
-    # Session start: roughly year_start January — use Jan 1 of the session year
-    # as the cutoff. If office started within 6 months of that, classify as "new"
-    # We don't have session year here, but we'll use a 2025-07-01 cutoff
-    # (6 months before the current sessions started in Jan 2025 or Jan 2026)
-    new_cutoff = datetime(2025, 7, 1).date()
-
-    new_zero = []
-    established_zero = []
-    for pol_id, first_name, last_name, start_date in zero_activity:
-        name = f"{first_name} {last_name}"
-        if start_date and start_date >= new_cutoff:
-            new_zero.append((str(pol_id), name, start_date))
-        else:
-            established_zero.append((str(pol_id), name, start_date))
+    established_zero = [(str(row[0]), f"{row[1]} {row[2]}") for row in zero_activity]
+    new_zero = []  # Cannot determine without start_date
 
     active_count = total - len(zero_activity)
     established_zero_pct = len(established_zero) / total if total > 0 else 0
@@ -557,7 +565,7 @@ def check_orphaned_records(conn, session_ids: list) -> dict:
         # Bills with no primary sponsor
         cur.execute(
             """
-            SELECT COUNT(*) FROM essentials.bills
+            SELECT COUNT(*) FROM essentials.legislative_bills
             WHERE session_id = ANY(%s::uuid[])
               AND sponsor_id IS NULL
             """,
@@ -565,13 +573,13 @@ def check_orphaned_records(conn, session_ids: list) -> dict:
         )
         bills_no_sponsor = cur.fetchone()[0]
 
-        # Sample orphaned bills
+        # Sample orphaned bills (using 'number' column, not 'bill_number')
         cur.execute(
             """
-            SELECT bill_number, title FROM essentials.bills
+            SELECT number, title FROM essentials.legislative_bills
             WHERE session_id = ANY(%s::uuid[])
               AND sponsor_id IS NULL
-            ORDER BY bill_number
+            ORDER BY number
             LIMIT 3
             """,
             (session_ids,),
@@ -581,7 +589,7 @@ def check_orphaned_records(conn, session_ids: list) -> dict:
         # Votes where politician_id is not in essentials.politicians
         cur.execute(
             """
-            SELECT COUNT(*) FROM essentials.votes v
+            SELECT COUNT(*) FROM essentials.legislative_votes v
             WHERE v.session_id = ANY(%s::uuid[])
               AND v.politician_id IS NOT NULL
               AND NOT EXISTS (
@@ -595,8 +603,8 @@ def check_orphaned_records(conn, session_ids: list) -> dict:
         # Bill cosponsors where politician_id is not in essentials.politicians
         cur.execute(
             """
-            SELECT COUNT(*) FROM essentials.bill_cosponsors bc
-            JOIN essentials.bills b ON b.id = bc.bill_id
+            SELECT COUNT(*) FROM essentials.legislative_bill_cosponsors bc
+            JOIN essentials.legislative_bills b ON b.id = bc.bill_id
             WHERE b.session_id = ANY(%s::uuid[])
               AND NOT EXISTS (
                   SELECT 1 FROM essentials.politicians p WHERE p.id = bc.politician_id
@@ -660,7 +668,7 @@ def check_spot_leaders(conn, state_abbr: str, jurisdiction: str, session_ids: li
             # Count bills as primary sponsor
             cur.execute(
                 """
-                SELECT COUNT(*) FROM essentials.bills
+                SELECT COUNT(*) FROM essentials.legislative_bills
                 WHERE session_id = ANY(%s::uuid[])
                   AND sponsor_id = %s::uuid
                 """,
@@ -671,8 +679,8 @@ def check_spot_leaders(conn, state_abbr: str, jurisdiction: str, session_ids: li
             # Count bills as cosponsor
             cur.execute(
                 """
-                SELECT COUNT(*) FROM essentials.bill_cosponsors bc
-                JOIN essentials.bills b ON b.id = bc.bill_id
+                SELECT COUNT(*) FROM essentials.legislative_bill_cosponsors bc
+                JOIN essentials.legislative_bills b ON b.id = bc.bill_id
                 WHERE b.session_id = ANY(%s::uuid[])
                   AND bc.politician_id = %s::uuid
                 """,
@@ -683,7 +691,7 @@ def check_spot_leaders(conn, state_abbr: str, jurisdiction: str, session_ids: li
             # Count votes
             cur.execute(
                 """
-                SELECT COUNT(*) FROM essentials.votes
+                SELECT COUNT(*) FROM essentials.legislative_votes
                 WHERE session_id = ANY(%s::uuid[])
                   AND politician_id = %s::uuid
                 """,
@@ -731,17 +739,23 @@ def validate_state(conn, state: str, verbose: bool, legiscan_check: bool, api_ke
     print(f"Validating {state} ({jurisdiction}) — {session_label}")
     print(f"{'=' * 60}")
 
-    # Resolve session IDs
-    session_ids = get_session_ids(conn, jurisdiction, year_start)
-    if not session_ids:
-        print(f"\nERROR: No sessions found for jurisdiction='{jurisdiction}' year_start={year_start}")
+    # Resolve session IDs (current sessions for this jurisdiction)
+    session_tuples = get_session_ids(conn, jurisdiction, current_only=True)
+    if not session_tuples:
+        print(f"\nERROR: No current sessions found for jurisdiction='{jurisdiction}'")
         print(f"{state}: FAIL — no sessions in DB to validate")
         return False
 
-    print(f"\nSessions found: {len(session_ids)} session(s) for year_start={year_start}")
+    session_ids = [t[0] for t in session_tuples]
+    session_names = [t[1] for t in session_tuples]
+
+    print(f"\nSessions found: {len(session_ids)} current session(s)")
     if verbose:
-        for sid in session_ids:
-            print(f"  - {sid}")
+        for sid, sname in session_tuples:
+            print(f"  - {sname} ({sid[:8]})")
+    else:
+        for sname in session_names:
+            print(f"  - {sname}")
 
     # --- Check A: DB bill/vote counts ---
     print(f"\n[A] DB Bill/Vote Counts")
@@ -810,9 +824,8 @@ def validate_state(conn, state: str, verbose: bool, legiscan_check: bool, api_ke
 
     if activity["established_zero_activity"] and verbose:
         print(f"  Established zero-activity legislators:")
-        for pol_id, name, start_date in activity["established_zero_activity"][:10]:
-            date_str = str(start_date) if start_date else "unknown"
-            print(f"    - {name} (start: {date_str}) ({pol_id[:8]})")
+        for pol_id, name in activity["established_zero_activity"][:10]:
+            print(f"    - {name} ({pol_id[:8]})")
 
     # --- Check E: Orphaned record detection ---
     print(f"\n[E] Orphaned Record Detection")
