@@ -656,9 +656,14 @@ def import_committees(
     dry_run: bool,
     verbose: bool,
     api_key: Optional[str] = None,
+    db_url: Optional[str] = None,
 ) -> dict:
     """
     Main import function. Returns stats dict.
+
+    For states with long API fetches (CA Open States ~15 min), the initial
+    conn may time out. Pass db_url to enable automatic reconnection after
+    the API fetch phase completes.
     """
     config = STATE_CONFIG[state]
     jurisdiction = config["jurisdiction"]
@@ -674,7 +679,7 @@ def import_committees(
         "bridge_rows_created": 0,
     }
 
-    # 1. Get current session ID
+    # 1. Get current session ID (pre-fetch DB read)
     session_id = get_current_session_id(conn, jurisdiction)
     if session_id:
         logging.info(f"Using session_id: {session_id}")
@@ -684,15 +689,27 @@ def import_committees(
             "Memberships will be inserted without session_id."
         )
 
-    # 2. Load existing committees from DB (for name matching)
+    # 2. Load existing committees from DB (pre-fetch DB read)
     existing_by_name, existing_by_ext_id = load_existing_committees(conn, jurisdiction)
 
-    # 3. Fetch committees with memberships
+    # 3. Fetch committees with memberships (long-running for CA Open States)
     if state == "IN":
         os_committees = fetch_all_iga_data()
     else:
         os_committees = fetch_all_committees(api_key, config["openstates_jurisdiction"])
     stats["committees_fetched"] = len(os_committees)
+
+    # 3b. Reconnect after long API fetch — the initial connection may have timed
+    # out during a multi-minute Open States pagination run. Close the stale
+    # connection and open a fresh one before writing to the database.
+    if db_url and state != "IN":
+        logging.info("Reconnecting to database after API fetch...")
+        try:
+            conn.close()
+        except Exception:
+            pass
+        conn = psycopg2.connect(db_url)
+        logging.info("Reconnected successfully.")
 
     # 4. Process each committee
     for committee in os_committees:
@@ -900,6 +917,9 @@ def main():
     # Log previous run info from tracker (matches LegiScan tracker pattern)
     log_previous_run(args.state)
 
+    # Open initial connection for pre-fetch DB reads (session_id, existing committees).
+    # For CA (Open States), the API fetch can take ~15 minutes. We reconnect after
+    # the fetch to avoid using a stale connection for DB writes.
     conn = psycopg2.connect(db_url)
     try:
         stats = import_committees(
@@ -908,6 +928,7 @@ def main():
             dry_run=args.dry_run,
             verbose=args.verbose,
             api_key=api_key,
+            db_url=db_url,
         )
 
         logging.info(f"\n{'=' * 60}")
@@ -921,8 +942,10 @@ def main():
         logging.info(f"{'=' * 60}")
 
         if not args.dry_run:
-            logging.info("\nFinal DB counts:")
-            report_final_counts(conn, jurisdiction)
+            # Open a fresh connection for the final count query
+            with psycopg2.connect(db_url) as final_conn:
+                logging.info("\nFinal DB counts:")
+                report_final_counts(final_conn, jurisdiction)
 
         # Save tracker after successful import (dry-run still records metadata)
         source = "iga" if args.state == "IN" else "openstates"
@@ -939,7 +962,10 @@ def main():
         logging.info(f"Tracker updated: {TRACKER_PATH}")
 
     finally:
-        conn.close()
+        try:
+            conn.close()
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":
