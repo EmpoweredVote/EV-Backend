@@ -1,0 +1,20 @@
+{
+  "states": {
+    "IN": {
+      "name": "Indiana",
+      "jurisdiction": "indiana",
+      "current_year_start": 2026,
+      "previous_year_start": 2025,
+      "committee_source": "iga",
+      "legislative_source": "legiscan"
+    },
+    "CA": {
+      "name": "California",
+      "jurisdiction": "california",
+      "current_year_start": 2025,
+      "previous_year_start": 2023,
+      "committee_source": "openstates",
+      "legislative_source": "legiscan"
+    }
+  }
+}

@@ -55,21 +55,55 @@ DATASET_CACHE_DIR = Path.home() / ".ev-backend" / "datasets"
 DATASET_HASH_PATH = Path.home() / ".ev-backend" / "dataset_hashes.json"
 IMPORT_TRACKER_PATH = Path.home() / ".ev-backend" / "legiscan_import_tracker.json"
 
-# State session configurations
-STATE_SESSIONS = {
-    "IN": {
-        "name": "Indiana",
-        "jurisdiction": "indiana",
-        "current_year_start": 2026,
-        "previous_year_start": 2025,
-    },
-    "CA": {
-        "name": "California",
-        "jurisdiction": "california",
-        "current_year_start": 2025,
-        "previous_year_start": 2023,
-    },
-}
+CONFIG_PATH = Path(__file__).resolve().parent / "state_legislative_config.json"
+
+
+def load_state_config(state_code: str) -> dict:
+    """Load session config for a state from state_legislative_config.json.
+
+    Returns the state's config dict (name, jurisdiction, current_year_start, etc.).
+    Exits with code 1 if the config file is missing or the state is not found.
+    """
+    if not CONFIG_PATH.exists():
+        print(
+            f"ERROR: Config file not found: {CONFIG_PATH}\n"
+            "       Create EV-Backend/scripts/state_legislative_config.json before running.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    with open(CONFIG_PATH) as f:
+        raw = json.load(f)
+    states = raw.get("states", {})
+    if state_code not in states:
+        print(
+            f"ERROR: State '{state_code}' not found in {CONFIG_PATH}\n"
+            f"       Available states: {list(states.keys())}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    return states[state_code]
+
+
+def _load_all_state_sessions() -> dict:
+    """Load all state session configs from state_legislative_config.json.
+
+    Returns dict matching the original STATE_SESSIONS shape so the rest of
+    the script is unchanged.  Exits with code 1 if the config file is missing.
+    """
+    if not CONFIG_PATH.exists():
+        print(
+            f"ERROR: Config file not found: {CONFIG_PATH}\n"
+            "       Create EV-Backend/scripts/state_legislative_config.json before running.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    with open(CONFIG_PATH) as f:
+        raw = json.load(f)
+    return raw.get("states", {})
+
+
+# State session configurations — loaded from state_legislative_config.json
+STATE_SESSIONS = _load_all_state_sessions()
 
 # Common nickname <-> formal name mappings for legislator matching.
 # Each entry maps both directions: "dave" matches "david" and vice versa.

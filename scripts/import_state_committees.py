@@ -65,6 +65,37 @@ ENV_PATH = os.path.join(SCRIPT_DIR, "..", ".env.local")
 load_dotenv(ENV_PATH)
 
 # ---------------------------------------------------------------------------
+# Shared session config (single source of truth)
+# ---------------------------------------------------------------------------
+CONFIG_PATH = Path(SCRIPT_DIR) / "state_legislative_config.json"
+
+
+def load_state_config(state_code: str) -> dict:
+    """Load session config for a state from state_legislative_config.json.
+
+    Returns the state's config dict (name, jurisdiction, current_year_start, etc.).
+    Exits with code 1 if the config file is missing or the state is not found.
+    """
+    if not CONFIG_PATH.exists():
+        print(
+            f"ERROR: Config file not found: {CONFIG_PATH}\n"
+            "       Create EV-Backend/scripts/state_legislative_config.json before running.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    with open(CONFIG_PATH) as f:
+        raw = json.load(f)
+    states = raw.get("states", {})
+    if state_code not in states:
+        print(
+            f"ERROR: State '{state_code}' not found in {CONFIG_PATH}\n"
+            f"       Available states: {list(states.keys())}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    return states[state_code]
+
+# ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
 OPENSTATES_BASE_URL = "https://v3.openstates.org"
@@ -194,7 +225,7 @@ def fetch_iga_members(committee_id: str, session_lpid: str) -> list:
     return data.get("members", [])
 
 
-def fetch_all_iga_data(session_year: int = 2026) -> list:
+def fetch_all_iga_data(session_year: int) -> list:
     """
     Fetch all standing committees + members from IGA API.
     Returns a list of committee dicts in the same shape the
@@ -657,6 +688,7 @@ def import_committees(
     verbose: bool,
     api_key: Optional[str] = None,
     db_url: Optional[str] = None,
+    session_year: Optional[int] = None,
 ) -> dict:
     """
     Main import function. Returns stats dict.
@@ -664,6 +696,9 @@ def import_committees(
     For states with long API fetches (CA Open States ~15 min), the initial
     conn may time out. Pass db_url to enable automatic reconnection after
     the API fetch phase completes.
+
+    session_year: IGA session year for IN (required for Indiana). Loaded from
+                  state_legislative_config.json by main() and passed here.
     """
     config = STATE_CONFIG[state]
     jurisdiction = config["jurisdiction"]
@@ -694,7 +729,7 @@ def import_committees(
 
     # 3. Fetch committees with memberships (long-running for CA Open States)
     if state == "IN":
-        os_committees = fetch_all_iga_data()
+        os_committees = fetch_all_iga_data(session_year=session_year)
     else:
         os_committees = fetch_all_committees(api_key, config["openstates_jurisdiction"])
     stats["committees_fetched"] = len(os_committees)
@@ -912,6 +947,14 @@ def main():
     config = STATE_CONFIG[args.state]
     jurisdiction = config["jurisdiction"]
 
+    # Load session config from shared JSON (single source of truth for session years)
+    session_cfg = load_state_config(args.state)
+    session_year = session_cfg["current_year_start"]
+    logging.info(
+        f"Loaded config from state_legislative_config.json: "
+        f"{args.state} current_year_start={session_year}"
+    )
+
     logging.info(f"Starting committee import for {args.state} ({jurisdiction})")
 
     # Log previous run info from tracker (matches LegiScan tracker pattern)
@@ -929,6 +972,7 @@ def main():
             verbose=args.verbose,
             api_key=api_key,
             db_url=db_url,
+            session_year=session_year,
         )
 
         logging.info(f"\n{'=' * 60}")
