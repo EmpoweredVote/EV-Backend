@@ -22,18 +22,35 @@ IGA API (Indiana):
     Base: https://iga.in.gov/api
     Auth: None (requires browser-like User-Agent header)
 
-Open States API v3:
+Open States API v3 (California):
     Base: https://v3.openstates.org
     Auth: ?apikey=... or x-api-key header
     Rate limit: 10/minute free tier → enforce 6-second delay between requests
+
+CA Data Source Decision (researched 2026-03-05):
+    leginfo.legislature.ca.gov was evaluated as a potential no-auth direct API
+    source (matching IGA's experience for Indiana). However, the site is a
+    JavaServer Faces (JSF) web application with session-based cookies and no
+    public REST or JSON API endpoints. Probing /api/, /cgi-bin/, and committee-
+    specific paths all returned HTTP 404. No usable structured API was found.
+    Decision: Open States API v3 is confirmed as the data source for California.
+
+Tracking:
+    Records last-run info to ~/.ev-backend/committee_import_tracker.json after
+    each successful import. On re-run, logs the previous run info so operators
+    can verify freshness before running a full import again.
 """
 
 import argparse
+import json
 import logging
 import os
 import sys
+import tempfile
 import time
 import uuid
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import Optional
 
 import psycopg2
@@ -52,6 +69,53 @@ load_dotenv(ENV_PATH)
 # ---------------------------------------------------------------------------
 OPENSTATES_BASE_URL = "https://v3.openstates.org"
 RATE_LIMIT_DELAY = 6  # seconds between requests (10/min free tier)
+
+# ---------------------------------------------------------------------------
+# Import tracker — records last-run timestamp and counts per state
+# Format: { "IN": {"last_run": ISO8601, "committees_imported": N, ...}, "CA": {...} }
+# Matches the LegiScan tracker pattern from import_state_legislative.py
+# ---------------------------------------------------------------------------
+TRACKER_PATH = Path.home() / ".ev-backend" / "committee_import_tracker.json"
+
+
+def read_committee_tracker() -> dict:
+    """Read the committee import tracker. Returns {} if not found."""
+    if not TRACKER_PATH.exists():
+        return {}
+    with open(TRACKER_PATH) as f:
+        return json.load(f)
+
+
+def save_committee_tracker(tracker: dict) -> None:
+    """Atomically write the committee import tracker using temp-file + rename."""
+    TRACKER_PATH.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=TRACKER_PATH.parent)
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(tracker, f, indent=2)
+        os.rename(tmp, TRACKER_PATH)
+    except Exception:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+
+
+def log_previous_run(state: str) -> None:
+    """Log info about the previous run for this state, if any."""
+    tracker = read_committee_tracker()
+    if state in tracker:
+        prev = tracker[state]
+        logging.info(
+            f"Last import for {state}: {prev.get('last_run', 'unknown')} — "
+            f"{prev.get('committees_imported', 0)} committees, "
+            f"{prev.get('memberships_created', 0)} memberships, "
+            f"{prev.get('match_failures', 0)} match failures "
+            f"(source: {prev.get('source', 'unknown')})"
+        )
+    else:
+        logging.info(f"No previous import recorded for {state}")
 
 # ---------------------------------------------------------------------------
 # IGA API (Indiana General Assembly) constants
@@ -242,9 +306,8 @@ def get_cache_path(jurisdiction: str) -> str:
 def fetch_all_committees(api_key: str, jurisdiction: str) -> list:
     """Fetch all committees with memberships via paginated listing.
     Caches progress to disk so interrupted runs can resume.
-    Filters to only return committees that have at least one membership."""
-    import json
-
+    Filters to standing committees only (classification == "committee") that have
+    at least one membership. Subcommittees and conference committees are excluded."""
     cache_path = get_cache_path(jurisdiction)
 
     # Resume from cache if exists
@@ -279,9 +342,14 @@ def fetch_all_committees(api_key: str, jurisdiction: str) -> list:
         max_page = pagination.get("max_page", 1)
         total_items = pagination.get("total_items", 0)
 
-        # Filter to committees with memberships
+        # Filter to standing committees only (classification == "committee")
+        # Excludes "subcommittee" and "conference" types — mirrors IGA filter
+        # that restricts to type == "standing" for Indiana.
         for committee in results:
-            if committee.get("memberships"):
+            if (
+                committee.get("memberships")
+                and committee.get("classification") == "committee"
+            ):
                 committees_with_members.append(committee)
 
         logging.debug(
@@ -829,6 +897,9 @@ def main():
 
     logging.info(f"Starting committee import for {args.state} ({jurisdiction})")
 
+    # Log previous run info from tracker (matches LegiScan tracker pattern)
+    log_previous_run(args.state)
+
     conn = psycopg2.connect(db_url)
     try:
         stats = import_committees(
@@ -852,6 +923,20 @@ def main():
         if not args.dry_run:
             logging.info("\nFinal DB counts:")
             report_final_counts(conn, jurisdiction)
+
+        # Save tracker after successful import (dry-run still records metadata)
+        source = "iga" if args.state == "IN" else "openstates"
+        tracker = read_committee_tracker()
+        tracker[args.state] = {
+            "last_run": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "committees_imported": stats["committees_fetched"],
+            "memberships_created": stats["memberships_linked"],
+            "match_failures": stats["memberships_skipped_no_match"],
+            "source": source,
+            "dry_run": args.dry_run,
+        }
+        save_committee_tracker(tracker)
+        logging.info(f"Tracker updated: {TRACKER_PATH}")
 
     finally:
         conn.close()
