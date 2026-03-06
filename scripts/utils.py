@@ -136,7 +136,7 @@ def get_supabase_client():
     return create_client(url, key)
 
 
-PHOTO_BUCKET = "politician-photos"
+PHOTO_BUCKET = "politician_photos"
 
 
 def upload_photo_to_storage(image_bytes, storage_path, content_type="image/jpeg"):
