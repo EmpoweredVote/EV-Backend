@@ -59,19 +59,21 @@ type Politician struct {
 }
 
 type Office struct {
-	ID                   uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
-	PoliticianID         uuid.UUID `json:"politician_id" gorm:"type:uuid;uniqueIndex"`
-	ChamberID            uuid.UUID `json:"chamber_id" gorm:"type:uuid"`
-	DistrictID           uuid.UUID `json:"district_id" gorm:"type:uuid"`
-	Title                string    `json:"title"`
-	RepresentingState    string    `json:"representing_state"`
-	RepresentingCity     string    `json:"representing_city"`
-	Description          string    `json:"description"` // Position description from BallotReady
-	Seats                int       `json:"seats"`
-	NormalizedPositionName string    `json:"normalized_position_name"`
-	PartisanType         string    `json:"partisan_type"`
-	Salary               string    `json:"salary"`
-	IsAppointedPosition  bool      `json:"is_appointed_position"`
+	ID                   uuid.UUID  `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	PoliticianID         *uuid.UUID `json:"politician_id" gorm:"type:uuid;uniqueIndex"`
+	ChamberID            uuid.UUID  `json:"chamber_id" gorm:"type:uuid"`
+	DistrictID           uuid.UUID  `json:"district_id" gorm:"type:uuid"`
+	Title                string     `json:"title"`
+	RepresentingState    string     `json:"representing_state"`
+	RepresentingCity     string     `json:"representing_city"`
+	Description          string     `json:"description"` // Position description from BallotReady
+	Seats                int        `json:"seats"`
+	NormalizedPositionName string   `json:"normalized_position_name"`
+	PartisanType         string     `json:"partisan_type"`
+	Salary               string     `json:"salary"`
+	IsAppointedPosition  bool       `json:"is_appointed_position"`
+	IsVacant             bool       `json:"is_vacant" gorm:"default:false"`
+	VacantSince          *time.Time `json:"vacant_since,omitempty"`
 }
 
 type Chamber struct {

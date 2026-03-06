@@ -1672,8 +1672,9 @@ func promoteToEssentials(tx *gorm.DB, sp StagingPolitician) (uuid.UUID, error) {
 	}
 
 	// Create office linking politician → chamber → district
+	polIDPtr := pol.ID
 	office := essentials.Office{
-		PoliticianID:      pol.ID,
+		PoliticianID:      &polIDPtr,
 		ChamberID:         chamber.ID,
 		DistrictID:        district.ID,
 		Title:             sp.Office,

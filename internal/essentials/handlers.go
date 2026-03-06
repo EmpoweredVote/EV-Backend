@@ -186,6 +186,7 @@ type OfficialOut struct {
 	IsElected            bool            `json:"is_elected"`
 	IsAppointed          bool            `json:"is_appointed,omitempty"`
 	IsVacant             bool            `json:"is_vacant,omitempty"`
+	VacantSince          *time.Time      `json:"vacant_since,omitempty"`
 	IsOffCycle           bool            `json:"is_off_cycle,omitempty"`
 	Specificity          string          `json:"specificity,omitempty"`
 	ElectionFrequency    string          `json:"election_frequency,omitempty"`
@@ -374,7 +375,7 @@ func upsertOfficial(ctx context.Context, off CiceroOfficial, timestamp time.Time
 		// ==== Office ====
 		office := Office{
 			ID:                   tr.Politician.OfficeID,
-			PoliticianID:         polID,
+			PoliticianID:         &polID,
 			ChamberID:            chamberID,
 			DistrictID:           districtID,
 			Title:                off.Office.Title,
@@ -717,7 +718,7 @@ func upsertNormalizedOfficial(ctx context.Context, off provider.NormalizedOffici
 		// ==== Office ====
 		office := Office{
 			ID:                   tr.Politician.OfficeID,
-			PoliticianID:         polID,
+			PoliticianID:         &polID,
 			ChamberID:            chamberID,
 			DistrictID:           districtID,
 			Title:                off.Office.Title,
@@ -1142,7 +1143,8 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		GovernmentName       string
 		ElectionFrequency    string
 		IsAppointed          bool
-		IsVacant             bool
+		IsVacantOffice       bool
+		VacantSince          *time.Time
 		IsOffCycle           bool
 		Specificity          string
 		Seats                int
@@ -1165,13 +1167,25 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 
 	var rows []row
 
-	// Build query that includes federal + state (if known) + local officials
+	// Build query that includes federal + state (if known) + local officials.
+	// Uses offices as the base table with a LEFT JOIN to politicians so that
+	// vacant offices (o.is_vacant = true) are returned even without an active politician.
 	query := `
 		SELECT
-		  p.id, p.external_id, p.first_name, p.middle_initial, p.last_name,
-		  p.preferred_name, p.name_suffix, p.full_name, p.party, p.party_short_name,
+		  COALESCE(p.id, o.id) AS id,
+		  COALESCE(p.external_id, 0) AS external_id,
+		  COALESCE(p.first_name, '') AS first_name,
+		  COALESCE(p.middle_initial, '') AS middle_initial,
+		  COALESCE(p.last_name, '') AS last_name,
+		  COALESCE(p.preferred_name, '') AS preferred_name,
+		  COALESCE(p.name_suffix, '') AS name_suffix,
+		  COALESCE(p.full_name, '') AS full_name,
+		  COALESCE(p.party, '') AS party,
+		  COALESCE(p.party_short_name, '') AS party_short_name,
 		  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
-		  p.web_form_url, p.urls, p.email_addresses,
+		  COALESCE(p.web_form_url, '') AS web_form_url,
+		  COALESCE(p.urls, '{}') AS urls,
+		  COALESCE(p.email_addresses, '{}') AS email_addresses,
 		  o.title AS office_title, o.representing_state, o.representing_city,
 		  d.district_type, d.label AS district_label,
 		  COALESCE(d.district_id, '') AS district_id_text,
@@ -1180,7 +1194,11 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		  COALESCE(c.name_formal, '') AS chamber_name_formal,
 		  COALESCE(g.name, '') AS government_name,
 		  COALESCE(c.election_frequency, '') AS election_frequency,
-		  p.is_appointed, p.is_vacant, p.is_off_cycle, p.specificity,
+		  COALESCE(p.is_appointed, false) AS is_appointed,
+		  o.is_vacant AS is_vacant_office,
+		  o.vacant_since,
+		  COALESCE(p.is_off_cycle, false) AS is_off_cycle,
+		  COALESCE(p.specificity, '') AS specificity,
 		  o.seats, o.normalized_position_name, o.partisan_type, o.salary,
 		  d.geo_id, d.is_judicial, d.ocd_id,
 		  COALESCE(p.bio_text, '') AS bio_text,
@@ -1192,8 +1210,8 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		  COALESCE(p.valid_from, '') AS valid_from,
 		  COALESCE(p.valid_to, '') AS valid_to,
 		  COALESCE(p.term_date_precision, '') AS term_date_precision
-		FROM essentials.politicians p
-		JOIN essentials.offices o ON o.politician_id = p.id
+		FROM essentials.offices o
+		LEFT JOIN essentials.politicians p ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
 		LEFT JOIN essentials.chambers c ON c.id = o.chamber_id
 		LEFT JOIN essentials.governments g ON g.id = c.government_id
@@ -1222,13 +1240,13 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		args = append(args, state, state)
 	}
 
-	// Add local officials mapped to this ZIP
+	// Add local officials mapped to this ZIP (vacant offices without politician_id won't match)
 	query += `
 		  OR p.id IN (
 		    SELECT politician_id FROM essentials.zip_politicians WHERE zip = ?
 		  )
 		)
-		AND p.is_active = true
+		AND (p.is_active = true OR o.is_vacant = true)
 		ORDER BY d.district_type, o.title, p.last_name, p.first_name
 	`
 	// Prepend zip for LEFT JOIN, then append for WHERE clause
@@ -1371,7 +1389,8 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 			GovernmentName:       r.GovernmentName,
 			IsElected:            isElectedPosition(r.DistrictType, r.OfficeTitle, r.ElectionFrequency),
 			IsAppointed:          r.IsAppointed,
-			IsVacant:             r.IsVacant,
+			IsVacant:             r.IsVacantOffice,
+			VacantSince:          r.VacantSince,
 			IsOffCycle:           r.IsOffCycle,
 			Specificity:          r.Specificity,
 			ElectionFrequency:    r.ElectionFrequency,
@@ -1446,7 +1465,8 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		GovernmentName       string
 		ElectionFrequency    string
 		IsAppointed          bool
-		IsVacant             bool
+		IsVacantOffice       bool
+		VacantSince          *time.Time
 		IsOffCycle           bool
 		Specificity          string
 		Seats                int
@@ -1468,12 +1488,24 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 
 	var rows []row
 
+	// Uses offices as the base table with LEFT JOIN to politicians so that
+	// vacant offices (o.is_vacant = true) are returned even without an active politician.
 	query := `
 		SELECT
-		  p.id, p.external_id, p.first_name, p.middle_initial, p.last_name,
-		  p.preferred_name, p.name_suffix, p.full_name, p.party, p.party_short_name,
+		  COALESCE(p.id, o.id) AS id,
+		  COALESCE(p.external_id, 0) AS external_id,
+		  COALESCE(p.first_name, '') AS first_name,
+		  COALESCE(p.middle_initial, '') AS middle_initial,
+		  COALESCE(p.last_name, '') AS last_name,
+		  COALESCE(p.preferred_name, '') AS preferred_name,
+		  COALESCE(p.name_suffix, '') AS name_suffix,
+		  COALESCE(p.full_name, '') AS full_name,
+		  COALESCE(p.party, '') AS party,
+		  COALESCE(p.party_short_name, '') AS party_short_name,
 		  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
-		  p.web_form_url, p.urls, p.email_addresses,
+		  COALESCE(p.web_form_url, '') AS web_form_url,
+		  COALESCE(p.urls, '{}') AS urls,
+		  COALESCE(p.email_addresses, '{}') AS email_addresses,
 		  o.title AS office_title, o.representing_state, o.representing_city,
 		  d.district_type, d.label AS district_label,
 		  COALESCE(d.district_id, '') AS district_id_text,
@@ -1481,7 +1513,11 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		  COALESCE(c.name, '') AS chamber_name, COALESCE(c.name_formal, '') AS chamber_name_formal,
 		  COALESCE(g.name, '') AS government_name,
 		  COALESCE(c.election_frequency, '') AS election_frequency,
-		  p.is_appointed, p.is_vacant, p.is_off_cycle, p.specificity,
+		  COALESCE(p.is_appointed, false) AS is_appointed,
+		  o.is_vacant AS is_vacant_office,
+		  o.vacant_since,
+		  COALESCE(p.is_off_cycle, false) AS is_off_cycle,
+		  COALESCE(p.specificity, '') AS specificity,
 		  o.seats, o.normalized_position_name, o.partisan_type, o.salary,
 		  d.geo_id, d.is_judicial, d.ocd_id,
 		  COALESCE(p.bio_text, '') AS bio_text,
@@ -1492,8 +1528,8 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		  COALESCE(p.valid_from, '') AS valid_from,
 		  COALESCE(p.valid_to, '') AS valid_to,
 		  COALESCE(p.term_date_precision, '') AS term_date_precision
-		FROM essentials.politicians p
-		JOIN essentials.offices o ON o.politician_id = p.id
+		FROM essentials.offices o
+		LEFT JOIN essentials.politicians p ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
 		LEFT JOIN essentials.chambers c ON c.id = o.chamber_id
 		LEFT JOIN essentials.governments g ON g.id = c.government_id
@@ -1510,6 +1546,7 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		    AND (o.representing_state = ? OR d.state = ?)
 		  )
 		)
+		AND (p.is_active = true OR o.is_vacant = true)
 		ORDER BY d.district_type, o.title, p.last_name, p.first_name
 	`
 
@@ -1648,7 +1685,8 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 			GovernmentName:       r.GovernmentName,
 			IsElected:            isElectedPosition(r.DistrictType, r.OfficeTitle, r.ElectionFrequency),
 			IsAppointed:          r.IsAppointed,
-			IsVacant:             r.IsVacant,
+			IsVacant:             r.IsVacantOffice,
+			VacantSince:          r.VacantSince,
 			IsOffCycle:           r.IsOffCycle,
 			Specificity:          r.Specificity,
 			ElectionFrequency:    r.ElectionFrequency,

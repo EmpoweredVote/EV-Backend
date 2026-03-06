@@ -119,9 +119,11 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 
 	whereClause := strings.Join(conditions, " OR ")
 
+	// Uses offices as the base table with LEFT JOIN to politicians so that
+	// vacant offices (o.is_vacant = true) are returned even without an active politician.
 	query := fmt.Sprintf(`
-		SELECT DISTINCT ON (p.id)
-			p.id,
+		SELECT DISTINCT ON (o.id)
+			COALESCE(p.id, o.id) AS id,
 			COALESCE(p.external_id, 0) AS external_id,
 			COALESCE(p.first_name, '') AS first_name,
 			COALESCE(p.middle_initial, '') AS middle_initial,
@@ -131,10 +133,10 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 			COALESCE(p.full_name, '') AS full_name,
 			COALESCE(p.party, '') AS party,
 			COALESCE(p.party_short_name, '') AS party_short_name,
-			COALESCE(p.photo_origin_url, '') AS photo_origin_url,
+			COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
 			COALESCE(p.web_form_url, '') AS web_form_url,
-			p.urls,
-			p.email_addresses,
+			COALESCE(p.urls, '{}') AS urls,
+			COALESCE(p.email_addresses, '{}') AS email_addresses,
 			COALESCE(o.title, '') AS office_title,
 			COALESCE(o.representing_state, '') AS representing_state,
 			COALESCE(o.representing_city, '') AS representing_city,
@@ -145,7 +147,8 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 			COALESCE(ch.name_formal, '') AS chamber_name_formal,
 			COALESCE(g.name, '') AS government_name,
 			COALESCE(p.is_appointed, false) AS is_appointed,
-			COALESCE(p.is_vacant, false) AS is_vacant,
+			o.is_vacant AS is_vacant,
+			o.vacant_since,
 			COALESCE(p.is_off_cycle, false) AS is_off_cycle,
 			COALESCE(p.specificity, '') AS specificity,
 			COALESCE(ch.election_frequency, '') AS election_frequency,
@@ -160,14 +163,14 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 			COALESCE(p.bioguide_id, '') AS bioguide_id,
 			COALESCE(p.slug, '') AS slug,
 			COALESCE(d.district_id, '') AS district_id_text
-		FROM essentials.politicians p
-		JOIN essentials.offices o ON o.politician_id = p.id
+		FROM essentials.offices o
+		LEFT JOIN essentials.politicians p ON o.politician_id = p.id
 		JOIN essentials.districts d ON o.district_id = d.id
 		LEFT JOIN essentials.chambers ch ON o.chamber_id = ch.id
 		LEFT JOIN essentials.governments g ON ch.government_id = g.id
 		WHERE (%s)
-		AND p.is_active = true
-		ORDER BY p.id, d.district_type
+		AND (p.is_active = true OR o.is_vacant = true)
+		ORDER BY o.id, d.district_type
 	`, whereClause)
 
 	rows, err := db.DB.WithContext(ctx).Raw(query, args...).Rows()
@@ -206,6 +209,7 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 			&off.GovernmentName,
 			&off.IsAppointed,
 			&off.IsVacant,
+			&off.VacantSince,
 			&off.IsOffCycle,
 			&off.Specificity,
 			&off.ElectionFrequency,

@@ -65,7 +65,7 @@ func TransformCiceroData(official CiceroOfficial) (TransformResults, error) {
 	// Office/District/Chamber/Gov
 	newOffice := &Office{
 		ID:                officeID,
-		PoliticianID:      polID,
+		PoliticianID:      &polID,
 		ChamberID:         chamberID,
 		DistrictID:        distID,
 		Title:             official.Office.Title,
@@ -317,7 +317,7 @@ func TransformNormalizedToModels(off provider.NormalizedOfficial) (TransformResu
 	// Office/District/Chamber/Government
 	newOffice := &Office{
 		ID:                   officeID,
-		PoliticianID:         polID,
+		PoliticianID:         &polID,
 		ChamberID:            chamberID,
 		DistrictID:           distID,
 		Title:                off.Office.Title,
