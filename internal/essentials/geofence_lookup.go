@@ -133,7 +133,7 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 			COALESCE(p.full_name, '') AS full_name,
 			COALESCE(p.party, '') AS party,
 			COALESCE(p.party_short_name, '') AS party_short_name,
-			COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
+			COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, ''), '') AS photo_origin_url,
 			COALESCE(p.web_form_url, '') AS web_form_url,
 			COALESCE(p.urls, '{}') AS urls,
 			COALESCE(p.email_addresses, '{}') AS email_addresses,
@@ -237,6 +237,9 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 		officials = append(officials, off)
 	}
 
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("politicians lookup rows error: %w", err)
+	}
 	if len(officials) == 0 {
 		return officials, nil
 	}
