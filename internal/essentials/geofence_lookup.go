@@ -280,29 +280,22 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 	return officials, nil
 }
 
-// FindGeoIDsByAreaIntersection finds all geofence boundaries (districts) that
-// spatially intersect the boundary of a queried area (city, ZIP, county).
-// The area is identified by looking up its boundary from geofence_boundaries
-// using the provided geo_id and MTFCC, then finding all other boundaries that
-// ST_Intersects with it.
-//
 // FindGeoIDsByAreaIntersection finds districts related to a queried area using
 // bidirectional point-on-surface matching:
-//   - Sub-districts whose representative point falls within the area (council wards, school districts)
-//   - Larger districts that contain the area's representative point (county, congressional, state leg)
-//
-// This avoids the ST_Intersects problem where neighboring cities that merely
-// share a boundary edge are included in results.
+//   - Sub-districts whose representative point falls within the area (council wards, school districts,
+//     AND cities whose center is inside the area)
+//   - Larger non-city districts that contain the area's representative point (county, congressional,
+//     state leg). City boundaries (G4110/G4120) are excluded from this direction because ZCTA
+//     boundaries don't align with city limits — e.g. 90210 extends into LA City territory but
+//     Beverly Hills residents shouldn't see the LA mayor.
 func FindGeoIDsByAreaIntersection(ctx context.Context, areaGeoID, areaMTFCC string) ([]GeoMatch, error) {
 	query := `
 		SELECT DISTINCT gb2.geo_id, COALESCE(gb2.mtfcc, '') as mtfcc
 		FROM essentials.geofence_boundaries gb1
 		JOIN essentials.geofence_boundaries gb2
 		  ON ST_Contains(gb1.geometry, ST_PointOnSurface(gb2.geometry))
-		   OR ST_Contains(gb2.geometry, ST_PointOnSurface(gb1.geometry))
-		   OR (gb2.mtfcc IN ('G4110', 'G4120')
-		       AND ST_Intersects(gb1.geometry, gb2.geometry)
-		       AND NOT ST_Touches(gb1.geometry, gb2.geometry))
+		   OR (ST_Contains(gb2.geometry, ST_PointOnSurface(gb1.geometry))
+		       AND gb2.mtfcc NOT IN ('G4110', 'G4120'))
 		WHERE gb1.geo_id = $1
 		  AND gb1.mtfcc = $2
 	`
