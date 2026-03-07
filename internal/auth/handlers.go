@@ -35,23 +35,28 @@ type RegisterRequest struct {
 }
 
 // sessionCookie returns a cookie configured for the current environment.
-// Local dev (PORT unset or localhost origins) uses Secure=false, SameSite=Lax
-// so cookies work over plain HTTP.
+// Local dev (PORT unset or 5050) uses Secure=false, SameSite=Lax, no Domain
+// so cookies work over plain HTTP without domain restrictions.
+// Production sets Domain ".empowered.vote" so the cookie is shared across
+// compass.empowered.vote, essentials.empowered.vote, and api.empowered.vote.
 func sessionCookie(name, value string, maxAge int) *http.Cookie {
 	secure := true
 	sameSite := http.SameSiteNoneMode
+	domain := ".empowered.vote"
 
 	// Detect local development: PORT env not set typically means `go run .`
 	port := os.Getenv("PORT")
 	if port == "" || strings.HasPrefix(port, "5050") {
 		secure = false
 		sameSite = http.SameSiteLaxMode
+		domain = "" // no domain restriction in local dev
 	}
 
 	return &http.Cookie{
 		Name:     name,
 		Value:    value,
 		Path:     "/",
+		Domain:   domain,
 		MaxAge:   maxAge,
 		HttpOnly: true,
 		Secure:   secure,
