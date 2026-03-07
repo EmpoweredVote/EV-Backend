@@ -17,6 +17,7 @@ func SetupRoutes() http.Handler {
 	r.Post("/politicians/search", SearchPoliticians)
 	r.Get("/politician/{id}", GetPoliticianByID)
 	r.Get("/candidates/{zip}", GetCandidatesByZip)
+	r.Post("/candidates/search", SearchCandidates)
 
 	// Phase B: Candidacy data endpoints
 	r.Get("/politician/{id}/endorsements", GetPoliticianEndorsements)

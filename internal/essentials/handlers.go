@@ -2659,22 +2659,25 @@ func GetAllPoliticians(w http.ResponseWriter, r *http.Request) {
 // The district_type field uses the same internal enum as OfficialOut for
 // compatibility with the frontend's classify.js system.
 type CandidateOut struct {
-	ExternalID        int    `json:"external_id"`
-	FirstName         string `json:"first_name"`
-	LastName          string `json:"last_name"`
-	FullName          string `json:"full_name"`
-	PhotoOriginURL    string `json:"photo_origin_url,omitempty"`
-	OfficeTitle       string `json:"office_title"`
-	DistrictType      string `json:"district_type"`
-	Party             string `json:"party,omitempty"`
-	PartyShortName    string `json:"party_short_name,omitempty"`
-	IsCandidate       bool   `json:"is_candidate"`
-	ElectionDate      string `json:"election_date"`
-	ElectionName      string `json:"election_name"`
-	IsPrimary         bool   `json:"is_primary"`
-	IsRunoff          bool   `json:"is_runoff"`
-	RepresentingState string `json:"representing_state,omitempty"`
-	ChamberName       string `json:"chamber_name,omitempty"`
+	ID                string            `json:"id"`                         // Politician UUID as string
+	ExternalID        int               `json:"external_id"`
+	FirstName         string            `json:"first_name"`
+	LastName          string            `json:"last_name"`
+	FullName          string            `json:"full_name"`
+	PhotoOriginURL    string            `json:"photo_origin_url,omitempty"`
+	Images            []PoliticianImage `json:"images,omitempty"`           // Full images array
+	OfficeTitle       string            `json:"office_title"`
+	DistrictType      string            `json:"district_type"`
+	Party             string            `json:"party,omitempty"`
+	PartyShortName    string            `json:"party_short_name,omitempty"`
+	IsCandidate       bool              `json:"is_candidate"`
+	ElectionDate      string            `json:"election_date"`
+	ElectionName      string            `json:"election_name"`
+	IsPrimary         bool              `json:"is_primary"`
+	IsRunoff          bool              `json:"is_runoff"`
+	RepresentingState string            `json:"representing_state,omitempty"`
+	ChamberName       string            `json:"chamber_name,omitempty"`
+	DistrictID        string            `json:"district_id,omitempty"`      // For subtitle (e.g. "District 11")
 }
 
 // GetCandidatesByZip returns active candidates from the election_records table.
@@ -2695,6 +2698,7 @@ func GetCandidatesByZip(w http.ResponseWriter, r *http.Request) {
 	state := zipPrefixToState(zip)
 
 	type candidateRow struct {
+		PoliticianID  uuid.UUID
 		ExternalID        int
 		FirstName         string
 		LastName          string
@@ -2710,11 +2714,13 @@ func GetCandidatesByZip(w http.ResponseWriter, r *http.Request) {
 		IsRunoff          bool
 		RepresentingState string
 		ChamberName       string
+		DistrictIDText    string
 	}
 
 	var rows []candidateRow
 	if err := db.DB.Raw(`
 		SELECT
+		  p.id AS politician_id,
 		  p.external_id,
 		  p.first_name, p.last_name, p.full_name,
 		  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
@@ -2727,7 +2733,8 @@ func GetCandidatesByZip(w http.ResponseWriter, r *http.Request) {
 		  er.is_primary,
 		  er.is_runoff,
 		  COALESCE(o.representing_state, '') AS representing_state,
-		  COALESCE(c.name, '') AS chamber_name
+		  COALESCE(c.name, '') AS chamber_name,
+		  COALESCE(d.district_id, '') AS district_id_text
 		FROM essentials.election_records er
 		JOIN essentials.politicians p ON p.id = er.politician_id
 		JOIN essentials.offices o ON o.politician_id = p.id
@@ -2754,14 +2761,23 @@ func GetCandidatesByZip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Batch-fetch images for all candidate politician IDs
+	polIDs := make([]uuid.UUID, 0, len(rows))
+	for _, row := range rows {
+		polIDs = append(polIDs, row.PoliticianID)
+	}
+	imagesByPolID := fetchImagesByPoliticianIDs(polIDs)
+
 	candidates := make([]CandidateOut, 0, len(rows))
 	for _, row := range rows {
 		candidates = append(candidates, CandidateOut{
+			ID:                row.PoliticianID.String(),
 			ExternalID:        row.ExternalID,
 			FirstName:         row.FirstName,
 			LastName:          row.LastName,
 			FullName:          row.FullName,
 			PhotoOriginURL:    row.PhotoOriginURL,
+			Images:            imagesByPolID[row.PoliticianID],
 			OfficeTitle:       row.OfficeTitle,
 			DistrictType:      row.DistrictType,
 			Party:             row.Party,
@@ -2773,9 +2789,230 @@ func GetCandidatesByZip(w http.ResponseWriter, r *http.Request) {
 			IsRunoff:          row.IsRunoff,
 			RepresentingState: row.RepresentingState,
 			ChamberName:       row.ChamberName,
+			DistrictID:        row.DistrictIDText,
 		})
 	}
 
+	writeJSON(w, candidates)
+}
+
+// fetchImagesByPoliticianIDs batch-fetches images for a set of politician UUIDs
+// and returns them grouped by politician_id for efficient attachment to CandidateOut.
+func fetchImagesByPoliticianIDs(polIDs []uuid.UUID) map[uuid.UUID][]PoliticianImage {
+	result := make(map[uuid.UUID][]PoliticianImage, len(polIDs))
+	if len(polIDs) == 0 {
+		return result
+	}
+	var images []PoliticianImage
+	db.DB.Where("politician_id IN ?", polIDs).Find(&images)
+	for _, img := range images {
+		result[img.PoliticianID] = append(result[img.PoliticianID], img)
+	}
+	return result
+}
+
+// --- SearchCandidates endpoint (address-based candidate search) ---------------
+
+// SearchCandidates accepts a POST with { "query": "..." } (address or ZIP string),
+// geocodes the query, finds matching geofences, and returns active candidates whose
+// districts overlap with the resolved geography.
+func SearchCandidates(w http.ResponseWriter, r *http.Request) {
+	var body struct {
+		Query string `json:"query"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+	query := strings.TrimSpace(body.Query)
+	if query == "" {
+		http.Error(w, "Query is required", http.StatusBadRequest)
+		return
+	}
+
+	if GeoClient == nil {
+		http.Error(w, "Address search requires geocoding service configuration", http.StatusServiceUnavailable)
+		return
+	}
+
+	geoResult, geoErr := GeoClient.Geocode(r.Context(), query)
+	if geoErr != nil {
+		log.Printf("[SearchCandidates] geocoding failed for %q: %v", query, geoErr)
+		writeJSON(w, []CandidateOut{})
+		return
+	}
+	log.Printf("[SearchCandidates] geocoded %q → (%.6f, %.6f) types=%v",
+		query, geoResult.Lat, geoResult.Lng, geoResult.ResultTypes)
+
+	// Resolve matching geo_ids using the same area/point strategy as SearchPoliticians
+	var geoMatches []GeoMatch
+
+	if geoResult.IsAreaQuery() {
+		areaGeoID, areaMTFCC, found := ResolveAreaBoundary(r.Context(), geoResult)
+		if found {
+			areaMatches, err := FindGeoIDsByAreaIntersection(r.Context(), areaGeoID, areaMTFCC)
+			if err == nil && len(areaMatches) > 0 {
+				geoMatches = areaMatches
+			}
+		}
+		// Fallback to point-in-polygon if area resolution failed
+		if len(geoMatches) == 0 {
+			pointMatches, err := FindGeoIDsByPoint(r.Context(), geoResult.Lat, geoResult.Lng)
+			if err == nil {
+				geoMatches = pointMatches
+			}
+		}
+	} else {
+		pointMatches, err := FindGeoIDsByPoint(r.Context(), geoResult.Lat, geoResult.Lng)
+		if err == nil {
+			geoMatches = pointMatches
+		}
+	}
+
+	// Extract geo_ids from matches
+	geoIDs := make([]string, 0, len(geoMatches))
+	for _, m := range geoMatches {
+		geoIDs = append(geoIDs, m.GeoID)
+	}
+
+	// Derive state for supplemental state/federal candidate lookup
+	geoState := strings.ToUpper(geoResult.State)
+
+	type candidateRow struct {
+		PoliticianID  uuid.UUID
+		ExternalID        int
+		FirstName         string
+		LastName          string
+		FullName          string
+		PhotoOriginURL    string
+		OfficeTitle       string
+		DistrictType      string
+		Party             string
+		PartyShortName    string
+		ElectionDate      string
+		ElectionName      string
+		IsPrimary         bool
+		IsRunoff          bool
+		RepresentingState string
+		ChamberName       string
+		DistrictIDText    string
+	}
+
+	var rows []candidateRow
+
+	if len(geoIDs) > 0 {
+		// Query candidates whose districts match the resolved geo_ids (local/state/federal)
+		if err := db.DB.Raw(`
+			SELECT
+			  p.id AS politician_id,
+			  p.external_id,
+			  p.first_name, p.last_name, p.full_name,
+			  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
+			  o.title AS office_title,
+			  d.district_type,
+			  COALESCE(p.party, '') AS party,
+			  COALESCE(p.party_short_name, '') AS party_short_name,
+			  er.election_date,
+			  er.election_name,
+			  er.is_primary,
+			  er.is_runoff,
+			  COALESCE(o.representing_state, '') AS representing_state,
+			  COALESCE(c.name, '') AS chamber_name,
+			  COALESCE(d.district_id, '') AS district_id_text
+			FROM essentials.election_records er
+			JOIN essentials.politicians p ON p.id = er.politician_id
+			JOIN essentials.offices o ON o.politician_id = p.id
+			JOIN essentials.districts d ON d.id = o.district_id
+			LEFT JOIN essentials.chambers c ON c.id = o.chamber_id
+			WHERE er.is_active = true
+			  AND er.withdrawn = false
+			  AND d.geo_id IN ?
+			ORDER BY er.election_date ASC
+		`, geoIDs).Scan(&rows).Error; err != nil {
+			log.Printf("[SearchCandidates] DB error: %v", err)
+		}
+	}
+
+	// Supplement with state/federal active candidates by representing_state
+	if geoState != "" {
+		seenPolIDs := make(map[uuid.UUID]bool, len(rows))
+		for _, row := range rows {
+			seenPolIDs[row.PoliticianID] = true
+		}
+
+		var suppRows []candidateRow
+		if err := db.DB.Raw(`
+			SELECT
+			  p.id AS politician_id,
+			  p.external_id,
+			  p.first_name, p.last_name, p.full_name,
+			  COALESCE(p.photo_custom_url, NULLIF(p.photo_origin_url, '')) AS photo_origin_url,
+			  o.title AS office_title,
+			  d.district_type,
+			  COALESCE(p.party, '') AS party,
+			  COALESCE(p.party_short_name, '') AS party_short_name,
+			  er.election_date,
+			  er.election_name,
+			  er.is_primary,
+			  er.is_runoff,
+			  COALESCE(o.representing_state, '') AS representing_state,
+			  COALESCE(c.name, '') AS chamber_name,
+			  COALESCE(d.district_id, '') AS district_id_text
+			FROM essentials.election_records er
+			JOIN essentials.politicians p ON p.id = er.politician_id
+			JOIN essentials.offices o ON o.politician_id = p.id
+			JOIN essentials.districts d ON d.id = o.district_id
+			LEFT JOIN essentials.chambers c ON c.id = o.chamber_id
+			WHERE er.is_active = true
+			  AND er.withdrawn = false
+			  AND d.district_type IN ('STATE_EXEC','STATE_UPPER','STATE_LOWER','NATIONAL_EXEC','NATIONAL_UPPER','NATIONAL_LOWER')
+			  AND (o.representing_state = ? OR d.district_type = 'NATIONAL_EXEC')
+			ORDER BY er.election_date ASC
+		`, geoState).Scan(&suppRows).Error; err != nil {
+			log.Printf("[SearchCandidates] supplemental query error: %v", err)
+		} else {
+			for _, sr := range suppRows {
+				if !seenPolIDs[sr.PoliticianID] {
+					rows = append(rows, sr)
+					seenPolIDs[sr.PoliticianID] = true
+				}
+			}
+		}
+	}
+
+	// Batch-fetch images for all candidate politician IDs
+	polIDs := make([]uuid.UUID, 0, len(rows))
+	for _, row := range rows {
+		polIDs = append(polIDs, row.PoliticianID)
+	}
+	imagesByPolID := fetchImagesByPoliticianIDs(polIDs)
+
+	candidates := make([]CandidateOut, 0, len(rows))
+	for _, row := range rows {
+		candidates = append(candidates, CandidateOut{
+			ID:                row.PoliticianID.String(),
+			ExternalID:        row.ExternalID,
+			FirstName:         row.FirstName,
+			LastName:          row.LastName,
+			FullName:          row.FullName,
+			PhotoOriginURL:    row.PhotoOriginURL,
+			Images:            imagesByPolID[row.PoliticianID],
+			OfficeTitle:       row.OfficeTitle,
+			DistrictType:      row.DistrictType,
+			Party:             row.Party,
+			PartyShortName:    row.PartyShortName,
+			IsCandidate:       true,
+			ElectionDate:      row.ElectionDate,
+			ElectionName:      row.ElectionName,
+			IsPrimary:         row.IsPrimary,
+			IsRunoff:          row.IsRunoff,
+			RepresentingState: row.RepresentingState,
+			ChamberName:       row.ChamberName,
+			DistrictID:        row.DistrictIDText,
+		})
+	}
+
+	log.Printf("[SearchCandidates] returned %d candidates for query=%q", len(candidates), query)
 	writeJSON(w, candidates)
 }
 
