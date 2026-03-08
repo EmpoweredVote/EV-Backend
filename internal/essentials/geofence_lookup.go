@@ -170,6 +170,7 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 		LEFT JOIN essentials.governments g ON ch.government_id = g.id
 		WHERE (%s)
 		AND (p.is_active = true OR o.is_vacant = true)
+		AND COALESCE(p.is_incumbent, true) = true
 		ORDER BY o.id, d.district_type
 	`, whereClause)
 

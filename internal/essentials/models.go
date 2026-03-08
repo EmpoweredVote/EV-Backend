@@ -50,7 +50,8 @@ type Politician struct {
 	// Provenance / Syncing
 	Source           string    `json:"source"` // "cicero" or "ballotready"
 	LastSynced       time.Time `json:"last_synced"`
-	IsActive         bool      `json:"is_active" gorm:"default:true"` // true = currently serving in their primary seat
+	IsActive         bool      `json:"is_active" gorm:"default:true"`    // true = currently serving in their primary seat
+	IsIncumbent      bool      `json:"is_incumbent" gorm:"default:true"` // false = candidate-only, excluded from default search
 	DataSource       string    `json:"data_source,omitempty"`         // e.g. "ballotready", "scraped", "manual"
 	TermDatePrecision string   `json:"term_date_precision,omitempty"` // "year", "month", "day"
 

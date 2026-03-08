@@ -1247,6 +1247,7 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		  )
 		)
 		AND (p.is_active = true OR o.is_vacant = true)
+		AND COALESCE(p.is_incumbent, true) = true
 		ORDER BY d.district_type, o.title, p.last_name, p.first_name
 	`
 	// Prepend zip for LEFT JOIN, then append for WHERE clause
@@ -1547,6 +1548,7 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		  )
 		)
 		AND (p.is_active = true OR o.is_vacant = true)
+		AND COALESCE(p.is_incumbent, true) = true
 		ORDER BY d.district_type, o.title, p.last_name, p.first_name
 	`
 
