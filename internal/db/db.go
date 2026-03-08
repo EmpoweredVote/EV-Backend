@@ -41,10 +41,11 @@ func Connect() {
 		log.Fatal("Failed to get sql.DB: ", err)
 	}
 
-	// Reasonable pool defaults for App Runner → Supabase
-	sqlDB.SetMaxOpenConns(20)
-	sqlDB.SetMaxIdleConns(20)
-	sqlDB.SetConnMaxLifetime(30 * time.Minute)
+	// Pool defaults for App Runner → Supabase pooler
+	sqlDB.SetMaxOpenConns(10)
+	sqlDB.SetMaxIdleConns(5)
+	sqlDB.SetConnMaxLifetime(10 * time.Minute)
+	sqlDB.SetConnMaxIdleTime(3 * time.Minute)
 
 	DB = db
 	log.Println("Connected to database")
