@@ -108,6 +108,7 @@ type ElectionRecordOut struct {
 	IsPrimary       bool   `json:"is_primary"`
 	IsRunoff        bool   `json:"is_runoff"`
 	IsUnexpiredTerm bool   `json:"is_unexpired_term"`
+	IsActive        bool   `json:"is_active"`
 }
 
 // Legislative data DTOs (Phase 55)
@@ -2479,6 +2480,7 @@ func GetPoliticianElections(w http.ResponseWriter, r *http.Request) {
 			IsPrimary:       rec.IsPrimary,
 			IsRunoff:        rec.IsRunoff,
 			IsUnexpiredTerm: rec.IsUnexpiredTerm,
+			IsActive:        rec.IsActive,
 		})
 	}
 
