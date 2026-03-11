@@ -58,6 +58,8 @@ func Init() {
 		&PositionDescription{},
 		// Phase 39: Building photos for city hall imagery
 		&BuildingPhoto{},
+		// Phase 73: Government body display names and website URLs
+		&GovernmentBody{},
 		// Phase 54: Legislative data foundation
 		&LegislativeSession{},
 		&LegislativeCommittee{},
@@ -71,6 +73,11 @@ func Init() {
 	); err != nil {
 		log.Fatal("Failed to auto-migrate tables", err)
 	}
+
+	// Phase 73: Populate chamber_name_formal for Indiana chambers (idempotent)
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Monroe County Council' WHERE name LIKE 'Monroe County Council%' AND (name_formal = '' OR name_formal IS NULL)`)
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Monroe County Commission' WHERE name LIKE 'Monroe County Commission%' AND (name_formal = '' OR name_formal IS NULL)`)
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Bloomington Common Council' WHERE name LIKE 'Bloomington City Common Council%' AND (name_formal = '' OR name_formal IS NULL)`)
 
 	// Create spatial index on geofence_boundaries geometry column
 	if err := db.DB.Exec(`

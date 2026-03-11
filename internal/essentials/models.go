@@ -278,6 +278,18 @@ type PositionDescription struct {
 	Source                 string    `json:"source"` // "ballotready", "manual"
 }
 
+// GovernmentBody stores display names and website URLs for government bodies,
+// keyed by (state, geo_id, body_key). The body_key matches COALESCE(chamber.name_formal, chamber.name).
+// Seeded manually; website_url may be empty until Phase 74.
+type GovernmentBody struct {
+	ID          uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	State       string    `json:"state" gorm:"uniqueIndex:idx_gov_body_lookup;not null"`
+	GeoID       string    `json:"geo_id" gorm:"uniqueIndex:idx_gov_body_lookup;not null"`
+	BodyKey     string    `json:"body_key" gorm:"uniqueIndex:idx_gov_body_lookup;not null"`
+	DisplayName string    `json:"display_name" gorm:"not null"`
+	WebsiteURL  string    `json:"website_url"`
+}
+
 // BuildingPhoto stores city hall / government building photos for place-based display.
 // Keyed by Census GEOID (e.g., "0644000" for City of Los Angeles).
 type BuildingPhoto struct {
@@ -372,6 +384,10 @@ func (PositionDescription) TableName() string {
 
 func (BuildingPhoto) TableName() string {
 	return "essentials.building_photos"
+}
+
+func (GovernmentBody) TableName() string {
+	return "essentials.government_bodies"
 }
 
 // Quote stores a curated politician quote for the Read & Rank feature.
