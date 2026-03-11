@@ -162,12 +162,18 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 			COALESCE(p.bio_text, '') AS bio_text,
 			COALESCE(p.bioguide_id, '') AS bioguide_id,
 			COALESCE(p.slug, '') AS slug,
-			COALESCE(d.district_id, '') AS district_id_text
+			COALESCE(d.district_id, '') AS district_id_text,
+			COALESCE(gb.display_name, '') AS government_body_name,
+			COALESCE(gb.website_url, '') AS government_body_url
 		FROM essentials.offices o
 		LEFT JOIN essentials.politicians p ON o.politician_id = p.id
 		JOIN essentials.districts d ON o.district_id = d.id
 		LEFT JOIN essentials.chambers ch ON o.chamber_id = ch.id
 		LEFT JOIN essentials.governments g ON ch.government_id = g.id
+		LEFT JOIN essentials.government_bodies gb
+		  ON gb.state = d.state
+		  AND gb.geo_id = d.geo_id
+		  AND gb.body_key = COALESCE(NULLIF(ch.name_formal, ''), ch.name, '')
 		WHERE (%s)
 		AND (p.is_active = true OR o.is_vacant = true)
 		AND COALESCE(p.is_incumbent, true) = true
@@ -225,6 +231,8 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 			&off.BioguideID,
 			&off.Slug,
 			&off.DistrictID,
+			&off.GovernmentBodyName,
+			&off.GovernmentBodyURL,
 		); err != nil {
 			return nil, fmt.Errorf("scan official: %w", err)
 		}

@@ -79,6 +79,32 @@ func Init() {
 	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Monroe County Commission' WHERE name LIKE 'Monroe County Commission%' AND (name_formal = '' OR name_formal IS NULL)`)
 	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Bloomington Common Council' WHERE name LIKE 'Bloomington City Common Council%' AND (name_formal = '' OR name_formal IS NULL)`)
 
+	// Phase 76: Group city executive/clerk chambers under shared body_key
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'City of Bloomington'
+	  WHERE name IN ('Bloomington City Mayor', 'Bloomington City Clerk')
+	  AND (name_formal = '' OR name_formal IS NULL)`)
+
+	// Phase 76: Group township chambers under shared body_key
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Bloomington Township'
+	  WHERE name LIKE 'Monroe County: Bloomington Township%'
+	  AND (name_formal = '' OR name_formal IS NULL)`)
+
+	// Phase 76: Group school board district chambers under shared body_key
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Monroe County Community School Corporation'
+	  WHERE name LIKE 'Monroe County Community School Board%'
+	  AND (name_formal = '' OR name_formal IS NULL)`)
+
+	// Phase 76: Group judicial chambers under shared body_keys
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Monroe County Circuit Court'
+	  WHERE name LIKE 'Indiana Circuit Court Judge - 10th Circuit (Monroe County)%'
+	  AND (name_formal = '' OR name_formal IS NULL)`)
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Indiana Court of Appeals'
+	  WHERE name LIKE 'Indiana Appeals Court Judge%'
+	  AND (name_formal = '' OR name_formal IS NULL)`)
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Indiana Supreme Court'
+	  WHERE name LIKE 'Indiana Supreme Court Justice%'
+	  AND (name_formal = '' OR name_formal IS NULL)`)
+
 	// Phase 74: Seed individual county office chambers with shared body_key (idempotent)
 	// Individual single-office county officials share 'Monroe County Government' so they resolve
 	// to one government_bodies row via the JOIN on COALESCE(NULLIF(c.name_formal, ''), c.name, '')
@@ -123,7 +149,25 @@ func Init() {
 	    -- Bloomington Common Council — District 5
 	    ('IN', '180586000005', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
 	    -- Bloomington Common Council — District 6
-	    ('IN', '180586000006', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council')
+	    ('IN', '180586000006', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
+	    -- City of Bloomington (Mayor + Clerk, geo_id 1805860)
+	    ('IN', '1805860',      'City of Bloomington',        'City of Bloomington',        'https://bloomington.in.gov/'),
+	    -- Bloomington Township (Trustee + Board, geo_id 1810505878)
+	    ('IN', '1810505878',   'Bloomington Township',       'Bloomington Township',       ''),
+	    -- Monroe County Community School Corporation (7 districts)
+	    ('IN', '180063000001', 'Monroe County Community School Corporation', 'Monroe County Community School Corporation', 'https://www.mccsc.edu/'),
+	    ('IN', '180063000002', 'Monroe County Community School Corporation', 'Monroe County Community School Corporation', 'https://www.mccsc.edu/'),
+	    ('IN', '180063000003', 'Monroe County Community School Corporation', 'Monroe County Community School Corporation', 'https://www.mccsc.edu/'),
+	    ('IN', '180063000004', 'Monroe County Community School Corporation', 'Monroe County Community School Corporation', 'https://www.mccsc.edu/'),
+	    ('IN', '180063000005', 'Monroe County Community School Corporation', 'Monroe County Community School Corporation', 'https://www.mccsc.edu/'),
+	    ('IN', '180063000006', 'Monroe County Community School Corporation', 'Monroe County Community School Corporation', 'https://www.mccsc.edu/'),
+	    ('IN', '180063000007', 'Monroe County Community School Corporation', 'Monroe County Community School Corporation', 'https://www.mccsc.edu/'),
+	    -- Monroe County Circuit Court (9 seats, geo_id 18105)
+	    ('IN', '18105',        'Monroe County Circuit Court', 'Monroe County Circuit Court', 'https://www.in.gov/courts/circuit/monroe/'),
+	    -- Indiana Court of Appeals (statewide, geo_id 18)
+	    ('IN', '18',           'Indiana Court of Appeals',   'Indiana Court of Appeals',   'https://www.in.gov/courts/appeals/'),
+	    -- Indiana Supreme Court (statewide, geo_id 18)
+	    ('IN', '18',           'Indiana Supreme Court',      'Indiana Supreme Court',      'https://www.in.gov/courts/supreme/')
 	  ON CONFLICT (state, geo_id, body_key) DO NOTHING
 	`)
 
