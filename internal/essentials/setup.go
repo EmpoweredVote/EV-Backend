@@ -91,38 +91,39 @@ func Init() {
 
 	// Phase 74: Seed government_bodies with verified official website URLs (idempotent)
 	// Uses ON CONFLICT DO NOTHING so manually-corrected URLs are preserved on restart.
-	// All rows use state='18' (FIPS code) to match d.state in the districts table JOIN.
+	// All rows use state='IN' (abbreviation) to match d.state in the districts table JOIN.
+	db.DB.Exec("DELETE FROM essentials.government_bodies WHERE state='18'") // clean up old FIPS-coded rows
 	db.DB.Exec(`
 	  INSERT INTO essentials.government_bodies (state, geo_id, body_key, display_name, website_url)
 	  VALUES
 	    -- Monroe County Commission (all 3 commissioners use geo_id 18105)
-	    ('18', '18105',        'Monroe County Commission',   'Monroe County Commission',   'https://www.in.gov/counties/monroe/government/commissioners/'),
+	    ('IN', '18105',        'Monroe County Commission',   'Monroe County Commission',   'https://www.in.gov/counties/monroe/government/commissioners/'),
 	    -- Monroe County Council — At-Large (3 members, geo_id 18105)
-	    ('18', '18105',        'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
+	    ('IN', '18105',        'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
 	    -- Monroe County Council — District 1
-	    ('18', '1810500001',   'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
+	    ('IN', '1810500001',   'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
 	    -- Monroe County Council — District 2
-	    ('18', '1810500002',   'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
+	    ('IN', '1810500002',   'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
 	    -- Monroe County Council — District 3
-	    ('18', '1810500003',   'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
+	    ('IN', '1810500003',   'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
 	    -- Monroe County Council — District 4
-	    ('18', '1810500004',   'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
+	    ('IN', '1810500004',   'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
 	    -- Individual county-wide elected officials (Sheriff, Assessor, Auditor, Coroner, etc.)
-	    ('18', '18105',        'Monroe County Government',   'Monroe County Government',   'https://www.in.gov/counties/monroe/'),
+	    ('IN', '18105',        'Monroe County Government',   'Monroe County Government',   'https://www.in.gov/counties/monroe/'),
 	    -- Bloomington Common Council — At-Large (3 members, geo_id 1805860)
-	    ('18', '1805860',      'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
+	    ('IN', '1805860',      'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
 	    -- Bloomington Common Council — District 1
-	    ('18', '180586000001', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
+	    ('IN', '180586000001', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
 	    -- Bloomington Common Council — District 2
-	    ('18', '180586000002', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
+	    ('IN', '180586000002', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
 	    -- Bloomington Common Council — District 3
-	    ('18', '180586000003', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
+	    ('IN', '180586000003', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
 	    -- Bloomington Common Council — District 4
-	    ('18', '180586000004', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
+	    ('IN', '180586000004', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
 	    -- Bloomington Common Council — District 5
-	    ('18', '180586000005', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
+	    ('IN', '180586000005', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
 	    -- Bloomington Common Council — District 6
-	    ('18', '180586000006', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council')
+	    ('IN', '180586000006', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council')
 	  ON CONFLICT (state, geo_id, body_key) DO NOTHING
 	`)
 
