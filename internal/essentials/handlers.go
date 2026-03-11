@@ -211,6 +211,8 @@ type OfficialOut struct {
 	TermStart            string          `json:"term_start,omitempty"`
 	TermEnd              string          `json:"term_end,omitempty"`
 	TermDatePrecision    string          `json:"term_date_precision,omitempty"` // "year", "month", or "day"
+	GovernmentBodyName   string          `json:"government_body_name,omitempty"`
+	GovernmentBodyURL    string          `json:"government_body_url,omitempty"`
 }
 
 func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
@@ -1164,6 +1166,8 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		ValidFrom            string
 		ValidTo              string
 		TermDatePrecision    string
+		GovernmentBodyName   string
+		GovernmentBodyURL    string
 	}
 
 	var rows []row
@@ -1210,7 +1214,9 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		  zp.is_contained,
 		  COALESCE(p.valid_from, '') AS valid_from,
 		  COALESCE(p.valid_to, '') AS valid_to,
-		  COALESCE(p.term_date_precision, '') AS term_date_precision
+		  COALESCE(p.term_date_precision, '') AS term_date_precision,
+		  COALESCE(gb.display_name, '') AS government_body_name,
+		  COALESCE(gb.website_url, '') AS government_body_url
 		FROM essentials.offices o
 		LEFT JOIN essentials.politicians p ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
@@ -1222,6 +1228,10 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		LEFT JOIN essentials.position_descriptions pd_generic
 		  ON pd_generic.normalized_position_name = COALESCE(NULLIF(o.normalized_position_name, ''), o.title)
 		  AND pd_generic.district_type = ''
+		LEFT JOIN essentials.government_bodies gb
+		  ON gb.state = d.state
+		  AND gb.geo_id = d.geo_id
+		  AND gb.body_key = COALESCE(NULLIF(c.name_formal, ''), c.name, '')
 		LEFT JOIN essentials.zip_politicians zp ON zp.politician_id = p.id AND zp.zip = ?
 		WHERE (
 		  -- Federal executive officials (President, VP, Cabinet) - nationwide
@@ -1416,6 +1426,8 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 			TermStart:            r.ValidFrom,
 			TermEnd:              r.ValidTo,
 			TermDatePrecision:    r.TermDatePrecision,
+			GovernmentBodyName:   r.GovernmentBodyName,
+			GovernmentBodyURL:    r.GovernmentBodyURL,
 		})
 	}
 
@@ -1486,6 +1498,8 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		ValidFrom            string
 		ValidTo              string
 		TermDatePrecision    string
+		GovernmentBodyName   string
+		GovernmentBodyURL    string
 	}
 
 	var rows []row
@@ -1529,7 +1543,9 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		  COALESCE(NULLIF(o.description, ''), pd_specific.description, pd_generic.description, '') AS office_description,
 		  COALESCE(p.valid_from, '') AS valid_from,
 		  COALESCE(p.valid_to, '') AS valid_to,
-		  COALESCE(p.term_date_precision, '') AS term_date_precision
+		  COALESCE(p.term_date_precision, '') AS term_date_precision,
+		  COALESCE(gb.display_name, '') AS government_body_name,
+		  COALESCE(gb.website_url, '') AS government_body_url
 		FROM essentials.offices o
 		LEFT JOIN essentials.politicians p ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
@@ -1541,6 +1557,10 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		LEFT JOIN essentials.position_descriptions pd_generic
 		  ON pd_generic.normalized_position_name = COALESCE(NULLIF(o.normalized_position_name, ''), o.title)
 		  AND pd_generic.district_type = ''
+		LEFT JOIN essentials.government_bodies gb
+		  ON gb.state = d.state
+		  AND gb.geo_id = d.geo_id
+		  AND gb.body_key = COALESCE(NULLIF(c.name_formal, ''), c.name, '')
 		WHERE (
 		  d.district_type = 'NATIONAL_EXEC'
 		  OR (
@@ -1712,6 +1732,8 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 			TermStart:            r.ValidFrom,
 			TermEnd:              r.ValidTo,
 			TermDatePrecision:    r.TermDatePrecision,
+			GovernmentBodyName:   r.GovernmentBodyName,
+			GovernmentBodyURL:    r.GovernmentBodyURL,
 		})
 	}
 
