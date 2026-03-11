@@ -282,13 +282,16 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 }
 
 // FindGeoIDsByAreaIntersection finds districts related to a queried area using
-// bidirectional point-on-surface matching:
+// bidirectional point-on-surface matching plus intersection for legislative districts:
 //   - Sub-districts whose representative point falls within the area (council wards, school districts,
 //     AND cities whose center is inside the area)
 //   - Larger non-city districts that contain the area's representative point (county, congressional,
 //     state leg). City boundaries (G4110/G4120) are excluded from this direction because ZCTA
 //     boundaries don't align with city limits — e.g. 90210 extends into LA City territory but
 //     Beverly Hills residents shouldn't see the LA mayor.
+//   - Legislative districts (congressional, state senate, state house) that have ANY geometric
+//     overlap with the search area. This catches districts that partially cover the area but whose
+//     center point falls outside it (e.g. a state senate district spanning multiple counties).
 func FindGeoIDsByAreaIntersection(ctx context.Context, areaGeoID, areaMTFCC string) ([]GeoMatch, error) {
 	query := `
 		SELECT DISTINCT gb2.geo_id, COALESCE(gb2.mtfcc, '') as mtfcc
@@ -297,6 +300,8 @@ func FindGeoIDsByAreaIntersection(ctx context.Context, areaGeoID, areaMTFCC stri
 		  ON ST_Contains(gb1.geometry, ST_PointOnSurface(gb2.geometry))
 		   OR (ST_Contains(gb2.geometry, ST_PointOnSurface(gb1.geometry))
 		       AND gb2.mtfcc NOT IN ('G4110', 'G4120'))
+		   OR (ST_Intersects(gb1.geometry, gb2.geometry)
+		       AND gb2.mtfcc IN ('G5200', 'G5210', 'G5220'))
 		WHERE gb1.geo_id = $1
 		  AND gb1.mtfcc = $2
 	`
