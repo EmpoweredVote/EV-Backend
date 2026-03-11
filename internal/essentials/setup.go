@@ -79,6 +79,53 @@ func Init() {
 	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Monroe County Commission' WHERE name LIKE 'Monroe County Commission%' AND (name_formal = '' OR name_formal IS NULL)`)
 	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Bloomington Common Council' WHERE name LIKE 'Bloomington City Common Council%' AND (name_formal = '' OR name_formal IS NULL)`)
 
+	// Phase 74: Seed individual county office chambers with shared body_key (idempotent)
+	// Individual single-office county officials share 'Monroe County Government' so they resolve
+	// to one government_bodies row via the JOIN on COALESCE(NULLIF(c.name_formal, ''), c.name, '')
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Monroe County Government'
+	  WHERE name IN (
+	    'Monroe County Assessor', 'Monroe County Auditor', 'Monroe County Circuit Court Clerk',
+	    'Monroe County Coroner', 'Monroe County Prosecuting Attorney', 'Monroe County Recorder',
+	    'Monroe County Sheriff', 'Monroe County Surveyor', 'Monroe County Treasurer'
+	  ) AND (name_formal = '' OR name_formal IS NULL)`)
+
+	// Phase 74: Seed government_bodies with verified official website URLs (idempotent)
+	// Uses ON CONFLICT DO NOTHING so manually-corrected URLs are preserved on restart.
+	// All rows use state='18' (FIPS code) to match d.state in the districts table JOIN.
+	db.DB.Exec(`
+	  INSERT INTO essentials.government_bodies (state, geo_id, body_key, display_name, website_url)
+	  VALUES
+	    -- Monroe County Commission (all 3 commissioners use geo_id 18105)
+	    ('18', '18105',        'Monroe County Commission',   'Monroe County Commission',   'https://www.in.gov/counties/monroe/government/commissioners/'),
+	    -- Monroe County Council — At-Large (3 members, geo_id 18105)
+	    ('18', '18105',        'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
+	    -- Monroe County Council — District 1
+	    ('18', '1810500001',   'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
+	    -- Monroe County Council — District 2
+	    ('18', '1810500002',   'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
+	    -- Monroe County Council — District 3
+	    ('18', '1810500003',   'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
+	    -- Monroe County Council — District 4
+	    ('18', '1810500004',   'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
+	    -- Individual county-wide elected officials (Sheriff, Assessor, Auditor, Coroner, etc.)
+	    ('18', '18105',        'Monroe County Government',   'Monroe County Government',   'https://www.in.gov/counties/monroe/'),
+	    -- Bloomington Common Council — At-Large (3 members, geo_id 1805860)
+	    ('18', '1805860',      'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
+	    -- Bloomington Common Council — District 1
+	    ('18', '180586000001', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
+	    -- Bloomington Common Council — District 2
+	    ('18', '180586000002', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
+	    -- Bloomington Common Council — District 3
+	    ('18', '180586000003', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
+	    -- Bloomington Common Council — District 4
+	    ('18', '180586000004', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
+	    -- Bloomington Common Council — District 5
+	    ('18', '180586000005', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council'),
+	    -- Bloomington Common Council — District 6
+	    ('18', '180586000006', 'Bloomington Common Council', 'Bloomington Common Council', 'https://bloomington.in.gov/council')
+	  ON CONFLICT (state, geo_id, body_key) DO NOTHING
+	`)
+
 	// Create spatial index on geofence_boundaries geometry column
 	if err := db.DB.Exec(`
 		CREATE INDEX IF NOT EXISTS idx_geofence_boundaries_geometry
