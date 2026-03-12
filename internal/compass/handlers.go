@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func TopicHandler(w http.ResponseWriter, r *http.Request) {
@@ -1249,4 +1250,79 @@ func SelectedTopicsHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(uc.TopicIDs)
 	}
+}
+
+// GetVerdicts returns all verdicts for the authenticated user.
+func GetVerdicts(w http.ResponseWriter, r *http.Request) {
+	userID, ok := utils.GetUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var verdicts []QuoteVerdict
+	if err := db.DB.Where("user_id = ?", userID).Find(&verdicts).Error; err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(verdicts)
+}
+
+// BulkUpsertVerdicts creates or updates multiple verdicts for the authenticated user
+// and returns the full updated verdict set for that user.
+func BulkUpsertVerdicts(w http.ResponseWriter, r *http.Request) {
+	userID, ok := utils.GetUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var input []struct {
+		QuoteID uuid.UUID `json:"quote_id"`
+		Verdict string    `json:"verdict"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	for _, entry := range input {
+		if entry.Verdict != "agreed" && entry.Verdict != "disagreed" {
+			http.Error(w, "invalid verdict value", http.StatusBadRequest)
+			return
+		}
+	}
+
+	tx := db.DB.Begin()
+	for _, entry := range input {
+		if err := tx.Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "user_id"}, {Name: "quote_id"}},
+			DoUpdates: clause.AssignmentColumns([]string{"verdict"}),
+		}).Create(&QuoteVerdict{
+			ID:      uuid.NewString(),
+			UserID:  userID,
+			QuoteID: entry.QuoteID,
+			Verdict: entry.Verdict,
+		}).Error; err != nil {
+			tx.Rollback()
+			http.Error(w, "Failed to upsert verdict", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		http.Error(w, "Failed to commit verdicts", http.StatusInternalServerError)
+		return
+	}
+
+	var updatedVerdicts []QuoteVerdict
+	if err := db.DB.Where("user_id = ?", userID).Find(&updatedVerdicts).Error; err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(updatedVerdicts)
 }

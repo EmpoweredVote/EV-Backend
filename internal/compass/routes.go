@@ -28,6 +28,8 @@ func SetupRoutes() http.Handler {
 		r.Post("/politicians/{politician_id}/answers/batch", PoliticianAnswerBatch)
 		r.Post("/compare", CompareHandler)
 		r.Delete("/answers/me", DeleteMyAnswersHandler)
+		r.Get("/verdicts", GetVerdicts)
+		r.Post("/verdicts", BulkUpsertVerdicts)
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.AdminMiddleware(sessionFetcher))
 			r.Patch("/topics/update", TopicUpdateHandler)
