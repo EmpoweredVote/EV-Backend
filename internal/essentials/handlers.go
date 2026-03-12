@@ -3079,6 +3079,17 @@ type IssueOut struct {
 // All three arrays are derived from the essentials.quotes table, joined with
 // essentials.politicians, essentials.offices, and compass.topics.
 func GetQuotes(w http.ResponseWriter, r *http.Request) {
+	politicianIDStr := r.URL.Query().Get("politician_id")
+	var filterPoliticianID *uuid.UUID
+	if politicianIDStr != "" {
+		pid, err := uuid.Parse(politicianIDStr)
+		if err != nil {
+			http.Error(w, "invalid politician_id", http.StatusBadRequest)
+			return
+		}
+		filterPoliticianID = &pid
+	}
+
 	type quoteRow struct {
 		ID          string
 		QuoteText   string
@@ -3093,7 +3104,7 @@ func GetQuotes(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var rows []quoteRow
-	if err := db.DB.Raw(`
+	mainSQL := `
 		SELECT
 		  q.id::text,
 		  q.quote_text,
@@ -3112,9 +3123,14 @@ func GetQuotes(w http.ResponseWriter, r *http.Request) {
 		  WHERE politician_id = p.id
 		  ORDER BY id DESC
 		  LIMIT 1
-		) o ON true
-		ORDER BY p.full_name, q.topic_key
-	`).Scan(&rows).Error; err != nil {
+		) o ON true`
+	var mainArgs []interface{}
+	if filterPoliticianID != nil {
+		mainSQL += " WHERE q.politician_id = ?"
+		mainArgs = append(mainArgs, *filterPoliticianID)
+	}
+	mainSQL += " ORDER BY p.full_name, q.topic_key"
+	if err := db.DB.Raw(mainSQL, mainArgs...).Scan(&rows).Error; err != nil {
 		log.Printf("[GetQuotes] DB error: %v", err)
 		http.Error(w, "DB fetch error", http.StatusInternalServerError)
 		return
@@ -3159,10 +3175,13 @@ func GetQuotes(w http.ResponseWriter, r *http.Request) {
 		TopicKey     string
 	}
 	var topicCounts []topicCount
-	if err := db.DB.Raw(`
-		SELECT DISTINCT politician_id::text, topic_key
-		FROM essentials.quotes
-	`).Scan(&topicCounts).Error; err != nil {
+	countSQL := `SELECT DISTINCT politician_id::text, topic_key FROM essentials.quotes`
+	var countArgs []interface{}
+	if filterPoliticianID != nil {
+		countSQL += " WHERE politician_id = ?"
+		countArgs = append(countArgs, *filterPoliticianID)
+	}
+	if err := db.DB.Raw(countSQL, countArgs...).Scan(&topicCounts).Error; err != nil {
 		log.Printf("[GetQuotes] topic count error: %v", err)
 		// Continue with whatever TotalIssues we have
 	} else {
