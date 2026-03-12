@@ -76,7 +76,8 @@ func Init() {
 
 	// Phase 73: Populate chamber_name_formal for Indiana chambers (idempotent)
 	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Monroe County Council' WHERE name LIKE 'Monroe County Council%' AND (name_formal = '' OR name_formal IS NULL)`)
-	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Monroe County Commission' WHERE name LIKE 'Monroe County Commission%' AND (name_formal = '' OR name_formal IS NULL)`)
+	// Quick-8: Rename Commission name_formal to its legal name (unconditional so it also fixes previously set old value)
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Monroe County Board of Commissioners' WHERE name LIKE 'Monroe County Commission%'`)
 	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Bloomington Common Council' WHERE name LIKE 'Bloomington City Common Council%' AND (name_formal = '' OR name_formal IS NULL)`)
 
 	// Phase 76: Group city executive/clerk chambers under shared body_key
@@ -119,11 +120,19 @@ func Init() {
 	// Uses ON CONFLICT DO NOTHING so manually-corrected URLs are preserved on restart.
 	// All rows use state='IN' (abbreviation) to match d.state in the districts table JOIN.
 	db.DB.Exec("DELETE FROM essentials.government_bodies WHERE state='18'") // clean up old FIPS-coded rows
+
+	// Quick-8: Rename Commission body_key to match new name_formal (idempotent — no-op if already renamed)
+	db.DB.Exec(`UPDATE essentials.government_bodies
+	  SET body_key = 'Monroe County Board of Commissioners',
+	      display_name = 'Monroe County Board of Commissioners',
+	      website_url = 'https://www.in.gov/counties/monroe/government/commissioners/'
+	  WHERE state = 'IN' AND geo_id = '18105' AND body_key = 'Monroe County Commission'`)
+
 	db.DB.Exec(`
 	  INSERT INTO essentials.government_bodies (state, geo_id, body_key, display_name, website_url)
 	  VALUES
-	    -- Monroe County Commission (all 3 commissioners use geo_id 18105)
-	    ('IN', '18105',        'Monroe County Commission',   'Monroe County Commission',   'https://www.in.gov/counties/monroe/government/commissioners/'),
+	    -- Monroe County Board of Commissioners (all 3 commissioners use geo_id 18105)
+	    ('IN', '18105',        'Monroe County Board of Commissioners',   'Monroe County Board of Commissioners',   'https://www.in.gov/counties/monroe/government/commissioners/'),
 	    -- Monroe County Council — At-Large (3 members, geo_id 18105)
 	    ('IN', '18105',        'Monroe County Council',      'Monroe County Council',      'https://www.in.gov/counties/monroe/government/council/'),
 	    -- Monroe County Council — District 1
