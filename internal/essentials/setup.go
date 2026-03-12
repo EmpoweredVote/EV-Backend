@@ -153,6 +153,17 @@ func Init() {
 	      website_url = 'https://www.in.gov/counties/monroe/government/commissioners/'
 	  WHERE state = 'IN' AND geo_id = '18105' AND body_key = 'Monroe County Commission'`)
 
+	// Quick-10: Add website URLs for Ellettsville and Richland-Bean Blossom bodies
+	db.DB.Exec(`UPDATE essentials.government_bodies
+	  SET website_url = 'https://ellettsville.in.us/council/'
+	  WHERE state = 'IN' AND geo_id = '1820800' AND body_key = 'Ellettsville Town Council'`)
+	db.DB.Exec(`UPDATE essentials.government_bodies
+	  SET website_url = 'https://ellettsville.in.us/department/index.php?structureid=12'
+	  WHERE state = 'IN' AND geo_id = '1820800' AND body_key = 'Ellettsville Town Officials'`)
+	db.DB.Exec(`UPDATE essentials.government_bodies
+	  SET website_url = 'https://www.rbbschools.net/school-board'
+	  WHERE state = 'IN' AND geo_id = '1809480' AND body_key = 'Richland-Bean Blossom Community School Corporation'`)
+
 	db.DB.Exec(`
 	  INSERT INTO essentials.government_bodies (state, geo_id, body_key, display_name, website_url)
 	  VALUES
@@ -202,14 +213,14 @@ func Init() {
 	    ('IN', '18',           'Indiana Court of Appeals',   'Indiana Court of Appeals',   'https://www.in.gov/courts/appeals/'),
 	    -- Indiana Supreme Court (statewide, geo_id 18)
 	    ('IN', '18',           'Indiana Supreme Court',      'Indiana Supreme Court',      'https://www.in.gov/courts/supreme/'),
-	    -- Quick-9: Ellettsville Town Council (3 wards + at-large, geo_id 1820800)
-	    ('IN', '1820800',      'Ellettsville Town Council',  'Ellettsville Town Council',  ''),
-	    -- Quick-9: Ellettsville Town Officials (Clerk/Treasurer, geo_id 1820800)
-	    ('IN', '1820800',      'Ellettsville Town Officials', 'Ellettsville Town Officials', ''),
+	    -- Quick-9/10: Ellettsville Town Council (3 wards + at-large, geo_id 1820800)
+	    ('IN', '1820800',      'Ellettsville Town Council',  'Ellettsville Town Council',  'https://ellettsville.in.us/council/'),
+	    -- Quick-9/10: Ellettsville Town Officials (Clerk/Treasurer, geo_id 1820800)
+	    ('IN', '1820800',      'Ellettsville Town Officials', 'Ellettsville Town Officials', 'https://ellettsville.in.us/department/index.php?structureid=12'),
 	    -- Quick-9: Richland Township (Board + Trustee, geo_id 1810564152)
 	    ('IN', '1810564152',   'Richland Township',          'Richland Township',          ''),
-	    -- Quick-9: Richland-Bean Blossom Community School Corporation (3 districts, geo_id 1809480)
-	    ('IN', '1809480',      'Richland-Bean Blossom Community School Corporation', 'Richland-Bean Blossom Community School Corporation', ''),
+	    -- Quick-9/10: Richland-Bean Blossom Community School Corporation (3 districts, geo_id 1809480)
+	    ('IN', '1809480',      'Richland-Bean Blossom Community School Corporation', 'Richland-Bean Blossom Community School Corporation', 'https://www.rbbschools.net/school-board'),
 	    -- Quick-9: Bean Blossom Township (Board + Trustee, geo_id 1810503808)
 	    ('IN', '1810503808',   'Bean Blossom Township',      'Bean Blossom Township',      '')
 	  ON CONFLICT (state, geo_id, body_key) DO NOTHING
