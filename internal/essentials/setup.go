@@ -95,6 +95,31 @@ func Init() {
 	  WHERE name LIKE 'Monroe County Community School Board%'
 	  AND (name_formal = '' OR name_formal IS NULL)`)
 
+	// Quick-9: Group Ellettsville Town Council wards under shared body_key
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Ellettsville Town Council'
+	  WHERE name LIKE 'Ellettsville Town Council%'
+	  AND (name_formal = '' OR name_formal IS NULL)`)
+
+	// Quick-9: Group Ellettsville Town Clerk/Treasurer under shared body_key for town officials
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Ellettsville Town Officials'
+	  WHERE name = 'Ellettsville Town Clerk/Treasurer'
+	  AND (name_formal = '' OR name_formal IS NULL)`)
+
+	// Quick-9: Group Richland Township Board and Trustee under shared body_key
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Richland Township'
+	  WHERE name LIKE 'Monroe County: Richland Township%'
+	  AND (name_formal = '' OR name_formal IS NULL)`)
+
+	// Quick-9: Group Richland-Bean Blossom school board chambers under shared body_key
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Richland-Bean Blossom Community School Corporation'
+	  WHERE name LIKE 'Richland-Bean Blossom School Board%'
+	  AND (name_formal = '' OR name_formal IS NULL)`)
+
+	// Quick-9: Group Bean Blossom Township Board and Trustee under shared body_key
+	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Bean Blossom Township'
+	  WHERE name LIKE 'Monroe County: Bean Blossom Township%'
+	  AND (name_formal = '' OR name_formal IS NULL)`)
+
 	// Phase 76: Group judicial chambers under shared body_keys
 	db.DB.Exec(`UPDATE essentials.chambers SET name_formal = 'Monroe County Circuit Court'
 	  WHERE name LIKE 'Indiana Circuit Court Judge - 10th Circuit (Monroe County)%'
@@ -176,7 +201,17 @@ func Init() {
 	    -- Indiana Court of Appeals (statewide, geo_id 18)
 	    ('IN', '18',           'Indiana Court of Appeals',   'Indiana Court of Appeals',   'https://www.in.gov/courts/appeals/'),
 	    -- Indiana Supreme Court (statewide, geo_id 18)
-	    ('IN', '18',           'Indiana Supreme Court',      'Indiana Supreme Court',      'https://www.in.gov/courts/supreme/')
+	    ('IN', '18',           'Indiana Supreme Court',      'Indiana Supreme Court',      'https://www.in.gov/courts/supreme/'),
+	    -- Quick-9: Ellettsville Town Council (3 wards + at-large, geo_id 1820800)
+	    ('IN', '1820800',      'Ellettsville Town Council',  'Ellettsville Town Council',  ''),
+	    -- Quick-9: Ellettsville Town Officials (Clerk/Treasurer, geo_id 1820800)
+	    ('IN', '1820800',      'Ellettsville Town Officials', 'Ellettsville Town Officials', ''),
+	    -- Quick-9: Richland Township (Board + Trustee, geo_id 1810564152)
+	    ('IN', '1810564152',   'Richland Township',          'Richland Township',          ''),
+	    -- Quick-9: Richland-Bean Blossom Community School Corporation (3 districts, geo_id 1809480)
+	    ('IN', '1809480',      'Richland-Bean Blossom Community School Corporation', 'Richland-Bean Blossom Community School Corporation', ''),
+	    -- Quick-9: Bean Blossom Township (Board + Trustee, geo_id 1810503808)
+	    ('IN', '1810503808',   'Bean Blossom Township',      'Bean Blossom Township',      '')
 	  ON CONFLICT (state, geo_id, body_key) DO NOTHING
 	`)
 
