@@ -81,3 +81,15 @@ type UserCompass struct {
 func (UserCompass) TableName() string {
 	return "compass.user_compasses"
 }
+
+type QuoteVerdict struct {
+	ID        string    `gorm:"primaryKey" json:"id"`
+	UserID    string    `json:"user_id"  gorm:"uniqueIndex:idx_user_quote"`
+	QuoteID   uuid.UUID `json:"quote_id" gorm:"type:uuid;uniqueIndex:idx_user_quote"`
+	Verdict   string    `json:"verdict"` // "agreed" | "disagreed"
+	CreatedAt time.Time `json:"created_at"`
+}
+
+func (QuoteVerdict) TableName() string {
+	return "compass.quote_verdicts"
+}
