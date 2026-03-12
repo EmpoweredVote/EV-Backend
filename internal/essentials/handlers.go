@@ -3127,7 +3127,7 @@ func GetQuotes(w http.ResponseWriter, r *http.Request) {
 	var mainArgs []interface{}
 	if filterPoliticianID != nil {
 		mainSQL += " WHERE q.politician_id = ?"
-		mainArgs = append(mainArgs, *filterPoliticianID)
+		mainArgs = append(mainArgs, filterPoliticianID.String())
 	}
 	mainSQL += " ORDER BY p.full_name, q.topic_key"
 	if err := db.DB.Raw(mainSQL, mainArgs...).Scan(&rows).Error; err != nil {
