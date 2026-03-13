@@ -10,16 +10,17 @@
 
 BEGIN;
 
--- Step 1: Reassign Cheryl Munson's vacant at-large office to Liz Feitl
+-- Step 1: Delete Liz Feitl's incorrectly-linked office (pointed to Assessor district)
+-- Must happen BEFORE reassigning Munson's office due to unique constraint on politician_id
+DELETE FROM essentials.offices
+WHERE id = '2e2414f4-3468-4a85-a5ed-60b778b4355e';
+
+-- Step 2: Reassign Cheryl Munson's vacant at-large office to Liz Feitl
 UPDATE essentials.offices
 SET politician_id = 'b3830ff1-3b9b-463a-bb7d-311bf1bf0168',
     is_vacant = false,
     vacant_since = NULL
 WHERE id = 'bbb57efc-6b2e-4d95-a749-e6233241a1ce';
-
--- Step 2: Delete Liz Feitl's incorrectly-linked office (pointed to Assessor district)
-DELETE FROM essentials.offices
-WHERE id = '2e2414f4-3468-4a85-a5ed-60b778b4355e';
 
 -- Step 3: Delete duplicate migration offices and politicians for districts 1-4
 DELETE FROM essentials.offices WHERE politician_id IN (
