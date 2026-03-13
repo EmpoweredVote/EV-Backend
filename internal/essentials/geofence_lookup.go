@@ -31,7 +31,7 @@ var mtfccToDistrictTypes = map[string][]string{
 	"G5400": {"SCHOOL"},                      // Elementary School District
 	"G5410": {"SCHOOL"},                      // Secondary School District
 	"G5420": {"SCHOOL"},                      // Unified School District
-	"X0001": {"LOCAL"},                       // City council sub-districts (BallotReady custom MTFCC)
+	"X0001": {"LOCAL", "COUNTY"},              // Sub-district boundaries (city council wards, county council districts)
 	"G6350": {},                              // ZCTA (ZIP Code Tabulation Area) — area boundary only, not a district type
 }
 
