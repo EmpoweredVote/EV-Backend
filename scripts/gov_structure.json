@@ -1,0 +1,347 @@
+{
+  "IN": {
+    "state_name": "Indiana",
+    "county": {
+      "legislative_bodies": [
+        {
+          "canonical_name": "County Council",
+          "canonical_name_formal": null,
+          "position": "Council Member",
+          "seats": {"district": 4, "at_large": 3},
+          "seat_term": "District"
+        },
+        {
+          "canonical_name": "Board of Commissioners",
+          "canonical_name_formal": null,
+          "position": "Commissioner",
+          "seats": {"district": 3, "at_large": 0},
+          "seat_term": "District"
+        }
+      ],
+      "elected_offices": [
+        "Auditor", "Clerk", "Treasurer", "Recorder",
+        "Assessor", "Sheriff", "Coroner", "Surveyor", "Prosecutor"
+      ]
+    },
+    "municipality": {
+      "types": ["City", "Town"],
+      "legislative_bodies": [
+        {
+          "type": "City",
+          "canonical_name": "Common Council",
+          "canonical_name_formal": null,
+          "position": "Council Member",
+          "seats": {"district": 6, "at_large": 3},
+          "seat_term": "District"
+        },
+        {
+          "type": "Town",
+          "canonical_name": "Town Council",
+          "canonical_name_formal": null,
+          "position": "Council Member",
+          "seats": {"district": 0, "at_large": 5},
+          "seat_term": null
+        }
+      ],
+      "exec_title": "Mayor"
+    },
+    "township": {
+      "exists": true,
+      "legislative_body": {
+        "canonical_name": "Township Board",
+        "position": "Board Member"
+      },
+      "exec_title": "Trustee",
+      "elected_offices": ["Assessor"]
+    },
+    "school_district": {
+      "body_name": "School Board",
+      "position": "Board Member",
+      "seat_term": "District",
+      "note": "Seat counts vary per district — validated per-body, not globally"
+    },
+    "judicial": {
+      "hierarchy": [
+        {
+          "level": "state_supreme",
+          "canonical_name": "Supreme Court",
+          "canonical_name_formal": "Supreme Court of Indiana",
+          "position": "Justice",
+          "chief_position": "Chief Justice",
+          "seats": 5,
+          "selection": "merit_retention",
+          "term_initial_years": 2,
+          "term_retention_years": 10,
+          "retirement_age": 75,
+          "classify_tier": "State",
+          "classify_group": "State Judiciary",
+          "geo_scope": "statewide",
+          "note": "5 justices chosen by merit selection (Judicial Nominating Commission nominates 3 to Governor). Chief Justice selected by JNC for 5-year term."
+        },
+        {
+          "level": "state_appellate",
+          "canonical_name": "Court of Appeals",
+          "canonical_name_formal": "Court of Appeals of Indiana",
+          "position": "Judge",
+          "chief_position": "Chief Judge",
+          "seats": 15,
+          "selection": "merit_retention",
+          "term_initial_years": 2,
+          "term_retention_years": 10,
+          "classify_tier": "State",
+          "classify_group": "State Judiciary",
+          "geo_scope": "statewide",
+          "note": "15 judges sitting in 3-judge panels. 5 appellate districts but judges have statewide jurisdiction."
+        },
+        {
+          "level": "state_tax",
+          "canonical_name": "Tax Court",
+          "canonical_name_formal": "Indiana Tax Court",
+          "position": "Judge",
+          "chief_position": null,
+          "seats": 1,
+          "selection": "gubernatorial_appointment",
+          "classify_tier": "State",
+          "classify_group": "State Judiciary",
+          "geo_scope": "statewide",
+          "note": "Established 1986. Single judge. Exclusive jurisdiction over cases arising under Indiana tax laws — appeals from Dept of State Revenue and Board of Tax Review."
+        },
+        {
+          "level": "circuit",
+          "canonical_name": "Circuit Court",
+          "canonical_name_formal": null,
+          "position": "Judge",
+          "chief_position": null,
+          "seats": null,
+          "selection": "partisan_election",
+          "term_years": 6,
+          "classify_tier": "Local",
+          "classify_group": "Local Judiciary",
+          "geo_scope": "county",
+          "note": "General jurisdiction trial court. One circuit per county (some circuits span multiple counties). ~318 circuit + superior judges combined statewide. Formal name: '{County} Circuit Court'"
+        },
+        {
+          "level": "superior",
+          "canonical_name": "Superior Court",
+          "canonical_name_formal": null,
+          "position": "Judge",
+          "chief_position": null,
+          "seats": null,
+          "selection": "partisan_election",
+          "term_years": 6,
+          "classify_tier": "Local",
+          "classify_group": "Local Judiciary",
+          "geo_scope": "county",
+          "note": "General jurisdiction trial court. Some counties have superior courts in addition to circuit courts. Marion County uses merit selection + retention for superior court judges."
+        },
+        {
+          "level": "probate",
+          "canonical_name": "Probate Court",
+          "canonical_name_formal": null,
+          "position": "Judge",
+          "chief_position": null,
+          "seats": null,
+          "selection": "partisan_election",
+          "classify_tier": "Local",
+          "classify_group": "Local Judiciary",
+          "geo_scope": "county",
+          "note": "Only St. Joseph County has a separate probate court. All other counties handle probate in circuit/superior courts."
+        },
+        {
+          "level": "city_town",
+          "canonical_name": "City Court",
+          "canonical_name_formal": null,
+          "position": "Judge",
+          "chief_position": null,
+          "seats": null,
+          "selection": "varies",
+          "classify_tier": "Local",
+          "classify_group": "Local Judiciary",
+          "geo_scope": "municipal",
+          "note": "Limited jurisdiction: city ordinances, misdemeanors, infractions, traffic. Also called 'Town Court'. Created by municipalities."
+        },
+        {
+          "level": "small_claims",
+          "canonical_name": "Small Claims Court",
+          "canonical_name_formal": null,
+          "position": "Judge",
+          "chief_position": null,
+          "seats": null,
+          "selection": "varies",
+          "classify_tier": "Local",
+          "classify_group": "Local Judiciary",
+          "geo_scope": "township",
+          "note": "Marion County has township-based small claims courts (Center, Warren, etc.). Constables are elected for each small claims court."
+        }
+      ],
+      "title_normalization": {
+        "judge": "Judge",
+        "justice": "Justice",
+        "chief justice": "Chief Justice",
+        "chief judge": "Chief Judge",
+        "magistrate": "Magistrate",
+        "judge of the circuit court": "Judge",
+        "judge of the superior court": "Judge",
+        "tax court judge": "Judge",
+        "small claims court judge": "Judge",
+        "city court judge": "Judge",
+        "town court judge": "Judge"
+      },
+      "related_positions": {
+        "circuit_court_clerk": {
+          "canonical_name": "Clerk",
+          "note": "Elected county-level official who manages circuit court records. One per county. district_type should be COUNTY, not JUDICIAL."
+        },
+        "constable": {
+          "canonical_name": "Constable",
+          "note": "Elected township-level official for small claims courts (Marion County). district_type should be LOCAL."
+        }
+      },
+      "note": "Indiana has 3 levels: appellate (Supreme Court, Court of Appeals, Tax Court — all merit selection/retention), general trial (Circuit + Superior — mostly partisan election, 6-year terms), and limited jurisdiction (City/Town Courts, Small Claims Courts). Over 575 judicial officers statewide handling 1.8M+ cases annually."
+    }
+  },
+  "CA": {
+    "state_name": "California",
+    "county": {
+      "legislative_bodies": [
+        {
+          "canonical_name": "Board of Supervisors",
+          "canonical_name_formal": null,
+          "position": "Supervisor",
+          "seats": {"district": 5, "at_large": 0},
+          "seat_term": "District"
+        }
+      ],
+      "elected_offices": [
+        "Assessor", "Sheriff", "District Attorney",
+        "Treasurer-Tax Collector", "Auditor-Controller"
+      ]
+    },
+    "municipality": {
+      "types": ["City"],
+      "legislative_bodies": [
+        {
+          "type": "City",
+          "canonical_name": "City Council",
+          "canonical_name_formal": null,
+          "position": "Council Member",
+          "seats": {"district": null, "at_large": null},
+          "seat_term": "District"
+        }
+      ],
+      "exec_title": "Mayor"
+    },
+    "township": {
+      "exists": false
+    },
+    "school_district": {
+      "body_name": "Board of Education",
+      "position": "Board Member",
+      "seat_term": "District",
+      "note": "Some districts use 'Board of Trustees' — both are valid in CA"
+    },
+    "judicial": {
+      "hierarchy": [
+        {
+          "level": "state_supreme",
+          "canonical_name": "Supreme Court",
+          "canonical_name_formal": "Supreme Court of California",
+          "position": "Justice",
+          "chief_position": "Chief Justice",
+          "seats": 7,
+          "selection": "retention",
+          "classify_tier": "State",
+          "classify_group": "State Judiciary",
+          "geo_scope": "statewide"
+        },
+        {
+          "level": "state_appellate",
+          "canonical_name": "Court of Appeal",
+          "canonical_name_formal": null,
+          "position": "Justice",
+          "chief_position": "Presiding Justice",
+          "seats": null,
+          "selection": "retention",
+          "classify_tier": "State",
+          "classify_group": "State Judiciary",
+          "geo_scope": "district",
+          "note": "6 appellate districts, each with divisions. Formal name is 'Court of Appeal, {Nth} Appellate District'"
+        },
+        {
+          "level": "superior",
+          "canonical_name": "Superior Court",
+          "canonical_name_formal": null,
+          "position": "Judge",
+          "chief_position": "Presiding Judge",
+          "seats": null,
+          "selection": "nonpartisan_election",
+          "classify_tier": "Local",
+          "classify_group": "Local Judiciary",
+          "geo_scope": "county",
+          "note": "One superior court per county; formal name is 'Superior Court of {County}'. CA has no circuit courts — superior courts are the trial courts."
+        }
+      ],
+      "title_normalization": {
+        "judge": "Judge",
+        "justice": "Justice",
+        "chief justice": "Chief Justice",
+        "presiding justice": "Presiding Justice",
+        "presiding judge": "Presiding Judge",
+        "associate justice": "Justice",
+        "judge of the superior court": "Judge"
+      },
+      "note": "California uses retention elections for Supreme Court and Court of Appeal justices. Superior court judges are elected in nonpartisan elections."
+    }
+  },
+  "FEDERAL": {
+    "state_name": null,
+    "judicial": {
+      "hierarchy": [
+        {
+          "level": "supreme",
+          "canonical_name": "Supreme Court",
+          "canonical_name_formal": "Supreme Court of the United States",
+          "position": "Justice",
+          "chief_position": "Chief Justice",
+          "seats": 9,
+          "selection": "presidential_appointment",
+          "classify_tier": "Federal",
+          "geo_scope": "national"
+        },
+        {
+          "level": "appellate",
+          "canonical_name": "Court of Appeals",
+          "canonical_name_formal": null,
+          "position": "Judge",
+          "chief_position": "Chief Judge",
+          "seats": null,
+          "selection": "presidential_appointment",
+          "classify_tier": "Federal",
+          "geo_scope": "circuit",
+          "note": "13 circuits. Formal name is 'United States Court of Appeals for the {Nth} Circuit'"
+        },
+        {
+          "level": "district",
+          "canonical_name": "District Court",
+          "canonical_name_formal": null,
+          "position": "Judge",
+          "chief_position": "Chief Judge",
+          "seats": null,
+          "selection": "presidential_appointment",
+          "classify_tier": "Federal",
+          "geo_scope": "district",
+          "note": "94 districts. Formal name is 'United States District Court for the {District} of {State}'"
+        }
+      ],
+      "title_normalization": {
+        "judge": "Judge",
+        "justice": "Justice",
+        "chief justice": "Chief Justice",
+        "chief judge": "Chief Judge",
+        "senior judge": "Senior Judge",
+        "magistrate judge": "Magistrate Judge"
+      },
+      "note": "All federal judges are appointed by the President and confirmed by the Senate. Serve lifetime terms."
+    }
+  }
+}
