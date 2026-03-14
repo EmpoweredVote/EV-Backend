@@ -118,6 +118,12 @@
           "classify_tier": "Local",
           "classify_group": "Local Judiciary",
           "geo_scope": "county",
+          "naming_convention": {
+            "district_label": "Division {N}",
+            "chamber_name": "{Court Name}, Division {N}",
+            "office_title": "{Court Name}, Division {N}",
+            "note": "Indiana circuit courts with multiple judges use 'Division' (not 'Seat'). Division numbers are assigned by the court, not by data source seat numbers. Verify division assignments against official court website (e.g., in.gov/counties/{county}/justice/circuit-court/)."
+          },
           "note": "General jurisdiction trial court. One circuit per county (some circuits span multiple counties). ~318 circuit + superior judges combined statewide. Formal name: '{County} Circuit Court'"
         },
         {
