@@ -55,6 +55,9 @@ type Politician struct {
 	DataSource       string    `json:"data_source,omitempty"`         // e.g. "ballotready", "scraped", "manual"
 	TermDatePrecision string   `json:"term_date_precision,omitempty"` // "year", "month", "day"
 
+	// Seniority / Appointment
+	AppointmentDate *string `json:"appointment_date,omitempty" gorm:"type:date"` // Original appointment/first-took-office date (for seniority ordering)
+
 	// Legislative data fetching
 	LegDataFetchedAt *time.Time `json:"leg_data_fetched_at,omitempty" gorm:"index"`
 }

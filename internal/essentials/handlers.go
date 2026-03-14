@@ -213,6 +213,7 @@ type OfficialOut struct {
 	TermDatePrecision    string          `json:"term_date_precision,omitempty"` // "year", "month", or "day"
 	GovernmentBodyName   string          `json:"government_body_name,omitempty"`
 	GovernmentBodyURL    string          `json:"government_body_url,omitempty"`
+	AppointmentDate      string          `json:"appointment_date,omitempty"`
 }
 
 func GetPoliticiansByZip(w http.ResponseWriter, r *http.Request) {
@@ -1168,6 +1169,7 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		TermDatePrecision    string
 		GovernmentBodyName   string
 		GovernmentBodyURL    string
+		AppointmentDate      string
 	}
 
 	var rows []row
@@ -1216,7 +1218,8 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		  COALESCE(p.valid_to, '') AS valid_to,
 		  COALESCE(p.term_date_precision, '') AS term_date_precision,
 		  COALESCE(gb.display_name, '') AS government_body_name,
-		  COALESCE(gb.website_url, '') AS government_body_url
+		  COALESCE(gb.website_url, '') AS government_body_url,
+		  COALESCE(p.appointment_date::text, '') AS appointment_date
 		FROM essentials.offices o
 		LEFT JOIN essentials.politicians p ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
@@ -1428,6 +1431,7 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 			TermDatePrecision:    r.TermDatePrecision,
 			GovernmentBodyName:   r.GovernmentBodyName,
 			GovernmentBodyURL:    r.GovernmentBodyURL,
+			AppointmentDate:      r.AppointmentDate,
 		})
 	}
 
@@ -1500,6 +1504,7 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		TermDatePrecision    string
 		GovernmentBodyName   string
 		GovernmentBodyURL    string
+		AppointmentDate      string
 	}
 
 	var rows []row
@@ -1545,7 +1550,8 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		  COALESCE(p.valid_to, '') AS valid_to,
 		  COALESCE(p.term_date_precision, '') AS term_date_precision,
 		  COALESCE(gb.display_name, '') AS government_body_name,
-		  COALESCE(gb.website_url, '') AS government_body_url
+		  COALESCE(gb.website_url, '') AS government_body_url,
+		  COALESCE(p.appointment_date::text, '') AS appointment_date
 		FROM essentials.offices o
 		LEFT JOIN essentials.politicians p ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
@@ -1734,6 +1740,7 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 			TermDatePrecision:    r.TermDatePrecision,
 			GovernmentBodyName:   r.GovernmentBodyName,
 			GovernmentBodyURL:    r.GovernmentBodyURL,
+			AppointmentDate:      r.AppointmentDate,
 		})
 	}
 
@@ -2131,6 +2138,7 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 		ValidFrom            string
 		ValidTo              string
 		TermDatePrecision    string
+		AppointmentDate      string
 	}
 
 	var r0 row
@@ -2158,7 +2166,8 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 		  COALESCE(c.election_frequency, '') AS election_frequency,
 		  COALESCE(p.valid_from, '') AS valid_from,
 		  COALESCE(p.valid_to, '') AS valid_to,
-		  COALESCE(p.term_date_precision, '') AS term_date_precision
+		  COALESCE(p.term_date_precision, '') AS term_date_precision,
+		  COALESCE(p.appointment_date::text, '') AS appointment_date
 		FROM essentials.politicians p
 		JOIN essentials.offices o ON o.politician_id = p.id
 		JOIN essentials.districts d ON d.id = o.district_id
@@ -2309,6 +2318,7 @@ func GetPoliticianByID(w http.ResponseWriter, r *http.Request) {
 			TermStart:            r0.ValidFrom,
 			TermEnd:              r0.ValidTo,
 			TermDatePrecision:    r0.TermDatePrecision,
+			AppointmentDate:      r0.AppointmentDate,
 		},
 		Addresses:   addresses,
 		Identifiers: identifiers,
