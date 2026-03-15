@@ -75,6 +75,47 @@ type ContactOut struct {
 	SyncedAt    string `json:"synced_at,omitempty"`
 }
 
+// Judicial record DTOs
+
+type JudgeDetailOut struct {
+	AppointedBy              string   `json:"appointed_by,omitempty"`
+	AppointingPresidentParty string   `json:"appointing_president_party,omitempty"`
+	ConfirmationVote         string   `json:"confirmation_vote,omitempty"`
+	CourtRole                string   `json:"court_role,omitempty"`
+	ElectionType             string   `json:"election_type,omitempty"`
+	AreasOfFocus             []string `json:"areas_of_focus,omitempty"`
+	DateSeated               string   `json:"date_seated,omitempty"`
+}
+
+type JudicialEvaluationOut struct {
+	Source     string `json:"source"`
+	Rating     string `json:"rating"`
+	RatingDate string `json:"rating_date"`
+	SourceURL  string `json:"source_url,omitempty"`
+}
+
+type JudicialMetricOut struct {
+	MetricType         string  `json:"metric_type"`
+	Value              float64 `json:"value"`
+	ContextLabel       string  `json:"context_label"`
+	ComparisonBaseline string  `json:"comparison_baseline,omitempty"`
+	TimePeriod         string  `json:"time_period,omitempty"`
+}
+
+type JudicialDisciplinaryRecordOut struct {
+	RecordType  string `json:"record_type"`
+	RecordDate  string `json:"record_date"`
+	Description string `json:"description"`
+	SourceURL   string `json:"source_url,omitempty"`
+}
+
+type JudicialRecordOut struct {
+	JudgeDetail         *JudgeDetailOut                 `json:"judge_detail,omitempty"`
+	Evaluations         []JudicialEvaluationOut         `json:"evaluations"`
+	Metrics             []JudicialMetricOut             `json:"metrics"`
+	DisciplinaryRecords []JudicialDisciplinaryRecordOut `json:"disciplinary_records"`
+}
+
 // Phase B: Candidacy data DTOs
 
 type EndorsementOut struct {
@@ -3717,5 +3758,92 @@ LIMIT 10
 	writeJSON(w, LegislativeSummaryOut{
 		RecentBills: bills,
 		RecentVotes: votes,
+	})
+}
+
+// GetJudicialRecord returns the full judicial record for a judge:
+// detail info, evaluations, metrics, and disciplinary records.
+func GetJudicialRecord(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "id")
+	polID, err := uuid.Parse(idStr)
+	if err != nil {
+		http.Error(w, "Invalid politician ID", http.StatusBadRequest)
+		return
+	}
+
+	// Fetch judge detail
+	var jd JudgeDetail
+	var detail *JudgeDetailOut
+	if err := db.DB.Where("politician_id = ?", polID).First(&jd).Error; err == nil {
+		areasOfFocus := []string(jd.AreasOfFocus)
+		if areasOfFocus == nil {
+			areasOfFocus = []string{}
+		}
+		dateSeated := ""
+		if jd.DateSeated != nil {
+			dateSeated = *jd.DateSeated
+		}
+		detail = &JudgeDetailOut{
+			AppointedBy:              jd.AppointedBy,
+			AppointingPresidentParty: jd.AppointingPresidentParty,
+			ConfirmationVote:         jd.ConfirmationVote,
+			CourtRole:                jd.CourtRole,
+			ElectionType:             jd.ElectionType,
+			AreasOfFocus:             areasOfFocus,
+			DateSeated:               dateSeated,
+		}
+	}
+
+	// Fetch evaluations
+	var evals []JudicialEvaluation
+	if err := db.DB.Where("politician_id = ?", polID).Order("rating_date DESC").Find(&evals).Error; err != nil {
+		log.Printf("[essentials] WARNING: failed to fetch judicial evaluations for %s: %v", polID, err)
+	}
+	evalOuts := make([]JudicialEvaluationOut, len(evals))
+	for i, e := range evals {
+		evalOuts[i] = JudicialEvaluationOut{
+			Source:     e.Source,
+			Rating:     e.Rating,
+			RatingDate: e.RatingDate,
+			SourceURL:  e.SourceURL,
+		}
+	}
+
+	// Fetch metrics
+	var metrics []JudicialMetric
+	if err := db.DB.Where("politician_id = ?", polID).Find(&metrics).Error; err != nil {
+		log.Printf("[essentials] WARNING: failed to fetch judicial metrics for %s: %v", polID, err)
+	}
+	metricOuts := make([]JudicialMetricOut, len(metrics))
+	for i, m := range metrics {
+		metricOuts[i] = JudicialMetricOut{
+			MetricType:         m.MetricType,
+			Value:              m.Value,
+			ContextLabel:       m.ContextLabel,
+			ComparisonBaseline: m.ComparisonBaseline,
+			TimePeriod:         m.TimePeriod,
+		}
+	}
+
+	// Fetch disciplinary records
+	var discs []JudicialDisciplinaryRecord
+	if err := db.DB.Where("politician_id = ?", polID).Order("record_date DESC").Find(&discs).Error; err != nil {
+		log.Printf("[essentials] WARNING: failed to fetch judicial disciplinary records for %s: %v", polID, err)
+	}
+	discOuts := make([]JudicialDisciplinaryRecordOut, len(discs))
+	for i, d := range discs {
+		discOuts[i] = JudicialDisciplinaryRecordOut{
+			RecordType:  d.RecordType,
+			RecordDate:  d.RecordDate,
+			Description: d.Description,
+			SourceURL:   d.SourceURL,
+		}
+	}
+
+	writeJSON(w, JudicialRecordOut{
+		JudgeDetail:         detail,
+		Evaluations:         evalOuts,
+		Metrics:             metricOuts,
+		DisciplinaryRecords: discOuts,
 	})
 }

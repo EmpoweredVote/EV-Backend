@@ -33,6 +33,9 @@ func SetupRoutes() http.Handler {
 	r.Get("/politician/{id}/votes", GetPoliticianVotes)
 	r.Get("/politician/{id}/legislative-summary", GetPoliticianLegislativeSummary)
 
+	// Judicial record endpoint
+	r.Get("/politician/{id}/judicial-record", GetJudicialRecord)
+
 	// Read & Rank quotes endpoint
 	r.Get("/quotes", GetQuotes)
 

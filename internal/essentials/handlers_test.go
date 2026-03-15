@@ -53,3 +53,36 @@ func TestJudicialDisciplinaryRecordModel(t *testing.T) {
 		t.Errorf("expected table name essentials.judicial_disciplinary_records, got %s", dr.TableName())
 	}
 }
+
+func TestJudicialRecordOutStructure(t *testing.T) {
+	out := JudicialRecordOut{}
+	_ = out.JudgeDetail
+	_ = out.Evaluations
+	_ = out.Metrics
+	_ = out.DisciplinaryRecords
+}
+
+func TestJudicialEvaluationOutStructure(t *testing.T) {
+	out := JudicialEvaluationOut{}
+	_ = out.Source
+	_ = out.Rating
+	_ = out.RatingDate
+	_ = out.SourceURL
+}
+
+func TestJudicialMetricOutStructure(t *testing.T) {
+	out := JudicialMetricOut{}
+	_ = out.MetricType
+	_ = out.Value
+	_ = out.ContextLabel
+	_ = out.ComparisonBaseline
+	_ = out.TimePeriod
+}
+
+func TestJudicialDisciplinaryRecordOutStructure(t *testing.T) {
+	out := JudicialDisciplinaryRecordOut{}
+	_ = out.RecordType
+	_ = out.RecordDate
+	_ = out.Description
+	_ = out.SourceURL
+}
