@@ -117,6 +117,15 @@ func FindPoliticiansByGeoMatches(ctx context.Context, matches []GeoMatch) ([]Off
 		argIdx++
 	}
 
+	// Include U.S. Supreme Court (and future federal judiciary) for all searches.
+	// NATIONAL_JUDICIAL has no geofence — always injected like NATIONAL_EXEC.
+	conditions = append(conditions, fmt.Sprintf(
+		"(d.district_type = $%d)",
+		argIdx,
+	))
+	args = append(args, "NATIONAL_JUDICIAL")
+	argIdx++
+
 	whereClause := strings.Join(conditions, " OR ")
 
 	// Uses offices as the base table with LEFT JOIN to politicians so that

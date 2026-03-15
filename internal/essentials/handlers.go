@@ -1237,8 +1237,8 @@ func fetchOfficialsFromDB(zip string, state string) ([]OfficialOut, error) {
 		  AND gb.body_key = COALESCE(NULLIF(c.name_formal, ''), c.name, '')
 		LEFT JOIN essentials.zip_politicians zp ON zp.politician_id = p.id AND zp.zip = ?
 		WHERE (
-		  -- Federal executive officials (President, VP, Cabinet) - nationwide
-		  d.district_type = 'NATIONAL_EXEC'
+		  -- Federal executive officials (President, VP, Cabinet) and federal judiciary - nationwide
+		  d.district_type IN ('NATIONAL_EXEC', 'NATIONAL_JUDICIAL')
 	`
 
 	args := []interface{}{}
@@ -1568,7 +1568,7 @@ func fetchFederalAndStateFromDBFiltered(state string, stateFilteredTypes []strin
 		  AND gb.geo_id = d.geo_id
 		  AND gb.body_key = COALESCE(NULLIF(c.name_formal, ''), c.name, '')
 		WHERE (
-		  d.district_type = 'NATIONAL_EXEC'
+		  d.district_type IN ('NATIONAL_EXEC', 'NATIONAL_JUDICIAL')
 		  OR (
 		    d.district_type = ANY(?)
 		    AND (o.representing_state = ? OR d.state = ?)
