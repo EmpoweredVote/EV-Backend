@@ -414,6 +414,57 @@ func (JudgeDetail) TableName() string {
 	return "essentials.judge_details"
 }
 
+// JudicialEvaluation stores bar association and judicial performance evaluation ratings.
+// Multiple evaluations per judge (different sources, different years).
+type JudicialEvaluation struct {
+	ID           uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	PoliticianID uuid.UUID `json:"politician_id" gorm:"type:uuid;not null;uniqueIndex:idx_jeval_dedup"`
+	Source       string    `json:"source" gorm:"uniqueIndex:idx_jeval_dedup"`      // "Indiana Judicial Qualifications Commission", "LACBA"
+	Rating       string    `json:"rating"`                                          // "Well Qualified", "Meets Performance Standards"
+	RatingDate   string    `json:"rating_date" gorm:"uniqueIndex:idx_jeval_dedup"` // "2024-11" or "2024"
+	SourceURL    string    `json:"source_url"`                                      // Link to evaluation report
+	Details      string    `json:"details,omitempty" gorm:"type:text"`              // Additional notes from source
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+func (JudicialEvaluation) TableName() string { return "essentials.judicial_evaluations" }
+
+// JudicialMetric stores quantitative judicial performance data (reversal rates,
+// caseload, disposition times, etc.) with contextual comparison labels.
+type JudicialMetric struct {
+	ID                 uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	PoliticianID       uuid.UUID `json:"politician_id" gorm:"type:uuid;not null;uniqueIndex:idx_jmetric_dedup"`
+	MetricType         string    `json:"metric_type" gorm:"uniqueIndex:idx_jmetric_dedup"`  // "reversal_rate", "caseload_volume", "avg_disposition_days"
+	Value              float64   `json:"value"`                                              // Numeric value (e.g., 8.2 for 8.2% reversal rate)
+	ContextLabel       string    `json:"context_label"`                                      // "below county average of 12%"
+	ComparisonBaseline string    `json:"comparison_baseline"`                                // "Monroe County average", "Indiana state average"
+	TimePeriod         string    `json:"time_period" gorm:"uniqueIndex:idx_jmetric_dedup"`  // "2020-2024"
+	DataSource         string    `json:"data_source"`                                        // "CourtListener", "Indiana Courts", "manual"
+	SourceURL          string    `json:"source_url"`
+	CreatedAt          time.Time `json:"created_at"`
+	UpdatedAt          time.Time `json:"updated_at"`
+}
+
+func (JudicialMetric) TableName() string { return "essentials.judicial_metrics" }
+
+// JudicialDisciplinaryRecord stores sanctions, reprimands, or complaints
+// against a judge. Only populated when records exist.
+type JudicialDisciplinaryRecord struct {
+	ID           uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	PoliticianID uuid.UUID `json:"politician_id" gorm:"type:uuid;not null;uniqueIndex:idx_jdisc_dedup"`
+	RecordType   string    `json:"record_type" gorm:"uniqueIndex:idx_jdisc_dedup"`  // "reprimand", "censure", "suspension", "complaint"
+	RecordDate   string    `json:"record_date" gorm:"uniqueIndex:idx_jdisc_dedup"`  // "2023-06-15"
+	Description  string    `json:"description" gorm:"type:text"`                    // Brief factual summary
+	SourceURL    string    `json:"source_url"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+func (JudicialDisciplinaryRecord) TableName() string {
+	return "essentials.judicial_disciplinary_records"
+}
+
 // Quote stores a curated politician quote for the Read & Rank feature.
 // Deduplication is handled at import time by matching on (politician_id, topic_key, source_url).
 // The same politician can have multiple quotes per topic (e.g., different quotes on the same issue).
