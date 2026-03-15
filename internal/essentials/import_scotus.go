@@ -19,7 +19,6 @@ type scotusJustice struct {
 	ConfirmationVote string
 	AppointmentDate  string // YYYY-MM-DD
 	PhotoOriginURL   string // supremecourt.gov URL (backup)
-	PhotoCDNURL      string // Supabase CDN URL (primary)
 }
 
 var scotusJustices = []scotusJustice{
@@ -244,17 +243,18 @@ func ImportSCOTUS(dryRun bool) error {
 			"court_role":                 j.CourtRole,
 		})
 
-		// Upsert PoliticianImage (CDN URL — placeholder until photos uploaded to Supabase)
-		if j.PhotoCDNURL != "" {
-			var img PoliticianImage
-			db.DB.Where("politician_id = ? AND type = ?", pol.ID, "default").
-				FirstOrCreate(&img, PoliticianImage{
-					PoliticianID: pol.ID,
-					URL:          j.PhotoCDNURL,
-					Type:         "default",
-					PhotoLicense: "us_government_work",
-				})
-		}
+		// Upsert PoliticianImage — CDN URL follows the standard pattern:
+		// https://<project>.supabase.co/storage/v1/object/public/politician_photos/<uuid>/default.jpg
+		// Photos must be uploaded to Supabase Storage separately (public domain US govt works).
+		cdnURL := fmt.Sprintf("https://kxsdzaojfaibhuzmclfq.supabase.co/storage/v1/object/public/politician_photos/%s/default.jpg", pol.ID)
+		var img PoliticianImage
+		db.DB.Where("politician_id = ? AND type = ?", pol.ID, "default").
+			FirstOrCreate(&img, PoliticianImage{
+				PoliticianID: pol.ID,
+				URL:          cdnURL,
+				Type:         "default",
+				PhotoLicense: "us_government_work",
+			})
 
 		log.Printf("  [%d/9] %s %s — %s", i+1,
 			map[bool]string{true: "CREATED", false: "UPDATED"}[isNew],
