@@ -429,6 +429,17 @@ func main() {
 			}
 			_ = maxErrors // only used in api mode
 			os.Exit(0)
+		case "import-scotus":
+			dryRun := false
+			for _, arg := range os.Args[2:] {
+				if arg == "--dry-run" {
+					dryRun = true
+				}
+			}
+			if err := essentials.ImportSCOTUS(dryRun); err != nil {
+				log.Fatal("import-scotus failed: ", err)
+			}
+			os.Exit(0)
 		}
 	}
 
