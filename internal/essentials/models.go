@@ -308,14 +308,18 @@ type BuildingPhoto struct {
 // JudgeDetail stores judge-specific metadata not applicable to elected officials.
 // 1:1 with Politician via PoliticianID.
 type JudgeDetail struct {
-	ID                      uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
-	PoliticianID            uuid.UUID `json:"politician_id" gorm:"type:uuid;uniqueIndex"`
-	AppointedBy             string    `json:"appointed_by"`               // President name, e.g. "Barack Obama"
-	AppointingPresidentParty string   `json:"appointing_president_party"` // "Democratic", "Republican"
-	ConfirmationVote        string    `json:"confirmation_vote"`          // e.g. "68-31", empty for voice votes
-	CourtRole               string    `json:"court_role"`                 // "Chief Justice", "Associate Justice"
-	CreatedAt               time.Time `json:"created_at"`
-	UpdatedAt               time.Time `json:"updated_at"`
+	ID                       uuid.UUID      `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	PoliticianID             uuid.UUID      `json:"politician_id" gorm:"type:uuid;uniqueIndex"`
+	AppointedBy              string         `json:"appointed_by"`               // President name, e.g. "Barack Obama"
+	AppointingPresidentParty string         `json:"appointing_president_party"` // "Democratic", "Republican"
+	ConfirmationVote         string         `json:"confirmation_vote"`          // e.g. "68-31", empty for voice votes
+	CourtRole                string         `json:"court_role"`                 // "Chief Justice", "Associate Justice"
+	// Enrichment fields
+	ElectionType             string         `json:"election_type"`                         // "retention" or "contested"
+	AreasOfFocus             pq.StringArray `json:"areas_of_focus" gorm:"type:text[]"`     // e.g. ["criminal", "family", "civil"]
+	DateSeated               *string        `json:"date_seated,omitempty" gorm:"type:date"` // When first took the bench
+	CreatedAt                time.Time      `json:"created_at"`
+	UpdatedAt                time.Time      `json:"updated_at"`
 }
 
 func (Politician) TableName() string {
