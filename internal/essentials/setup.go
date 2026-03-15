@@ -69,6 +69,8 @@ func Init() {
 		&LegislativeBillCosponsor{},
 		&LegislativeVote{},
 		&LegislativePoliticianIDMap{},
+		// SCOTUS: Judge-specific metadata
+		&JudgeDetail{},
 		// &GeofenceBoundary{}, // Table already exists, managed manually to avoid GORM constraint issues
 	); err != nil {
 		log.Fatal("Failed to auto-migrate tables", err)
