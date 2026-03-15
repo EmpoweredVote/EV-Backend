@@ -32,10 +32,12 @@ var (
 // categories are semicolon-separated without spaces; stance order maps to value 1..5
 
 type TopicCSV struct {
-	Title      string
-	ShortTitle string
-	Stances    [5]string
-	Categories []string // titles
+	TopicKey    string
+	Title       string
+	ShortTitle  string
+	StartPhrase string
+	Stances     [5]string
+	Categories  []string // titles
 }
 
 type Counts struct {
@@ -170,7 +172,7 @@ func loadCSV(path string) ([]TopicCSV, error) {
 	for i, h := range headers {
 		idx[strings.TrimSpace(h)] = i
 	}
-	required := []string{"title", "shortTitle", "stance1", "stance2", "stance3", "stance4", "stance5", "categories"}
+	required := []string{"topic_key", "title", "short_title", "start_phrase", "stance_1", "stance_2", "stance_3", "stance_4", "stance_5", "categories"}
 	for _, k := range required {
 		if _, ok := idx[k]; !ok {
 			return nil, fmt.Errorf("missing required column: %s", k)
@@ -188,14 +190,16 @@ func loadCSV(path string) ([]TopicCSV, error) {
 		}
 
 		row := TopicCSV{
-			Title:      strings.TrimSpace(rec[idx["title"]]),
-			ShortTitle: strings.TrimSpace(rec[idx["shortTitle"]]),
+			TopicKey:    strings.TrimSpace(rec[idx["topic_key"]]),
+			Title:       strings.TrimSpace(rec[idx["title"]]),
+			ShortTitle:  strings.TrimSpace(rec[idx["short_title"]]),
+			StartPhrase: strings.TrimSpace(rec[idx["start_phrase"]]),
 		}
-		row.Stances[0] = strings.TrimSpace(rec[idx["stance1"]])
-		row.Stances[1] = strings.TrimSpace(rec[idx["stance2"]])
-		row.Stances[2] = strings.TrimSpace(rec[idx["stance3"]])
-		row.Stances[3] = strings.TrimSpace(rec[idx["stance4"]])
-		row.Stances[4] = strings.TrimSpace(rec[idx["stance5"]])
+		row.Stances[0] = strings.TrimSpace(rec[idx["stance_1"]])
+		row.Stances[1] = strings.TrimSpace(rec[idx["stance_2"]])
+		row.Stances[2] = strings.TrimSpace(rec[idx["stance_3"]])
+		row.Stances[3] = strings.TrimSpace(rec[idx["stance_4"]])
+		row.Stances[4] = strings.TrimSpace(rec[idx["stance_5"]])
 
 		cats := strings.TrimSpace(rec[idx["categories"]])
 		if cats == "" {
@@ -221,6 +225,9 @@ func validateRows(rows []TopicCSV) error {
 	}
 	seen := make(map[string]struct{}, len(rows))
 	for i, r := range rows {
+		if r.TopicKey == "" {
+			return fmt.Errorf("row %d: topic_key is empty", i+2)
+		}
 		if r.Title == "" {
 			return fmt.Errorf("row %d: title is empty", i+2)
 		}
@@ -325,7 +332,7 @@ func upsertCategory(ctx context.Context, tx *sql.Tx, title string) (uuid.UUID, e
 
 func insertAll(ctx context.Context, tx *sql.Tx, rows []TopicCSV, catIDs map[string]uuid.UUID) error {
 	// prepared statements for speed & safety
-	topicStmt, err := tx.PrepareContext(ctx, `INSERT INTO compass.topics (id, title, short_title) VALUES ($1,$2,$3)`)
+	topicStmt, err := tx.PrepareContext(ctx, `INSERT INTO compass.topics (id, topic_key, title, short_title, question_text) VALUES ($1,$2,$3,$4,$5)`)
 	if err != nil {
 		return err
 	}
@@ -345,7 +352,7 @@ func insertAll(ctx context.Context, tx *sql.Tx, rows []TopicCSV, catIDs map[stri
 
 	for _, r := range rows {
 		topicID := uuid.New()
-		if _, err := topicStmt.ExecContext(ctx, topicID, r.Title, r.ShortTitle); err != nil {
+		if _, err := topicStmt.ExecContext(ctx, topicID, r.TopicKey, r.Title, r.ShortTitle, r.StartPhrase); err != nil {
 			return fmt.Errorf("insert topic '%s': %w", r.ShortTitle, err)
 		}
 		// stances 1..5 map to value 1..5
