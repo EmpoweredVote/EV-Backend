@@ -3165,10 +3165,15 @@ func GetQuotes(w http.ResponseWriter, r *http.Request) {
 		  COALESCE(q.source_name, '') AS source_name,
 		  p.full_name,
 		  COALESCE(p.party, '') AS party,
-		  COALESCE(p.photo_custom_url, p.photo_origin_url, '') AS photo,
+		  COALESCE(p.photo_custom_url, p.photo_origin_url, pi.url, '') AS photo,
 		  COALESCE(o.title, '') AS office_title
 		FROM essentials.quotes q
 		JOIN essentials.politicians p ON p.id = q.politician_id
+		LEFT JOIN LATERAL (
+		  SELECT url FROM essentials.politician_images
+		  WHERE politician_id = p.id AND type = 'default'
+		  LIMIT 1
+		) pi ON true
 		LEFT JOIN LATERAL (
 		  SELECT title FROM essentials.offices
 		  WHERE politician_id = p.id
