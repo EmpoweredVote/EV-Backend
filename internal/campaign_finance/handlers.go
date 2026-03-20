@@ -315,3 +315,42 @@ func IngestFECHandler(w http.ResponseWriter, r *http.Request) {
 		"message":          "ingestion complete",
 	})
 }
+
+// IndianaResult holds per-politician ingestion outcome for the Indiana JSON response.
+type IndianaResult struct {
+	PoliticianSourceID string `json:"politician_source_id"`
+	Status             string `json:"status"`
+	RecordsInserted    int    `json:"records_inserted"`
+	RecordsFetched     int    `json:"records_fetched"`
+	RecordsUnresolved  int    `json:"records_unresolved"`
+	Error              string `json:"error,omitempty"`
+}
+
+// IndianaIngestAllFunc ingests all confirmed indiana politician sources from the annual CSV.
+// Returns results slice and total unresolved count (adapter-wide, not per-politician).
+type IndianaIngestAllFunc func() ([]IndianaResult, int, error)
+
+var indianaIngestAllFn IndianaIngestAllFunc
+
+// SetIndianaIngestAllFunc injects the Indiana ingestion function (avoids import cycles).
+func SetIndianaIngestAllFunc(fn IndianaIngestAllFunc) { indianaIngestAllFn = fn }
+
+// IngestIndianaHandler triggers Indiana ingestion for all confirmed indiana sources.
+func IngestIndianaHandler(w http.ResponseWriter, r *http.Request) {
+	if indianaIngestAllFn == nil {
+		http.Error(w, "indiana ingestion not configured", http.StatusInternalServerError)
+		return
+	}
+	results, totalUnresolved, err := indianaIngestAllFn()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":           "ok",
+		"message":          "Indiana ingestion complete",
+		"results":          results,
+		"total_unresolved": totalUnresolved,
+	})
+}
