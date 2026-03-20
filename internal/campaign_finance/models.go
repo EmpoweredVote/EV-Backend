@@ -62,9 +62,9 @@ type Contribution struct {
 	Amount             float64    `json:"amount" gorm:"type:decimal(14,2);not null"`
 	ContributionDate   *time.Time `json:"contribution_date"`
 	ElectionCycle      string     `json:"election_cycle" gorm:"type:varchar(4)"`
-	ConfidenceLevel    string     `json:"confidence_level" gorm:"type:varchar(16);not null;check:confidence_level IN ('HIGH','MEDIUM','ESTIMATED')"`
-	DataSource         string     `json:"data_source" gorm:"type:varchar(32);not null;check:data_source IN ('fec','indiana','cal_access','la_socrata','community_verified')"`
-	SourceTransactionID string    `json:"source_transaction_id" gorm:"type:varchar(128);index"`
+	ConfidenceLevel     string     `json:"confidence_level" gorm:"type:varchar(16);not null;check:confidence_level IN ('HIGH','MEDIUM','ESTIMATED')"`
+	DataSource          string     `json:"data_source" gorm:"type:varchar(32);not null;check:data_source IN ('fec','indiana','cal_access','la_socrata','community_verified');uniqueIndex:idx_contribution_dedup"`
+	SourceTransactionID string     `json:"source_transaction_id" gorm:"type:varchar(128);uniqueIndex:idx_contribution_dedup"`
 	RawRecord          []byte     `json:"raw_record" gorm:"type:jsonb"`
 	CreatedAt          time.Time  `json:"created_at"`
 	UpdatedAt          time.Time  `json:"updated_at"`
@@ -101,3 +101,24 @@ type SourceAuditLog struct {
 }
 
 func (SourceAuditLog) TableName() string { return "transparent_motivations.source_audit_log" }
+
+// IngestionRun records the lifecycle and outcome of every adapter execution.
+// Status values: running | completed | completed_with_warning | failed
+type IngestionRun struct {
+	ID                 uint       `json:"id" gorm:"primaryKey;autoIncrement"`
+	AdapterName        string     `json:"adapter_name" gorm:"type:varchar(64);not null;index"`
+	PoliticianSourceID *uuid.UUID `json:"politician_source_id" gorm:"type:uuid;index"`
+	ElectionCycle      string     `json:"election_cycle" gorm:"type:varchar(4)"`
+	StartedAt          time.Time  `json:"started_at" gorm:"not null"`
+	CompletedAt        *time.Time `json:"completed_at"`
+	Status             string     `json:"status" gorm:"type:varchar(32);not null;default:'running';check:status IN ('running','completed','completed_with_warning','failed')"`
+	RecordsFetched     int        `json:"records_fetched"`
+	RecordsInserted    int        `json:"records_inserted"`
+	RecordsSkipped     int        `json:"records_skipped"`
+	RecordsUnresolved  int        `json:"records_unresolved"`
+	ErrorCount         int        `json:"errors" gorm:"column:errors"`
+	DurationMs         int64      `json:"duration_ms"`
+	Notes              string     `json:"notes" gorm:"type:text"`
+}
+
+func (IngestionRun) TableName() string { return "transparent_motivations.ingestion_runs" }
