@@ -38,7 +38,7 @@ func main() {
 
 	// Load all confirmed FEC politician sources.
 	var sources []campaign_finance.PoliticianSource
-	if err := db.DB.Where("source_system = ? AND research_status = ?", "fec", "confirmed").
+	if err := db.DB.Where("source_system IN ? AND research_status = ?", []string{"fec_house", "fec_senate"}, "confirmed").
 		Find(&sources).Error; err != nil {
 		log.Fatalf("backfill-fec: failed to load confirmed FEC sources: %v", err)
 	}
