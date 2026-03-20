@@ -204,55 +204,18 @@ func (a *IndianaAdapter) Fetch(ps campaign_finance.PoliticianSource) (adapter.Fe
 // Normalize converts FetchResult records into Contribution structs.
 // source_transaction_id is a composite of FileNumber|ContributionDate|ContributorName|Amount,
 // truncated to 128 characters to fit the DB column.
+// Delegates to NormalizeRow to keep normalization logic in one place (no drift with backfill).
 func (a *IndianaAdapter) Normalize(raw adapter.FetchResult, ps campaign_finance.PoliticianSource) (adapter.NormalizeResult, error) {
 	contributions := make([]campaign_finance.Contribution, 0, len(raw.Records))
 
 	for _, rec := range raw.Records {
-		amount, _ := rec["Amount"].(float64)
-		tranDate, _ := rec["ContributionDate"].(time.Time)
-		contributorName, _ := rec["ContributorName"].(string)
-		fileNumber, _ := rec["FileNumber"].(string)
-
-		// Election cycle: round up to next even year.
-		year := tranDate.Year()
-		if year == 0 {
-			// Zero time — use current year rounded to even.
-			year = time.Now().Year()
+		contrib, err := NormalizeRow(rec, ps)
+		if err != nil {
+			// Log and skip rows that cannot be normalized (e.g., unparseable amount).
+			log.Printf("indiana: Normalize: skip row: %v", err)
+			continue
 		}
-		if year%2 != 0 {
-			year++
-		}
-		electionCycle := fmt.Sprintf("%d", year)
-
-		// source_transaction_id: composite, truncated to 128 chars.
-		rawTxID := fmt.Sprintf("%s|%s|%s|%.2f",
-			fileNumber,
-			tranDate.Format("2006-01-02"),
-			contributorName,
-			amount,
-		)
-		if len(rawTxID) > 128 {
-			rawTxID = rawTxID[:128]
-		}
-
-		rawBytes, _ := json.Marshal(rec)
-
-		var contribDate *time.Time
-		if !tranDate.IsZero() {
-			t := tranDate
-			contribDate = &t
-		}
-
-		contributions = append(contributions, campaign_finance.Contribution{
-			PoliticianSourceID:  ps.ID,
-			DataSource:          "indiana",
-			SourceTransactionID: rawTxID,
-			Amount:              amount,
-			ContributionDate:    contribDate,
-			ElectionCycle:       electionCycle,
-			ConfidenceLevel:     "HIGH",
-			RawRecord:           rawBytes,
-		})
+		contributions = append(contributions, contrib)
 	}
 
 	return adapter.NormalizeResult{

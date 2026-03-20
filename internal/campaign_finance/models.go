@@ -129,6 +129,7 @@ func (IngestionRun) TableName() string { return "transparent_motivations.ingesti
 // but whose research_status is not yet "confirmed". Phase 8 backfill queries this table
 // using the composite index on (adapter_name, external_id) to hydrate contributions
 // once OrgIds are confirmed.
+// Status values: active | dismissed | resolved
 type UnresolvedContribution struct {
 	ID             uint      `json:"id" gorm:"primaryKey;autoIncrement"`
 	AdapterName    string    `json:"adapter_name" gorm:"type:varchar(64);not null;index:idx_unresolved_adapter_external,priority:1"`
@@ -136,6 +137,7 @@ type UnresolvedContribution struct {
 	RawRow         []byte    `json:"raw_row" gorm:"type:jsonb;not null"`
 	RowNumber      int       `json:"row_number"`
 	ExternalID     string    `json:"external_id" gorm:"type:varchar(128);index:idx_unresolved_adapter_external,priority:2"`
+	Status         string    `json:"status" gorm:"type:varchar(16);not null;default:'active';index"`
 	CreatedAt      time.Time `json:"created_at"`
 }
 

@@ -75,4 +75,34 @@ END $$;
 	if migrationResult.Error != nil {
 		log.Printf("warning: skipped_no_change migration: %v", migrationResult.Error)
 	}
+
+	// Add status CHECK constraint for unresolved_contributions.
+	// GORM AutoMigrate does not modify CHECK constraints — raw SQL required.
+	// Existing rows written before this migration have no status column yet;
+	// the column default 'active' handles them once AutoMigrate adds the column.
+	unresolvedStatusMigration := db.DB.Exec(`
+DO $$
+DECLARE
+    constraint_name text;
+BEGIN
+    SELECT con.conname INTO constraint_name
+    FROM pg_constraint con
+    JOIN pg_attribute att ON att.attnum = ANY(con.conkey)
+        AND att.attrelid = con.conrelid
+    WHERE con.conrelid = 'transparent_motivations.unresolved_contributions'::regclass
+        AND con.contype = 'c'
+        AND att.attname = 'status';
+
+    IF constraint_name IS NOT NULL THEN
+        EXECUTE format('ALTER TABLE transparent_motivations.unresolved_contributions DROP CONSTRAINT %I', constraint_name);
+    END IF;
+
+    ALTER TABLE transparent_motivations.unresolved_contributions
+        ADD CONSTRAINT unresolved_contributions_status_check
+        CHECK (status IN ('active','dismissed','resolved'));
+END $$;
+`)
+	if unresolvedStatusMigration.Error != nil {
+		log.Printf("warning: unresolved_contributions status migration: %v", unresolvedStatusMigration.Error)
+	}
 }
