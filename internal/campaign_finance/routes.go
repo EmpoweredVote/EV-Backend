@@ -15,6 +15,10 @@ func Routes(r chi.Router) {
 		w.Write([]byte(`{"status":"ok","schema":"transparent_motivations"}`))
 	})
 
+	// Public campaign finance endpoints — no auth required
+	r.Get("/campaign-finance/politician/{id}/summary", SummaryHandler)
+	r.Get("/campaign-finance/politician/{id}/contributions", ContributionsHandler)
+
 	// Admin-only routes — require valid session + admin role
 	sessionFetcher := auth.SessionInfo{}
 	r.Group(func(r chi.Router) {
