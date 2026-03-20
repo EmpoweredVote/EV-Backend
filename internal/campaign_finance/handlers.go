@@ -172,3 +172,76 @@ func DeleteSourceHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]bool{"deleted": true})
 }
+
+// ingestFECRequest is the JSON body shape for IngestFECHandler.
+type ingestFECRequest struct {
+	PoliticianSourceID string `json:"politician_source_id"`
+	Cycle              string `json:"cycle"`
+}
+
+// IngestFECHandler handles POST /campaign-finance/admin/ingest/fec.
+// It triggers a synchronous FEC ingestion for one confirmed politician source
+// and one election cycle, returning the resulting IngestionRun ID.
+func IngestFECHandler(w http.ResponseWriter, r *http.Request) {
+	var req ingestFECRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "invalid request body"})
+		return
+	}
+
+	if req.PoliticianSourceID == "" || req.Cycle == "" {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "politician_source_id and cycle are required"})
+		return
+	}
+
+	var ps PoliticianSource
+	if err := db.DB.First(&ps, "id = ?", req.PoliticianSourceID).Error; err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "politician_source not found"})
+		return
+	}
+
+	if ps.SourceSystem != "fec" || ps.ResearchStatus != "confirmed" {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "politician_source must be source_system=fec and research_status=confirmed"})
+		return
+	}
+
+	if fecIngestFn == nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "FEC ingestion not configured"})
+		return
+	}
+
+	startedAfter := time.Now()
+	if err := fecIngestFn(ps, req.Cycle); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+		return
+	}
+
+	// Retrieve the most recently created IngestionRun for this source and cycle.
+	var run IngestionRun
+	if err := db.DB.Where("politician_source_id = ? AND election_cycle = ? AND started_at >= ?", ps.ID, req.Cycle, startedAfter).
+		Order("started_at DESC").First(&run).Error; err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "ingestion completed but could not retrieve run ID"})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":           "ok",
+		"ingestion_run_id": run.ID,
+		"message":          "ingestion complete",
+	})
+}

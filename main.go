@@ -8,6 +8,8 @@ import (
 
 	"github.com/EmpoweredVote/EV-Backend/internal/auth"
 	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance"
+	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter"
+	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter/fec"
 	"github.com/EmpoweredVote/EV-Backend/internal/compass"
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/EmpoweredVote/EV-Backend/internal/essentials"
@@ -44,6 +46,12 @@ func main() {
 	staging.Init()
 	meetings.Init()
 	campaign_finance.Init()
+
+	// Wire FEC ingestion function — avoids import cycle between campaign_finance
+	// and campaign_finance/adapter by injecting the implementation at startup.
+	campaign_finance.SetFECIngestFunc(func(ps campaign_finance.PoliticianSource, cycle string) error {
+		return adapter.RunIngestion(fec.New(cycle), ps, cycle)
+	})
 
 	// CLI subcommand dispatch — must come after all Init() calls so tables
 	// are migrated and the global db.DB connection is ready.

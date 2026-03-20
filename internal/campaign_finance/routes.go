@@ -29,5 +29,7 @@ func Routes(r chi.Router) {
 		r.Get("/campaign-finance/admin/sources/form", SourcesFormHandler)
 		r.Post("/campaign-finance/admin/sources/form", SourcesFormSubmitHandler)
 		r.Post("/campaign-finance/admin/sources/form/delete", SourcesFormDeleteHandler)
+
+		r.Post("/campaign-finance/admin/ingest/fec", IngestFECHandler)
 	})
 }
