@@ -13,6 +13,7 @@ import (
 	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter"
 	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter/calaccess"
 	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter/fec"
+	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter/socrata"
 	"github.com/EmpoweredVote/EV-Backend/internal/compass"
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/EmpoweredVote/EV-Backend/internal/essentials"
@@ -124,6 +125,74 @@ func main() {
 
 		if err := ca.SaveETag(); err != nil {
 			log.Printf("warning: failed to save cal-access ETag: %v", err)
+		}
+		return results, nil
+	})
+
+	// Wire Socrata ingestion — REST API, no ZIP lifecycle.
+	socrataToken := os.Getenv("SOCRATA_APP_TOKEN")
+	if socrataToken == "" {
+		log.Fatal("SOCRATA_APP_TOKEN environment variable is not set")
+	}
+	campaign_finance.SetSocrataIngestAllFunc(func() ([]campaign_finance.SocrataResult, error) {
+		// Query all confirmed la_socrata politician sources.
+		var sources []campaign_finance.PoliticianSource
+		if err := db.DB.Where("source_system = ? AND research_status = ?", "la_socrata", "confirmed").Find(&sources).Error; err != nil {
+			return nil, fmt.Errorf("query la_socrata sources: %w", err)
+		}
+		if len(sources) == 0 {
+			return nil, fmt.Errorf("no confirmed la_socrata politician sources found")
+		}
+
+		sa := socrata.New(db.DB, socrataToken)
+		var results []campaign_finance.SocrataResult
+
+		// Non-aborting loop — per-politician failure logged, continues to next.
+		for _, ps := range sources {
+			result := campaign_finance.SocrataResult{PoliticianSourceID: ps.ID.String()}
+
+			// Warn if external_id is empty (no cmt_id seeded).
+			if ps.ExternalID == "" {
+				result.Status = "completed_with_warning"
+				result.Error = "no external_id (cmt_id) configured"
+				log.Printf("socrata: skipping %s — no external_id", ps.ID)
+				now := time.Now()
+				warnRun := campaign_finance.IngestionRun{
+					AdapterName:        "la_socrata",
+					PoliticianSourceID: &ps.ID,
+					StartedAt:          now,
+					CompletedAt:        &now,
+					Status:             "completed_with_warning",
+					Notes:              "no external_id (cmt_id) configured — skipped",
+				}
+				db.DB.Create(&warnRun)
+				results = append(results, result)
+				continue
+			}
+
+			if err := adapter.RunIngestion(sa, ps, ""); err != nil {
+				result.Status = "failed"
+				result.Error = err.Error()
+				log.Printf("socrata ingestion failed for %s: %v", ps.ID, err)
+			} else {
+				// Retrieve the IngestionRun that RunIngestion just created.
+				var run campaign_finance.IngestionRun
+				db.DB.Where("politician_source_id = ? AND adapter_name = ?", ps.ID, "la_socrata").
+					Order("started_at DESC").First(&run)
+
+				// Zero-record check: if RunIngestion succeeded but fetched zero records,
+				// override to completed_with_warning.
+				if run.RecordsFetched == 0 {
+					run.Status = "completed_with_warning"
+					run.Notes = "zero contribution rows returned for seeded politician"
+					db.DB.Save(&run)
+					log.Printf("socrata: zero records for %s (cmt_id=%s) — marked completed_with_warning", ps.ID, ps.ExternalID)
+				}
+
+				result.Status = run.Status
+				result.RecordsInserted = run.RecordsInserted
+			}
+			results = append(results, result)
 		}
 		return results, nil
 	})

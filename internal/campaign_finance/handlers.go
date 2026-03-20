@@ -208,6 +208,41 @@ func IngestCalAccessHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// SocrataResult holds per-politician ingestion outcome for the Socrata JSON response.
+type SocrataResult struct {
+	PoliticianSourceID string `json:"politician_source_id"`
+	Status             string `json:"status"`
+	RecordsInserted    int    `json:"records_inserted"`
+	Error              string `json:"error,omitempty"`
+}
+
+// SocrataIngestAllFunc ingests all confirmed la_socrata politician sources via the Socrata API.
+type SocrataIngestAllFunc func() ([]SocrataResult, error)
+
+var socrataIngestAllFn SocrataIngestAllFunc
+
+// SetSocrataIngestAllFunc injects the Socrata ingestion function (avoids import cycles).
+func SetSocrataIngestAllFunc(fn SocrataIngestAllFunc) { socrataIngestAllFn = fn }
+
+// IngestSocrataHandler triggers Socrata ingestion for all confirmed la_socrata sources.
+func IngestSocrataHandler(w http.ResponseWriter, r *http.Request) {
+	if socrataIngestAllFn == nil {
+		http.Error(w, "socrata ingestion not configured", http.StatusInternalServerError)
+		return
+	}
+	results, err := socrataIngestAllFn()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  "ok",
+		"message": "Socrata ingestion complete",
+		"results": results,
+	})
+}
+
 // ingestFECRequest is the JSON body shape for IngestFECHandler.
 type ingestFECRequest struct {
 	PoliticianSourceID string `json:"politician_source_id"`
