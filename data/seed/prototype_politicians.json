@@ -1,8 +1,8 @@
 [
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Erin Houchin'",
-    "essentials_politician_id": "00000001-0000-0000-0000-000000000000",
+    "essentials_politician_id": "68568faf-1e0f-4ca2-89d9-bda625665712",
     "name": "Erin Houchin",
+    "db_full_name": "Erin Houchin",
     "first_name": "Erin",
     "last_name": "Houchin",
     "state": "IN",
@@ -12,9 +12,9 @@
     "pilot_city": "bloomington"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Todd Young'",
-    "essentials_politician_id": "00000002-0000-0000-0000-000000000000",
+    "essentials_politician_id": "102b239c-0a3d-44b9-ae32-88d8179197e2",
     "name": "Todd Young",
+    "db_full_name": "Todd Young",
     "first_name": "Todd",
     "last_name": "Young",
     "state": "IN",
@@ -24,9 +24,9 @@
     "pilot_city": "bloomington"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Jim Banks'",
-    "essentials_politician_id": "00000003-0000-0000-0000-000000000000",
+    "essentials_politician_id": "023c6644-356e-4afb-925b-e20f9c32209b",
     "name": "Jim Banks",
+    "db_full_name": "Jim Banks",
     "first_name": "Jim",
     "last_name": "Banks",
     "state": "IN",
@@ -36,9 +36,9 @@
     "pilot_city": "bloomington"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Micah Beckwith'",
-    "essentials_politician_id": "00000004-0000-0000-0000-000000000000",
+    "essentials_politician_id": "929346a2-8037-4b14-af33-4820eb365323",
     "name": "Micah Beckwith",
+    "db_full_name": "Micah Beckwith",
     "first_name": "Micah",
     "last_name": "Beckwith",
     "state": "IN",
@@ -48,9 +48,9 @@
     "pilot_city": "bloomington"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Kerry Thomson'",
-    "essentials_politician_id": "00000005-0000-0000-0000-000000000000",
+    "essentials_politician_id": "1c6dbdaf-e110-48d3-9b88-27f911d9521f",
     "name": "Kerry Thomson",
+    "db_full_name": "Kerry Thomson",
     "first_name": "Kerry",
     "last_name": "Thomson",
     "state": "IN",
@@ -60,9 +60,9 @@
     "pilot_city": "bloomington"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Karen Bass'",
-    "essentials_politician_id": "00000006-0000-0000-0000-000000000000",
+    "essentials_politician_id": "21c9e711-fb18-4afb-884f-08acd2b598ba",
     "name": "Karen Bass",
+    "db_full_name": "Karen Ruth Bass",
     "first_name": "Karen",
     "last_name": "Bass",
     "state": "CA",
@@ -72,9 +72,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Alex Padilla'",
-    "essentials_politician_id": "00000007-0000-0000-0000-000000000000",
+    "essentials_politician_id": "2d31eaf5-bf46-439e-9ca5-f73cc3127916",
     "name": "Alex Padilla",
+    "db_full_name": "Alex Padilla",
     "first_name": "Alex",
     "last_name": "Padilla",
     "state": "CA",
@@ -84,9 +84,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Adam Schiff'",
-    "essentials_politician_id": "00000008-0000-0000-0000-000000000000",
+    "essentials_politician_id": "8a27a8b7-88b4-4f79-bbcf-d1d0e70d4032",
     "name": "Adam Schiff",
+    "db_full_name": "Adam B. Schiff",
     "first_name": "Adam",
     "last_name": "Schiff",
     "state": "CA",
@@ -96,9 +96,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Judy Chu'",
-    "essentials_politician_id": "00000009-0000-0000-0000-000000000000",
+    "essentials_politician_id": "d75dfa60-351b-4f0d-880a-45acf013c82a",
     "name": "Judy Chu",
+    "db_full_name": "Judy Chu",
     "first_name": "Judy",
     "last_name": "Chu",
     "state": "CA",
@@ -108,9 +108,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Ted Lieu'",
-    "essentials_politician_id": "0000000a-0000-0000-0000-000000000000",
+    "essentials_politician_id": "3a39c313-b994-447b-b3fd-592e4994769b",
     "name": "Ted Lieu",
+    "db_full_name": "Ted W. Lieu",
     "first_name": "Ted",
     "last_name": "Lieu",
     "state": "CA",
@@ -120,9 +120,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Sydney Kamlager-Dove'",
-    "essentials_politician_id": "0000000b-0000-0000-0000-000000000000",
+    "essentials_politician_id": "a2c6adc7-7689-49b9-964f-8f2aeb243a83",
     "name": "Sydney Kamlager-Dove",
+    "db_full_name": "Sydney Kamlager-Dove",
     "first_name": "Sydney",
     "last_name": "Kamlager-Dove",
     "state": "CA",
@@ -132,9 +132,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Maxine Waters'",
-    "essentials_politician_id": "0000000c-0000-0000-0000-000000000000",
+    "essentials_politician_id": "203ab943-324d-4478-9093-d827d5d9c7da",
     "name": "Maxine Waters",
+    "db_full_name": "Maxine Waters",
     "first_name": "Maxine",
     "last_name": "Waters",
     "state": "CA",
@@ -144,9 +144,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Nanette Diaz Baragán'",
-    "essentials_politician_id": "0000000d-0000-0000-0000-000000000000",
+    "essentials_politician_id": "5bd54ac0-c8b9-486c-844c-ecc4313e5de7",
     "name": "Nanette Diaz Baragán",
+    "db_full_name": "Nanette Diaz Baragán",
     "first_name": "Nanette",
     "last_name": "Barragan",
     "state": "CA",
@@ -156,9 +156,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Jimmy Gomez'",
-    "essentials_politician_id": "0000000e-0000-0000-0000-000000000000",
+    "essentials_politician_id": "99d93781-7c5f-492c-b959-ee502ca05c29",
     "name": "Jimmy Gomez",
+    "db_full_name": "Jimmy Gomez",
     "first_name": "Jimmy",
     "last_name": "Gomez",
     "state": "CA",
@@ -168,9 +168,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Robert Garcia'",
-    "essentials_politician_id": "0000000f-0000-0000-0000-000000000000",
+    "essentials_politician_id": "28a5f098-7f90-4fa9-af7e-c034d49cb538",
     "name": "Robert Garcia",
+    "db_full_name": "Robert Garcia",
     "first_name": "Robert",
     "last_name": "Garcia",
     "state": "CA",
@@ -180,9 +180,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Brad Sherman'",
-    "essentials_politician_id": "00000010-0000-0000-0000-000000000000",
+    "essentials_politician_id": "96c77e2b-df35-4d56-a573-8bc0c15a142d",
     "name": "Brad Sherman",
+    "db_full_name": "Brad Sherman",
     "first_name": "Brad",
     "last_name": "Sherman",
     "state": "CA",
@@ -192,9 +192,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Linda Sanchez'",
-    "essentials_politician_id": "00000011-0000-0000-0000-000000000000",
+    "essentials_politician_id": "bb73793e-ad67-431a-bb03-663b765204d8",
     "name": "Linda Sanchez",
+    "db_full_name": "Linda T. Sanchez",
     "first_name": "Linda",
     "last_name": "Sanchez",
     "state": "CA",
@@ -204,9 +204,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Norma Torres'",
-    "essentials_politician_id": "00000012-0000-0000-0000-000000000000",
+    "essentials_politician_id": "e4d5cd69-0a54-48d6-9d8c-11da8f091cb6",
     "name": "Norma Torres",
+    "db_full_name": "Norma Torres",
     "first_name": "Norma",
     "last_name": "Torres",
     "state": "CA",
@@ -216,9 +216,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Julia Brownley'",
-    "essentials_politician_id": "00000013-0000-0000-0000-000000000000",
+    "essentials_politician_id": "01147c2b-0f40-4255-b09e-b5a19a45fd31",
     "name": "Julia Brownley",
+    "db_full_name": "Julia Brownley",
     "first_name": "Julia",
     "last_name": "Brownley",
     "state": "CA",
@@ -228,9 +228,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Jay Obernolte'",
-    "essentials_politician_id": "00000014-0000-0000-0000-000000000000",
+    "essentials_politician_id": "18db5d61-6bce-4f55-ad45-bed01f329548",
     "name": "Jay Obernolte",
+    "db_full_name": "Jay Obernolte",
     "first_name": "Jay",
     "last_name": "Obernolte",
     "state": "CA",
@@ -240,9 +240,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Gilbert Cisneros'",
-    "essentials_politician_id": "00000015-0000-0000-0000-000000000000",
+    "essentials_politician_id": "be2943b7-f634-42f4-8ab8-15db8138169f",
     "name": "Gilbert Cisneros",
+    "db_full_name": "Gil Cisneros",
     "first_name": "Gilbert",
     "last_name": "Cisneros",
     "state": "CA",
@@ -252,9 +252,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Derek Tran'",
-    "essentials_politician_id": "00000016-0000-0000-0000-000000000000",
+    "essentials_politician_id": "b7612f49-c914-4ea7-a6da-559d71f313c2",
     "name": "Derek Tran",
+    "db_full_name": "Derek Tran",
     "first_name": "Derek",
     "last_name": "Tran",
     "state": "CA",
@@ -264,9 +264,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'George Whitesides'",
-    "essentials_politician_id": "00000017-0000-0000-0000-000000000000",
+    "essentials_politician_id": "c2f8656e-f73a-42ec-996e-87fceedf0389",
     "name": "George Whitesides",
+    "db_full_name": "George Whitesides",
     "first_name": "George",
     "last_name": "Whitesides",
     "state": "CA",
@@ -276,9 +276,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Luz Rivas'",
-    "essentials_politician_id": "00000018-0000-0000-0000-000000000000",
+    "essentials_politician_id": "a1fc524b-7c90-43c0-83a7-c76664293913",
     "name": "Luz Rivas",
+    "db_full_name": "Luz Maria Rivas",
     "first_name": "Luz",
     "last_name": "Rivas",
     "state": "CA",
@@ -288,9 +288,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Tony Cardenas'",
-    "essentials_politician_id": "00000019-0000-0000-0000-000000000000",
+    "essentials_politician_id": "ee52c1ec-85b8-486e-83ea-4fe337497486",
     "name": "Tony Cardenas",
+    "db_full_name": "Tony Cárdenas",
     "first_name": "Tony",
     "last_name": "Cardenas",
     "state": "CA",
@@ -300,9 +300,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Laura Friedman'",
-    "essentials_politician_id": "0000001a-0000-0000-0000-000000000000",
+    "essentials_politician_id": "e099da71-f9d9-445d-96d9-179952bd539c",
     "name": "Laura Friedman",
+    "db_full_name": "Laura Friedman",
     "first_name": "Laura",
     "last_name": "Friedman",
     "state": "CA",
@@ -312,9 +312,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Gavin Newsom'",
-    "essentials_politician_id": "0000001b-0000-0000-0000-000000000000",
+    "essentials_politician_id": "f26309c8-2525-49b2-bdaf-62980cbb1853",
     "name": "Gavin Newsom",
+    "db_full_name": "Gavin Newsom",
     "first_name": "Gavin",
     "last_name": "Newsom",
     "state": "CA",
@@ -324,9 +324,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Eleni Kounalakis'",
-    "essentials_politician_id": "0000001c-0000-0000-0000-000000000000",
+    "essentials_politician_id": "03df7cce-7502-4089-acd5-139841002cbe",
     "name": "Eleni Kounalakis",
+    "db_full_name": "Eleni Kounalakis",
     "first_name": "Eleni",
     "last_name": "Kounalakis",
     "state": "CA",
@@ -336,9 +336,9 @@
     "pilot_city": "los_angeles"
   },
   {
-    "essentials_politician_id_note": "placeholder - replace with actual UUID from essentials.politicians WHERE full_name = 'Pete Aguilar'",
-    "essentials_politician_id": "0000001d-0000-0000-0000-000000000000",
+    "essentials_politician_id": "822966a7-5f09-4151-ba43-630afbd676c2",
     "name": "Pete Aguilar",
+    "db_full_name": "Pete Aguilar",
     "first_name": "Pete",
     "last_name": "Aguilar",
     "state": "CA",

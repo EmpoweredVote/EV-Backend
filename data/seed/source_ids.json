@@ -1,214 +1,214 @@
 [
   {
-    "essentials_politician_id": "00000001-0000-0000-0000-000000000000",
+    "essentials_politician_id": "68568faf-1e0f-4ca2-89d9-bda625665712",
     "politician_name": "Erin Houchin",
     "source_system": "fec_house",
     "external_id": "H6IN09143",
-    "research_status": "needs_research",
-    "notes": "FEC API match (status=C, activeThru=2026, cycles=2016,2022,2024,2026) — verify at https://www.fec.gov/data/candidates/H6IN09143/"
+    "research_status": "confirmed",
+    "notes": "Confirmed: HOUCHIN, ERIN — House, IN-09, Republican"
   },
   {
-    "essentials_politician_id": "00000002-0000-0000-0000-000000000000",
+    "essentials_politician_id": "102b239c-0a3d-44b9-ae32-88d8179197e2",
     "politician_name": "Todd Young",
     "source_system": "fec_senate",
     "external_id": "S6IN00191",
-    "research_status": "needs_research",
-    "notes": "FEC API match (status=C, activeThru=2028, cycles=2016,2018,2020,2022,2024,2026) — verify at https://www.fec.gov/data/candidates/S6IN00191/"
+    "research_status": "confirmed",
+    "notes": "Confirmed: YOUNG, TODD CHRISTOPHER — Senate, IN, Republican"
   },
   {
-    "essentials_politician_id": "00000003-0000-0000-0000-000000000000",
+    "essentials_politician_id": "023c6644-356e-4afb-925b-e20f9c32209b",
     "politician_name": "Jim Banks",
     "source_system": "fec_house",
-    "external_id": "H2IN03102",
-    "research_status": "needs_research",
-    "notes": "Jim Banks served in House (IN-03) before Senate — verify House ID at https://www.fec.gov/data/candidates/H2IN03102/ and add Senate ID separately once known"
+    "external_id": "H6IN03229",
+    "research_status": "confirmed",
+    "notes": "Confirmed: BANKS, JAMES E — House, IN-03, Republican (2016–2024). Prior House ID before Senate."
   },
   {
-    "essentials_politician_id": "00000003-0000-0000-0000-000000000000",
+    "essentials_politician_id": "023c6644-356e-4afb-925b-e20f9c32209b",
     "politician_name": "Jim Banks",
     "source_system": "fec_senate",
-    "external_id": "",
-    "research_status": "needs_research",
-    "notes": "Jim Banks won Senate seat (IN) in 2024 — FEC Senate candidate ID not returned by API; look up at https://www.fec.gov/data/candidates/?name=banks&state=IN&office=S"
+    "external_id": "S4IN00196",
+    "research_status": "confirmed",
+    "notes": "Confirmed: BANKS, JAMES E — Senate, IN, Republican (2024–2030)"
   },
   {
-    "essentials_politician_id": "00000007-0000-0000-0000-000000000000",
+    "essentials_politician_id": "2d31eaf5-bf46-439e-9ca5-f73cc3127916",
     "politician_name": "Alex Padilla",
     "source_system": "fec_senate",
     "external_id": "S2CA00955",
-    "research_status": "needs_research",
-    "notes": "FEC API match (status=C, activeThru=2028, cycles=2020,2022,2024,2026) — verify at https://www.fec.gov/data/candidates/S2CA00955/"
+    "research_status": "confirmed",
+    "notes": "Confirmed: PADILLA, ALEX — Senate, CA, Democratic"
   },
   {
-    "essentials_politician_id": "00000008-0000-0000-0000-000000000000",
+    "essentials_politician_id": "8a27a8b7-88b4-4f79-bbcf-d1d0e70d4032",
     "politician_name": "Adam Schiff",
     "source_system": "fec_senate",
     "external_id": "S4CA00555",
-    "research_status": "needs_research",
-    "notes": "FEC API match (status=C, activeThru=2030, cycles=2024,2026) — verify at https://www.fec.gov/data/candidates/S4CA00555/"
+    "research_status": "confirmed",
+    "notes": "Confirmed: SCHIFF, ADAM — Senate, CA, Democratic (active through 2030)"
   },
   {
-    "essentials_politician_id": "00000008-0000-0000-0000-000000000000",
+    "essentials_politician_id": "8a27a8b7-88b4-4f79-bbcf-d1d0e70d4032",
     "politician_name": "Adam Schiff",
     "source_system": "fec_house",
     "external_id": "H0CA27048",
     "research_status": "needs_research",
-    "notes": "Adam Schiff also has prior House candidate ID (CA-28/CA-30 era) — verify at https://www.fec.gov/data/candidates/H0CA27048/"
+    "notes": "Prior House ID (CA-28/CA-30 era) — not yet verified; check https://www.fec.gov/data/candidates/H0CA27048/"
   },
   {
-    "essentials_politician_id": "00000009-0000-0000-0000-000000000000",
+    "essentials_politician_id": "d75dfa60-351b-4f0d-880a-45acf013c82a",
     "politician_name": "Judy Chu",
     "source_system": "fec_house",
     "external_id": "H0CA32101",
-    "research_status": "needs_research",
-    "notes": "FEC API match (status=C, activeThru=2026, cycles=2008-2026) — verify at https://www.fec.gov/data/candidates/H0CA32101/"
+    "research_status": "confirmed",
+    "notes": "Confirmed: CHU, JUDY — House, CA-28, Democratic"
   },
   {
-    "essentials_politician_id": "0000000a-0000-0000-0000-000000000000",
+    "essentials_politician_id": "3a39c313-b994-447b-b3fd-592e4994769b",
     "politician_name": "Ted Lieu",
     "source_system": "fec_house",
-    "external_id": "H4CA33017",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H4CA33017/"
+    "external_id": "H4CA33119",
+    "research_status": "confirmed",
+    "notes": "Confirmed: LIEU, TED — House, CA-36, Democratic (2014–2026)"
   },
   {
-    "essentials_politician_id": "0000000b-0000-0000-0000-000000000000",
+    "essentials_politician_id": "a2c6adc7-7689-49b9-964f-8f2aeb243a83",
     "politician_name": "Sydney Kamlager-Dove",
     "source_system": "fec_house",
     "external_id": "H2CA37304",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H2CA37304/"
+    "research_status": "confirmed",
+    "notes": "Confirmed: KAMLAGER-DOVE, SYDNEY — House, CA-37, Democratic"
   },
   {
-    "essentials_politician_id": "0000000c-0000-0000-0000-000000000000",
+    "essentials_politician_id": "203ab943-324d-4478-9093-d827d5d9c7da",
     "politician_name": "Maxine Waters",
     "source_system": "fec_house",
-    "external_id": "H0CA29095",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H0CA29095/"
+    "external_id": "H4CA23011",
+    "research_status": "confirmed",
+    "notes": "Confirmed: WATERS, MAXINE — House, CA-43, Democratic (1986–2026)"
   },
   {
-    "essentials_politician_id": "0000000d-0000-0000-0000-000000000000",
+    "essentials_politician_id": "5bd54ac0-c8b9-486c-844c-ecc4313e5de7",
     "politician_name": "Nanette Diaz Baragán",
     "source_system": "fec_house",
-    "external_id": "H6CA44038",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H6CA44038/"
+    "external_id": "H6CA44103",
+    "research_status": "confirmed",
+    "notes": "Confirmed: BARRAGAN, NANETTE — House, CA-44, Democratic (2016–2026)"
   },
   {
-    "essentials_politician_id": "0000000e-0000-0000-0000-000000000000",
+    "essentials_politician_id": "99d93781-7c5f-492c-b959-ee502ca05c29",
     "politician_name": "Jimmy Gomez",
     "source_system": "fec_house",
-    "external_id": "H6CA34060",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H6CA34060/"
+    "external_id": "H8CA34266",
+    "research_status": "confirmed",
+    "notes": "Confirmed: GOMEZ, JIMMY — House, CA-34, Democratic (2018–2026)"
   },
   {
-    "essentials_politician_id": "0000000f-0000-0000-0000-000000000000",
+    "essentials_politician_id": "28a5f098-7f90-4fa9-af7e-c034d49cb538",
     "politician_name": "Robert Garcia",
     "source_system": "fec_house",
-    "external_id": "H2CA42059",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H2CA42059/"
+    "external_id": "H2CA47188",
+    "research_status": "confirmed",
+    "notes": "Confirmed: GARCIA, ROBERT — House, CA-42, Democratic (2022–2026)"
   },
   {
-    "essentials_politician_id": "00000010-0000-0000-0000-000000000000",
+    "essentials_politician_id": "96c77e2b-df35-4d56-a573-8bc0c15a142d",
     "politician_name": "Brad Sherman",
     "source_system": "fec_house",
-    "external_id": "H6CA24060",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H6CA24060/"
+    "external_id": "H6CA24113",
+    "research_status": "confirmed",
+    "notes": "Confirmed: SHERMAN, BRAD — House, CA-32, Democratic (1996–2026)"
   },
   {
-    "essentials_politician_id": "00000011-0000-0000-0000-000000000000",
+    "essentials_politician_id": "bb73793e-ad67-431a-bb03-663b765204d8",
     "politician_name": "Linda Sanchez",
     "source_system": "fec_house",
-    "external_id": "H2CA39096",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H2CA39096/"
+    "external_id": "H2CA39078",
+    "research_status": "confirmed",
+    "notes": "Confirmed: SANCHEZ, LINDA — House, CA-38 area, Democratic (2002–2026)"
   },
   {
-    "essentials_politician_id": "00000012-0000-0000-0000-000000000000",
+    "essentials_politician_id": "e4d5cd69-0a54-48d6-9d8c-11da8f091cb6",
     "politician_name": "Norma Torres",
     "source_system": "fec_house",
-    "external_id": "H4CA35077",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H4CA35077/"
+    "external_id": "H4CA35031",
+    "research_status": "confirmed",
+    "notes": "Confirmed: TORRES, NORMA — House, CA-35, Democratic (2014–2026)"
   },
   {
-    "essentials_politician_id": "00000013-0000-0000-0000-000000000000",
+    "essentials_politician_id": "01147c2b-0f40-4255-b09e-b5a19a45fd31",
     "politician_name": "Julia Brownley",
     "source_system": "fec_house",
-    "external_id": "H2CA26020",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H2CA26020/"
+    "external_id": "H2CA00120",
+    "research_status": "confirmed",
+    "notes": "Confirmed: BROWNLEY, JULIA — House, CA-26, Democratic (2012–2026)"
   },
   {
-    "essentials_politician_id": "00000014-0000-0000-0000-000000000000",
+    "essentials_politician_id": "18db5d61-6bce-4f55-ad45-bed01f329548",
     "politician_name": "Jay Obernolte",
     "source_system": "fec_house",
-    "external_id": "H0CA42136",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H0CA42136/"
+    "external_id": "H0CA08135",
+    "research_status": "confirmed",
+    "notes": "Confirmed: OBERNOLTE, JAY — House, CA-23, Republican (2020–2026)"
   },
   {
-    "essentials_politician_id": "00000015-0000-0000-0000-000000000000",
+    "essentials_politician_id": "be2943b7-f634-42f4-8ab8-15db8138169f",
     "politician_name": "Gilbert Cisneros",
     "source_system": "fec_house",
-    "external_id": "H8CA39142",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H8CA39142/"
+    "external_id": "H4CA31170",
+    "research_status": "confirmed",
+    "notes": "Confirmed: CISNEROS, GILBERT — House, CA-31, Democratic (2024–2026). Note: also has older ID H8CA39174 from CA-39 era (2018–2020)"
   },
   {
-    "essentials_politician_id": "00000016-0000-0000-0000-000000000000",
+    "essentials_politician_id": "b7612f49-c914-4ea7-a6da-559d71f313c2",
     "politician_name": "Derek Tran",
     "source_system": "fec_house",
-    "external_id": "H4CA45130",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H4CA45130/"
+    "external_id": "H4CA45170",
+    "research_status": "confirmed",
+    "notes": "Confirmed: TRAN, DEREK — House, CA-45, Democratic (2024–2026)"
   },
   {
-    "essentials_politician_id": "00000017-0000-0000-0000-000000000000",
+    "essentials_politician_id": "c2f8656e-f73a-42ec-996e-87fceedf0389",
     "politician_name": "George Whitesides",
     "source_system": "fec_house",
-    "external_id": "H4CA27197",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H4CA27197/"
+    "external_id": "H4CA27111",
+    "research_status": "confirmed",
+    "notes": "Confirmed: WHITESIDES, GEORGE — House, CA-27, Democratic (2024–2026)"
   },
   {
-    "essentials_politician_id": "00000018-0000-0000-0000-000000000000",
+    "essentials_politician_id": "a1fc524b-7c90-43c0-83a7-c76664293913",
     "politician_name": "Luz Rivas",
     "source_system": "fec_house",
-    "external_id": "",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — FEC ID not yet confirmed; look up at https://www.fec.gov/data/candidates/?name=rivas&state=CA&office=H"
+    "external_id": "H4CA29141",
+    "research_status": "confirmed",
+    "notes": "Confirmed: RIVAS, LUZ — House, CA-29, Democratic (2024–2026)"
   },
   {
-    "essentials_politician_id": "00000019-0000-0000-0000-000000000000",
+    "essentials_politician_id": "ee52c1ec-85b8-486e-83ea-4fe337497486",
     "politician_name": "Tony Cardenas",
     "source_system": "fec_house",
-    "external_id": "H2CA29088",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H2CA29088/"
+    "external_id": "H2CA28113",
+    "research_status": "confirmed",
+    "notes": "Confirmed: CARDENAS, TONY — House, CA-29, Democratic (2012–2024). Note: ID encodes old district number from first filing"
   },
   {
-    "essentials_politician_id": "0000001a-0000-0000-0000-000000000000",
+    "essentials_politician_id": "e099da71-f9d9-445d-96d9-179952bd539c",
     "politician_name": "Laura Friedman",
     "source_system": "fec_house",
-    "external_id": "H4CA30094",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H4CA30094/"
+    "external_id": "H4CA30149",
+    "research_status": "confirmed",
+    "notes": "Confirmed: FRIEDMAN, LAURA — House, CA-30, Democratic (2024–2026)"
   },
   {
-    "essentials_politician_id": "0000001d-0000-0000-0000-000000000000",
+    "essentials_politician_id": "822966a7-5f09-4151-ba43-630afbd676c2",
     "politician_name": "Pete Aguilar",
     "source_system": "fec_house",
-    "external_id": "H2CA31052",
-    "research_status": "needs_research",
-    "notes": "FEC API rate-limited during lookup — manually sourced; verify at https://www.fec.gov/data/candidates/H2CA31052/"
+    "external_id": "H2CA31125",
+    "research_status": "confirmed",
+    "notes": "Confirmed: AGUILAR, PETE — House, CA-33, Democratic (2012–2026)"
   },
   {
-    "essentials_politician_id": "00000004-0000-0000-0000-000000000000",
+    "essentials_politician_id": "929346a2-8037-4b14-af33-4820eb365323",
     "politician_name": "Micah Beckwith",
     "source_system": "indiana",
     "external_id": "",
@@ -216,7 +216,7 @@
     "notes": "Indiana Lieutenant Governor — look up OrgId at https://campaignfinance.in.gov/PublicSite/Search.aspx (search 'Beckwith')"
   },
   {
-    "essentials_politician_id": "00000005-0000-0000-0000-000000000000",
+    "essentials_politician_id": "1c6dbdaf-e110-48d3-9b88-27f911d9521f",
     "politician_name": "Kerry Thomson",
     "source_system": "indiana",
     "external_id": "",
@@ -224,7 +224,7 @@
     "notes": "Bloomington Mayor — look up OrgId at https://campaignfinance.in.gov/PublicSite/Search.aspx (search 'Thomson')"
   },
   {
-    "essentials_politician_id": "00000006-0000-0000-0000-000000000000",
+    "essentials_politician_id": "21c9e711-fb18-4afb-884f-08acd2b598ba",
     "politician_name": "Karen Bass",
     "source_system": "cal_access",
     "external_id": "",
@@ -232,15 +232,15 @@
     "notes": "LA Mayor — look up Cal-Access FILER_ID in FILERS_CD.TSV (search 'Bass') or at https://cal-access.sos.ca.gov/"
   },
   {
-    "essentials_politician_id": "00000006-0000-0000-0000-000000000000",
+    "essentials_politician_id": "21c9e711-fb18-4afb-884f-08acd2b598ba",
     "politician_name": "Karen Bass",
     "source_system": "la_socrata",
     "external_id": "",
     "research_status": "needs_research",
-    "notes": "LA Mayor — Socrata entity ID field name not yet confirmed (see RESEARCH.md); look up at https://data.lacity.org"
+    "notes": "LA Mayor — Socrata entity ID not yet confirmed; look up at https://data.lacity.org"
   },
   {
-    "essentials_politician_id": "0000001b-0000-0000-0000-000000000000",
+    "essentials_politician_id": "f26309c8-2525-49b2-bdaf-62980cbb1853",
     "politician_name": "Gavin Newsom",
     "source_system": "cal_access",
     "external_id": "",
@@ -248,7 +248,7 @@
     "notes": "CA Governor — look up Cal-Access FILER_ID in FILERS_CD.TSV (search 'Newsom')"
   },
   {
-    "essentials_politician_id": "0000001c-0000-0000-0000-000000000000",
+    "essentials_politician_id": "03df7cce-7502-4089-acd5-139841002cbe",
     "politician_name": "Eleni Kounalakis",
     "source_system": "cal_access",
     "external_id": "",
