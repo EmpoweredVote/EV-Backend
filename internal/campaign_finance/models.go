@@ -111,7 +111,7 @@ type IngestionRun struct {
 	ElectionCycle      string     `json:"election_cycle" gorm:"type:varchar(4)"`
 	StartedAt          time.Time  `json:"started_at" gorm:"not null"`
 	CompletedAt        *time.Time `json:"completed_at"`
-	Status             string     `json:"status" gorm:"type:varchar(32);not null;default:'running';check:status IN ('running','completed','completed_with_warning','failed')"`
+	Status             string     `json:"status" gorm:"type:varchar(32);not null;default:'running';check:status IN ('running','completed','completed_with_warning','failed','skipped_no_change')"`
 	RecordsFetched     int        `json:"records_fetched"`
 	RecordsInserted    int        `json:"records_inserted"`
 	RecordsSkipped     int        `json:"records_skipped"`
@@ -124,3 +124,21 @@ type IngestionRun struct {
 }
 
 func (IngestionRun) TableName() string { return "transparent_motivations.ingestion_runs" }
+
+// UnresolvedContribution stores CSV rows that matched a known politician_sources ExternalID
+// but whose research_status is not yet "confirmed". Phase 8 backfill queries this table
+// using the composite index on (adapter_name, external_id) to hydrate contributions
+// once OrgIds are confirmed.
+type UnresolvedContribution struct {
+	ID             uint      `json:"id" gorm:"primaryKey;autoIncrement"`
+	AdapterName    string    `json:"adapter_name" gorm:"type:varchar(64);not null;index:idx_unresolved_adapter_external,priority:1"`
+	IngestionRunID uint      `json:"ingestion_run_id" gorm:"not null;index"`
+	RawRow         []byte    `json:"raw_row" gorm:"type:jsonb;not null"`
+	RowNumber      int       `json:"row_number"`
+	ExternalID     string    `json:"external_id" gorm:"type:varchar(128);index:idx_unresolved_adapter_external,priority:2"`
+	CreatedAt      time.Time `json:"created_at"`
+}
+
+func (UnresolvedContribution) TableName() string {
+	return "transparent_motivations.unresolved_contributions"
+}
