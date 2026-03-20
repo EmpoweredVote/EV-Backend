@@ -173,6 +173,41 @@ func DeleteSourceHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]bool{"deleted": true})
 }
 
+// CalAccessResult holds per-politician ingestion outcome for the JSON response.
+type CalAccessResult struct {
+	PoliticianSourceID string `json:"politician_source_id"`
+	Status             string `json:"status"`
+	RecordsInserted    int    `json:"records_inserted"`
+	Error              string `json:"error,omitempty"`
+}
+
+// CalAccessIngestAllFunc downloads ZIP once and ingests all confirmed cal_access sources.
+type CalAccessIngestAllFunc func() ([]CalAccessResult, error)
+
+var calAccessIngestAllFn CalAccessIngestAllFunc
+
+// SetCalAccessIngestAllFunc injects the Cal-Access ingestion function (avoids import cycles).
+func SetCalAccessIngestAllFunc(fn CalAccessIngestAllFunc) { calAccessIngestAllFn = fn }
+
+// IngestCalAccessHandler triggers Cal-Access ingestion for all confirmed sources.
+func IngestCalAccessHandler(w http.ResponseWriter, r *http.Request) {
+	if calAccessIngestAllFn == nil {
+		http.Error(w, "cal-access ingestion not configured", http.StatusInternalServerError)
+		return
+	}
+	results, err := calAccessIngestAllFn()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  "ok",
+		"message": "Cal-Access ingestion complete",
+		"results": results,
+	})
+}
+
 // ingestFECRequest is the JSON body shape for IngestFECHandler.
 type ingestFECRequest struct {
 	PoliticianSourceID string `json:"politician_source_id"`

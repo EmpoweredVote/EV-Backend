@@ -59,6 +59,19 @@ func RunIngestion(adapterImpl SourceAdapter, ps campaign_finance.PoliticianSourc
 	run.RecordsUnresolved = upsertResult.Unresolved
 	run.ErrorCount = upsertResult.Errors
 
+	// Populate ETag/download metadata if adapter provides it (Cal-Access does).
+	type etagProvider interface {
+		ZIPETag() string
+		ZIPDownloadedAt() time.Time
+	}
+	if ep, ok := adapterImpl.(etagProvider); ok {
+		run.SourceETag = ep.ZIPETag()
+		dlAt := ep.ZIPDownloadedAt()
+		if !dlAt.IsZero() {
+			run.ZIPDownloadedAt = &dlAt
+		}
+	}
+
 	// Completeness check: warn if fetched < 95% of expected
 	if fetchResult.TotalExpected > 0 &&
 		fetchResult.TotalFetched < int(float64(fetchResult.TotalExpected)*0.95) {
@@ -71,6 +84,21 @@ func RunIngestion(adapterImpl SourceAdapter, ps campaign_finance.PoliticianSourc
 		)
 	} else {
 		run.Status = "completed"
+	}
+
+	// Skip threshold: warn if >1% of examined rows were skipped (Cal-Access locked decision).
+	if normalizeResult.TotalParsed > 0 && normalizeResult.Skipped > 0 {
+		skipRate := float64(normalizeResult.Skipped) / float64(normalizeResult.TotalParsed)
+		if skipRate > 0.01 {
+			run.Status = "completed_with_warning"
+			skipNote := fmt.Sprintf("skip threshold exceeded: %d/%d rows skipped (%.1f%%)",
+				normalizeResult.Skipped, normalizeResult.TotalParsed, skipRate*100)
+			if run.Notes != "" {
+				run.Notes += "; " + skipNote
+			} else {
+				run.Notes = skipNote
+			}
+		}
 	}
 
 	if err := db.DB.Save(&run).Error; err != nil {

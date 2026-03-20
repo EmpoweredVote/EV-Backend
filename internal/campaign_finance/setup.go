@@ -46,4 +46,32 @@ func Init() {
 	); err != nil {
 		log.Fatal("campaign_finance: failed to migrate tables:", err)
 	}
+
+	// Add skipped_no_change to IngestionRun status CHECK constraint.
+	// GORM AutoMigrate does not modify CHECK constraints — raw SQL required.
+	migrationResult := db.DB.Exec(`
+DO $$
+DECLARE
+    constraint_name text;
+BEGIN
+    SELECT con.conname INTO constraint_name
+    FROM pg_constraint con
+    JOIN pg_attribute att ON att.attnum = ANY(con.conkey)
+        AND att.attrelid = con.conrelid
+    WHERE con.conrelid = 'transparent_motivations.ingestion_runs'::regclass
+        AND con.contype = 'c'
+        AND att.attname = 'status';
+
+    IF constraint_name IS NOT NULL THEN
+        EXECUTE format('ALTER TABLE transparent_motivations.ingestion_runs DROP CONSTRAINT %I', constraint_name);
+    END IF;
+
+    ALTER TABLE transparent_motivations.ingestion_runs
+        ADD CONSTRAINT ingestion_runs_status_check
+        CHECK (status IN ('running','completed','completed_with_warning','failed','skipped_no_change'));
+END $$;
+`)
+	if migrationResult.Error != nil {
+		log.Printf("warning: skipped_no_change migration: %v", migrationResult.Error)
+	}
 }
