@@ -13,9 +13,12 @@ type FetchResult struct {
 
 // NormalizeResult is returned by the Normalize phase.
 // Skipped counts memo items (memo_code="X") and superseded amendments (is_amended=true).
+// TotalParsed is the number of rows the parser examined for this politician (used by callers
+// to compute >1% skip threshold).
 type NormalizeResult struct {
 	Contributions []campaign_finance.Contribution
 	Skipped       int
+	TotalParsed   int
 }
 
 // UpsertResult is returned by the Upsert phase.

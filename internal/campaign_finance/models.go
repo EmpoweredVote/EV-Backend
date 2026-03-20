@@ -103,7 +103,7 @@ type SourceAuditLog struct {
 func (SourceAuditLog) TableName() string { return "transparent_motivations.source_audit_log" }
 
 // IngestionRun records the lifecycle and outcome of every adapter execution.
-// Status values: running | completed | completed_with_warning | failed
+// Status values: running | completed | completed_with_warning | failed | skipped_no_change
 type IngestionRun struct {
 	ID                 uint       `json:"id" gorm:"primaryKey;autoIncrement"`
 	AdapterName        string     `json:"adapter_name" gorm:"type:varchar(64);not null;index"`
@@ -119,6 +119,8 @@ type IngestionRun struct {
 	ErrorCount         int        `json:"errors" gorm:"column:errors"`
 	DurationMs         int64      `json:"duration_ms"`
 	Notes              string     `json:"notes" gorm:"type:text"`
+	SourceETag         string     `json:"source_etag" gorm:"type:varchar(256)"`
+	ZIPDownloadedAt    *time.Time `json:"zip_downloaded_at"`
 }
 
 func (IngestionRun) TableName() string { return "transparent_motivations.ingestion_runs" }
