@@ -35,5 +35,6 @@ func Routes(r chi.Router) {
 		r.Post("/campaign-finance/admin/sources/form/delete", SourcesFormDeleteHandler)
 
 		r.Post("/campaign-finance/admin/ingest/fec", IngestFECHandler)
+		r.Post("/campaign-finance/admin/ingest/cal-access", IngestCalAccessHandler)
 	})
 }

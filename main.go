@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/EmpoweredVote/EV-Backend/internal/auth"
 	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance"
 	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter"
+	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter/calaccess"
 	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter/fec"
 	"github.com/EmpoweredVote/EV-Backend/internal/compass"
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
@@ -51,6 +54,78 @@ func main() {
 	// and campaign_finance/adapter by injecting the implementation at startup.
 	campaign_finance.SetFECIngestFunc(func(ps campaign_finance.PoliticianSource, cycle string) error {
 		return adapter.RunIngestion(fec.New(cycle), ps, cycle)
+	})
+
+	// Wire Cal-Access ingestion — downloads ZIP once, runs per-politician ingestion.
+	campaign_finance.SetCalAccessIngestAllFunc(func() ([]campaign_finance.CalAccessResult, error) {
+		// Query all confirmed cal_access politician sources
+		var sources []campaign_finance.PoliticianSource
+		if err := db.DB.Where("source_system = ? AND research_status = ?", "cal_access", "confirmed").Find(&sources).Error; err != nil {
+			return nil, fmt.Errorf("query cal_access sources: %w", err)
+		}
+		if len(sources) == 0 {
+			return nil, fmt.Errorf("no confirmed cal_access politician sources found")
+		}
+
+		// Create adapter (does NOT download — PreDownload does that)
+		ca := calaccess.New(db.DB)
+		defer ca.Cleanup()
+
+		// Download ZIP once (check ETag)
+		if err := ca.PreDownload(context.Background()); err != nil {
+			return nil, fmt.Errorf("cal-access download: %w", err)
+		}
+
+		var results []campaign_finance.CalAccessResult
+
+		if ca.ZIPSkipped() {
+			// ZIP unchanged (HTTP 304) — write skipped_no_change run per politician
+			now := time.Now()
+			dlAt := ca.ZIPDownloadedAt()
+			for _, ps := range sources {
+				skipRun := campaign_finance.IngestionRun{
+					AdapterName:        "cal_access",
+					PoliticianSourceID: &ps.ID,
+					StartedAt:          now,
+					CompletedAt:        &now,
+					Status:             "skipped_no_change",
+					Notes:              "ZIP unchanged (HTTP 304)",
+					SourceETag:         ca.ZIPETag(),
+					ZIPDownloadedAt:    &dlAt,
+				}
+				db.DB.Create(&skipRun)
+				results = append(results, campaign_finance.CalAccessResult{
+					PoliticianSourceID: ps.ID.String(),
+					Status:             "skipped_no_change",
+				})
+			}
+			if err := ca.SaveETag(); err != nil {
+				log.Printf("warning: failed to save cal-access ETag: %v", err)
+			}
+			return results, nil
+		}
+
+		// ZIP has new data — run per-politician ingestion (non-aborting)
+		for _, ps := range sources {
+			result := campaign_finance.CalAccessResult{PoliticianSourceID: ps.ID.String()}
+			if err := adapter.RunIngestion(ca, ps, ""); err != nil {
+				result.Status = "failed"
+				result.Error = err.Error()
+				log.Printf("cal-access ingestion failed for %s: %v", ps.ID, err)
+			} else {
+				var run campaign_finance.IngestionRun
+				db.DB.Where("politician_source_id = ? AND adapter_name = ?", ps.ID, "cal_access").
+					Order("started_at DESC").First(&run)
+				result.Status = run.Status
+				result.RecordsInserted = run.RecordsInserted
+			}
+			results = append(results, result)
+		}
+
+		if err := ca.SaveETag(); err != nil {
+			log.Printf("warning: failed to save cal-access ETag: %v", err)
+		}
+		return results, nil
 	})
 
 	// CLI subcommand dispatch — must come after all Init() calls so tables
