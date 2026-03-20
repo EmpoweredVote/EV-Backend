@@ -22,6 +22,7 @@ func Init() {
 		&Contribution{},
 		&DataSourceMetadata{},
 		&SourceAuditLog{},
+		&IngestionRun{},
 	); err != nil {
 		log.Fatal("campaign_finance: failed to migrate tables:", err)
 	}
