@@ -15,6 +15,7 @@ import (
 	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter/fec"
 	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter/indiana"
 	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter/socrata"
+	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/scheduler"
 	"github.com/EmpoweredVote/EV-Backend/internal/compass"
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/EmpoweredVote/EV-Backend/internal/essentials"
@@ -326,6 +327,51 @@ func main() {
 		}
 		return results, unresolvedCount, nil
 	})
+
+	// --- Scheduler setup ---
+	// Start after all Init() calls (AutoMigrate must run first) and before
+	// CLI subcommand dispatch. Non-fatal: missing Redis / config just logs a warning.
+	fecIngestAllFn := func() error {
+		var sources []campaign_finance.PoliticianSource
+		if err := db.DB.Where("source_system = ? AND research_status = ?", "fec", "confirmed").Find(&sources).Error; err != nil {
+			return fmt.Errorf("query fec sources: %w", err)
+		}
+		if len(sources) == 0 {
+			log.Printf("scheduler: no confirmed FEC sources, skipping")
+			return nil
+		}
+		// Current election cycle (even year).
+		year := time.Now().Year()
+		if year%2 != 0 {
+			year++
+		}
+		cycle := fmt.Sprintf("%d", year)
+		for _, ps := range sources {
+			if err := adapter.RunIngestion(fec.New(cycle), ps, cycle); err != nil {
+				log.Printf("scheduler: FEC ingestion failed for %s: %v", ps.ID, err)
+				// Non-aborting: continue to next source.
+			}
+		}
+		return nil
+	}
+
+	sched, schedErr := scheduler.New(scheduler.Config{
+		RedisURL: os.Getenv("UPSTASH_REDIS_URL"),
+		HealthcheckURLs: map[string]string{
+			"fec":        os.Getenv("HC_FEC_URL"),
+			"cal-access": os.Getenv("HC_CAL_ACCESS_URL"),
+			"indiana":    os.Getenv("HC_INDIANA_URL"),
+			"socrata":    os.Getenv("HC_SOCRATA_URL"),
+		},
+		FECIngestFn: fecIngestAllFn,
+		DB:          db.DB,
+	})
+	if schedErr != nil {
+		log.Printf("warning: scheduler init failed, FEC auto-polling disabled: %v", schedErr)
+	} else {
+		sched.Start()
+		defer sched.Stop()
+	}
 
 	// CLI subcommand dispatch — must come after all Init() calls so tables
 	// are migrated and the global db.DB connection is ready.
