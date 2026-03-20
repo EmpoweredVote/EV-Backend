@@ -34,6 +34,7 @@ func FetchAllPages(candidateID, cycle string) ([]map[string]interface{}, int, er
 	}
 
 	baseURL := "https://api.open.fec.gov/v1/schedules/schedule_a/"
+	httpClient := &http.Client{Timeout: 30 * time.Second}
 
 	var allRecords []map[string]interface{}
 	totalExpected := 0
@@ -58,7 +59,7 @@ func FetchAllPages(candidateID, cycle string) ([]map[string]interface{}, int, er
 
 		requestURL := baseURL + "?" + params.Encode()
 
-		resp, err := http.Get(requestURL) //nolint:noctx
+		resp, err := httpClient.Get(requestURL)
 		if err != nil {
 			return nil, totalExpected, fmt.Errorf("FEC API request failed: %w", err)
 		}
