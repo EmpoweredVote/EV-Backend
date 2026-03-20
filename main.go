@@ -13,6 +13,7 @@ import (
 	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter"
 	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter/calaccess"
 	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter/fec"
+	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter/indiana"
 	"github.com/EmpoweredVote/EV-Backend/internal/campaign_finance/adapter/socrata"
 	"github.com/EmpoweredVote/EV-Backend/internal/compass"
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
@@ -195,6 +196,135 @@ func main() {
 			results = append(results, result)
 		}
 		return results, nil
+	})
+
+	// Wire Indiana ingestion — annual ZIP, OrgId exact-match, unresolved queue.
+	campaign_finance.SetIndianaIngestAllFunc(func() ([]campaign_finance.IndianaResult, int, error) {
+		// Query all confirmed indiana politician sources.
+		var sources []campaign_finance.PoliticianSource
+		if err := db.DB.Where("source_system = ? AND research_status = ?", "indiana", "confirmed").Find(&sources).Error; err != nil {
+			return nil, 0, fmt.Errorf("query indiana sources: %w", err)
+		}
+		if len(sources) == 0 {
+			// No confirmed sources — log warning, return completed_with_warning (do NOT hard-fail).
+			log.Printf("indiana: no confirmed politician sources found — returning completed_with_warning")
+			return []campaign_finance.IndianaResult{{
+				Status: "completed_with_warning",
+				Error:  "no confirmed indiana politician sources found",
+			}}, 0, nil
+		}
+
+		// Use previous complete year (most recent available data).
+		year := time.Now().Year() - 1
+
+		// Create adapter
+		ia := indiana.New(db.DB, year)
+		defer ia.Cleanup()
+
+		// Download ZIP (check ETag)
+		if err := ia.PreDownload(context.Background()); err != nil {
+			return nil, 0, fmt.Errorf("indiana download: %w", err)
+		}
+
+		var results []campaign_finance.IndianaResult
+
+		if ia.ZIPSkipped() {
+			// ZIP unchanged (HTTP 304) — write skipped_no_change run per politician.
+			now := time.Now()
+			dlAt := ia.ZIPDownloadedAt()
+			for _, ps := range sources {
+				skipRun := campaign_finance.IngestionRun{
+					AdapterName:        "indiana",
+					PoliticianSourceID: &ps.ID,
+					StartedAt:          now,
+					CompletedAt:        &now,
+					Status:             "skipped_no_change",
+					Notes:              "ZIP unchanged (HTTP 304)",
+					SourceETag:         ia.ZIPETag(),
+					ZIPDownloadedAt:    &dlAt,
+				}
+				db.DB.Create(&skipRun)
+				results = append(results, campaign_finance.IndianaResult{
+					PoliticianSourceID: ps.ID.String(),
+					Status:             "skipped_no_change",
+				})
+			}
+			if err := ia.SaveETag(); err != nil {
+				log.Printf("warning: failed to save indiana ETag: %v", err)
+			}
+			return results, 0, nil
+		}
+
+		// ZIP has new data — run per-politician ingestion (non-aborting).
+		for _, ps := range sources {
+			result := campaign_finance.IndianaResult{PoliticianSourceID: ps.ID.String()}
+			if err := adapter.RunIngestion(ia, ps, ""); err != nil {
+				result.Status = "failed"
+				result.Error = err.Error()
+				log.Printf("indiana ingestion failed for %s: %v", ps.ID, err)
+			} else {
+				// Look up the run to report stats.
+				var run campaign_finance.IngestionRun
+				db.DB.Where("politician_source_id = ? AND adapter_name = ?", ps.ID, "indiana").
+					Order("started_at DESC").First(&run)
+				result.Status = run.Status
+				result.RecordsInserted = run.RecordsInserted
+				result.RecordsFetched = run.RecordsFetched
+
+				// Zero records for a seeded politician -> completed_with_warning.
+				if run.RecordsFetched == 0 && run.Status == "completed" {
+					run.Status = "completed_with_warning"
+					run.Notes = "zero records fetched for seeded politician"
+					db.DB.Save(&run)
+					result.Status = "completed_with_warning"
+				}
+			}
+			results = append(results, result)
+		}
+
+		// Write unresolved rows to queue (after all politicians processed).
+		unresolvedCount := 0
+		if ia.UnresolvedCount() > 0 {
+			var lastRun campaign_finance.IngestionRun
+			db.DB.Where("adapter_name = ?", "indiana").Order("started_at DESC").First(&lastRun)
+			written, err := ia.WriteUnresolved(lastRun.ID)
+			if err != nil {
+				log.Printf("indiana: failed to write unresolved rows: %v", err)
+			} else {
+				log.Printf("indiana: wrote %d unresolved rows", written)
+				unresolvedCount = written
+			}
+
+			// Warning threshold: if unresolved > 50% of total fetched, mark runs as warning.
+			// Use RecordsFetched (not RecordsInserted) as denominator.
+			totalFetched := 0
+			for _, r := range results {
+				totalFetched += r.RecordsFetched
+			}
+			if totalFetched > 0 && float64(unresolvedCount)/float64(totalFetched+unresolvedCount) > 0.50 {
+				log.Printf("indiana: unresolved ratio %.0f%% exceeds 50%% threshold",
+					float64(unresolvedCount)/float64(totalFetched+unresolvedCount)*100)
+				for _, ps := range sources {
+					db.DB.Model(&campaign_finance.IngestionRun{}).
+						Where("politician_source_id = ? AND adapter_name = ? AND status = ?", ps.ID, "indiana", "completed").
+						Order("started_at DESC").Limit(1).
+						Update("status", "completed_with_warning")
+				}
+			}
+
+			// Update RecordsUnresolved on each run.
+			for _, ps := range sources {
+				db.DB.Model(&campaign_finance.IngestionRun{}).
+					Where("politician_source_id = ? AND adapter_name = ? AND records_unresolved = 0", ps.ID, "indiana").
+					Order("started_at DESC").Limit(1).
+					Update("records_unresolved", unresolvedCount)
+			}
+		}
+
+		if err := ia.SaveETag(); err != nil {
+			log.Printf("warning: failed to save indiana ETag: %v", err)
+		}
+		return results, unresolvedCount, nil
 	})
 
 	// CLI subcommand dispatch — must come after all Init() calls so tables
