@@ -373,6 +373,30 @@ func main() {
 		defer sched.Stop()
 	}
 
+	// Register FEC ingest-all closure with the admin handler so it is reachable
+	// via POST /admin/ingest/fec (token-authenticated, no session required).
+	campaign_finance.SetFECIngestAllFunc(fecIngestAllFn)
+
+	// SQS worker: long-polls for EventBridge-triggered cal-access and indiana runs.
+	// Dispatchers are thin closures that delegate to the package-level ingest fns.
+	sqsDispatchers := map[string]func() error{
+		"cal-access": func() error { return campaign_finance.DispatchAdapter("cal-access") },
+		"indiana":    func() error { return campaign_finance.DispatchAdapter("indiana") },
+	}
+
+	sqsCtx, sqsCancel := context.WithCancel(context.Background())
+	defer sqsCancel()
+	if err := scheduler.StartSQSWorker(sqsCtx, scheduler.SQSWorkerConfig{
+		QueueURL:    os.Getenv("SQS_INGEST_QUEUE_URL"),
+		Dispatchers: sqsDispatchers,
+		HealthcheckURLs: map[string]string{
+			"cal-access": os.Getenv("HC_CAL_ACCESS_URL"),
+			"indiana":    os.Getenv("HC_INDIANA_URL"),
+		},
+	}); err != nil {
+		log.Printf("warning: SQS worker init failed: %v", err)
+	}
+
 	// CLI subcommand dispatch — must come after all Init() calls so tables
 	// are migrated and the global db.DB connection is ready.
 	if len(os.Args) > 1 {

@@ -19,6 +19,11 @@ func Routes(r chi.Router) {
 	r.Get("/campaign-finance/politician/{id}/summary", SummaryHandler)
 	r.Get("/campaign-finance/politician/{id}/contributions", ContributionsHandler)
 
+	// Token-authenticated admin ingest endpoint — no session middleware.
+	// Used by SQS worker, EventBridge, curl, and manual one-off triggers.
+	// Authentication is via X-Admin-Token header (see AdminIngestHandler).
+	r.Post("/admin/ingest/{adapter}", AdminIngestHandler)
+
 	// Admin-only routes — require valid session + admin role
 	sessionFetcher := auth.SessionInfo{}
 	r.Group(func(r chi.Router) {
