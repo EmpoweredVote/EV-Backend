@@ -377,6 +377,13 @@ func main() {
 	// via POST /admin/ingest/fec (token-authenticated, no session required).
 	campaign_finance.SetFECIngestAllFunc(fecIngestAllFn)
 
+	// Wire Indiana backfill normalization — used by ResolveUnresolvedHandler to
+	// convert stored jsonb RawRow data into Contribution structs without duplicating
+	// normalization logic. Injected here to avoid import cycle.
+	campaign_finance.SetIndianaBackfillFunc(func(rec map[string]interface{}, ps campaign_finance.PoliticianSource) (campaign_finance.Contribution, error) {
+		return indiana.NormalizeRow(rec, ps)
+	})
+
 	// SQS worker: long-polls for EventBridge-triggered cal-access and indiana runs.
 	// Dispatchers are thin closures that delegate to the package-level ingest fns.
 	sqsDispatchers := map[string]func() error{

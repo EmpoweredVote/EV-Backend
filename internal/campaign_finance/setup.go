@@ -26,6 +26,25 @@ func SetFECIngestFunc(fn FECIngestFunc) {
 	fecIngestFn = fn
 }
 
+// IndianaNormalizeRowFunc is the function signature for normalizing a single
+// Indiana raw row map into a Contribution. Injected at startup by main.go to
+// avoid an import cycle: campaign_finance imports adapter/indiana which imports
+// campaign_finance.
+type IndianaNormalizeRowFunc func(rec map[string]interface{}, ps PoliticianSource) (Contribution, error)
+
+// indianaNormalizeRowFn is set via SetIndianaBackfillFunc. Nil until startup.
+var indianaNormalizeRowFn IndianaNormalizeRowFunc
+
+// SetIndianaBackfillFunc registers the Indiana normalization function.
+// Call this from main.go after campaign_finance.Init():
+//
+//	campaign_finance.SetIndianaBackfillFunc(func(rec map[string]interface{}, ps campaign_finance.PoliticianSource) (campaign_finance.Contribution, error) {
+//	    return indiana.NormalizeRow(rec, ps)
+//	})
+func SetIndianaBackfillFunc(fn IndianaNormalizeRowFunc) {
+	indianaNormalizeRowFn = fn
+}
+
 func Init() {
 	if err := db.EnsureSchema(db.DB, "transparent_motivations"); err != nil {
 		log.Fatal("campaign_finance: failed to create schema: ", err)

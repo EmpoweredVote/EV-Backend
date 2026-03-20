@@ -43,5 +43,10 @@ func Routes(r chi.Router) {
 		r.Post("/campaign-finance/admin/ingest/cal-access", IngestCalAccessHandler)
 		r.Post("/campaign-finance/admin/ingest/socrata", IngestSocrataHandler)
 		r.Post("/campaign-finance/admin/ingest/indiana", IngestIndianaHandler)
+
+		r.Get("/campaign-finance/admin/unresolved", UnresolvedQueueHandler)
+		r.Post("/campaign-finance/admin/unresolved/resolve", ResolveUnresolvedHandler)
+		r.Post("/campaign-finance/admin/unresolved/dismiss", DismissUnresolvedHandler)
+		r.Post("/campaign-finance/admin/unresolved/restore", RestoreUnresolvedHandler)
 	})
 }
