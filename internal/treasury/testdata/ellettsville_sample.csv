@@ -1,0 +1,11 @@
+fund_name|department_name|account_description|amount
+General Fund|Police Department|Salaries & Wages|125000.00
+General Fund|Police Department|Equipment & Supplies|15000.00
+General Fund|Fire Department|Salaries & Wages|98000.00
+General Fund|Fire Department|Building Maintenance|8500.00
+General Fund|Parks & Recreation|Operations|22000.00
+Utility Fund|Water Services|Operations & Maintenance|45000.00
+Utility Fund|Water Services|Equipment|12500.00
+Utility Fund|Sewer Services|Operations & Maintenance|38000.00
+Capital Fund|Street Improvements|Construction|"1,234,567.00"
+Capital Fund|Street Improvements|Engineering|(500.00)
