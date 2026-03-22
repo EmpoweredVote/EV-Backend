@@ -12,8 +12,8 @@ func SetupRoutes() http.Handler {
 	sessionFetcher := SessionInfo{}
 
 	// Public routes - read-only access to budget data
-	r.Get("/cities", ListCities)
-	r.Get("/cities/{city_id}", GetCity)
+	r.Get("/municipalities", ListMunicipalities)
+	r.Get("/municipalities/{municipality_id}", GetMunicipality)
 	r.Get("/budgets", ListBudgets)
 	r.Get("/budgets/{budget_id}", GetBudget)
 	r.Get("/budgets/{budget_id}/categories", GetBudgetCategories)
@@ -23,9 +23,9 @@ func SetupRoutes() http.Handler {
 		r.Use(middleware.SessionMiddleware(sessionFetcher))
 		r.Use(middleware.AdminMiddleware(sessionFetcher))
 
-		r.Post("/cities", CreateCity)
-		r.Put("/cities/{city_id}", UpdateCity)
-		r.Delete("/cities/{city_id}", DeleteCity)
+		r.Post("/municipalities", CreateMunicipality)
+		r.Put("/municipalities/{municipality_id}", UpdateMunicipality)
+		r.Delete("/municipalities/{municipality_id}", DeleteMunicipality)
 
 		r.Post("/budgets", CreateBudget)
 		r.Post("/budgets/import", ImportBudget)

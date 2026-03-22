@@ -13,47 +13,50 @@ import (
 	"gorm.io/gorm"
 )
 
-// ListCities returns all cities with budget data
-func ListCities(w http.ResponseWriter, r *http.Request) {
-	var cities []City
+// ListMunicipalities returns all municipalities with budget data
+func ListMunicipalities(w http.ResponseWriter, r *http.Request) {
+	var municipalities []Municipality
 
-	if err := db.DB.Find(&cities).Error; err != nil {
-		http.Error(w, "Failed to fetch cities: "+err.Error(), http.StatusInternalServerError)
+	if err := db.DB.Find(&municipalities).Error; err != nil {
+		http.Error(w, "Failed to fetch municipalities: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(cities)
+	json.NewEncoder(w).Encode(municipalities)
 }
 
-// GetCity returns a single city by ID
-func GetCity(w http.ResponseWriter, r *http.Request) {
-	cityID := chi.URLParam(r, "city_id")
+// GetMunicipality returns a single municipality by ID
+func GetMunicipality(w http.ResponseWriter, r *http.Request) {
+	municipalityID := chi.URLParam(r, "municipality_id")
 
-	var city City
-	if err := db.DB.Preload("Budgets").First(&city, "id = ?", cityID).Error; err != nil {
-		http.Error(w, "City not found", http.StatusNotFound)
+	var municipality Municipality
+	if err := db.DB.Preload("Budgets").First(&municipality, "id = ?", municipalityID).Error; err != nil {
+		http.Error(w, "Municipality not found", http.StatusNotFound)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(city)
+	json.NewEncoder(w).Encode(municipality)
 }
 
-// ListBudgets returns budgets with optional filtering by city and year
+// ListBudgets returns budgets with optional filtering by municipality and year
 func ListBudgets(w http.ResponseWriter, r *http.Request) {
-	query := db.DB.Model(&Budget{}).Preload("City")
+	query := db.DB.Model(&Budget{}).Preload("Municipality")
 
-	// Filter by city name or ID
+	// Filter by municipality name, municipality_id, or city_id (backward compat)
 	if cityName := r.URL.Query().Get("city"); cityName != "" {
-		var city City
-		if err := db.DB.First(&city, "name = ?", cityName).Error; err != nil {
-			http.Error(w, "City not found", http.StatusNotFound)
+		var municipality Municipality
+		if err := db.DB.First(&municipality, "name = ?", cityName).Error; err != nil {
+			http.Error(w, "Municipality not found", http.StatusNotFound)
 			return
 		}
-		query = query.Where("city_id = ?", city.ID)
+		query = query.Where("municipality_id = ?", municipality.ID)
+	} else if muniID := r.URL.Query().Get("municipality_id"); muniID != "" {
+		query = query.Where("municipality_id = ?", muniID)
 	} else if cityID := r.URL.Query().Get("city_id"); cityID != "" {
-		query = query.Where("city_id = ?", cityID)
+		// Backward compat: city_id param maps to municipality_id column
+		query = query.Where("municipality_id = ?", cityID)
 	}
 
 	// Filter by fiscal year
@@ -81,12 +84,12 @@ func ListBudgets(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(budgets)
 }
 
-// GetBudget returns a single budget with its city
+// GetBudget returns a single budget with its municipality
 func GetBudget(w http.ResponseWriter, r *http.Request) {
 	budgetID := chi.URLParam(r, "budget_id")
 
 	var budget Budget
-	if err := db.DB.Preload("City").First(&budget, "id = ?", budgetID).Error; err != nil {
+	if err := db.DB.Preload("Municipality").First(&budget, "id = ?", budgetID).Error; err != nil {
 		http.Error(w, "Budget not found", http.StatusNotFound)
 		return
 	}
@@ -150,42 +153,54 @@ func buildCategoryTree(categories []BudgetCategory) []BudgetCategory {
 	return roots
 }
 
-// CreateCity creates a new city (admin only)
-func CreateCity(w http.ResponseWriter, r *http.Request) {
-	var city City
-	if err := json.NewDecoder(r.Body).Decode(&city); err != nil {
+// CreateMunicipality creates a new municipality (admin only)
+func CreateMunicipality(w http.ResponseWriter, r *http.Request) {
+	var municipality Municipality
+	if err := json.NewDecoder(r.Body).Decode(&municipality); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	if city.Name == "" || city.State == "" {
+	if municipality.Name == "" || municipality.State == "" {
 		http.Error(w, "Name and state are required", http.StatusBadRequest)
 		return
 	}
 
-	if err := db.DB.Create(&city).Error; err != nil {
-		http.Error(w, "Failed to create city: "+err.Error(), http.StatusInternalServerError)
+	// Validate entity_type if provided; default to "city" if empty
+	if municipality.EntityType == "" {
+		municipality.EntityType = "city"
+	} else {
+		validTypes := map[string]bool{"city": true, "county": true, "township": true}
+		if !validTypes[municipality.EntityType] {
+			http.Error(w, "entity_type must be one of: city, county, township", http.StatusBadRequest)
+			return
+		}
+	}
+
+	if err := db.DB.Create(&municipality).Error; err != nil {
+		http.Error(w, "Failed to create municipality: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(city)
+	json.NewEncoder(w).Encode(municipality)
 }
 
-// UpdateCity updates an existing city (admin only)
-func UpdateCity(w http.ResponseWriter, r *http.Request) {
-	cityID := chi.URLParam(r, "city_id")
+// UpdateMunicipality updates an existing municipality (admin only)
+func UpdateMunicipality(w http.ResponseWriter, r *http.Request) {
+	municipalityID := chi.URLParam(r, "municipality_id")
 
-	var city City
-	if err := db.DB.First(&city, "id = ?", cityID).Error; err != nil {
-		http.Error(w, "City not found", http.StatusNotFound)
+	var municipality Municipality
+	if err := db.DB.First(&municipality, "id = ?", municipalityID).Error; err != nil {
+		http.Error(w, "Municipality not found", http.StatusNotFound)
 		return
 	}
 
 	var updates struct {
 		Name       *string `json:"name,omitempty"`
 		State      *string `json:"state,omitempty"`
+		EntityType *string `json:"entity_type,omitempty"`
 		Population *int    `json:"population,omitempty"`
 	}
 
@@ -201,25 +216,33 @@ func UpdateCity(w http.ResponseWriter, r *http.Request) {
 	if updates.State != nil {
 		updateMap["state"] = *updates.State
 	}
+	if updates.EntityType != nil {
+		validTypes := map[string]bool{"city": true, "county": true, "township": true}
+		if !validTypes[*updates.EntityType] {
+			http.Error(w, "entity_type must be one of: city, county, township", http.StatusBadRequest)
+			return
+		}
+		updateMap["entity_type"] = *updates.EntityType
+	}
 	if updates.Population != nil {
 		updateMap["population"] = *updates.Population
 	}
 
-	if err := db.DB.Model(&city).Updates(updateMap).Error; err != nil {
-		http.Error(w, "Failed to update city: "+err.Error(), http.StatusInternalServerError)
+	if err := db.DB.Model(&municipality).Updates(updateMap).Error; err != nil {
+		http.Error(w, "Failed to update municipality: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "City updated successfully")
+	fmt.Fprintf(w, "Municipality updated successfully")
 }
 
-// DeleteCity deletes a city and all associated data (admin only)
-func DeleteCity(w http.ResponseWriter, r *http.Request) {
-	cityID := chi.URLParam(r, "city_id")
+// DeleteMunicipality deletes a municipality and all associated data (admin only)
+func DeleteMunicipality(w http.ResponseWriter, r *http.Request) {
+	municipalityID := chi.URLParam(r, "municipality_id")
 
-	if err := db.DB.Delete(&City{}, "id = ?", cityID).Error; err != nil {
-		http.Error(w, "Failed to delete city: "+err.Error(), http.StatusInternalServerError)
+	if err := db.DB.Delete(&Municipality{}, "id = ?", municipalityID).Error; err != nil {
+		http.Error(w, "Failed to delete municipality: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -234,8 +257,8 @@ func CreateBudget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if budget.CityID == uuid.Nil || budget.FiscalYear == 0 {
-		http.Error(w, "city_id and fiscal_year are required", http.StatusBadRequest)
+	if budget.MunicipalityID == uuid.Nil || budget.FiscalYear == 0 {
+		http.Error(w, "municipality_id and fiscal_year are required", http.StatusBadRequest)
 		return
 	}
 
@@ -252,20 +275,32 @@ func CreateBudget(w http.ResponseWriter, r *http.Request) {
 // ImportBudget imports a full budget from JSON (admin only)
 func ImportBudget(w http.ResponseWriter, r *http.Request) {
 	var importRequest struct {
-		CityName    string           `json:"city_name"`
-		CityState   string           `json:"city_state"`
-		Population  int              `json:"population"`
-		FiscalYear  int              `json:"fiscal_year"`
-		DatasetType string           `json:"dataset_type"`
-		TotalBudget float64          `json:"total_budget"`
-		DataSource  string           `json:"data_source"`
-		Hierarchy   []string         `json:"hierarchy"`
-		Categories  []CategoryImport `json:"categories"`
+		CityName             string           `json:"city_name"`
+		CityState            string           `json:"city_state"`
+		EntityType           string           `json:"entity_type"`            // optional, defaults to "city"
+		Population           int              `json:"population"`
+		FiscalYear           int              `json:"fiscal_year"`
+		FiscalYearStartMonth int              `json:"fiscal_year_start_month"` // optional, defaults to 1
+		DatasetType          string           `json:"dataset_type"`
+		TotalBudget          float64          `json:"total_budget"`
+		DataSource           string           `json:"data_source"`
+		Hierarchy            []string         `json:"hierarchy"`
+		Categories           []CategoryImport `json:"categories"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&importRequest); err != nil {
 		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
+	}
+
+	// Default entity_type to "city" if not provided
+	if importRequest.EntityType == "" {
+		importRequest.EntityType = "city"
+	}
+
+	// Default fiscal_year_start_month to 1 (January) if not provided
+	if importRequest.FiscalYearStartMonth == 0 {
+		importRequest.FiscalYearStartMonth = 1
 	}
 
 	tx := db.DB.Begin()
@@ -274,25 +309,26 @@ func ImportBudget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Find or create city
-	var city City
-	if err := tx.Where("name = ? AND state = ?", importRequest.CityName, importRequest.CityState).First(&city).Error; err != nil {
-		city = City{
+	// Find or create municipality
+	var municipality Municipality
+	if err := tx.Where("name = ? AND state = ?", importRequest.CityName, importRequest.CityState).First(&municipality).Error; err != nil {
+		municipality = Municipality{
 			Name:       importRequest.CityName,
 			State:      importRequest.CityState,
+			EntityType: importRequest.EntityType,
 			Population: importRequest.Population,
 		}
-		if err := tx.Create(&city).Error; err != nil {
+		if err := tx.Create(&municipality).Error; err != nil {
 			tx.Rollback()
-			http.Error(w, "Failed to create city: "+err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Failed to create municipality: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
 
-	// Check if budget already exists for this city/year/dataset
+	// Check if budget already exists for this municipality/year/dataset
 	var existingBudget Budget
-	err := tx.Where("city_id = ? AND fiscal_year = ? AND dataset_type = ?",
-		city.ID, importRequest.FiscalYear, importRequest.DatasetType).First(&existingBudget).Error
+	err := tx.Where("municipality_id = ? AND fiscal_year = ? AND dataset_type = ?",
+		municipality.ID, importRequest.FiscalYear, importRequest.DatasetType).First(&existingBudget).Error
 	if err == nil {
 		tx.Rollback()
 		http.Error(w, fmt.Sprintf("Budget already exists for %s %d (%s)",
@@ -302,12 +338,13 @@ func ImportBudget(w http.ResponseWriter, r *http.Request) {
 
 	// Create budget
 	budget := Budget{
-		CityID:      city.ID,
-		FiscalYear:  importRequest.FiscalYear,
-		DatasetType: importRequest.DatasetType,
-		TotalBudget: importRequest.TotalBudget,
-		DataSource:  importRequest.DataSource,
-		Hierarchy:   importRequest.Hierarchy,
+		MunicipalityID:       municipality.ID,
+		FiscalYear:           importRequest.FiscalYear,
+		FiscalYearStartMonth: importRequest.FiscalYearStartMonth,
+		DatasetType:          importRequest.DatasetType,
+		TotalBudget:          importRequest.TotalBudget,
+		DataSource:           importRequest.DataSource,
+		Hierarchy:            importRequest.Hierarchy,
 	}
 	if err := tx.Create(&budget).Error; err != nil {
 		tx.Rollback()
@@ -333,9 +370,9 @@ func ImportBudget(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"status":    "success",
-		"budget_id": budget.ID,
-		"city_id":   city.ID,
+		"status":          "success",
+		"budget_id":       budget.ID,
+		"municipality_id": municipality.ID,
 	})
 }
 
