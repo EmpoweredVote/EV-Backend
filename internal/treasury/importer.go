@@ -1,14 +1,20 @@
 package treasury
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/lib/pq"
+	"golang.org/x/text/encoding/charmap"
+	"golang.org/x/text/transform"
 )
 
 // ImportBudgetsConfig holds configuration for the import-budgets CLI subcommand.
@@ -188,4 +194,257 @@ func ImportBudgets(config ImportBudgetsConfig) (ImportBudgetsResult, error) {
 	}
 
 	return result, nil
+}
+
+// ─── Gateway Types ────────────────────────────────────────────────────────────
+
+// GatewayEntityConfig holds metadata for a single Indiana Gateway entity.
+type GatewayEntityConfig struct {
+	DisplayName          string   `json:"display_name"`
+	State                string   `json:"state"`
+	EntityType           string   `json:"entity_type"`
+	UnitCode             string   `json:"unit_code"`
+	BaseURL              string   `json:"base_url"`
+	Delimiter            string   `json:"delimiter"`
+	Encoding             string   `json:"encoding"`
+	FiscalYearStartMonth int      `json:"fiscal_year_start_month"`
+	FiscalYears          []int    `json:"fiscal_years"`
+	DatasetTypes         []string `json:"dataset_types"`
+	HierarchyColumns     []string `json:"hierarchy_columns"`
+	AmountColumn         string   `json:"amount_column"`
+}
+
+// GatewayConfig holds the full treasury import configuration.
+type GatewayConfig struct {
+	GatewayEntities []GatewayEntityConfig `json:"gateway_entities"`
+}
+
+// ─── Gateway Helper Functions ─────────────────────────────────────────────────
+
+// newGatewayCSVReader wraps body with Windows-1252 → UTF-8 decoding and
+// configures csv.Reader with the given delimiter, LazyQuotes, and TrimLeadingSpace.
+func newGatewayCSVReader(body io.Reader, delimiter rune) *csv.Reader {
+	utf8Reader := transform.NewReader(body, charmap.Windows1252.NewDecoder())
+	r := csv.NewReader(utf8Reader)
+	r.Comma = delimiter
+	r.LazyQuotes = true
+	r.TrimLeadingSpace = true
+	return r
+}
+
+// parseAmount parses government-formatted amount strings into float64.
+// Handles: comma-formatted numbers, parenthesized negatives, blank strings.
+func parseAmount(s string) (float64, error) {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return 0.0, nil
+	}
+
+	// Handle parenthesized negatives: "(12,345.00)" → "-12345.00"
+	negative := false
+	if strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
+		negative = true
+		s = s[1 : len(s)-1]
+	}
+
+	// Strip commas: "1,234,567.00" → "1234567.00"
+	s = strings.ReplaceAll(s, ",", "")
+
+	val, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return 0.0, fmt.Errorf("parseAmount: cannot parse %q as float: %w", strings.TrimSpace(s), err)
+	}
+
+	if negative {
+		val = -val
+	}
+	return val, nil
+}
+
+// validateHeaders builds a header-to-index map and returns an error listing
+// any required columns that are missing.
+func validateHeaders(headers []string, required []string) (map[string]int, error) {
+	idx := make(map[string]int, len(headers))
+	for i, h := range headers {
+		idx[strings.TrimSpace(h)] = i
+	}
+
+	var missing []string
+	for _, col := range required {
+		if _, ok := idx[col]; !ok {
+			missing = append(missing, col)
+		}
+	}
+
+	if len(missing) > 0 {
+		return nil, fmt.Errorf("gateway CSV missing required columns: %v (got: %v)", missing, headers)
+	}
+	return idx, nil
+}
+
+// ─── Tree accumulator types for buildGatewayCategoryTree ─────────────────────
+
+type lineAccum struct {
+	description string
+	amount      float64
+}
+
+type deptAccum struct {
+	name   string
+	amount float64
+	items  []lineAccum
+}
+
+type fundAccum struct {
+	name   string
+	amount float64
+	depts  map[string]*deptAccum
+	order  int // insertion order for deterministic output
+}
+
+// buildGatewayCategoryTree converts flat CSV records into a []CategoryImport tree.
+// records is the slice of data rows (headers already consumed).
+// headerIdx maps trimmed header name → column index.
+// Returns the root categories, the total budget amount, and any error.
+func buildGatewayCategoryTree(records [][]string, headerIdx map[string]int, entity GatewayEntityConfig) ([]CategoryImport, float64, error) {
+	funds := make(map[string]*fundAccum)
+	fundOrder := []string{} // preserve insertion order for deterministic sorting
+
+	var totalBudget float64
+	totalRows := 0
+	zeroRows := 0
+
+	for _, row := range records {
+		if len(row) == 0 {
+			continue
+		}
+
+		// Extract hierarchy values safely
+		getField := func(col string) string {
+			i, ok := headerIdx[col]
+			if !ok || i >= len(row) {
+				return ""
+			}
+			return strings.TrimSpace(row[i])
+		}
+
+		fundName := getField(entity.HierarchyColumns[0])
+		deptName := ""
+		if len(entity.HierarchyColumns) > 1 {
+			deptName = getField(entity.HierarchyColumns[1])
+		}
+		lineDesc := ""
+		if len(entity.HierarchyColumns) > 2 {
+			lineDesc = getField(entity.HierarchyColumns[2])
+		}
+
+		amountStr := getField(entity.AmountColumn)
+		amount, err := parseAmount(amountStr)
+		if err != nil {
+			log.Printf("WARNING: could not parse amount %q in row %v: %v", amountStr, row, err)
+			continue
+		}
+
+		totalRows++
+		if amount == 0 {
+			zeroRows++
+		}
+
+		// Accumulate into fund → dept tree
+		if _, ok := funds[fundName]; !ok {
+			funds[fundName] = &fundAccum{
+				name:  fundName,
+				depts: make(map[string]*deptAccum),
+				order: len(fundOrder),
+			}
+			fundOrder = append(fundOrder, fundName)
+		}
+		fund := funds[fundName]
+		fund.amount += amount
+
+		if deptName != "" {
+			if _, ok := fund.depts[deptName]; !ok {
+				fund.depts[deptName] = &deptAccum{name: deptName}
+			}
+			dept := fund.depts[deptName]
+			dept.amount += amount
+			if lineDesc != "" {
+				dept.items = append(dept.items, lineAccum{description: lineDesc, amount: amount})
+			}
+		}
+
+		totalBudget += amount
+	}
+
+	// Warn if too many zero-amount rows (possible encoding misparse indicator)
+	if totalRows > 0 && float64(zeroRows)/float64(totalRows) > 0.05 {
+		log.Printf("WARNING: %.0f%% of rows have zero amounts (%d/%d) — possible encoding misparse",
+			float64(zeroRows)/float64(totalRows)*100, zeroRows, totalRows)
+	}
+
+	// Convert accumulated tree to []CategoryImport (funds in insertion order)
+	var rootCategories []CategoryImport
+	for _, fundName := range fundOrder {
+		fund := funds[fundName]
+
+		var pct float64
+		if totalBudget != 0 {
+			pct = (fund.amount / totalBudget) * 100
+		}
+
+		fundCat := CategoryImport{
+			Name:       fund.name,
+			Amount:     fund.amount,
+			Percentage: pct,
+		}
+
+		// Add department subcategories in insertion order
+		deptOrder := []string{}
+		for deptName := range fund.depts {
+			deptOrder = append(deptOrder, deptName)
+		}
+		// Sort deterministically
+		sortStrings(deptOrder)
+
+		for _, deptName := range deptOrder {
+			dept := fund.depts[deptName]
+
+			var deptPct float64
+			if totalBudget != 0 {
+				deptPct = (dept.amount / totalBudget) * 100
+			}
+
+			deptCat := CategoryImport{
+				Name:       dept.name,
+				Amount:     dept.amount,
+				Percentage: deptPct,
+			}
+
+			// Line items go into the dept's LineItems (not further subcategories)
+			for _, item := range dept.items {
+				deptCat.LineItems = append(deptCat.LineItems, LineItemImport{
+					Description:    item.description,
+					ApprovedAmount: item.amount,
+				})
+			}
+			deptCat.Items = len(deptCat.LineItems)
+
+			fundCat.Subcategories = append(fundCat.Subcategories, deptCat)
+		}
+		fundCat.Items = len(fundCat.Subcategories)
+
+		rootCategories = append(rootCategories, fundCat)
+	}
+
+	return rootCategories, totalBudget, nil
+}
+
+// sortStrings sorts a slice of strings in place (simple insertion sort to avoid
+// importing sort package just for this helper).
+func sortStrings(ss []string) {
+	for i := 1; i < len(ss); i++ {
+		for j := i; j > 0 && ss[j] < ss[j-1]; j-- {
+			ss[j], ss[j-1] = ss[j-1], ss[j]
+		}
+	}
 }
