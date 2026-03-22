@@ -151,6 +151,33 @@ func main() {
 			fmt.Printf("Import complete: %d processed, %d inserted, %d updated, %d skipped\n",
 				result.Processed, result.Inserted, result.Updated, result.Skipped)
 			os.Exit(0)
+		case "import-budgets":
+			jsonDir := "treasury-tracker/public/data"
+			dryRun := false
+			for _, arg := range os.Args[2:] {
+				switch {
+				case arg == "--dry-run":
+					dryRun = true
+				case strings.HasPrefix(arg, "--data-dir="):
+					jsonDir = strings.TrimPrefix(arg, "--data-dir=")
+				}
+			}
+			result, err := treasury.ImportBudgets(treasury.ImportBudgetsConfig{
+				DataDir: jsonDir,
+				DryRun:  dryRun,
+			})
+			if err != nil {
+				log.Fatal("import-budgets failed: ", err)
+			}
+			fmt.Printf("Import complete: %d files processed, %d budgets inserted, %d skipped\n",
+				result.FilesProcessed, result.Inserted, result.Skipped)
+			if len(result.Errors) > 0 {
+				fmt.Printf("Errors (%d):\n", len(result.Errors))
+				for _, e := range result.Errors {
+					fmt.Printf("  - %s\n", e)
+				}
+			}
+			os.Exit(0)
 		case "backfill-legislative-ids":
 			dryRun := false
 			for _, arg := range os.Args[2:] {
