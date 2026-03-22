@@ -6,10 +6,13 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/EmpoweredVote/EV-Backend/internal/db"
 	"github.com/lib/pq"
@@ -194,6 +197,231 @@ func ImportBudgets(config ImportBudgetsConfig) (ImportBudgetsResult, error) {
 	}
 
 	return result, nil
+}
+
+// ─── Gateway Import ───────────────────────────────────────────────────────────
+
+// datasetTypeToGatewayParam maps internal dataset_type strings to Gateway form
+// parameter values. These must be confirmed against the Indiana Gateway download
+// form by inspecting the POST request in browser DevTools.
+//
+// The Gateway uses a "rptType" parameter (or similar) to select the dataset.
+// Known values based on Gateway UI options:
+//   - "operating" → Gateway "Budget" or "Appropriation" report type
+//   - "revenue"   → Gateway "Revenue" report type
+var datasetTypeToGatewayParam = map[string]string{
+	"operating": "Budget",
+	"revenue":   "Revenue",
+}
+
+// ImportGatewayBudgets fetches, parses, and inserts Indiana Gateway budget data
+// for all entities defined in the config file. It is the Gateway equivalent of
+// ImportBudgets (which handles Bloomington JSON files).
+//
+// Usage: ./server import-budgets --source=gateway [--config=treasury-import-config.json] [--dry-run]
+func ImportGatewayBudgets(configFile string, dryRun bool) (ImportBudgetsResult, error) {
+	if configFile == "" {
+		configFile = "treasury-import-config.json"
+	}
+
+	data, err := os.ReadFile(configFile)
+	if err != nil {
+		return ImportBudgetsResult{}, fmt.Errorf("failed to read config %s: %w", configFile, err)
+	}
+
+	var config GatewayConfig
+	if err := json.Unmarshal(data, &config); err != nil {
+		return ImportBudgetsResult{}, fmt.Errorf("failed to parse config %s: %w", configFile, err)
+	}
+
+	client := &http.Client{Timeout: 60 * time.Second}
+	var result ImportBudgetsResult
+
+	for _, entity := range config.GatewayEntities {
+		delimiter := '|'
+		if entity.Delimiter != "" {
+			delimiter = rune(entity.Delimiter[0])
+		}
+
+		for _, datasetType := range entity.DatasetTypes {
+			for _, year := range entity.FiscalYears {
+				result.FilesProcessed++
+
+				body, err := fetchGatewayCSV(client, entity, year, datasetType)
+				if err != nil {
+					msg := fmt.Sprintf("gateway fetch failed for %s %d %s: %v", entity.DisplayName, year, datasetType, err)
+					result.Errors = append(result.Errors, msg)
+					log.Printf("SKIP: %s", msg)
+					continue
+				}
+				defer body.Close()
+
+				r := newGatewayCSVReader(body, delimiter)
+
+				headers, err := r.Read()
+				if err != nil {
+					msg := fmt.Sprintf("failed to read headers for %s %d %s: %v", entity.DisplayName, year, datasetType, err)
+					result.Errors = append(result.Errors, msg)
+					log.Printf("SKIP: %s", msg)
+					continue
+				}
+
+				required := append(entity.HierarchyColumns, entity.AmountColumn)
+				headerIdx, err := validateHeaders(headers, required)
+				if err != nil {
+					msg := fmt.Sprintf("header validation failed for %s %d %s: %v", entity.DisplayName, year, datasetType, err)
+					result.Errors = append(result.Errors, msg)
+					log.Printf("SKIP: %s", msg)
+					continue
+				}
+
+				records, err := r.ReadAll()
+				if err != nil {
+					msg := fmt.Sprintf("failed to read CSV rows for %s %d %s: %v", entity.DisplayName, year, datasetType, err)
+					result.Errors = append(result.Errors, msg)
+					log.Printf("SKIP: %s", msg)
+					continue
+				}
+
+				rootCategories, totalBudget, err := buildGatewayCategoryTree(records, headerIdx, entity)
+				if err != nil {
+					msg := fmt.Sprintf("failed to build category tree for %s %d %s: %v", entity.DisplayName, year, datasetType, err)
+					result.Errors = append(result.Errors, msg)
+					log.Printf("SKIP: %s", msg)
+					continue
+				}
+
+				if dryRun {
+					log.Printf("[DRY-RUN] Would import %s %d (%s): totalBudget=%.2f, %d root categories",
+						entity.DisplayName, year, datasetType, totalBudget, len(rootCategories))
+					continue
+				}
+
+				tx := db.DB.Begin()
+				if tx.Error != nil {
+					msg := fmt.Sprintf("failed to begin transaction for %s %d %s: %v", entity.DisplayName, year, datasetType, tx.Error)
+					result.Errors = append(result.Errors, msg)
+					continue
+				}
+
+				// Find or create municipality.
+				var municipality Municipality
+				if err := tx.Where("name = ? AND state = ? AND entity_type = ?",
+					entity.DisplayName, entity.State, entity.EntityType).
+					First(&municipality).Error; err != nil {
+					municipality = Municipality{
+						Name:       entity.DisplayName,
+						State:      entity.State,
+						EntityType: entity.EntityType,
+					}
+					if err := tx.Create(&municipality).Error; err != nil {
+						tx.Rollback()
+						msg := fmt.Sprintf("failed to create municipality for %s %d %s: %v", entity.DisplayName, year, datasetType, err)
+						result.Errors = append(result.Errors, msg)
+						continue
+					}
+				}
+
+				// Idempotent check: skip if budget already exists.
+				var existingBudget Budget
+				checkErr := tx.Where("municipality_id = ? AND fiscal_year = ? AND dataset_type = ?",
+					municipality.ID, year, datasetType).First(&existingBudget).Error
+				if checkErr == nil {
+					tx.Rollback()
+					log.Printf("SKIP: budget already exists for %s %d (%s)", entity.DisplayName, year, datasetType)
+					result.Skipped++
+					continue
+				}
+
+				// Create budget record.
+				budget := Budget{
+					MunicipalityID:       municipality.ID,
+					FiscalYear:           year,
+					DatasetType:          datasetType,
+					TotalBudget:          totalBudget,
+					FiscalYearStartMonth: entity.FiscalYearStartMonth,
+					DataSource:           "Indiana Gateway",
+					Hierarchy:            pq.StringArray(entity.HierarchyColumns),
+				}
+				if err := tx.Create(&budget).Error; err != nil {
+					tx.Rollback()
+					msg := fmt.Sprintf("failed to create budget for %s %d %s: %v", entity.DisplayName, year, datasetType, err)
+					result.Errors = append(result.Errors, msg)
+					continue
+				}
+
+				// Recursively import categories using existing importCategories helper.
+				if err := importCategories(tx, budget.ID, nil, rootCategories, 0); err != nil {
+					tx.Rollback()
+					msg := fmt.Sprintf("failed to import categories for %s %d %s: %v", entity.DisplayName, year, datasetType, err)
+					result.Errors = append(result.Errors, msg)
+					continue
+				}
+
+				if err := tx.Commit().Error; err != nil {
+					msg := fmt.Sprintf("failed to commit transaction for %s %d %s: %v", entity.DisplayName, year, datasetType, err)
+					result.Errors = append(result.Errors, msg)
+					continue
+				}
+
+				log.Printf("Inserted: %s %d (%s), totalBudget=%.2f", entity.DisplayName, year, datasetType, totalBudget)
+				result.Inserted++
+			}
+		}
+	}
+
+	return result, nil
+}
+
+// fetchGatewayCSV downloads a budget CSV from the Indiana Gateway for a specific
+// entity, fiscal year, and dataset type.
+//
+// The Indiana Gateway uses ASP.NET WebForms with POST-based downloads. The form
+// parameters were determined by inspecting the download form at:
+// https://gateway.ifionline.org/public/download.aspx
+//
+// NOTE: The exact parameter names (UnitType, UnitID, rptYear, rptType) should be
+// verified by capturing a real POST request in browser DevTools and updating this
+// function if the parameters differ from the defaults below.
+func fetchGatewayCSV(client *http.Client, entity GatewayEntityConfig, year int, datasetType string) (io.ReadCloser, error) {
+	gatewayParam, ok := datasetTypeToGatewayParam[datasetType]
+	if !ok {
+		gatewayParam = datasetType
+	}
+
+	formValues := url.Values{}
+	formValues.Set("UnitID", entity.UnitCode)
+	formValues.Set("rptYear", strconv.Itoa(year))
+	formValues.Set("rptType", gatewayParam)
+	// Gateway may require additional form fields (ViewState, etc.) captured from DevTools
+	// Add them here if a plain POST returns the HTML form page instead of the CSV file.
+
+	req, err := http.NewRequest("POST", entity.BaseURL, strings.NewReader(formValues.Encode()))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("User-Agent", "EmpoweredVote-Treasury-Importer/1.0")
+	req.Header.Set("Accept", "text/csv, text/plain, */*")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("HTTP request failed: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		resp.Body.Close()
+		return nil, fmt.Errorf("gateway returned HTTP %d", resp.StatusCode)
+	}
+
+	// If content-type is HTML, the download failed and returned the form page.
+	contentType := resp.Header.Get("Content-Type")
+	if strings.Contains(contentType, "text/html") {
+		resp.Body.Close()
+		return nil, fmt.Errorf("gateway returned HTML page instead of CSV (content-type: %s) — POST parameters may need updating", contentType)
+	}
+
+	return resp.Body, nil
 }
 
 // ─── Gateway Types ────────────────────────────────────────────────────────────
