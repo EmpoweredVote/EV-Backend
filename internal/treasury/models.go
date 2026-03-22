@@ -7,37 +7,39 @@ import (
 	"github.com/lib/pq"
 )
 
-// City represents a municipality with budget data
-type City struct {
+// Municipality represents a city, county, or township with budget data
+type Municipality struct {
 	ID         uuid.UUID `gorm:"type:uuid;primaryKey;default:uuid_generate_v4()" json:"id"`
-	Name       string    `gorm:"uniqueIndex;not null" json:"name"`
+	Name       string    `gorm:"not null" json:"name"`
 	State      string    `gorm:"not null" json:"state"`
+	EntityType string    `gorm:"not null;default:'city'" json:"entity_type"` // city, county, township
 	Population int       `json:"population"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 
-	Budgets []Budget `gorm:"foreignKey:CityID" json:"budgets,omitempty"`
+	Budgets []Budget `gorm:"foreignKey:MunicipalityID" json:"budgets,omitempty"`
 }
 
-func (City) TableName() string {
-	return "treasury.cities"
+func (Municipality) TableName() string {
+	return "treasury.municipalities"
 }
 
-// Budget represents a fiscal year budget for a city
+// Budget represents a fiscal year budget for a municipality
 type Budget struct {
-	ID          uuid.UUID      `gorm:"type:uuid;primaryKey;default:uuid_generate_v4()" json:"id"`
-	CityID      uuid.UUID      `gorm:"type:uuid;not null;index:idx_budget_city_year,unique" json:"city_id"`
-	FiscalYear  int            `gorm:"not null;index:idx_budget_city_year,unique" json:"fiscal_year"`
-	DatasetType string         `gorm:"not null;default:'operating'" json:"dataset_type"` // operating, revenue, salaries
-	TotalBudget float64        `gorm:"not null" json:"total_budget"`
-	DataSource  string         `json:"data_source"`
-	Hierarchy   pq.StringArray `gorm:"type:text[]" json:"hierarchy"`
-	GeneratedAt time.Time      `json:"generated_at"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
+	ID                  uuid.UUID      `gorm:"type:uuid;primaryKey;default:uuid_generate_v4()" json:"id"`
+	MunicipalityID      uuid.UUID      `gorm:"type:uuid;not null;index:idx_budget_municipality_year_type,unique" json:"municipality_id"`
+	FiscalYear          int            `gorm:"not null;index:idx_budget_municipality_year_type,unique" json:"fiscal_year"`
+	DatasetType         string         `gorm:"not null;default:'operating';index:idx_budget_municipality_year_type,unique" json:"dataset_type"` // operating, revenue, salaries
+	FiscalYearStartMonth int           `gorm:"not null;default:1" json:"fiscal_year_start_month"`                                               // 1=Jan (Indiana), 7=Jul (California)
+	TotalBudget         float64        `gorm:"not null" json:"total_budget"`
+	DataSource          string         `json:"data_source"`
+	Hierarchy           pq.StringArray `gorm:"type:text[]" json:"hierarchy"`
+	GeneratedAt         time.Time      `json:"generated_at"`
+	CreatedAt           time.Time      `json:"created_at"`
+	UpdatedAt           time.Time      `json:"updated_at"`
 
-	City       City             `gorm:"foreignKey:CityID" json:"city,omitempty"`
-	Categories []BudgetCategory `gorm:"foreignKey:BudgetID" json:"categories,omitempty"`
+	Municipality Municipality     `gorm:"foreignKey:MunicipalityID" json:"municipality,omitempty"`
+	Categories   []BudgetCategory `gorm:"foreignKey:BudgetID" json:"categories,omitempty"`
 }
 
 func (Budget) TableName() string {
@@ -61,10 +63,10 @@ type BudgetCategory struct {
 	Depth            int        `gorm:"default:0" json:"depth"` // 0=root, 1=child, etc.
 	LinkKey          string     `json:"link_key,omitempty"`     // For transaction linking
 
-	Budget        Budget            `gorm:"foreignKey:BudgetID" json:"-"`
-	Parent        *BudgetCategory   `gorm:"foreignKey:ParentID" json:"-"`
-	Subcategories []BudgetCategory  `gorm:"foreignKey:ParentID" json:"subcategories,omitempty"`
-	LineItems     []BudgetLineItem  `gorm:"foreignKey:CategoryID" json:"line_items,omitempty"`
+	Budget        Budget           `gorm:"foreignKey:BudgetID" json:"-"`
+	Parent        *BudgetCategory  `gorm:"foreignKey:ParentID" json:"-"`
+	Subcategories []BudgetCategory `gorm:"foreignKey:ParentID" json:"subcategories,omitempty"`
+	LineItems     []BudgetLineItem `gorm:"foreignKey:CategoryID" json:"line_items,omitempty"`
 }
 
 func (BudgetCategory) TableName() string {
