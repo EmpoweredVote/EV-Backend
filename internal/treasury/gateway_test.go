@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"golang.org/x/text/encoding/charmap"
@@ -25,8 +26,8 @@ func TestGatewayCSVParse(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to read header: %v", err)
 	}
-	if len(headers) != 4 {
-		t.Fatalf("expected 4 header columns, got %d: %v", len(headers), headers)
+	if len(headers) != 12 {
+		t.Fatalf("expected 12 header columns, got %d: %v", len(headers), headers)
 	}
 
 	// Read all data rows
@@ -34,17 +35,19 @@ func TestGatewayCSVParse(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to read rows: %v", err)
 	}
-	if len(rows) != 10 {
-		t.Errorf("expected 10 data rows, got %d", len(rows))
+	// 5 Ellettsville + 2 Monroe County + 1 Adams County = 8 data rows
+	if len(rows) != 8 {
+		t.Errorf("expected 8 data rows, got %d", len(rows))
 	}
 
 	// Check first data row fields are accessible by index
 	firstRow := rows[0]
-	if len(firstRow) < 4 {
-		t.Fatalf("first row has fewer than 4 fields: %v", firstRow)
+	if len(firstRow) < 12 {
+		t.Fatalf("first row has fewer than 12 fields: %v", firstRow)
 	}
-	if firstRow[0] == "" || firstRow[1] == "" || firstRow[2] == "" || firstRow[3] == "" {
-		t.Errorf("first row has empty required fields: %v", firstRow)
+	// unit_name should be ELLETTSVILLE CIVIL TOWN
+	if !strings.Contains(firstRow[5], "ELLETTSVILLE") {
+		t.Errorf("first row unit_name should contain ELLETTSVILLE, got: %q", firstRow[5])
 	}
 }
 
@@ -63,6 +66,7 @@ func TestParseAmount(t *testing.T) {
 		{"not_a_number", 0.0, true},
 		{"(1,234.56)", -1234.56, false},
 		{"0.00", 0.0, false},
+		{"3656551.0000", 3656551.0, false},
 	}
 
 	for _, tc := range tests {
@@ -84,46 +88,41 @@ func TestParseAmount(t *testing.T) {
 // TestValidateHeaders tests header validation logic.
 func TestValidateHeaders(t *testing.T) {
 	t.Run("all required columns present", func(t *testing.T) {
-		headers := []string{"fund_name", "department_name", "account_description", "amount", "extra_col"}
-		required := []string{"fund_name", "department_name", "account_description", "amount"}
+		headers := []string{"year", "cnty_cd", "unit_code", "fund_description", "Total budget estimate_adopted", "extra_col"}
+		required := []string{"fund_description", "Total budget estimate_adopted", "unit_code"}
 
 		idx, err := validateHeaders(headers, required)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if idx["fund_name"] != 0 {
-			t.Errorf("fund_name index = %d, want 0", idx["fund_name"])
+		if idx["fund_description"] != 3 {
+			t.Errorf("fund_description index = %d, want 3", idx["fund_description"])
 		}
-		if idx["amount"] != 3 {
-			t.Errorf("amount index = %d, want 3", idx["amount"])
+		if idx["Total budget estimate_adopted"] != 4 {
+			t.Errorf("Total budget estimate_adopted index = %d, want 4", idx["Total budget estimate_adopted"])
 		}
 	})
 
 	t.Run("missing one column", func(t *testing.T) {
-		headers := []string{"fund_name", "department_name", "amount"}
-		required := []string{"fund_name", "department_name", "account_description", "amount"}
+		headers := []string{"year", "cnty_cd", "fund_description"}
+		required := []string{"fund_description", "Total budget estimate_adopted", "unit_code"}
 
 		_, err := validateHeaders(headers, required)
 		if err == nil {
 			t.Fatal("expected error for missing column, got nil")
 		}
 		errStr := err.Error()
-		if len(errStr) == 0 {
-			t.Error("error message is empty")
-		}
-		// Check error contains "missing required columns"
-		if !containsStr(errStr, "missing required columns") {
+		if !strings.Contains(errStr, "missing required columns") {
 			t.Errorf("error should mention 'missing required columns', got: %s", errStr)
 		}
-		// Check error names the missing column
-		if !containsStr(errStr, "account_description") {
-			t.Errorf("error should mention missing column 'account_description', got: %s", errStr)
+		if !strings.Contains(errStr, "Total budget estimate_adopted") {
+			t.Errorf("error should mention missing column, got: %s", errStr)
 		}
 	})
 
 	t.Run("extra columns in CSV", func(t *testing.T) {
-		headers := []string{"fund_name", "department_name", "account_description", "amount", "col_extra1", "col_extra2"}
-		required := []string{"fund_name", "department_name", "account_description", "amount"}
+		headers := []string{"year", "cnty_cd", "unit_code", "fund_description", "Total budget estimate_adopted", "col_extra1", "col_extra2"}
+		required := []string{"fund_description", "Total budget estimate_adopted", "unit_code"}
 
 		_, err := validateHeaders(headers, required)
 		if err != nil {
@@ -153,8 +152,8 @@ func TestPipeDelimiter(t *testing.T) {
 		t.Fatalf("pipe delimiter not working: got %d field(s) instead of multiple: %v", len(headers), headers)
 	}
 
-	// Verify expected header names
-	expectedHeaders := []string{"fund_name", "department_name", "account_description", "amount"}
+	// Verify expected header names from actual Gateway format
+	expectedHeaders := []string{"year", "cnty_cd", "cnty_description", "unit_type", "unit_code", "unit_name"}
 	for i, h := range expectedHeaders {
 		if i >= len(headers) {
 			t.Fatalf("missing expected header at index %d: %s", i, h)
@@ -167,12 +166,9 @@ func TestPipeDelimiter(t *testing.T) {
 
 // TestUTF8Reencode verifies Windows-1252 bytes are converted to correct UTF-8.
 func TestUTF8Reencode(t *testing.T) {
-	// Windows-1252 byte for e-acute (é) is 0xE9
-	// Pipe-delimited row with Windows-1252 encoded department name
-	// Header row + data row with e-acute in department name
-	input := []byte("fund_name|department_name|account_description|amount\nGénéral Fund|Département des Finances|Salaires|50000.00\n")
+	// Create a pipe-delimited row with Windows-1252 encoded characters
+	input := []byte("year|fund_description|amount\n2024|Général Fund|50000.00\n")
 
-	// Re-encode to Windows-1252 by using the charmap encoder
 	encoder := charmap.Windows1252.NewEncoder()
 	win1252Bytes, err := encoder.Bytes(input)
 	if err != nil {
@@ -181,13 +177,11 @@ func TestUTF8Reencode(t *testing.T) {
 
 	r := newGatewayCSVReader(bytes.NewReader(win1252Bytes), '|')
 
-	// Read header
 	_, err = r.Read()
 	if err != nil {
 		t.Fatalf("failed to read header: %v", err)
 	}
 
-	// Read data row
 	row, err := r.Read()
 	if err != nil {
 		t.Fatalf("failed to read data row: %v", err)
@@ -197,14 +191,13 @@ func TestUTF8Reencode(t *testing.T) {
 		t.Fatalf("expected at least 2 fields, got %d", len(row))
 	}
 
-	// The department name should contain the é character correctly as UTF-8
-	deptName := row[1]
-	if !containsStr(deptName, "é") {
-		t.Errorf("department name should contain UTF-8 é after re-encoding, got: %q", deptName)
+	fundName := row[1]
+	if !strings.Contains(fundName, "é") {
+		t.Errorf("fund name should contain UTF-8 é after re-encoding, got: %q", fundName)
 	}
 }
 
-// TestImportEllettsville tests end-to-end CSV parse -> tree build for Ellettsville.
+// TestImportEllettsville tests CSV parse -> filter -> tree build for Ellettsville.
 func TestImportEllettsville(t *testing.T) {
 	fixturePath := filepath.Join("testdata", "ellettsville_sample.csv")
 	f, err := os.Open(fixturePath)
@@ -217,28 +210,36 @@ func TestImportEllettsville(t *testing.T) {
 		DisplayName:          "Ellettsville",
 		State:                "IN",
 		EntityType:           "city",
-		HierarchyColumns:     []string{"fund_name", "department_name", "account_description"},
-		AmountColumn:         "amount",
+		UnitCode:             "0788",
+		UnitType:             "City/Town",
+		HierarchyColumns:     []string{"fund_description"},
+		AmountColumn:         "Total budget estimate_adopted",
+		UnitCodeColumn:       "unit_code",
 		FiscalYearStartMonth: 1,
 	}
 
 	r := newGatewayCSVReader(f, '|')
 
-	// Read header
 	headers, err := r.Read()
 	if err != nil {
 		t.Fatalf("failed to read headers: %v", err)
 	}
 
-	headerIdx, err := validateHeaders(headers, append(entity.HierarchyColumns, entity.AmountColumn))
+	required := append(entity.HierarchyColumns, entity.AmountColumn, entity.UnitCodeColumn)
+	headerIdx, err := validateHeaders(headers, required)
 	if err != nil {
 		t.Fatalf("header validation failed: %v", err)
 	}
 
-	// Read all rows
-	records, err := r.ReadAll()
+	allRecords, err := r.ReadAll()
 	if err != nil {
 		t.Fatalf("failed to read rows: %v", err)
+	}
+
+	// Filter for Ellettsville only (unit_code=0788)
+	records := filterEntityRows(allRecords, headerIdx, entity, "unit_code", "cnty_cd")
+	if len(records) != 5 {
+		t.Errorf("expected 5 Ellettsville rows, got %d", len(records))
 	}
 
 	categories, totalBudget, err := buildGatewayCategoryTree(records, headerIdx, entity)
@@ -246,38 +247,36 @@ func TestImportEllettsville(t *testing.T) {
 		t.Fatalf("buildGatewayCategoryTree failed: %v", err)
 	}
 
-	// Verify expected fund names
+	// Verify expected fund names from Gateway data
 	fundNames := make(map[string]bool)
 	for _, cat := range categories {
 		fundNames[cat.Name] = true
 	}
 
-	expectedFunds := []string{"General Fund", "Utility Fund", "Capital Fund"}
+	expectedFunds := []string{"GENERAL", "DEBT SERVICE", "LOCAL INCOME TAX", "LOCAL ROAD & STREET", "LEASE RENTAL PAYMENT"}
 	for _, fund := range expectedFunds {
 		if !fundNames[fund] {
-			t.Errorf("expected fund %q not found in categories", fund)
+			t.Errorf("expected fund %q not found in categories, got: %v", fund, fundNames)
 		}
 	}
 
-	// Verify amounts are aggregated (not zero)
 	if totalBudget <= 0 {
 		t.Errorf("totalBudget should be > 0, got %v", totalBudget)
 	}
 
-	// General Fund should have subcategories (departments)
+	// GENERAL fund should have adopted budget of 3656551.0
 	for _, cat := range categories {
-		if cat.Name == "General Fund" {
-			if len(cat.Subcategories) == 0 {
-				t.Error("General Fund should have subcategories (departments)")
+		if cat.Name == "GENERAL" {
+			if cat.Amount != 3656551.0 {
+				t.Errorf("GENERAL fund amount = %v, want 3656551.0", cat.Amount)
 			}
 			break
 		}
 	}
 }
 
-// TestImportMonroeCounty tests that county entity config produces correct CategoryImport output.
+// TestImportMonroeCounty tests that county entity filtering works correctly.
 func TestImportMonroeCounty(t *testing.T) {
-	// Reuse same fixture with county entity config
 	fixturePath := filepath.Join("testdata", "ellettsville_sample.csv")
 	f, err := os.Open(fixturePath)
 	if err != nil {
@@ -289,8 +288,13 @@ func TestImportMonroeCounty(t *testing.T) {
 		DisplayName:          "Monroe County",
 		State:                "IN",
 		EntityType:           "county",
-		HierarchyColumns:     []string{"fund_name", "department_name", "account_description"},
-		AmountColumn:         "amount",
+		UnitCode:             "0000",
+		UnitType:             "County",
+		CountyCode:           "53",
+		HierarchyColumns:     []string{"fund_description"},
+		AmountColumn:         "Total budget estimate_adopted",
+		UnitCodeColumn:       "unit_code",
+		CountyCodeColumn:     "cnty_cd",
 		FiscalYearStartMonth: 1,
 	}
 
@@ -301,14 +305,22 @@ func TestImportMonroeCounty(t *testing.T) {
 		t.Fatalf("failed to read headers: %v", err)
 	}
 
-	headerIdx, err := validateHeaders(headers, append(entity.HierarchyColumns, entity.AmountColumn))
+	required := append(entity.HierarchyColumns, entity.AmountColumn, entity.UnitCodeColumn, entity.CountyCodeColumn)
+	headerIdx, err := validateHeaders(headers, required)
 	if err != nil {
 		t.Fatalf("header validation failed: %v", err)
 	}
 
-	records, err := r.ReadAll()
+	allRecords, err := r.ReadAll()
 	if err != nil {
 		t.Fatalf("failed to read rows: %v", err)
+	}
+
+	// Filter for Monroe County (unit_code=0000, cnty_cd=53)
+	// Should NOT include Adams County (cnty_cd=01, unit_code=0000)
+	records := filterEntityRows(allRecords, headerIdx, entity, "unit_code", "cnty_cd")
+	if len(records) != 2 {
+		t.Errorf("expected 2 Monroe County rows, got %d", len(records))
 	}
 
 	categories, totalBudget, err := buildGatewayCategoryTree(records, headerIdx, entity)
@@ -320,34 +332,50 @@ func TestImportMonroeCounty(t *testing.T) {
 		t.Error("expected at least one root category")
 	}
 
+	// totalBudget should be positive (48,777,223 - 5,000,000 for the two rows)
 	if totalBudget <= 0 {
 		t.Errorf("totalBudget should be > 0, got %v", totalBudget)
 	}
 
-	// Verify entity type metadata doesn't affect parsing logic
-	// (county vs city is a DB concern, not a parsing concern)
-	// Key check: categories are still correctly structured
+	// Monroe County should have GENERAL and DEBT SERVICE funds
+	fundNames := make(map[string]bool)
 	for _, cat := range categories {
-		if cat.Amount <= 0 {
-			// Capital Fund has a net negative line item, total may be non-zero
-			// Just verify amount field is populated
-			if cat.Amount == 0 && cat.Name != "" {
-				t.Logf("Note: category %q has zero amount (may be valid)", cat.Name)
-			}
-		}
+		fundNames[cat.Name] = true
+	}
+	if !fundNames["GENERAL"] {
+		t.Error("expected GENERAL fund for Monroe County")
+	}
+	if !fundNames["DEBT SERVICE"] {
+		t.Error("expected DEBT SERVICE fund for Monroe County")
 	}
 }
 
-// containsStr is a helper for substring matching.
-func containsStr(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(s) > 0 && findSubstr(s, substr))
-}
-
-func findSubstr(s, substr string) bool {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return true
-		}
+// TestFilterEntityRows tests the entity row filtering logic.
+func TestFilterEntityRows(t *testing.T) {
+	headerIdx := map[string]int{
+		"unit_code": 4,
+		"cnty_cd":   1,
 	}
-	return false
+
+	records := [][]string{
+		{"2024", "53", "Monroe", "3", "0788", "ELLETTSVILLE"},
+		{"2024", "53", "Monroe", "1", "0000", "MONROE COUNTY"},
+		{"2024", "01", "Adams", "1", "0000", "ADAMS COUNTY"},
+	}
+
+	t.Run("filter by unit_code only", func(t *testing.T) {
+		entity := GatewayEntityConfig{UnitCode: "0788"}
+		filtered := filterEntityRows(records, headerIdx, entity, "unit_code", "cnty_cd")
+		if len(filtered) != 1 {
+			t.Errorf("expected 1 row, got %d", len(filtered))
+		}
+	})
+
+	t.Run("filter by unit_code and county_code", func(t *testing.T) {
+		entity := GatewayEntityConfig{UnitCode: "0000", CountyCode: "53"}
+		filtered := filterEntityRows(records, headerIdx, entity, "unit_code", "cnty_cd")
+		if len(filtered) != 1 {
+			t.Errorf("expected 1 row (Monroe County only), got %d", len(filtered))
+		}
+	})
 }

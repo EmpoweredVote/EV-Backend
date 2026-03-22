@@ -1,11 +1,9 @@
-fund_name|department_name|account_description|amount
-General Fund|Police Department|Salaries & Wages|125000.00
-General Fund|Police Department|Equipment & Supplies|15000.00
-General Fund|Fire Department|Salaries & Wages|98000.00
-General Fund|Fire Department|Building Maintenance|8500.00
-General Fund|Parks & Recreation|Operations|22000.00
-Utility Fund|Water Services|Operations & Maintenance|45000.00
-Utility Fund|Water Services|Equipment|12500.00
-Utility Fund|Sewer Services|Operations & Maintenance|38000.00
-Capital Fund|Street Improvements|Construction|"1,234,567.00"
-Capital Fund|Street Improvements|Engineering|(500.00)
+year|cnty_cd|cnty_description|unit_type|unit_code|unit_name|sboa_id|fund_cd|fund_description|Net Assessed Valuation|Total budget estimate_published|Total budget estimate_adopted
+2024|53|Monroe|3|0788|ELLETTSVILLE CIVIL TOWN|53-002.00|0101|GENERAL|416666286.0000|3656551.0000|3656551.0000
+2024|53|Monroe|3|0788|ELLETTSVILLE CIVIL TOWN|53-002.00|0180|DEBT SERVICE|463820668.0000|385000.0000|385000.0000
+2024|53|Monroe|3|0788|ELLETTSVILLE CIVIL TOWN|53-002.00|0254|LOCAL INCOME TAX|433322775.0000|198995.0000|198995.0000
+2024|53|Monroe|3|0788|ELLETTSVILLE CIVIL TOWN|53-002.00|0706|LOCAL ROAD & STREET|433322775.0000|135000.0000|135000.0000
+2024|53|Monroe|3|0788|ELLETTSVILLE CIVIL TOWN|53-002.00|0283|LEASE RENTAL PAYMENT|463820668.0000|261000.0000|261000.0000
+2024|53|Monroe|1|0000|MONROE COUNTY|53-000.00|0101|GENERAL|9864126056.0000|59251842.0000|"48,777,223.0000"
+2024|53|Monroe|1|0000|MONROE COUNTY|53-000.00|0180|DEBT SERVICE|9864126056.0000|5000000.0000|(5000000.0000)
+2024|01|Adams|1|0000|ADAMS COUNTY|01-000.00|0101|GENERAL|1524041230.0000|17416235.0000|17022020.0000

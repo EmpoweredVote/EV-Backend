@@ -201,17 +201,31 @@ func ImportBudgets(config ImportBudgetsConfig) (ImportBudgetsResult, error) {
 
 // ─── Gateway Import ───────────────────────────────────────────────────────────
 
-// datasetTypeToGatewayParam maps internal dataset_type strings to Gateway form
-// parameter values. These must be confirmed against the Indiana Gateway download
-// form by inspecting the POST request in browser DevTools.
-//
-// The Gateway uses a "rptType" parameter (or similar) to select the dataset.
-// Known values based on Gateway UI options:
-//   - "operating" → Gateway "Budget" or "Appropriation" report type
-//   - "revenue"   → Gateway "Revenue" report type
-var datasetTypeToGatewayParam = map[string]string{
-	"operating": "Budget",
-	"revenue":   "Revenue",
+// filterEntityRows filters bulk Gateway CSV rows for a specific entity.
+// For counties, matches by county_code + unit_code. For cities, matches by unit_code only.
+func filterEntityRows(records [][]string, headerIdx map[string]int, entity GatewayEntityConfig, unitCodeCol, countyCodeCol string) [][]string {
+	var filtered [][]string
+	ucIdx := headerIdx[unitCodeCol]
+	ccIdx := headerIdx[countyCodeCol]
+
+	for _, row := range records {
+		if len(row) <= ucIdx {
+			continue
+		}
+		rowUnitCode := strings.TrimSpace(row[ucIdx])
+		if rowUnitCode != entity.UnitCode {
+			continue
+		}
+		// For counties, also match county_code to disambiguate unit_code=0000
+		if entity.CountyCode != "" && len(row) > ccIdx {
+			rowCountyCode := strings.TrimSpace(row[ccIdx])
+			if rowCountyCode != entity.CountyCode {
+				continue
+			}
+		}
+		filtered = append(filtered, row)
+	}
+	return filtered
 }
 
 // ImportGatewayBudgets fetches, parses, and inserts Indiana Gateway budget data
@@ -243,46 +257,73 @@ func ImportGatewayBudgets(configFile string, dryRun bool) (ImportBudgetsResult, 
 			delimiter = rune(entity.Delimiter[0])
 		}
 
-		for _, datasetType := range entity.DatasetTypes {
-			for _, year := range entity.FiscalYears {
-				result.FilesProcessed++
+		for _, year := range entity.FiscalYears {
+			result.FilesProcessed++
 
-				body, err := fetchGatewayCSV(client, entity, year, datasetType)
-				if err != nil {
-					msg := fmt.Sprintf("gateway fetch failed for %s %d %s: %v", entity.DisplayName, year, datasetType, err)
-					result.Errors = append(result.Errors, msg)
-					log.Printf("SKIP: %s", msg)
-					continue
-				}
-				defer body.Close()
+			body, err := fetchGatewayCSV(client, entity, year)
+			if err != nil {
+				msg := fmt.Sprintf("gateway fetch failed for %s %d: %v", entity.DisplayName, year, err)
+				result.Errors = append(result.Errors, msg)
+				log.Printf("SKIP: %s", msg)
+				continue
+			}
 
-				r := newGatewayCSVReader(body, delimiter)
+			r := newGatewayCSVReader(body, delimiter)
 
-				headers, err := r.Read()
-				if err != nil {
-					msg := fmt.Sprintf("failed to read headers for %s %d %s: %v", entity.DisplayName, year, datasetType, err)
-					result.Errors = append(result.Errors, msg)
-					log.Printf("SKIP: %s", msg)
-					continue
-				}
+			headers, err := r.Read()
+			if err != nil {
+				body.Close()
+				msg := fmt.Sprintf("failed to read headers for %s %d: %v", entity.DisplayName, year, err)
+				result.Errors = append(result.Errors, msg)
+				log.Printf("SKIP: %s", msg)
+				continue
+			}
 
-				required := append(entity.HierarchyColumns, entity.AmountColumn)
-				headerIdx, err := validateHeaders(headers, required)
-				if err != nil {
-					msg := fmt.Sprintf("header validation failed for %s %d %s: %v", entity.DisplayName, year, datasetType, err)
-					result.Errors = append(result.Errors, msg)
-					log.Printf("SKIP: %s", msg)
-					continue
-				}
+			// Validate required columns exist
+			unitCodeCol := entity.UnitCodeColumn
+			if unitCodeCol == "" {
+				unitCodeCol = "unit_code"
+			}
+			countyCodeCol := entity.CountyCodeColumn
+			if countyCodeCol == "" {
+				countyCodeCol = "cnty_cd"
+			}
+			required := append(entity.HierarchyColumns, entity.AmountColumn, unitCodeCol)
+			if entity.CountyCode != "" {
+				required = append(required, countyCodeCol)
+			}
+			headerIdx, err := validateHeaders(headers, required)
+			if err != nil {
+				body.Close()
+				msg := fmt.Sprintf("header validation failed for %s %d: %v", entity.DisplayName, year, err)
+				result.Errors = append(result.Errors, msg)
+				log.Printf("SKIP: %s", msg)
+				continue
+			}
 
-				records, err := r.ReadAll()
-				if err != nil {
-					msg := fmt.Sprintf("failed to read CSV rows for %s %d %s: %v", entity.DisplayName, year, datasetType, err)
-					result.Errors = append(result.Errors, msg)
-					log.Printf("SKIP: %s", msg)
-					continue
-				}
+			allRecords, err := r.ReadAll()
+			body.Close()
+			if err != nil {
+				msg := fmt.Sprintf("failed to read CSV rows for %s %d: %v", entity.DisplayName, year, err)
+				result.Errors = append(result.Errors, msg)
+				log.Printf("SKIP: %s", msg)
+				continue
+			}
 
+			// Filter rows for this specific entity by unit_code (and county_code if set)
+			records := filterEntityRows(allRecords, headerIdx, entity, unitCodeCol, countyCodeCol)
+			log.Printf("Filtered %d/%d rows for %s (unit_code=%s) year %d",
+				len(records), len(allRecords), entity.DisplayName, entity.UnitCode, year)
+
+			if len(records) == 0 {
+				msg := fmt.Sprintf("no rows found for %s (unit_code=%s) in year %d", entity.DisplayName, entity.UnitCode, year)
+				result.Errors = append(result.Errors, msg)
+				log.Printf("SKIP: %s", msg)
+				continue
+			}
+
+			// For each dataset type, build tree from filtered rows
+			for _, datasetType := range entity.DatasetTypes {
 				rootCategories, totalBudget, err := buildGatewayCategoryTree(records, headerIdx, entity)
 				if err != nil {
 					msg := fmt.Sprintf("failed to build category tree for %s %d %s: %v", entity.DisplayName, year, datasetType, err)
@@ -292,8 +333,8 @@ func ImportGatewayBudgets(configFile string, dryRun bool) (ImportBudgetsResult, 
 				}
 
 				if dryRun {
-					log.Printf("[DRY-RUN] Would import %s %d (%s): totalBudget=%.2f, %d root categories",
-						entity.DisplayName, year, datasetType, totalBudget, len(rootCategories))
+					log.Printf("[DRY-RUN] Would import %s %d (%s): totalBudget=%.2f, %d fund categories, %d rows",
+						entity.DisplayName, year, datasetType, totalBudget, len(rootCategories), len(records))
 					continue
 				}
 
@@ -364,7 +405,8 @@ func ImportGatewayBudgets(configFile string, dryRun bool) (ImportBudgetsResult, 
 					continue
 				}
 
-				log.Printf("Inserted: %s %d (%s), totalBudget=%.2f", entity.DisplayName, year, datasetType, totalBudget)
+				log.Printf("Inserted: %s %d (%s), totalBudget=%.2f, %d funds",
+					entity.DisplayName, year, datasetType, totalBudget, len(rootCategories))
 				result.Inserted++
 			}
 		}
@@ -373,28 +415,51 @@ func ImportGatewayBudgets(configFile string, dryRun bool) (ImportBudgetsResult, 
 	return result, nil
 }
 
-// fetchGatewayCSV downloads a budget CSV from the Indiana Gateway for a specific
-// entity, fiscal year, and dataset type.
+// fetchGatewayCSV downloads budget CSV data from the Indiana Gateway.
 //
-// The Indiana Gateway uses ASP.NET WebForms with POST-based downloads. The form
-// parameters were determined by inspecting the download form at:
-// https://gateway.ifionline.org/public/download.aspx
+// The Indiana Gateway uses ASP.NET WebForms with ViewState tokens. The download
+// is a two-step process:
+//   1. GET the download page to extract __VIEWSTATE and __EVENTVALIDATION tokens
+//   2. POST with those tokens plus the correct form field values
 //
-// NOTE: The exact parameter names (UnitType, UnitID, rptYear, rptType) should be
-// verified by capturing a real POST request in browser DevTools and updating this
-// function if the parameters differ from the defaults below.
-func fetchGatewayCSV(client *http.Client, entity GatewayEntityConfig, year int, datasetType string) (io.ReadCloser, error) {
-	gatewayParam, ok := datasetTypeToGatewayParam[datasetType]
-	if !ok {
-		gatewayParam = datasetType
+// The download returns a bulk CSV containing ALL entities for the selected year.
+// Filtering by specific entity (unit_code) is done after download by the caller.
+func fetchGatewayCSV(client *http.Client, entity GatewayEntityConfig, year int) (io.ReadCloser, error) {
+	// Step 1: GET the page to extract ASP.NET tokens
+	getResp, err := client.Get(entity.BaseURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to GET download page: %w", err)
+	}
+	pageBytes, err := io.ReadAll(getResp.Body)
+	getResp.Body.Close()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read download page: %w", err)
+	}
+	pageHTML := string(pageBytes)
+
+	viewState := extractFormValue(pageHTML, "__VIEWSTATE")
+	eventValidation := extractFormValue(pageHTML, "__EVENTVALIDATION")
+	viewStateGenerator := extractFormValue(pageHTML, "__VIEWSTATEGENERATOR")
+
+	if viewState == "" || eventValidation == "" {
+		return nil, fmt.Errorf("could not extract ASP.NET ViewState tokens from download page")
+	}
+
+	// Step 2: POST with ASP.NET form fields
+	unitType := entity.UnitType
+	if unitType == "" {
+		unitType = "All"
 	}
 
 	formValues := url.Values{}
-	formValues.Set("UnitID", entity.UnitCode)
-	formValues.Set("rptYear", strconv.Itoa(year))
-	formValues.Set("rptType", gatewayParam)
-	// Gateway may require additional form fields (ViewState, etc.) captured from DevTools
-	// Add them here if a plain POST returns the HTML form page instead of the CSV file.
+	formValues.Set("__VIEWSTATE", viewState)
+	formValues.Set("__EVENTVALIDATION", eventValidation)
+	formValues.Set("__VIEWSTATEGENERATOR", viewStateGenerator)
+	formValues.Set("ctl00$ContentPlaceHolder1$RadComboBox1", "Budget Data")
+	formValues.Set("ctl00$ContentPlaceHolder1$RadComboBox2", "Disbursements by Fund and Department")
+	formValues.Set("ctl00$ContentPlaceHolder1$DropDownListUnitType", unitType)
+	formValues.Set("ctl00$ContentPlaceHolder1$DropDownListYear", strconv.Itoa(year))
+	formValues.Set("ctl00$ContentPlaceHolder1$button_download1", "Download")
 
 	req, err := http.NewRequest("POST", entity.BaseURL, strings.NewReader(formValues.Encode()))
 	if err != nil {
@@ -402,7 +467,6 @@ func fetchGatewayCSV(client *http.Client, entity GatewayEntityConfig, year int, 
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("User-Agent", "EmpoweredVote-Treasury-Importer/1.0")
-	req.Header.Set("Accept", "text/csv, text/plain, */*")
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -414,7 +478,6 @@ func fetchGatewayCSV(client *http.Client, entity GatewayEntityConfig, year int, 
 		return nil, fmt.Errorf("gateway returned HTTP %d", resp.StatusCode)
 	}
 
-	// If content-type is HTML, the download failed and returned the form page.
 	contentType := resp.Header.Get("Content-Type")
 	if strings.Contains(contentType, "text/html") {
 		resp.Body.Close()
@@ -422,6 +485,28 @@ func fetchGatewayCSV(client *http.Client, entity GatewayEntityConfig, year int, 
 	}
 
 	return resp.Body, nil
+}
+
+// extractFormValue extracts a hidden form field value from HTML by field name.
+func extractFormValue(html string, fieldName string) string {
+	// Look for: id="fieldName" ... value="..."
+	needle := `id="` + fieldName + `"`
+	idx := strings.Index(html, needle)
+	if idx == -1 {
+		return ""
+	}
+	// Find value="..." after the id
+	rest := html[idx:]
+	valStart := strings.Index(rest, `value="`)
+	if valStart == -1 {
+		return ""
+	}
+	rest = rest[valStart+7:]
+	valEnd := strings.Index(rest, `"`)
+	if valEnd == -1 {
+		return ""
+	}
+	return rest[:valEnd]
 }
 
 // ─── Gateway Types ────────────────────────────────────────────────────────────
@@ -432,6 +517,8 @@ type GatewayEntityConfig struct {
 	State                string   `json:"state"`
 	EntityType           string   `json:"entity_type"`
 	UnitCode             string   `json:"unit_code"`
+	UnitType             string   `json:"unit_type"`
+	CountyCode           string   `json:"county_code,omitempty"`
 	BaseURL              string   `json:"base_url"`
 	Delimiter            string   `json:"delimiter"`
 	Encoding             string   `json:"encoding"`
@@ -440,6 +527,9 @@ type GatewayEntityConfig struct {
 	DatasetTypes         []string `json:"dataset_types"`
 	HierarchyColumns     []string `json:"hierarchy_columns"`
 	AmountColumn         string   `json:"amount_column"`
+	UnitCodeColumn       string   `json:"unit_code_column,omitempty"`
+	CountyCodeColumn     string   `json:"county_code_column,omitempty"`
+	YearColumn           string   `json:"year_column,omitempty"`
 }
 
 // GatewayConfig holds the full treasury import configuration.

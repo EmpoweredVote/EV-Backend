@@ -4,29 +4,37 @@
       "display_name": "Ellettsville",
       "state": "IN",
       "entity_type": "city",
-      "unit_code": "5304",
+      "unit_code": "0788",
+      "unit_type": "City/Town",
       "base_url": "https://gateway.ifionline.org/public/download.aspx",
       "delimiter": "|",
       "encoding": "windows-1252",
       "fiscal_year_start_month": 1,
       "fiscal_years": [2021, 2022, 2023, 2024, 2025],
-      "dataset_types": ["operating", "revenue"],
-      "hierarchy_columns": ["fund_name", "department_name", "account_description"],
-      "amount_column": "amount"
+      "dataset_types": ["operating"],
+      "hierarchy_columns": ["fund_description"],
+      "amount_column": "Total budget estimate_adopted",
+      "unit_code_column": "unit_code",
+      "year_column": "year"
     },
     {
       "display_name": "Monroe County",
       "state": "IN",
       "entity_type": "county",
-      "unit_code": "5500",
+      "unit_code": "0000",
+      "unit_type": "County",
+      "county_code": "53",
       "base_url": "https://gateway.ifionline.org/public/download.aspx",
       "delimiter": "|",
       "encoding": "windows-1252",
       "fiscal_year_start_month": 1,
       "fiscal_years": [2021, 2022, 2023, 2024, 2025],
-      "dataset_types": ["operating", "revenue"],
-      "hierarchy_columns": ["fund_name", "department_name", "account_description"],
-      "amount_column": "amount"
+      "dataset_types": ["operating"],
+      "hierarchy_columns": ["fund_description"],
+      "amount_column": "Total budget estimate_adopted",
+      "unit_code_column": "unit_code",
+      "county_code_column": "cnty_cd",
+      "year_column": "year"
     }
   ]
 }
