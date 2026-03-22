@@ -153,6 +153,8 @@ func main() {
 			os.Exit(0)
 		case "import-budgets":
 			jsonDir := "treasury-tracker/public/data"
+			source := "bloomington"
+			configFile := "treasury-import-config.json"
 			dryRun := false
 			for _, arg := range os.Args[2:] {
 				switch {
@@ -160,12 +162,27 @@ func main() {
 					dryRun = true
 				case strings.HasPrefix(arg, "--data-dir="):
 					jsonDir = strings.TrimPrefix(arg, "--data-dir=")
+				case strings.HasPrefix(arg, "--source="):
+					source = strings.TrimPrefix(arg, "--source=")
+				case strings.HasPrefix(arg, "--config="):
+					configFile = strings.TrimPrefix(arg, "--config=")
 				}
 			}
-			result, err := treasury.ImportBudgets(treasury.ImportBudgetsConfig{
-				DataDir: jsonDir,
-				DryRun:  dryRun,
-			})
+
+			var result treasury.ImportBudgetsResult
+			var err error
+			switch source {
+			case "bloomington":
+				result, err = treasury.ImportBudgets(treasury.ImportBudgetsConfig{
+					DataDir: jsonDir,
+					DryRun:  dryRun,
+				})
+			case "gateway":
+				result, err = treasury.ImportGatewayBudgets(configFile, dryRun)
+			default:
+				log.Fatalf("unknown source: %s (valid: bloomington, gateway)", source)
+			}
+
 			if err != nil {
 				log.Fatal("import-budgets failed: ", err)
 			}
