@@ -58,7 +58,7 @@
           "dataset_id": "ih6g-qkwz",
           "hierarchy_columns": ["Revenue Source"],
           "amount_column": "Amount",
-          "fiscal_year_column": "Fiscal_Year_Shorthand"
+          "fiscal_year_column": "Fiscal Year Shorthand"
         }
       ]
     }
