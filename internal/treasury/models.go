@@ -57,17 +57,17 @@ type BudgetCategory struct {
 	Percentage       float64    `json:"percentage"`
 	Color            string     `json:"color"`
 	Description      string     `json:"description,omitempty"`
-	WhyMatters       string     `json:"why_matters,omitempty"`
-	HistoricalChange *float64   `json:"historical_change,omitempty"`
+	WhyMatters       string     `json:"whyMatters,omitempty"`
+	HistoricalChange *float64   `json:"historicalChange,omitempty"`
 	ItemCount        int        `gorm:"default:0" json:"items"`
 	SortOrder        int        `gorm:"default:0" json:"sort_order"`
 	Depth            int        `gorm:"default:0" json:"depth"` // 0=root, 1=child, etc.
-	LinkKey          string     `json:"link_key,omitempty"`     // For transaction linking
+	LinkKey          string     `json:"linkKey,omitempty"`      // For transaction linking
 
 	Budget        Budget           `gorm:"foreignKey:BudgetID" json:"-"`
 	Parent        *BudgetCategory  `gorm:"foreignKey:ParentID" json:"-"`
 	Subcategories []BudgetCategory `gorm:"foreignKey:ParentID" json:"subcategories,omitempty"`
-	LineItems     []BudgetLineItem `gorm:"foreignKey:CategoryID" json:"line_items,omitempty"`
+	LineItems     []BudgetLineItem `gorm:"foreignKey:CategoryID" json:"lineItems,omitempty"`
 }
 
 func (BudgetCategory) TableName() string {
@@ -77,25 +77,25 @@ func (BudgetCategory) TableName() string {
 // BudgetLineItem represents an individual line item within a category
 type BudgetLineItem struct {
 	ID             uuid.UUID `gorm:"type:uuid;primaryKey;default:uuid_generate_v4()" json:"id"`
-	CategoryID     uuid.UUID `gorm:"type:uuid;not null;index" json:"category_id"`
+	CategoryID     uuid.UUID `gorm:"type:uuid;not null;index" json:"categoryId"`
 	Description    string    `gorm:"not null" json:"description"`
-	ApprovedAmount float64   `json:"approved_amount"`
-	ActualAmount   float64   `json:"actual_amount"`
+	ApprovedAmount float64   `json:"approvedAmount"`
+	ActualAmount   float64   `json:"actualAmount"`
 
 	// Salary-specific fields
-	BasePay   *float64 `json:"base_pay,omitempty"`
+	BasePay   *float64 `json:"basePay,omitempty"`
 	Benefits  *float64 `json:"benefits,omitempty"`
 	Overtime  *float64 `json:"overtime,omitempty"`
 	Other     *float64 `json:"other,omitempty"`
-	StartDate *string  `json:"start_date,omitempty"`
+	StartDate *string  `json:"startDate,omitempty"`
 
 	// Transaction-specific fields
 	Vendor          *string `json:"vendor,omitempty"`
 	Date            *string `json:"date,omitempty"`
-	PaymentMethod   *string `json:"payment_method,omitempty"`
-	InvoiceNumber   *string `json:"invoice_number,omitempty"`
+	PaymentMethod   *string `json:"paymentMethod,omitempty"`
+	InvoiceNumber   *string `json:"invoiceNumber,omitempty"`
 	Fund            *string `json:"fund,omitempty"`
-	ExpenseCategory *string `json:"expense_category,omitempty"`
+	ExpenseCategory *string `json:"expenseCategory,omitempty"`
 
 	Category BudgetCategory `gorm:"foreignKey:CategoryID" json:"-"`
 }

@@ -430,35 +430,37 @@ func ImportBudget(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// CategoryImport represents the structure for importing categories
+// CategoryImport represents the structure for importing categories.
+// JSON tags accept both camelCase (from pre-built Bloomington JSONs) and snake_case.
+// Go's encoding/json only supports one tag, so we use camelCase to match the source files.
 type CategoryImport struct {
 	Name             string           `json:"name"`
 	Amount           float64          `json:"amount"`
 	Percentage       float64          `json:"percentage"`
 	Color            string           `json:"color"`
 	Description      string           `json:"description,omitempty"`
-	WhyMatters       string           `json:"why_matters,omitempty"`
-	HistoricalChange *float64         `json:"historical_change,omitempty"`
+	WhyMatters       string           `json:"whyMatters,omitempty"`
+	HistoricalChange *float64         `json:"historicalChange,omitempty"`
 	Items            int              `json:"items,omitempty"`
-	LinkKey          string           `json:"link_key,omitempty"`
+	LinkKey          string           `json:"linkKey,omitempty"`
 	Subcategories    []CategoryImport `json:"subcategories,omitempty"`
-	LineItems        []LineItemImport `json:"line_items,omitempty"`
+	LineItems        []LineItemImport `json:"lineItems,omitempty"`
 }
 
 // LineItemImport represents the structure for importing line items
 type LineItemImport struct {
 	Description    string   `json:"description"`
-	ApprovedAmount float64  `json:"approved_amount"`
-	ActualAmount   float64  `json:"actual_amount"`
-	BasePay        *float64 `json:"base_pay,omitempty"`
+	ApprovedAmount float64  `json:"approvedAmount"`
+	ActualAmount   float64  `json:"actualAmount"`
+	BasePay        *float64 `json:"basePay,omitempty"`
 	Benefits       *float64 `json:"benefits,omitempty"`
 	Overtime       *float64 `json:"overtime,omitempty"`
 	Other          *float64 `json:"other,omitempty"`
-	StartDate      *string  `json:"start_date,omitempty"`
+	StartDate      *string  `json:"startDate,omitempty"`
 	Vendor         *string  `json:"vendor,omitempty"`
 	Date           *string  `json:"date,omitempty"`
-	PaymentMethod  *string  `json:"payment_method,omitempty"`
-	InvoiceNumber  *string  `json:"invoice_number,omitempty"`
+	PaymentMethod  *string  `json:"paymentMethod,omitempty"`
+	InvoiceNumber  *string  `json:"invoiceNumber,omitempty"`
 	Fund           *string  `json:"fund,omitempty"`
 }
 

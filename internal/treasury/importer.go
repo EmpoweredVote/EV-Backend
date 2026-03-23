@@ -548,6 +548,11 @@ type SocrataDatasetConfig struct {
 	HierarchyColumns []string `json:"hierarchy_columns"`   // e.g. ["Department_Name", "SubDepartment_Name", "Program_Name"]
 	AmountColumn     string   `json:"amount_column"`       // e.g. "Appropriation"
 	FiscalYearColumn string   `json:"fiscal_year_column"`  // e.g. "Fiscal_Year"
+
+	// Optional: when set, leaf nodes produce lineItems instead of empty categories.
+	DescriptionColumn    string `json:"description_column,omitempty"`     // e.g. "description"
+	ApprovedAmountColumn string `json:"approved_amount_column,omitempty"` // e.g. "approved_amount"
+	ActualAmountColumn   string `json:"actual_amount_column,omitempty"`   // e.g. "actual_amount"
 }
 
 // SocrataEntityConfig holds metadata for a single Socrata entity (e.g. LA City).
@@ -875,23 +880,36 @@ func parseFiscalYearRange(s string) (int, error) {
 }
 
 // categoryNode is an N-level tree accumulator used by both Socrata and ArcGIS tree builders.
+// leafRow holds per-row data for leaf nodes so they can become LineItems.
+type leafRow struct {
+	description    string
+	approvedAmount float64
+	actualAmount   float64
+}
+
 type categoryNode struct {
 	name     string
 	amount   float64
 	children map[string]*categoryNode
 	order    []string // insertion order for deterministic output
+	rows     []leafRow // raw rows accumulated at leaf level
 }
 
 // addToTree walks hierarchy columns and accumulates amount at each node.
-// getLevel returns the string value for a given hierarchy level index.
 // If a level value is empty, the row is accumulated at the nearest non-empty parent.
 func addToTree(root map[string]*categoryNode, rootOrder *[]string, levels []string, amount float64) {
+	addToTreeWithRow(root, rootOrder, levels, amount, nil)
+}
+
+// addToTreeWithRow is like addToTree but also stores per-row data for leaf-level lineItems.
+func addToTreeWithRow(root map[string]*categoryNode, rootOrder *[]string, levels []string, amount float64, row *leafRow) {
 	if len(levels) == 0 {
 		return
 	}
 	// Walk down the hierarchy, creating nodes as needed
 	current := root
 	currentOrder := rootOrder
+	var lastNode *categoryNode
 	for _, level := range levels {
 		if level == "" {
 			break
@@ -905,12 +923,18 @@ func addToTree(root map[string]*categoryNode, rootOrder *[]string, levels []stri
 		}
 		node := current[level]
 		node.amount += amount
+		lastNode = node
 		current = node.children
 		currentOrder = &node.order
+	}
+	// Attach row data to the deepest node reached
+	if row != nil && lastNode != nil {
+		lastNode.rows = append(lastNode.rows, *row)
 	}
 }
 
 // convertTreeToCategories recursively converts categoryNode map to []CategoryImport.
+// Leaf nodes with accumulated rows produce LineItems instead of empty categories.
 func convertTreeToCategories(nodeMap map[string]*categoryNode, order []string, totalBudget float64) []CategoryImport {
 	var cats []CategoryImport
 	for _, name := range order {
@@ -927,6 +951,16 @@ func convertTreeToCategories(nodeMap map[string]*categoryNode, order []string, t
 		if len(node.children) > 0 {
 			cat.Subcategories = convertTreeToCategories(node.children, node.order, totalBudget)
 			cat.Items = len(cat.Subcategories)
+		} else if len(node.rows) > 0 {
+			// Leaf node with row data — convert to LineItems
+			for _, r := range node.rows {
+				cat.LineItems = append(cat.LineItems, LineItemImport{
+					Description:    r.description,
+					ApprovedAmount: r.approvedAmount,
+					ActualAmount:   r.actualAmount,
+				})
+			}
+			cat.Items = len(cat.LineItems)
 		}
 		cats = append(cats, cat)
 	}
@@ -993,7 +1027,33 @@ func buildSocrataCategoryTree(records [][]string, headerIdx map[string]int, data
 			levels = append(levels, val)
 		}
 
-		addToTree(root, &rootOrder, levels, amount)
+		// Build leaf row data when description column is configured
+		var rowData *leafRow
+		if dataset.DescriptionColumn != "" {
+			desc := ""
+			if idx, ok := headerIdx[dataset.DescriptionColumn]; ok && idx < len(row) {
+				desc = strings.TrimSpace(row[idx])
+			}
+			approved := amount // default: use primary amount as approved
+			if dataset.ApprovedAmountColumn != "" {
+				if idx, ok := headerIdx[dataset.ApprovedAmountColumn]; ok && idx < len(row) {
+					if v, err := parseAmount(strings.TrimSpace(row[idx])); err == nil {
+						approved = v
+					}
+				}
+			}
+			actual := 0.0
+			if dataset.ActualAmountColumn != "" {
+				if idx, ok := headerIdx[dataset.ActualAmountColumn]; ok && idx < len(row) {
+					if v, err := parseAmount(strings.TrimSpace(row[idx])); err == nil {
+						actual = v
+					}
+				}
+			}
+			rowData = &leafRow{description: desc, approvedAmount: approved, actualAmount: actual}
+		}
+
+		addToTreeWithRow(root, &rootOrder, levels, amount, rowData)
 		totalBudget += amount
 	}
 
