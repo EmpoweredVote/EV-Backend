@@ -535,6 +535,69 @@ type GatewayEntityConfig struct {
 // GatewayConfig holds the full treasury import configuration.
 type GatewayConfig struct {
 	GatewayEntities []GatewayEntityConfig `json:"gateway_entities"`
+	SocrataEntities []SocrataEntityConfig `json:"socrata_entities"`
+	ArcGISEntities  []ArcGISEntityConfig  `json:"arcgis_entities"`
+}
+
+// ─── Socrata Types ────────────────────────────────────────────────────────────
+
+// SocrataDatasetConfig holds config for one Socrata dataset (one dataset_type).
+type SocrataDatasetConfig struct {
+	DatasetType      string   `json:"dataset_type"`        // "operating", "revenue", "salaries"
+	DatasetID        string   `json:"dataset_id"`          // Socrata 4x4 ID e.g. "5242-pnmt"
+	HierarchyColumns []string `json:"hierarchy_columns"`   // e.g. ["Department_Name", "SubDepartment_Name", "Program_Name"]
+	AmountColumn     string   `json:"amount_column"`       // e.g. "Appropriation"
+	FiscalYearColumn string   `json:"fiscal_year_column"`  // e.g. "Fiscal_Year"
+}
+
+// SocrataEntityConfig holds metadata for a single Socrata entity (e.g. LA City).
+type SocrataEntityConfig struct {
+	DisplayName          string                 `json:"display_name"`
+	State                string                 `json:"state"`
+	EntityType           string                 `json:"entity_type"`
+	BaseURL              string                 `json:"base_url"`              // e.g. "https://data.lacity.org"
+	FiscalYearStartMonth int                    `json:"fiscal_year_start_month"`
+	FiscalYears          []int                  `json:"fiscal_years"`
+	Datasets             []SocrataDatasetConfig `json:"datasets"`
+}
+
+// ─── ArcGIS Types ─────────────────────────────────────────────────────────────
+
+// ArcGISDatasetConfig holds config for one ArcGIS FeatureServer dataset.
+type ArcGISDatasetConfig struct {
+	DatasetType      string   `json:"dataset_type"`
+	FeatureServerURL string   `json:"feature_server_url"`
+	FiscalYearField  string   `json:"fiscal_year_field"`   // e.g. "Budget_Fiscal_Year"
+	HierarchyColumns []string `json:"hierarchy_columns"`
+	AmountColumn     string   `json:"amount_column"`
+}
+
+// ArcGISEntityConfig holds metadata for a single ArcGIS Hub entity (e.g. LA County).
+type ArcGISEntityConfig struct {
+	DisplayName          string                `json:"display_name"`
+	State                string                `json:"state"`
+	EntityType           string                `json:"entity_type"`
+	FiscalYearStartMonth int                   `json:"fiscal_year_start_month"`
+	FiscalYears          []int                 `json:"fiscal_years"`
+	Datasets             []ArcGISDatasetConfig `json:"datasets"`
+}
+
+// ArcGISField describes a field returned by an ArcGIS FeatureServer query.
+type ArcGISField struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+// ArcGISFeature is a single feature from an ArcGIS FeatureServer query.
+type ArcGISFeature struct {
+	Attributes map[string]interface{} `json:"attributes"`
+}
+
+// ArcGISQueryResponse is the JSON response from an ArcGIS FeatureServer /query endpoint.
+type ArcGISQueryResponse struct {
+	Fields                []ArcGISField   `json:"fields"`
+	Features              []ArcGISFeature `json:"features"`
+	ExceededTransferLimit bool            `json:"exceededTransferLimit"`
 }
 
 // ─── Gateway Helper Functions ─────────────────────────────────────────────────
@@ -765,4 +828,582 @@ func sortStrings(ss []string) {
 			ss[j], ss[j-1] = ss[j-1], ss[j]
 		}
 	}
+}
+
+// ─── Socrata Fetch + Import ───────────────────────────────────────────────────
+
+// fetchSocrataCSV downloads a full CSV dataset from the Socrata platform.
+// It performs a simple HTTP GET and returns the response body for the caller to close.
+// Large CSVs (like LA City's 58K-row appropriations file) require a 120-second timeout.
+func fetchSocrataCSV(client *http.Client, baseURL, datasetID string) (io.ReadCloser, error) {
+	csvURL := fmt.Sprintf("%s/api/views/%s/rows.csv?accessType=DOWNLOAD", baseURL, datasetID)
+	resp, err := client.Get(csvURL)
+	if err != nil {
+		return nil, fmt.Errorf("socrata fetch failed for %s: %w", datasetID, err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		resp.Body.Close()
+		return nil, fmt.Errorf("socrata returned HTTP %d for dataset %s", resp.StatusCode, datasetID)
+	}
+	contentType := resp.Header.Get("Content-Type")
+	if strings.Contains(contentType, "text/html") || strings.Contains(contentType, "application/json") {
+		resp.Body.Close()
+		return nil, fmt.Errorf("socrata returned %s instead of CSV for dataset %s — dataset ID may be wrong", contentType, datasetID)
+	}
+	return resp.Body, nil
+}
+
+// parseFiscalYearRange parses a fiscal year string that may be a range ("2020-2021")
+// or a plain integer ("2024"). Returns the end year as int.
+// For range strings, the last segment after "-" is used (the end year).
+func parseFiscalYearRange(s string) (int, error) {
+	s = strings.TrimSpace(s)
+	if strings.Contains(s, "-") {
+		parts := strings.Split(s, "-")
+		last := strings.TrimSpace(parts[len(parts)-1])
+		year, err := strconv.Atoi(last)
+		if err != nil {
+			return 0, fmt.Errorf("parseFiscalYearRange: cannot parse end year from %q: %w", s, err)
+		}
+		return year, nil
+	}
+	year, err := strconv.Atoi(s)
+	if err != nil {
+		return 0, fmt.Errorf("parseFiscalYearRange: cannot parse %q as integer: %w", s, err)
+	}
+	return year, nil
+}
+
+// categoryNode is an N-level tree accumulator used by both Socrata and ArcGIS tree builders.
+type categoryNode struct {
+	name     string
+	amount   float64
+	children map[string]*categoryNode
+	order    []string // insertion order for deterministic output
+}
+
+// addToTree walks hierarchy columns and accumulates amount at each node.
+// getLevel returns the string value for a given hierarchy level index.
+// If a level value is empty, the row is accumulated at the nearest non-empty parent.
+func addToTree(root map[string]*categoryNode, rootOrder *[]string, levels []string, amount float64) {
+	if len(levels) == 0 {
+		return
+	}
+	// Walk down the hierarchy, creating nodes as needed
+	current := root
+	currentOrder := rootOrder
+	for _, level := range levels {
+		if level == "" {
+			break
+		}
+		if _, ok := current[level]; !ok {
+			current[level] = &categoryNode{
+				name:     level,
+				children: make(map[string]*categoryNode),
+			}
+			*currentOrder = append(*currentOrder, level)
+		}
+		node := current[level]
+		node.amount += amount
+		current = node.children
+		currentOrder = &node.order
+	}
+}
+
+// convertTreeToCategories recursively converts categoryNode map to []CategoryImport.
+func convertTreeToCategories(nodeMap map[string]*categoryNode, order []string, totalBudget float64) []CategoryImport {
+	var cats []CategoryImport
+	for _, name := range order {
+		node := nodeMap[name]
+		var pct float64
+		if totalBudget != 0 {
+			pct = (node.amount / totalBudget) * 100
+		}
+		cat := CategoryImport{
+			Name:       node.name,
+			Amount:     node.amount,
+			Percentage: pct,
+		}
+		if len(node.children) > 0 {
+			cat.Subcategories = convertTreeToCategories(node.children, node.order, totalBudget)
+			cat.Items = len(cat.Subcategories)
+		}
+		cats = append(cats, cat)
+	}
+	return cats
+}
+
+// buildSocrataCategoryTree converts flat CSV records into a []CategoryImport hierarchy.
+// records contains data rows (header row already consumed and passed as headerIdx).
+// Rows are filtered to only those matching targetYear in dataset.FiscalYearColumn.
+// For revenue datasets where FY is a range like "2020-2021", parseFiscalYearRange
+// extracts the end year for comparison.
+func buildSocrataCategoryTree(records [][]string, headerIdx map[string]int, dataset SocrataDatasetConfig, targetYear int) ([]CategoryImport, float64, error) {
+	root := make(map[string]*categoryNode)
+	var rootOrder []string
+	var totalBudget float64
+
+	fyIdx, ok := headerIdx[dataset.FiscalYearColumn]
+	if !ok {
+		return nil, 0, fmt.Errorf("fiscal year column %q not found in headers", dataset.FiscalYearColumn)
+	}
+	amtIdx, ok := headerIdx[dataset.AmountColumn]
+	if !ok {
+		return nil, 0, fmt.Errorf("amount column %q not found in headers", dataset.AmountColumn)
+	}
+
+	for _, row := range records {
+		if len(row) == 0 {
+			continue
+		}
+
+		// Determine fiscal year for this row
+		fyStr := ""
+		if fyIdx < len(row) {
+			fyStr = strings.TrimSpace(row[fyIdx])
+		}
+		rowYear, err := parseFiscalYearRange(fyStr)
+		if err != nil {
+			// Skip rows with unparseable fiscal year
+			log.Printf("WARNING: skipping row with unparseable fiscal year %q: %v", fyStr, err)
+			continue
+		}
+		if rowYear != targetYear {
+			continue
+		}
+
+		// Parse amount
+		amtStr := ""
+		if amtIdx < len(row) {
+			amtStr = strings.TrimSpace(row[amtIdx])
+		}
+		amount, err := parseAmount(amtStr)
+		if err != nil {
+			log.Printf("WARNING: could not parse Socrata amount %q: %v", amtStr, err)
+			continue
+		}
+
+		// Extract hierarchy levels
+		levels := make([]string, 0, len(dataset.HierarchyColumns))
+		for _, col := range dataset.HierarchyColumns {
+			val := ""
+			if idx, ok := headerIdx[col]; ok && idx < len(row) {
+				val = strings.TrimSpace(row[idx])
+			}
+			levels = append(levels, val)
+		}
+
+		addToTree(root, &rootOrder, levels, amount)
+		totalBudget += amount
+	}
+
+	categories := convertTreeToCategories(root, rootOrder, totalBudget)
+	return categories, totalBudget, nil
+}
+
+// ImportSocrataBudgets fetches, parses, and inserts Socrata CSV budget data
+// for all socrata_entities defined in the config file.
+//
+// Usage: ./server import-budgets --source=socrata [--config=treasury-import-config.json] [--dry-run]
+func ImportSocrataBudgets(configFile string, dryRun bool) (ImportBudgetsResult, error) {
+	if configFile == "" {
+		configFile = "treasury-import-config.json"
+	}
+
+	data, err := os.ReadFile(configFile)
+	if err != nil {
+		return ImportBudgetsResult{}, fmt.Errorf("failed to read config %s: %w", configFile, err)
+	}
+
+	var config GatewayConfig
+	if err := json.Unmarshal(data, &config); err != nil {
+		return ImportBudgetsResult{}, fmt.Errorf("failed to parse config %s: %w", configFile, err)
+	}
+
+	// 120-second timeout for large Socrata CSV files (LA City is ~58K rows)
+	client := &http.Client{Timeout: 120 * time.Second}
+	var result ImportBudgetsResult
+
+	for _, entity := range config.SocrataEntities {
+		for _, year := range entity.FiscalYears {
+			for _, dataset := range entity.Datasets {
+				result.FilesProcessed++
+
+				body, err := fetchSocrataCSV(client, entity.BaseURL, dataset.DatasetID)
+				if err != nil {
+					msg := fmt.Sprintf("socrata fetch failed for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, err)
+					result.Errors = append(result.Errors, msg)
+					log.Printf("SKIP: %s", msg)
+					continue
+				}
+
+				// Socrata serves UTF-8 natively — no charset conversion needed
+				r := csv.NewReader(body)
+				r.LazyQuotes = true
+				r.TrimLeadingSpace = true
+
+				headers, err := r.Read()
+				if err != nil {
+					body.Close()
+					msg := fmt.Sprintf("failed to read Socrata headers for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, err)
+					result.Errors = append(result.Errors, msg)
+					log.Printf("SKIP: %s", msg)
+					continue
+				}
+
+				required := append(dataset.HierarchyColumns, dataset.AmountColumn, dataset.FiscalYearColumn)
+				headerIdx, err := validateHeaders(headers, required)
+				if err != nil {
+					body.Close()
+					msg := fmt.Sprintf("header validation failed for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, err)
+					result.Errors = append(result.Errors, msg)
+					log.Printf("SKIP: %s", msg)
+					continue
+				}
+
+				allRecords, err := r.ReadAll()
+				body.Close()
+				if err != nil {
+					msg := fmt.Sprintf("failed to read Socrata CSV rows for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, err)
+					result.Errors = append(result.Errors, msg)
+					log.Printf("SKIP: %s", msg)
+					continue
+				}
+
+				rootCategories, totalBudget, err := buildSocrataCategoryTree(allRecords, headerIdx, dataset, year)
+				if err != nil {
+					msg := fmt.Sprintf("failed to build Socrata category tree for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, err)
+					result.Errors = append(result.Errors, msg)
+					log.Printf("SKIP: %s", msg)
+					continue
+				}
+
+				if len(rootCategories) == 0 {
+					msg := fmt.Sprintf("no rows found for %s year %d in %s dataset", entity.DisplayName, year, dataset.DatasetType)
+					result.Errors = append(result.Errors, msg)
+					log.Printf("SKIP: %s", msg)
+					continue
+				}
+
+				if dryRun {
+					log.Printf("[DRY-RUN] Would import Socrata %s %d (%s): totalBudget=%.2f, %d root categories",
+						entity.DisplayName, year, dataset.DatasetType, totalBudget, len(rootCategories))
+					continue
+				}
+
+				tx := db.DB.Begin()
+				if tx.Error != nil {
+					msg := fmt.Sprintf("failed to begin transaction for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, tx.Error)
+					result.Errors = append(result.Errors, msg)
+					continue
+				}
+
+				// Find or create municipality.
+				var municipality Municipality
+				if err := tx.Where("name = ? AND state = ? AND entity_type = ?",
+					entity.DisplayName, entity.State, entity.EntityType).
+					First(&municipality).Error; err != nil {
+					municipality = Municipality{
+						Name:       entity.DisplayName,
+						State:      entity.State,
+						EntityType: entity.EntityType,
+					}
+					if err := tx.Create(&municipality).Error; err != nil {
+						tx.Rollback()
+						msg := fmt.Sprintf("failed to create municipality for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, err)
+						result.Errors = append(result.Errors, msg)
+						continue
+					}
+				}
+
+				// Idempotent check: skip if budget already exists.
+				var existingBudget Budget
+				checkErr := tx.Where("municipality_id = ? AND fiscal_year = ? AND dataset_type = ?",
+					municipality.ID, year, dataset.DatasetType).First(&existingBudget).Error
+				if checkErr == nil {
+					tx.Rollback()
+					log.Printf("SKIP: budget already exists for %s %d (%s)", entity.DisplayName, year, dataset.DatasetType)
+					result.Skipped++
+					continue
+				}
+
+				// Create budget record.
+				budget := Budget{
+					MunicipalityID:       municipality.ID,
+					FiscalYear:           year,
+					DatasetType:          dataset.DatasetType,
+					TotalBudget:          totalBudget,
+					FiscalYearStartMonth: entity.FiscalYearStartMonth,
+					DataSource:           "Socrata: " + entity.BaseURL,
+					Hierarchy:            pq.StringArray(dataset.HierarchyColumns),
+				}
+				if err := tx.Create(&budget).Error; err != nil {
+					tx.Rollback()
+					msg := fmt.Sprintf("failed to create budget for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, err)
+					result.Errors = append(result.Errors, msg)
+					continue
+				}
+
+				// Recursively import categories using existing importCategories helper.
+				if err := importCategories(tx, budget.ID, nil, rootCategories, 0); err != nil {
+					tx.Rollback()
+					msg := fmt.Sprintf("failed to import categories for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, err)
+					result.Errors = append(result.Errors, msg)
+					continue
+				}
+
+				if err := tx.Commit().Error; err != nil {
+					msg := fmt.Sprintf("failed to commit transaction for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, err)
+					result.Errors = append(result.Errors, msg)
+					continue
+				}
+
+				log.Printf("Inserted Socrata: %s %d (%s), totalBudget=%.2f, %d root categories",
+					entity.DisplayName, year, dataset.DatasetType, totalBudget, len(rootCategories))
+				result.Inserted++
+			}
+		}
+	}
+
+	return result, nil
+}
+
+// ─── ArcGIS Fetch + Import ────────────────────────────────────────────────────
+
+// fetchArcGISFeatures fetches all features from an ArcGIS FeatureServer endpoint
+// for a specific fiscal year using paginated queries (resultOffset pagination).
+// ArcGIS caps each response at maxRecordCount=2000; this function loops until
+// ExceededTransferLimit is false or no features are returned.
+// A 100ms sleep between pages avoids rate-limiting on the public service.
+func fetchArcGISFeatures(client *http.Client, featureServerURL string, fiscalYearField string, fiscalYear int, outFields []string) ([]ArcGISFeature, error) {
+	const pageSize = 2000
+	var all []ArcGISFeature
+	offset := 0
+
+	outFieldStr := "*"
+	if len(outFields) > 0 {
+		outFieldStr = strings.Join(outFields, ",")
+	}
+
+	for {
+		params := url.Values{}
+		params.Set("where", fmt.Sprintf("%s='%d'", fiscalYearField, fiscalYear))
+		params.Set("outFields", outFieldStr)
+		params.Set("resultRecordCount", strconv.Itoa(pageSize))
+		params.Set("resultOffset", strconv.Itoa(offset))
+		params.Set("f", "json")
+
+		queryURL := fmt.Sprintf("%s/query?%s", featureServerURL, params.Encode())
+		resp, err := client.Get(queryURL)
+		if err != nil {
+			return nil, fmt.Errorf("arcgis page fetch (offset=%d) failed: %w", offset, err)
+		}
+		body, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if err != nil {
+			return nil, fmt.Errorf("arcgis read body (offset=%d) failed: %w", offset, err)
+		}
+
+		var page ArcGISQueryResponse
+		if err := json.Unmarshal(body, &page); err != nil {
+			return nil, fmt.Errorf("arcgis JSON parse (offset=%d) failed: %w", offset, err)
+		}
+
+		all = append(all, page.Features...)
+		log.Printf("ArcGIS page offset=%d: got %d features (total so far: %d, exceededTransferLimit=%v)",
+			offset, len(page.Features), len(all), page.ExceededTransferLimit)
+
+		if !page.ExceededTransferLimit || len(page.Features) == 0 {
+			break
+		}
+		offset += pageSize
+		time.Sleep(100 * time.Millisecond)
+	}
+
+	return all, nil
+}
+
+// buildArcGISCategoryTree converts ArcGIS FeatureServer features into a []CategoryImport hierarchy.
+// Hierarchy levels are extracted from feature attributes using dataset.HierarchyColumns.
+// Negative amounts pass through as-is (credits/adjustments).
+func buildArcGISCategoryTree(features []ArcGISFeature, dataset ArcGISDatasetConfig) ([]CategoryImport, float64, error) {
+	root := make(map[string]*categoryNode)
+	var rootOrder []string
+	var totalBudget float64
+
+	for _, feature := range features {
+		// Extract amount — may be float64 or nil from JSON
+		amtRaw := feature.Attributes[dataset.AmountColumn]
+		var amount float64
+		switch v := amtRaw.(type) {
+		case float64:
+			amount = v
+		case nil:
+			amount = 0
+		default:
+			// Try string parsing as fallback
+			amtStr := fmt.Sprintf("%v", v)
+			var err error
+			amount, err = parseAmount(amtStr)
+			if err != nil {
+				log.Printf("WARNING: could not parse ArcGIS amount %q: %v", amtStr, err)
+				continue
+			}
+		}
+
+		// Extract hierarchy levels from attributes
+		levels := make([]string, 0, len(dataset.HierarchyColumns))
+		for _, col := range dataset.HierarchyColumns {
+			val := ""
+			if v, ok := feature.Attributes[col]; ok && v != nil {
+				val = strings.TrimSpace(fmt.Sprintf("%v", v))
+			}
+			levels = append(levels, val)
+		}
+
+		addToTree(root, &rootOrder, levels, amount)
+		totalBudget += amount
+	}
+
+	categories := convertTreeToCategories(root, rootOrder, totalBudget)
+	return categories, totalBudget, nil
+}
+
+// ImportArcGISBudgets fetches, parses, and inserts ArcGIS FeatureServer budget data
+// for all arcgis_entities defined in the config file.
+//
+// Usage: ./server import-budgets --source=arcgis [--config=treasury-import-config.json] [--dry-run]
+func ImportArcGISBudgets(configFile string, dryRun bool) (ImportBudgetsResult, error) {
+	if configFile == "" {
+		configFile = "treasury-import-config.json"
+	}
+
+	data, err := os.ReadFile(configFile)
+	if err != nil {
+		return ImportBudgetsResult{}, fmt.Errorf("failed to read config %s: %w", configFile, err)
+	}
+
+	var config GatewayConfig
+	if err := json.Unmarshal(data, &config); err != nil {
+		return ImportBudgetsResult{}, fmt.Errorf("failed to parse config %s: %w", configFile, err)
+	}
+
+	client := &http.Client{Timeout: 60 * time.Second}
+	var result ImportBudgetsResult
+
+	for _, entity := range config.ArcGISEntities {
+		for _, year := range entity.FiscalYears {
+			for _, dataset := range entity.Datasets {
+				result.FilesProcessed++
+
+				// Build outFields list from hierarchy columns + amount column
+				outFields := append(dataset.HierarchyColumns, dataset.AmountColumn)
+				if dataset.FiscalYearField != "" {
+					outFields = append(outFields, dataset.FiscalYearField)
+				}
+
+				features, err := fetchArcGISFeatures(client, dataset.FeatureServerURL, dataset.FiscalYearField, year, outFields)
+				if err != nil {
+					msg := fmt.Sprintf("arcgis fetch failed for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, err)
+					result.Errors = append(result.Errors, msg)
+					log.Printf("SKIP: %s", msg)
+					continue
+				}
+
+				if len(features) == 0 {
+					msg := fmt.Sprintf("no features found for %s year %d in %s dataset", entity.DisplayName, year, dataset.DatasetType)
+					result.Errors = append(result.Errors, msg)
+					log.Printf("SKIP: %s", msg)
+					continue
+				}
+
+				rootCategories, totalBudget, err := buildArcGISCategoryTree(features, dataset)
+				if err != nil {
+					msg := fmt.Sprintf("failed to build ArcGIS category tree for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, err)
+					result.Errors = append(result.Errors, msg)
+					log.Printf("SKIP: %s", msg)
+					continue
+				}
+
+				if dryRun {
+					log.Printf("[DRY-RUN] Would import ArcGIS %s %d (%s): totalBudget=%.2f, %d root categories, %d features",
+						entity.DisplayName, year, dataset.DatasetType, totalBudget, len(rootCategories), len(features))
+					continue
+				}
+
+				tx := db.DB.Begin()
+				if tx.Error != nil {
+					msg := fmt.Sprintf("failed to begin transaction for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, tx.Error)
+					result.Errors = append(result.Errors, msg)
+					continue
+				}
+
+				// Find or create municipality.
+				var municipality Municipality
+				if err := tx.Where("name = ? AND state = ? AND entity_type = ?",
+					entity.DisplayName, entity.State, entity.EntityType).
+					First(&municipality).Error; err != nil {
+					municipality = Municipality{
+						Name:       entity.DisplayName,
+						State:      entity.State,
+						EntityType: entity.EntityType,
+					}
+					if err := tx.Create(&municipality).Error; err != nil {
+						tx.Rollback()
+						msg := fmt.Sprintf("failed to create municipality for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, err)
+						result.Errors = append(result.Errors, msg)
+						continue
+					}
+				}
+
+				// Idempotent check: skip if budget already exists.
+				var existingBudget Budget
+				checkErr := tx.Where("municipality_id = ? AND fiscal_year = ? AND dataset_type = ?",
+					municipality.ID, year, dataset.DatasetType).First(&existingBudget).Error
+				if checkErr == nil {
+					tx.Rollback()
+					log.Printf("SKIP: budget already exists for %s %d (%s)", entity.DisplayName, year, dataset.DatasetType)
+					result.Skipped++
+					continue
+				}
+
+				// Create budget record.
+				budget := Budget{
+					MunicipalityID:       municipality.ID,
+					FiscalYear:           year,
+					DatasetType:          dataset.DatasetType,
+					TotalBudget:          totalBudget,
+					FiscalYearStartMonth: entity.FiscalYearStartMonth,
+					DataSource:           "ArcGIS: " + dataset.FeatureServerURL,
+					Hierarchy:            pq.StringArray(dataset.HierarchyColumns),
+				}
+				if err := tx.Create(&budget).Error; err != nil {
+					tx.Rollback()
+					msg := fmt.Sprintf("failed to create budget for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, err)
+					result.Errors = append(result.Errors, msg)
+					continue
+				}
+
+				// Recursively import categories using existing importCategories helper.
+				if err := importCategories(tx, budget.ID, nil, rootCategories, 0); err != nil {
+					tx.Rollback()
+					msg := fmt.Sprintf("failed to import categories for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, err)
+					result.Errors = append(result.Errors, msg)
+					continue
+				}
+
+				if err := tx.Commit().Error; err != nil {
+					msg := fmt.Sprintf("failed to commit transaction for %s %d %s: %v", entity.DisplayName, year, dataset.DatasetType, err)
+					result.Errors = append(result.Errors, msg)
+					continue
+				}
+
+				log.Printf("Inserted ArcGIS: %s %d (%s), totalBudget=%.2f, %d root categories, %d features",
+					entity.DisplayName, year, dataset.DatasetType, totalBudget, len(rootCategories), len(features))
+				result.Inserted++
+			}
+		}
+	}
+
+	return result, nil
 }
