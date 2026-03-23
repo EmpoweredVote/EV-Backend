@@ -36,5 +36,63 @@
       "county_code_column": "cnty_cd",
       "year_column": "year"
     }
+  ],
+  "socrata_entities": [
+    {
+      "display_name": "Los Angeles",
+      "state": "CA",
+      "entity_type": "city",
+      "base_url": "https://data.lacity.org",
+      "fiscal_year_start_month": 7,
+      "fiscal_years": [2021, 2022, 2023, 2024, 2025],
+      "datasets": [
+        {
+          "dataset_type": "operating",
+          "dataset_id": "5242-pnmt",
+          "hierarchy_columns": ["Department_Name", "SubDepartment_Name", "Program_Name"],
+          "amount_column": "Appropriation",
+          "fiscal_year_column": "Fiscal_Year"
+        },
+        {
+          "dataset_type": "revenue",
+          "dataset_id": "ih6g-qkwz",
+          "hierarchy_columns": ["Revenue Source"],
+          "amount_column": "Amount",
+          "fiscal_year_column": "Fiscal_Year_Shorthand"
+        }
+      ]
+    }
+  ],
+  "arcgis_entities": [
+    {
+      "display_name": "Los Angeles County",
+      "state": "CA",
+      "entity_type": "county",
+      "fiscal_year_start_month": 7,
+      "fiscal_years": [2021, 2022, 2023, 2024, 2025],
+      "datasets": [
+        {
+          "dataset_type": "operating",
+          "feature_server_url": "https://services.arcgis.com/RmCCgQtiZLDCtblq/arcgis/rest/services/Open_Expenditures/FeatureServer/0",
+          "fiscal_year_field": "Budget_Fiscal_Year",
+          "hierarchy_columns": ["Fund_Group", "Department", "Expenditure_Category", "Expenditure_Class"],
+          "amount_column": "Amount"
+        },
+        {
+          "dataset_type": "revenue",
+          "feature_server_url": "https://services.arcgis.com/RmCCgQtiZLDCtblq/arcgis/rest/services/Open_Budget_Revenue/FeatureServer/0",
+          "fiscal_year_field": "Budget_Fiscal_Year",
+          "hierarchy_columns": ["Fund_Group", "Department", "Revenue_Category", "Revenue_Class"],
+          "amount_column": "Amount"
+        },
+        {
+          "dataset_type": "salaries",
+          "feature_server_url": "https://services.arcgis.com/RmCCgQtiZLDCtblq/arcgis/rest/services/LA_County_Employee_Salaries/FeatureServer/0",
+          "fiscal_year_field": "Year",
+          "hierarchy_columns": ["Department"],
+          "amount_column": "Total_Compensation"
+        }
+      ]
+    }
   ]
 }
