@@ -13,17 +13,71 @@ import (
 	"gorm.io/gorm"
 )
 
-// ListMunicipalities returns all municipalities with budget data
+// DatasetSummary represents an available dataset for a municipality
+type DatasetSummary struct {
+	FiscalYear  int    `json:"fiscal_year"`
+	DatasetType string `json:"dataset_type"`
+}
+
+// MunicipalityResponse extends Municipality with available dataset metadata
+type MunicipalityResponse struct {
+	ID                uuid.UUID        `json:"id"`
+	Name              string           `json:"name"`
+	State             string           `json:"state"`
+	EntityType        string           `json:"entity_type"`
+	Population        int              `json:"population"`
+	HeroImageURL      *string          `json:"hero_image_url,omitempty"`
+	AvailableDatasets []DatasetSummary `json:"available_datasets"`
+}
+
+// ListMunicipalities returns all municipalities with available dataset metadata
 func ListMunicipalities(w http.ResponseWriter, r *http.Request) {
 	var municipalities []Municipality
-
 	if err := db.DB.Find(&municipalities).Error; err != nil {
 		http.Error(w, "Failed to fetch municipalities: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	// Fetch all budget summaries in a single query
+	var budgetSummaries []struct {
+		MunicipalityID uuid.UUID `gorm:"column:municipality_id"`
+		FiscalYear     int       `gorm:"column:fiscal_year"`
+		DatasetType    string    `gorm:"column:dataset_type"`
+	}
+	if err := db.DB.Model(&Budget{}).Select("municipality_id, fiscal_year, dataset_type").Find(&budgetSummaries).Error; err != nil {
+		http.Error(w, "Failed to fetch budget summaries: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Group budget summaries by municipality_id
+	datasetMap := make(map[uuid.UUID][]DatasetSummary)
+	for _, b := range budgetSummaries {
+		datasetMap[b.MunicipalityID] = append(datasetMap[b.MunicipalityID], DatasetSummary{
+			FiscalYear:  b.FiscalYear,
+			DatasetType: b.DatasetType,
+		})
+	}
+
+	// Build response with available_datasets per municipality
+	responses := make([]MunicipalityResponse, 0, len(municipalities))
+	for _, m := range municipalities {
+		datasets := datasetMap[m.ID]
+		if datasets == nil {
+			datasets = []DatasetSummary{}
+		}
+		responses = append(responses, MunicipalityResponse{
+			ID:                m.ID,
+			Name:              m.Name,
+			State:             m.State,
+			EntityType:        m.EntityType,
+			Population:        m.Population,
+			HeroImageURL:      m.HeroImageURL,
+			AvailableDatasets: datasets,
+		})
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(municipalities)
+	json.NewEncoder(w).Encode(responses)
 }
 
 // GetMunicipality returns a single municipality by ID

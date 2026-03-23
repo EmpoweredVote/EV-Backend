@@ -13,7 +13,8 @@ type Municipality struct {
 	Name       string    `gorm:"not null" json:"name"`
 	State      string    `gorm:"not null" json:"state"`
 	EntityType string    `gorm:"not null;default:'city'" json:"entity_type"` // city, county, township
-	Population int       `json:"population"`
+	Population   int     `json:"population"`
+	HeroImageURL *string `json:"hero_image_url,omitempty"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 
