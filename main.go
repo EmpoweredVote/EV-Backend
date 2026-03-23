@@ -179,8 +179,12 @@ func main() {
 				})
 			case "gateway":
 				result, err = treasury.ImportGatewayBudgets(configFile, dryRun)
+			case "socrata":
+				result, err = treasury.ImportSocrataBudgets(configFile, dryRun)
+			case "arcgis":
+				result, err = treasury.ImportArcGISBudgets(configFile, dryRun)
 			default:
-				log.Fatalf("unknown source: %s (valid: bloomington, gateway)", source)
+				log.Fatalf("unknown source: %s (valid: bloomington, gateway, socrata, arcgis)", source)
 			}
 
 			if err != nil {
