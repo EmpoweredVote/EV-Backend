@@ -1,0 +1,12 @@
+{
+  "objectIdFieldName": "ObjectId",
+  "fields": [],
+  "features": [
+    {"attributes": {"Budget_Fiscal_Year": "2024", "Fund_Group": "General Fund", "Department": "Chief Executive Office", "Expenditure_Category": "Salaries & Employee Benefits", "Expenditure_Class": "Salaries & Wages", "Amount": 2741537.29}},
+    {"attributes": {"Budget_Fiscal_Year": "2024", "Fund_Group": "General Fund", "Department": "Chief Executive Office", "Expenditure_Category": "Services & Supplies", "Expenditure_Class": "Office Expense", "Amount": 150000.00}},
+    {"attributes": {"Budget_Fiscal_Year": "2024", "Fund_Group": "General Fund", "Department": "Sheriff", "Expenditure_Category": "Salaries & Employee Benefits", "Expenditure_Class": "Overtime", "Amount": 890000.50}},
+    {"attributes": {"Budget_Fiscal_Year": "2024", "Fund_Group": "Special Fund", "Department": "Health Services", "Expenditure_Category": "Services & Supplies", "Expenditure_Class": "Medical Supplies", "Amount": -25000.00}},
+    {"attributes": {"Budget_Fiscal_Year": "2024", "Fund_Group": "Special Fund", "Department": "Health Services", "Expenditure_Category": "Salaries & Employee Benefits", "Expenditure_Class": "Salaries & Wages", "Amount": 1200000.00}}
+  ],
+  "exceededTransferLimit": false
+}

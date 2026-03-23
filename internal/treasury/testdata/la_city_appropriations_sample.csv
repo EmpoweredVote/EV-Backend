@@ -1,0 +1,7 @@
+Dept_Code,Department_Name,SubDept_Code,SubDepartment_Name,Prog_Code,Program_Name,Program_Priority,Source_Fund_Code,Source_Fund_Name,Account_Code,Account_Name, Appropriation ,Fiscal_Year,Expense_Type
+70,Police,70LVL5,Police,,Police Operations,,,,,Salaries,1166229399,2024,Salaries
+50,Fire,50LVL5,Fire,,Fire Suppression,,,,,Salaries,543210000,2024,Salaries
+70,Police,70LVL5,Police,,Detective Bureau,,,,,Supplies,234567890,2024,Supplies
+14,Public Works,14LVL5,Public Works,,Street Maintenance,,,,,Services,87654321,2024,Services
+70,Police,70LVL5,Police,,Police Operations,,,,,Salaries,1100000000,2023,Salaries
+50,Fire,50LVL5,Fire,,Fire Suppression,,,,,Salaries,500000000,2023,Salaries
