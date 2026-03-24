@@ -173,37 +173,42 @@ func GetBudgetCategories(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(tree)
 }
 
-// buildCategoryTree converts a flat list of categories into a nested tree
+// buildCategoryTree converts a flat list of categories into a nested tree.
+// Uses pointer-based assembly so deep subcategories propagate correctly,
+// then serializes to value slices at the end.
 func buildCategoryTree(categories []BudgetCategory) []BudgetCategory {
-	// Create a map for quick lookup
+	// Map for pointer-based lookup
 	categoryMap := make(map[uuid.UUID]*BudgetCategory)
-	var roots []BudgetCategory
+	childrenMap := make(map[uuid.UUID][]*BudgetCategory) // parentID → children pointers
+	var rootIDs []uuid.UUID
 
-	// First pass: populate the map
+	// First pass: populate the map, identify roots
 	for i := range categories {
-		categories[i].Subcategories = []BudgetCategory{}
+		categories[i].Subcategories = nil
 		categoryMap[categories[i].ID] = &categories[i]
-	}
-
-	// Second pass: build the tree
-	for i := range categories {
-		cat := &categories[i]
-		if cat.ParentID == nil {
-			roots = append(roots, *cat)
+		if categories[i].ParentID == nil {
+			rootIDs = append(rootIDs, categories[i].ID)
 		} else {
-			if parent, ok := categoryMap[*cat.ParentID]; ok {
-				parent.Subcategories = append(parent.Subcategories, *cat)
-			}
+			pid := *categories[i].ParentID
+			childrenMap[pid] = append(childrenMap[pid], &categories[i])
 		}
 	}
 
-	// Update roots with their children from the map
-	for i := range roots {
-		if mapped, ok := categoryMap[roots[i].ID]; ok {
-			roots[i].Subcategories = mapped.Subcategories
+	// Recursive function to build tree by value from pointers
+	var buildTree func(id uuid.UUID) BudgetCategory
+	buildTree = func(id uuid.UUID) BudgetCategory {
+		cat := *categoryMap[id]
+		cat.Subcategories = []BudgetCategory{}
+		for _, child := range childrenMap[id] {
+			cat.Subcategories = append(cat.Subcategories, buildTree(child.ID))
 		}
+		return cat
 	}
 
+	roots := make([]BudgetCategory, 0, len(rootIDs))
+	for _, id := range rootIDs {
+		roots = append(roots, buildTree(id))
+	}
 	return roots
 }
 
