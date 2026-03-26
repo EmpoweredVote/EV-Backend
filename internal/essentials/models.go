@@ -71,6 +71,19 @@ type Office struct {
 	IsAppointedPosition  bool      `json:"is_appointed_position"`
 }
 
+// UserLocation stores the last-searched address for a logged-in user so that
+// GET /representatives/me can return their representatives without re-prompting.
+type UserLocation struct {
+	ID               uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	UserID           string    `json:"user_id" gorm:"type:uuid;not null;uniqueIndex"`
+	HomeAddress      string    `json:"home_address" gorm:"not null"` // raw query the user searched
+	FormattedAddress string    `json:"formatted_address"`            // geocoder-validated form
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+}
+
+func (UserLocation) TableName() string { return "essentials.user_locations" }
+
 type Chamber struct {
 	ID                uuid.UUID `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
 	ExternalID        int       `json:"external_id" gorm:"uniqueIndex"`

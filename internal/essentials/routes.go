@@ -15,8 +15,12 @@ func SetupRoutes() http.Handler {
 	r.Get("/politicians", GetAllPoliticians)
 	r.Get("/politicians/{zip}", GetPoliticiansByZip)
 	r.Post("/politicians/search", SearchPoliticians)
+	r.Post("/candidates/search", SearchPoliticians) // alias used by Essentials frontend
 	r.Get("/politician/{id}", GetPoliticianByID)
 	r.Get("/candidates/{zip}", GetCandidatesByZip)
+
+	// Authenticated routes (Supabase JWT required)
+	r.Get("/representatives/me", GetMyRepresentatives)
 
 	// Phase B: Candidacy data endpoints
 	r.Get("/politician/{id}/endorsements", GetPoliticianEndorsements)
