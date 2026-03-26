@@ -2,11 +2,15 @@ package essentials
 
 import (
 	"context"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -25,6 +29,189 @@ import (
 func writeJSON(w http.ResponseWriter, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(v)
+}
+
+// extractBearerToken returns the raw JWT from the Authorization header, or "".
+func extractBearerToken(r *http.Request) string {
+	auth := r.Header.Get("Authorization")
+	if strings.HasPrefix(auth, "Bearer ") {
+		return strings.TrimPrefix(auth, "Bearer ")
+	}
+	return ""
+}
+
+// verifySupabaseJWT validates an HS256 Supabase JWT using SUPABASE_JWT_SECRET and
+// returns the subject (user UUID) on success.
+func verifySupabaseJWT(tokenString string) (string, error) {
+	secret := os.Getenv("SUPABASE_JWT_SECRET")
+	if secret == "" {
+		return "", errors.New("SUPABASE_JWT_SECRET not configured")
+	}
+
+	parts := strings.Split(tokenString, ".")
+	if len(parts) != 3 {
+		return "", errors.New("invalid JWT format")
+	}
+
+	signingInput := parts[0] + "." + parts[1]
+	sig, err := base64.RawURLEncoding.DecodeString(parts[2])
+	if err != nil {
+		return "", fmt.Errorf("invalid JWT signature encoding: %w", err)
+	}
+
+	mac := hmac.New(sha256.New, []byte(secret))
+	mac.Write([]byte(signingInput))
+	if !hmac.Equal(mac.Sum(nil), sig) {
+		return "", errors.New("JWT signature mismatch")
+	}
+
+	payload, err := base64.RawURLEncoding.DecodeString(parts[1])
+	if err != nil {
+		return "", fmt.Errorf("invalid JWT payload encoding: %w", err)
+	}
+
+	var claims struct {
+		Sub string `json:"sub"`
+		Exp int64  `json:"exp"`
+	}
+	if err := json.Unmarshal(payload, &claims); err != nil {
+		return "", fmt.Errorf("invalid JWT claims: %w", err)
+	}
+	if claims.Exp > 0 && time.Now().Unix() > claims.Exp {
+		return "", errors.New("JWT expired")
+	}
+	if claims.Sub == "" {
+		return "", errors.New("JWT has no sub claim")
+	}
+	return claims.Sub, nil
+}
+
+// saveUserLocationAsync upserts the user's searched address in the background (non-blocking).
+func saveUserLocationAsync(userID, rawQuery, formatted string) {
+	go func() {
+		result := db.DB.Model(&UserLocation{}).
+			Where("user_id = ?", userID).
+			Updates(map[string]interface{}{
+				"home_address":      rawQuery,
+				"formatted_address": formatted,
+				"updated_at":        time.Now(),
+			})
+		if result.Error == nil && result.RowsAffected == 0 {
+			// No existing row — create one.
+			db.DB.Create(&UserLocation{
+				UserID:           userID,
+				HomeAddress:      rawQuery,
+				FormattedAddress: formatted,
+			})
+		}
+	}()
+}
+
+// GetMyRepresentatives handles GET /representatives/me.
+// Requires a valid Supabase JWT in the Authorization header.
+// Returns the caller's saved representatives, or 204 if no location is on file.
+func GetMyRepresentatives(w http.ResponseWriter, r *http.Request) {
+	token := extractBearerToken(r)
+	if token == "" {
+		http.Error(w, "Authorization required", http.StatusUnauthorized)
+		return
+	}
+	userID, err := verifySupabaseJWT(token)
+	if err != nil {
+		log.Printf("[GetMyRepresentatives] JWT error: %v", err)
+		http.Error(w, "Invalid or expired token", http.StatusUnauthorized)
+		return
+	}
+
+	var loc UserLocation
+	if err := db.DB.Where("user_id = ?", userID).First(&loc).Error; err != nil {
+		// No saved location — tell the client to show the address input instead.
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	if GeoClient == nil {
+		http.Error(w, "Geocoding service not configured", http.StatusServiceUnavailable)
+		return
+	}
+
+	geoResult, geoErr := GeoClient.Geocode(r.Context(), loc.HomeAddress)
+	if geoErr != nil {
+		log.Printf("[GetMyRepresentatives] geocoding failed for user=%s addr=%q: %v", userID, loc.HomeAddress, geoErr)
+		http.Error(w, "Could not resolve saved address", http.StatusBadRequest)
+		return
+	}
+
+	var officials []OfficialOut
+
+	if geoResult.IsAreaQuery() {
+		areaGeoID, areaMTFCC, found := ResolveAreaBoundary(r.Context(), geoResult)
+		if found {
+			areaMatches, err := FindGeoIDsByAreaIntersection(r.Context(), areaGeoID, areaMTFCC)
+			if err == nil && len(areaMatches) > 0 {
+				officials, _ = FindPoliticiansByGeoMatches(r.Context(), areaMatches)
+			}
+		}
+		if len(officials) == 0 {
+			if pointMatches, err := FindGeoIDsByPoint(r.Context(), geoResult.Lat, geoResult.Lng); err == nil && len(pointMatches) > 0 {
+				officials, _ = FindPoliticiansByGeoMatches(r.Context(), pointMatches)
+			}
+		}
+	} else {
+		if pointMatches, err := FindGeoIDsByPoint(r.Context(), geoResult.Lat, geoResult.Lng); err == nil && len(pointMatches) > 0 {
+			officials, _ = FindPoliticiansByGeoMatches(r.Context(), pointMatches)
+		}
+	}
+
+	geoState := strings.ToUpper(geoResult.State)
+	if geoState == "" {
+		for _, o := range officials {
+			if o.RepresentingState != "" {
+				geoState = strings.ToUpper(o.RepresentingState)
+				break
+			}
+		}
+	}
+
+	if len(officials) > 0 && geoState != "" {
+		seenExtIDs := make(map[int]bool, len(officials))
+		for _, o := range officials {
+			if o.ExternalID != 0 {
+				seenExtIDs[o.ExternalID] = true
+			}
+		}
+		if supplemental, err := fetchStatewideFromDB(geoState); err == nil {
+			for _, s := range supplemental {
+				if !seenExtIDs[s.ExternalID] {
+					officials = append(officials, s)
+					seenExtIDs[s.ExternalID] = true
+				}
+			}
+		}
+	}
+
+	if len(officials) == 0 && geoState != "" {
+		var err error
+		officials, err = fetchFederalAndStateFromDB(geoState)
+		if err != nil {
+			log.Printf("[GetMyRepresentatives] fallback fetch error: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("X-Data-Status", "no-geofence-data")
+	} else {
+		w.Header().Set("X-Data-Status", "fresh")
+	}
+
+	// Update the stored formatted address if geocoder returned a better form.
+	if loc.FormattedAddress != geoResult.Formatted && geoResult.Formatted != "" {
+		go db.DB.Model(&UserLocation{}).
+			Where("user_id = ?", userID).
+			Update("formatted_address", geoResult.Formatted)
+	}
+
+	w.Header().Set("X-Formatted-Address", geoResult.Formatted)
+	writeJSON(w, officials)
 }
 
 // Type aliases for backward compatibility with existing code
@@ -1960,6 +2147,14 @@ func SearchPoliticians(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Optional auth: if a valid JWT is present, we'll save the address on success.
+	authedUserID := ""
+	if tok := extractBearerToken(r); tok != "" {
+		if uid, err := verifySupabaseJWT(tok); err == nil {
+			authedUserID = uid
+		}
+	}
+
 	// All queries (including ZIP codes) go through geocode → area/point detection.
 	// ZIP codes will return result type "postal_code" which triggers area intersection.
 	// This replaces the old ZIP-specific warm/cache delegation.
@@ -2082,6 +2277,9 @@ func SearchPoliticians(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("[SearchPoliticians] served %d officials (%d geo matches) for state=%s query=%q",
 			len(officials), geoMatchCount, strings.ToUpper(geoResult.State), query)
+		if authedUserID != "" {
+			saveUserLocationAsync(authedUserID, query, geoResult.Formatted)
+		}
 		w.Header().Set("X-Data-Status", "fresh")
 		w.Header().Set("X-Geofence-Count", fmt.Sprintf("%d", geoMatchCount))
 		w.Header().Set("X-Formatted-Address", geoResult.Formatted)
@@ -2104,6 +2302,9 @@ func SearchPoliticians(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("[SearchPoliticians] no-geofence fallback: returned %d federal+state officials for state=%s", len(federalState), geoState)
+	if authedUserID != "" {
+		saveUserLocationAsync(authedUserID, query, geoResult.Formatted)
+	}
 	w.Header().Set("X-Data-Status", "no-geofence-data")
 	w.Header().Set("X-Formatted-Address", geoResult.Formatted)
 	writeJSON(w, federalState)
