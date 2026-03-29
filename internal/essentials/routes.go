@@ -18,7 +18,7 @@ func SetupRoutes() http.Handler {
 	r.Post("/candidates/search", SearchPoliticians) // alias used by Essentials frontend
 	r.Get("/politician/{id}", GetPoliticianByID)
 	r.Get("/candidates/{zip}", GetCandidatesByZip)
-	r.Post("/candidates/search", SearchCandidates)
+	r.Post("/candidates/election-search", SearchCandidates) // election candidates (Show Candidates toggle)
 
 	// Authenticated routes (Supabase JWT required)
 	r.Get("/representatives/me", GetMyRepresentatives)
