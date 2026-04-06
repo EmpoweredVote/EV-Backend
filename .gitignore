@@ -33,4 +33,4 @@ check_db.go
 
 # TIGER/Census shapefile data (imported into PostGIS, not needed at runtime)
 scripts/shapefile_data/migrate-photos
-scripts/shapefile_data
+scripts/shapefile_data.claude/
