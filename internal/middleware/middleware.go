@@ -73,6 +73,8 @@ var allowed = map[string]struct{}{
 	"https://ev-prototypes.netlify.app":      {},
 	"https://readrank.empowered.vote":        {},
 	"https://readrank-dev.empowered.vote":    {},
+	"https://financials.empowered.vote":      {},
+	"https://tt.empowered.vote":              {},
 }
 
 func CORSMiddleware(next http.Handler) http.Handler {
