@@ -38,6 +38,7 @@ func SetupRoutes() http.Handler {
 			r.Patch("/topics/categories/update", UpdateTopicCategoriesHandler)
 			r.Post("/politicians/context", PoliticianContextHandler)
 			r.Put("/politicians/{politician_id}/answers", UpsertPoliticianAnswers)
+			r.Patch("/politicians/{id}/photo", UpdatePoliticianPhotoHandler)
 			r.Delete("/topics/delete/{id}", DeleteTopicHandler)
 		})
 	})

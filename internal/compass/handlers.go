@@ -1177,11 +1177,11 @@ func PoliticiansWithAnswersHandler(w http.ResponseWriter, r *http.Request) {
 		  p.id, p.first_name, p.last_name, p.preferred_name, p.full_name,
 		  COALESCE(
 		    NULLIF(p.photo_custom_url, ''),
-		    NULLIF(p.photo_origin_url, ''),
 		    (SELECT url FROM essentials.politician_images
 		     WHERE politician_id = p.id AND type = 'default' LIMIT 1),
 		    (SELECT url FROM essentials.politician_images
-		     WHERE politician_id = p.id LIMIT 1)
+		     WHERE politician_id = p.id LIMIT 1),
+		    NULLIF(p.photo_origin_url, '')
 		  ) AS photo_origin_url,
 		  o.title AS office_title,
 		  o.representing_state,
@@ -1204,6 +1204,26 @@ func PoliticiansWithAnswersHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(results)
+}
+
+// UpdatePoliticianPhotoHandler lets an admin set photo_custom_url for a politician.
+func UpdatePoliticianPhotoHandler(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	var body struct {
+		PhotoCustomURL string `json:"photo_custom_url"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "invalid body", http.StatusBadRequest)
+		return
+	}
+	if err := db.DB.Exec(
+		`UPDATE essentials.politicians SET photo_custom_url = ? WHERE id::text = ?`,
+		body.PhotoCustomURL, id,
+	).Error; err != nil {
+		http.Error(w, "DB error", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func SelectedTopicsHandler(w http.ResponseWriter, r *http.Request) {
