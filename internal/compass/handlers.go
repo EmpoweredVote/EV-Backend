@@ -1169,6 +1169,7 @@ func PoliticiansWithAnswersHandler(w http.ResponseWriter, r *http.Request) {
 		RepresentingCity  string   `json:"representing_city,omitempty"`
 		DistrictLabel    string    `json:"district_label,omitempty"`
 		DistrictType     string    `json:"district_type,omitempty"`
+		AnswerCount      int       `json:"answer_count"`
 	}
 
 	var results []polRow
@@ -1187,7 +1188,9 @@ func PoliticiansWithAnswersHandler(w http.ResponseWriter, r *http.Request) {
 		  o.representing_state,
 		  o.representing_city,
 		  d.label AS district_label,
-		  d.district_type
+		  d.district_type,
+		  (SELECT COUNT(*) FROM compass.answers
+		   WHERE politician_id = p.id::text AND value != 0) AS answer_count
 		FROM compass.answers a
 		JOIN essentials.politicians p ON p.id::text = a.politician_id
 		LEFT JOIN essentials.offices o ON o.politician_id = p.id
